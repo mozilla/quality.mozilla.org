@@ -2,18 +2,16 @@
 /* Template Name: Home Page */
 $events_cat = get_category_by_slug('events')->cat_ID;
 $news_cat = get_category_by_slug('qmo-news')->cat_ID;
-$home_intro = get_page_by_path('home-intro')->ID;
+$home_intro = get_page_by_path('home/home-intro')->ID;
 
 get_header(); ?>
 <div id="content-main" class="hfeed vcalendar" role="main">
-
-<?php if (is_front_page() && ($paged < 1) && $home_intro) :
-    fc_get_post($home_intro); ?>
+<?php if ( is_front_page() && ($paged < 1) && $home_intro ) :
+  fc_get_post($home_intro); ?>
   <div id="home-head">
     <h2 class="section-title"><?php the_title(); ?></h2>
 
-    <?php
-    $groups_page = get_page_by_path('groups')->ID;
+    <?php $groups_page = get_page_by_path('groups')->ID;
     $groups = new WP_Query(array('post_type' => 'page','post_status' => 'publish','post_parent' => $groups_page, 'order' => 'ASC', 'orderby' => 'menu_order'));
     
     if ( $groups->have_posts() ) : ?>
@@ -31,14 +29,12 @@ get_header(); ?>
 
     <?php the_content(); ?>
   </div>
+
   <h2 class="section-title">Latest News</h2>
 <?php endif; ?>
 
-<?php
-$wp_query->query('cat='.$news_cat.','.$events_cat.'&paged='.$paged); // only one post on the home page, and only from the add-ons category
-if (have_posts()) : while (have_posts()) : the_post(); // The Loop
-?>
-<?php // if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
+<?php $wp_query->query('cat='.$news_cat.','.$events_cat.'&paged='.$paged); // Only show news and events on the home page
+if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
 
   <div id="post-<?php the_ID(); ?>" <?php if ( function_exists('is_event') && is_event() ) : post_class('vevent'); else : post_class(); endif; ?> role="article">
     <h3 class="entry-title <?php if ( function_exists('is_event') && is_event() ) : echo 'summary'; endif; ?>"><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent link to &#8220;<?php the_title_attribute(); ?>&#8221;" <?php if ( function_exists('is_event') && is_event() ) : echo 'class="url"'; endif; ?>><?php the_title(); ?></a></h3>

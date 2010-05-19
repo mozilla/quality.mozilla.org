@@ -138,9 +138,6 @@ body.page div.page { padding: 0; background-image: none; }
 .page .doc-flag, .type-page .doc-flag { background: url("img/flag-docs.png") 50% 0 no-repeat; }
 .page .group-flag, .type-page .group-flag { background: url("img/flag-groups.png") 50% 0 no-repeat; }
 
-.page-tree { margin-left: 1.5em; }
-.page-tree li ul { margin-left: 1.5em; }
-
 .post .entry-content, .post .entry-symmary, .page .entry-content { margin-bottom: 1em; }
 .entry-content:after, .entry-summary:after { content: "."; clear: both; display: block; height: 0; visibility: hidden; }
 
@@ -299,8 +296,6 @@ table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10
 #groups-list .group:nth-child(even) { background-position: -40% top; }
 #groups-list .group .entry-title { font-size: 1.385em; }
 #groups-list .group .wp-post-image { position: absolute; left: 0; top: 1.44em; padding: 2px; }
-#groups-list a:hover .wp-post-image, #groups-list a:focus .wp-post-image, #groups-list a:active .wp-post-image { padding: 1px; border: 1px solid #369; }
-#groups-list a:visited:hover .wp-post-image, #groups-list a:visited:focus .wp-post-image, #groups-list a:visited:active .wp-post-image { padding: 1px; border: 1px solid #f93; }
 
 /* @Breadcrumbs *********/
 .crumbs { list-style: none; font: .846em/1.1 Verdana, Arial, Helvetica, sans-serif; }
@@ -409,9 +404,9 @@ table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10
 
 /* @Sidebar @Widgets *********/
 #content-sub .widget:first-child { margin-top: -15px; }
-#content-sub .widget:first-child .widgettitle { padding-top: 30px; background: url("img/bg-widget.png") left top repeat-x; }
+#content-sub .widget:first-child .widgettitle { padding-top: 30px; background: url("img/hatches.png") left top repeat-x; }
 
-.widget { margin-bottom: 1.75em; padding-bottom: 20px; background: url("img/bg-widget.png") right bottom repeat-x; }
+.widget { margin-bottom: 1.75em; padding-bottom: 20px; background: url("img/hatches.png") right bottom repeat-x; }
 .widget ul { list-style: none; }
 .widgettitle { font-size: 1.385em; margin: .4em 0 .6em; }
 
@@ -420,10 +415,17 @@ table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10
 .widget .blogroll li { border-top: 1px dashed #999; padding: .15em 1px; }
 .widget .blogroll a:link, .widget .blogroll a:visited { font-weight: bold; color: #369; }
 
+/* local */
 #linkcat-13 { font-size: 1.07em; }
 #linkcat-13 .widgettitle { font-size: 1.69em; }
 
-.widget_categoryposts .cat-post-item { border-top: 1px dashed #999; padding: .15em 1px; }
+/* prod */
+#linkcat-14 { font-size: 1.07em; }
+#linkcat-14 .widgettitle { font-size: 1.69em; }
+
+/*** @Related posts and pages *********/
+.widget_categoryposts ul, .flexipages_widget ul { border-bottom: 1px dashed #999; }
+.widget_categoryposts .cat-post-item, .flexipages_widget .page_item { border-top: 1px dashed #999; padding: .15em 1px; }
 
 /*** @Events widgets *********/
 .dig-in { font-size: .846em; border-bottom: 1px dashed #999; padding: 0 3px .5em; margin-bottom: 1em; }
@@ -535,9 +537,13 @@ input[type='button']:hover, input[type='button']:focus {
 #docs-pages ul ul { font-size: 1em; }
 #docs-pages ul li { padding-left: 20px; margin: .25em 0; float: none; clear: both; width: auto; background: url("img/tree-node.gif") 2px 0 no-repeat; }
 
-.widget .page-tree { list-style: none; margin: 0; line-height: 1.3; }
-.widget .page-tree ul { list-style: none; margin: 0; }
-.widget .page-tree ul li { padding: .2em 0 .2em 20px; margin: .25em 0; background: url("img/tree-node.gif") 3px 0 no-repeat; }
+.page-tree { margin-left: 1.5em; }
+.page-tree li ul { margin-left: 1.5em; }
+
+.related_docs .page-tree { list-style: none; margin: 0 0 1.5em; line-height: 1.3; }
+.related_docs .page-tree li { padding: .2em 0; margin: .25em 0; }
+.related_docs .page-tree ul { list-style: none; margin: 0; }
+.related_docs .page-tree ul li { padding: .2em 0 .2em 20px; background: url("img/tree-node.gif") 3px 0 no-repeat; }
 
 /* @Footer *********/
 #site-info { clear: both; margin-top: 2em; padding: 2.5em 0 4em; text-align: center; font: .846em/1.2 Verdana, Arial, Helvetica, sans-serif; background: url("img/pencil-line-footer.gif") repeat-x; }
