@@ -1,0 +1,13 @@
+html { background: #fff url("../img/bg-canvas-topfade.gif") 0 2.43em repeat-x; }
+body { background: transparent url("../img/bg-body.gif") 54% 0 no-repeat; min-width: 960px; padding-top: 3em; font: .812em/1.538 Georgia, Times, serif; color: #333; }
+
+#login { margin-top: 0; }
+
+h1 { background: url("../img/logo-login.png") center top no-repeat; width: 310px; height: 200px; margin: 0 0 .5em 8px; overflow: hidden; }
+h1 a { position: absolute; left: -999em; }
+
+.login #backtoblog { position: absolute; top: 0; left: 0; width: 100%; color: #fff; height: 3em; background: #4c81ba url("../img/bg-topbar.gif"); border-bottom: 1px solid #fff; }
+.login #backtoblog a { top: .75em; color: #fff; }
+.login #backtoblog a:hover, .login #backtoblog a:focus, .login #backtoblog a:active { text-decoration: underline; }
+
+#loginform { border-color: #eee; -moz-border-radius: 3px; -webkit-border-radius: 3px; -moz-box-shadow: 0 2px 3px rgba(0,0,0,.1); }

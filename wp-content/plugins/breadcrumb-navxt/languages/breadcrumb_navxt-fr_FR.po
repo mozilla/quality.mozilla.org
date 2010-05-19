@@ -1,0 +1,575 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: breadcrumb-navxt\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-12-07 06:08+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Laurent Grabielle <infos@3w3t.com>\n"
+"Language-Team: 3w3t\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: _e;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: D:\\3w3t.com\\wordpress\\wp-content\\plugins\\breadcrumb-navxt\n"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:134
+msgid "Insufficient privileges to proceed."
+msgstr "Vos droits sont insuffisants pour cette fonction."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:190
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:216
+msgid "<a title=\"Go to the first page of search results for %title%.\" href=\"%link%\">"
+msgstr "<a title=\"Aller à la première page des résultats pour %title%.\" href=\"%link%\">"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:540
+msgid "Settings"
+msgstr "Réglages"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:594
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:629
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:802
+msgid "Breadcrumb NavXT Settings"
+msgstr "Paramétrages de Breadcrumb NavXT"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:630
+#, php-format
+msgid "Get help with \"%s\""
+msgstr "Obtenir de l'aide avec \"%s\""
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:641
+#, php-format
+msgid "Tips for the settings are located below select options. Please refer to the %sdocumentation%s for more information."
+msgstr "Des explications pour le paramétrage sont affichées en dessous de chaque option. Veuillez vous référer à la %sdocumentation%s pour plus d'informations."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:642
+msgid "Go to the Breadcrumb NavXT online documentation"
+msgstr "Aller à la documentation en ligne de Breadcrumb NavXT"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:697
+msgid "All of your current Breadcrumb NavXT settings will be overwritten with the default values. Are you sure you want to continue?"
+msgstr "Tous vos paramétrages actuels de Breadcrumb NavXT vont être remplacés par les valeurs par défaut. Etes vous sûr de vouloir continuer?"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:700
+msgid "All of your current Breadcrumb NavXT settings will be overwritten with the imported values. Are you sure you want to continue?"
+msgstr "Tous vos paramétrages actuels de Breadcrumb NavXT vont être remplacés par les valeurs importées. Etes vous sûr de vouloir continuer?"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:753
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1386
+msgid "Import"
+msgstr "Importation"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:753
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1387
+msgid "Export"
+msgstr "Exportation"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:753
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1388
+msgid "Reset"
+msgstr "Réinitialisation"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:812
+msgid "General"
+msgstr "Général"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:816
+msgid "Breadcrumb Separator"
+msgstr "Séparateur du fil d'ariane"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:820
+msgid "Placed in between each breadcrumb."
+msgstr "Placé entre chaque élément du fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:825
+msgid "Breadcrumb Max Title Length"
+msgstr "Longueur maximum du titre "
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:833
+msgid "Home Breadcrumb"
+msgstr "Origine du fil d'ariane"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:838
+msgid "Place the home breadcrumb in the trail."
+msgstr "Inclure la page d'accueil dans le fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:843
+msgid "Home Title: "
+msgstr "Titre de la page d'accueil:"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:852
+msgid "Blog Breadcrumb"
+msgstr "Fil d'ariane du site"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:857
+msgid "Place the blog breadcrumb in the trail."
+msgstr "Mettre le fil d'ariane du site en route. "
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:863
+msgid "Home Prefix"
+msgstr "Préfixe de la page d'accueil"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:871
+msgid "Home Suffix"
+msgstr "Suffixe de la page d'accueil"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:879
+msgid "Home Anchor"
+msgstr "Ancre pour la page d'accueil"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:883
+msgid "The anchor template for the home breadcrumb."
+msgstr "Modèle de l'ancre pour l'élement origine du fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:888
+msgid "Blog Anchor"
+msgstr "Ancre pour le blog"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:892
+msgid "The anchor template for the blog breadcrumb, used only in static front page environments."
+msgstr "Modèle de l'ancre pour le fil d'ariane, utilisé uniquement quand l'accueil est une page statique."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:898
+msgid "Current Item"
+msgstr "Elément courant"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:902
+msgid "Link Current Item"
+msgstr "Faire un lien avec l'élément courant"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:907
+msgid "Yes"
+msgstr "Oui"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:913
+msgid "Current Item Prefix"
+msgstr "Préfixe pour l'élément courant"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:917
+msgid "This is always placed in front of the last breadcrumb in the trail, before any other prefixes for that breadcrumb."
+msgstr "Toujours placé au début du dernier élément du fil d'ariane, avant tout autre préfixe."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:922
+msgid "Current Item Suffix"
+msgstr "Suffixe pour l'élément courant"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:926
+msgid "This is always placed after the last breadcrumb in the trail, and after any other prefixes for that breadcrumb."
+msgstr "Toujours placé en fin dernier élément du fil d'ariane, et après tout autre suffixe."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:931
+msgid "Current Item Anchor"
+msgstr "Ancre pour l'élément courant"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:935
+msgid "The anchor template for current item breadcrumbs."
+msgstr "Modèle de l'ancre pour l'élement courant du fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:940
+msgid "Paged Breadcrumb"
+msgstr "Fil d'ariane avec pagination"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:945
+msgid "Include the paged breadcrumb in the breadcrumb trail."
+msgstr "Inclus la pagination dans le fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:947
+msgid "Indicates that the user is on a page other than the first on paginated posts/pages."
+msgstr "Indique que l'utilisateur se trouve dans une autre page/article que la première lorsque la pagination est activée."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:952
+msgid "Paged Prefix"
+msgstr "Préfixe pour la pagination"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:960
+msgid "Paged Suffix"
+msgstr "Suffixe pour la pagination"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:969
+msgid "Posts &amp; Pages"
+msgstr "Articles &amp; Pages"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:973
+msgid "Post Prefix"
+msgstr "Préfixe des articles"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:981
+msgid "Post Suffix"
+msgstr "Suffixe des articles"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:989
+msgid "Post Anchor"
+msgstr "Ancre des articles"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:993
+msgid "The anchor template for post breadcrumbs."
+msgstr "Modèle de l'ancre pour le fil d'ariane des articles"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:998
+msgid "Post Taxonomy Display"
+msgstr "Affichage de la taxonomie des articles"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1003
+msgid "Show the taxonomy leading to a post in the breadcrumb trail."
+msgstr "Montrer la taxonomie dans le fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1009
+msgid "Post Taxonomy"
+msgstr "Taxonomie des articles"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1014
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1091
+msgid "Categories"
+msgstr "Catégories"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1019
+msgid "Dates"
+msgstr "Dates"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1024
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1141
+msgid "Tags"
+msgstr "Tags"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1044
+msgid "The taxonomy which the breadcrumb trail will show."
+msgstr "Le type d'élément de taxonomie qui sera affiché dans le fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1049
+msgid "Page Prefix"
+msgstr "Préfixe pour les pages"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1057
+msgid "Page Suffix"
+msgstr "Suffixe pour les pages"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1065
+msgid "Page Anchor"
+msgstr "Ancre des pages"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1069
+msgid "The anchor template for page breadcrumbs."
+msgstr "Modèle de l'ancre pour un élément page du fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1074
+msgid "Attachment Prefix"
+msgstr "Préfixe pour les attachements"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1082
+msgid "Attachment Suffix"
+msgstr "Suffixe pour les attachements"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1095
+msgid "Category Prefix"
+msgstr "Préfixe pour catégorie"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1099
+msgid "Applied before the anchor on all category breadcrumbs."
+msgstr "Appliqué avant chaque ancre pour tous les éléments catégorie du fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1104
+msgid "Category Suffix"
+msgstr "Suffixe pour catégorie"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1108
+msgid "Applied after the anchor on all category breadcrumbs."
+msgstr "Appliqué après chaque ancre pour tous les éléments catégorie du fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1113
+msgid "Category Anchor"
+msgstr "Ancre pour les catégories"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1117
+msgid "The anchor template for category breadcrumbs."
+msgstr "Modèle de l'ancre pour les éléments catégorie du fil d'ariane"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1122
+msgid "Archive by Category Prefix"
+msgstr "Préfixe pour les archives par catégorie"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1126
+msgid "Applied before the title of the current item breadcrumb on an archive by cateogry page."
+msgstr "Appliqué avant chaque item du fil d'ariane sur une page d'archive par catégorie."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1131
+msgid "Archive by Category Suffix"
+msgstr "Suffixe pour les archive par catégorie"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1135
+msgid "Applied after the title of the current item breadcrumb on an archive by cateogry page."
+msgstr "Appliqué après chaque item du fil d'ariane sur une page d'archive par catégorie."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1145
+msgid "Tag Prefix"
+msgstr "Préfixe pour les tag"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1149
+msgid "Applied before the anchor on all tag breadcrumbs."
+msgstr "Appliqué avant l'ancre de tous les éléments tag du fil d'ariane. "
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1154
+msgid "Tag Suffix"
+msgstr "Suffixe pour les tags"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1158
+msgid "Applied after the anchor on all tag breadcrumbs."
+msgstr "Appliqué après l'ancre de tous les éléments tag du fil d'ariane. "
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1163
+msgid "Tag Anchor"
+msgstr "Ancre pour les tags"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1167
+msgid "The anchor template for tag breadcrumbs."
+msgstr "Modèle de l'ancre pour les élément du fil d'ariane tag."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1172
+msgid "Archive by Tag Prefix"
+msgstr "Préfixe pour archive par tag"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1176
+msgid "Applied before the title of the current item breadcrumb on an archive by tag page."
+msgstr "Appliqué avant chaque item du fil d'ariane sur une page d'archive par tag."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1181
+msgid "Archive by Tag Suffix"
+msgstr "Suffixe pour archive par tag"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1185
+msgid "Applied after the title of the current item breadcrumb on an archive by tag page."
+msgstr "Appliqué après chaque item du fil d'ariane sur une page d'archive par tag."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1203
+#, php-format
+msgid "%s Prefix"
+msgstr "Préfixe des %s"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1207
+#, php-format
+msgid "Applied before the anchor on all %s breadcrumbs."
+msgstr "Appliqué avant l'ancre de tous les éléments %s du fil d'ariane. "
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1212
+#, php-format
+msgid "%s Suffix"
+msgstr "Suffixe des %s"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1216
+#, php-format
+msgid "Applied after the anchor on all %s breadcrumbs."
+msgstr "Appliqué après l'ancre de tous les éléments %s du fil d'ariane. "
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1221
+#, php-format
+msgid "%s Anchor"
+msgstr "Ancre des %s"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1225
+#, php-format
+msgid "The anchor template for %s breadcrumbs."
+msgstr "Modèle de l'ancre pour le fil d'ariane des %s."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1230
+#, php-format
+msgid "Archive by %s Prefix"
+msgstr "Préfixe pour archive par %s"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1234
+#, php-format
+msgid "Applied before the title of the current item breadcrumb on an archive by %s page."
+msgstr "Appliqué avant le titre de l'item courant du fil d'ariane sur une page d'archive par %s."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1239
+#, php-format
+msgid "Archive by %s Suffix"
+msgstr "Suffixe pour archive par %s"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1243
+#, php-format
+msgid "Applied after the title of the current item breadcrumb on an archive by %s page."
+msgstr "Appliqué après le titre de l'item courant du fil d'ariane sur une page d'archive par %s."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1253
+msgid "Date Archives"
+msgstr "Archives par date"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1257
+msgid "Archive by Date Prefix"
+msgstr "Préfixe pour les archives par date"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1261
+msgid "Applied before the anchor on all date breadcrumbs."
+msgstr "Appliqué avant l'ancre de chaque élément date du fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1266
+msgid "Archive by Date Suffix"
+msgstr "Suffixe pour archive par date"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1270
+msgid "Applied after the anchor on all date breadcrumbs."
+msgstr "Appliqué après l'ancre de chaque élément date du fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1275
+msgid "Date Anchor"
+msgstr "Ancre pour archive par date"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1279
+msgid "The anchor template for date breadcrumbs."
+msgstr "Modèle de l'ancre pour la date dans le fil d'ariane."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1285
+msgid "Miscellaneous"
+msgstr "Divers"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1289
+msgid "Author Prefix"
+msgstr "Préfixe pour auteur"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1297
+msgid "Author Suffix"
+msgstr "Suffixe pour auteur"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1305
+msgid "Author Display Format"
+msgstr "Format d'affichage de l'auteur"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1311
+msgid "display_name uses the name specified in \"Display name publicly as\" under the user profile the others correspond to options in the user profile."
+msgstr "display_name utilise le nom spécifié \"Nom à afficher publiquement\" dans le profil utilisateur. Les autres choix correspondent aux différentes options disponibles dans profil utilisateur."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1316
+msgid "Search Prefix"
+msgstr "Préfixe pour la recherche"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1324
+msgid "Search Suffix"
+msgstr "Suffixe pour la recherche"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1332
+msgid "Search Anchor"
+msgstr "Ancre de recherche"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1336
+msgid "The anchor template for search breadcrumbs, used only when the search results span several pages."
+msgstr "Modèle de l'ancre pour le fil d'ariane, utilisé uniquement quand le résultat de recherche comprend plusieurs pages."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1341
+msgid "404 Title"
+msgstr "Titre erreur 404"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1349
+msgid "404 Prefix"
+msgstr "Préfixe erreur 404"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1357
+msgid "404 Suffix"
+msgstr "Suffixe erreur 404"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1366
+msgid "Save Changes"
+msgstr "Sauvegarder les changements"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1372
+msgid "Import/Export/Reset Settings"
+msgstr "Importation/Exportation/Reinitialisation des paramétrages"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1373
+msgid "Import Breadcrumb NavXT settings from a XML file, export the current settings to a XML file, or reset to the default Breadcrumb NavXT settings."
+msgstr "Importer les paramétrages de Breadcrumb NavXT depuis un fichier XML, exporter les paramétrages actuels vers un fichier XML, ou réinitialiser par les valeurs par défaut de Breadcrumb NavXT."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1377
+msgid "Settings File"
+msgstr "Fichier de paramétrages"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1381
+msgid "Select a XML settings file to upload and import settings from."
+msgstr "Selectionner un fichier XML à télécharger à partir duquel les paramétrages seront importés."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1518
+msgid "Importing settings from file failed."
+msgstr "L'importation des paramétrages depuis le fichier a échoué."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1528
+msgid "The Breadcrumb NavXT settings were successfully imported from file."
+msgstr "Les paramétrages de Breadcrumb NavXT ont été importés depuis le fichier avec succès."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_admin.php:1538
+msgid "The Breadcrumb NavXT settings were reset to the default values."
+msgstr "Les paramétrages de Breadcrumb NavXT ont été réinitialisés avec les valeurs par défaut."
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:149
+msgid "Blog"
+msgstr "Accueil"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:151
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:155
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:179
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:193
+msgid "<a title=\"Go to %title%.\" href=\"%link%\">"
+msgstr "<a title=\"Aller à %title%.\" href=\"%link%\">"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:168
+msgid "<a title=\"Reload the current page.\" href=\"%link%\">"
+msgstr "<a title=\"recharger la page courante. \" href=\"%link%\">"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:209
+msgid "404"
+msgstr "404"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:212
+msgid "Search results for &#39;"
+msgstr "Résultat de recherche pour &#39;"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:223
+msgid "<a title=\"Go to the %title% tag archives.\" href=\"%link%\">"
+msgstr "<a title=\"Aller aux archives du tag %title%.\" href=\"%link%\">"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:226
+msgid "Articles by: "
+msgstr "Articles par:"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:230
+msgid "<a title=\"Go to the first page of posts by %title%.\" href=\"%link%\">"
+msgstr "<a title=\"Aller à la première page des articles par %title%.\" href=\"%link%\">"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:239
+msgid "<a title=\"Go to the %title% category archives.\" href=\"%link%\">"
+msgstr "<a title=\"Aller aux archives de la catégorie %title%.\" href=\"%link%\">"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:242
+msgid "Archive by category &#39;"
+msgstr "Archive par categorie &#39;"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:246
+msgid "Archive by tag &#39;"
+msgstr "Archive par tag &#39;"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:249
+msgid "<a title=\"Go to the %title% archives.\" href=\"%link%\">"
+msgstr "<a title=\"Aller aux archives %title%.\" href=\"%link%\">"
+
+#: D:\3w3t.com\wordpress\wp-content\plugins\breadcrumb-navxt/breadcrumb_navxt_class.php:488
+msgid "Untagged"
+msgstr "Marquage enlevé"
+
+#~ msgid ""
+#~ "Warning, your version of Breadcrumb NavXT does not match the version "
+#~ "supported by this administrative interface. As a result, settings may not "
+#~ "work as expected."
+#~ msgstr ""
+#~ "Attention !!! votre version de Breadcrumb NavXT ne correspond pas à la "
+#~ "version supportée par votre interface d'administration. En conséquence "
+#~ "les paramétrages pourraient ne pas fonctionner comme souhaité."
+#~ msgid "Your Breadcrumb NavXT Administration interface version is "
+#~ msgstr ""
+#~ "La version de votre interface d'Administration de Breadcrumb NavXT est "
+#~ msgid "Your Breadcrumb NavXT version is "
+#~ msgstr "Votre version de Breadcrumb NavXT est "
+#~ msgid "Leave the home breadcrumb out of the trail."
+#~ msgstr "Ne pas inclure la page d'accueil dans le fil d'ariane."
+#~ msgid "breadcrumb"
+#~ msgstr "fil d'ariane :"
+

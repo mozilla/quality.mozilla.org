@@ -1,0 +1,132 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Flexi Pages Widget 1.5.3.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-09-03 12:08+0530\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Fat Cow <zhr@tut.by>\n"
+"Language-Team: Fat Cow <zhr@tut.by>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: RUSSIAN FEDERATION\n"
+"X-Poedit-SearchPath-0: \n"
+
+#: /flexi-pages-widget.php:36
+msgid "Pages"
+msgstr "Страницы"
+
+#: /flexi-pages-widget.php:46
+#: /flexi-pages-widget.php:279
+msgid "Home"
+msgstr "Домой"
+
+#: /flexi-pages-widget.php:385
+msgid "Title"
+msgstr "Название"
+
+#: /flexi-pages-widget.php:390
+msgid "Sort by"
+msgstr "Сортировать по"
+
+#: /flexi-pages-widget.php:392
+msgid "Page title"
+msgstr "название страницы"
+
+#: /flexi-pages-widget.php:393
+msgid "Menu order"
+msgstr "Порядок меню"
+
+#: /flexi-pages-widget.php:394
+msgid "Date created"
+msgstr "Дата создания"
+
+#: /flexi-pages-widget.php:395
+msgid "Date modified"
+msgstr "Дата изменения"
+
+#: /flexi-pages-widget.php:396
+msgid "Page ID"
+msgstr "ID страницы"
+
+#: /flexi-pages-widget.php:397
+msgid "Page author ID"
+msgstr "ID страницы автора"
+
+#: /flexi-pages-widget.php:398
+msgid "Page slug"
+msgstr "Слоган страницы"
+
+#: /flexi-pages-widget.php:401
+msgid "ASC"
+msgstr "ASC"
+
+#: /flexi-pages-widget.php:402
+msgid "DESC"
+msgstr "Описание"
+
+#: /flexi-pages-widget.php:407
+msgid "Exclude"
+msgstr "Исключить"
+
+#: /flexi-pages-widget.php:408
+msgid "Include"
+msgstr "Включить"
+
+#: /flexi-pages-widget.php:409
+msgid "pages"
+msgstr "страницы"
+
+#: /flexi-pages-widget.php:413
+msgid "use &lt;Ctrl&gt; key to select multiple pages"
+msgstr "используйте клавишу &lt;Ctrl&gt; для выбора нескольких страниц"
+
+#: /flexi-pages-widget.php:417
+msgid "Show sub-pages"
+msgstr "Показать подстраницы"
+
+#: /flexi-pages-widget.php:419
+msgid "Show all sub-pages"
+msgstr "Показать все подстраницы"
+
+#: /flexi-pages-widget.php:420
+msgid "Only related sub-pages"
+msgstr "Только связанные подстраницы"
+
+#: /flexi-pages-widget.php:421
+msgid "Only strictly related sub-pages"
+msgstr "Только непосредственно связанные подстраницы"
+
+#: /flexi-pages-widget.php:427
+msgid "Show hierarchy"
+msgstr "Показать иерархию"
+
+#: /flexi-pages-widget.php:431
+#, php-format
+msgid "%d levels deep"
+msgstr "%d уровень"
+
+#: /flexi-pages-widget.php:433
+msgid "Unlimited depth"
+msgstr "Глубина неограничена"
+
+#: /flexi-pages-widget.php:438
+msgid "Show home page"
+msgstr "Показать домашнюю страницу"
+
+#: /flexi-pages-widget.php:442
+msgid "Show date"
+msgstr "Показать дату"
+
+#: /flexi-pages-widget.php:444
+msgid "Choose Format"
+msgstr "Выбрать формат"
+
+#: /flexi-pages-widget.php:462
+msgid "A highly configurable widget to list pages and sub-pages."
+msgstr "Полностью настраиваемый виджет списка страниц и подстраниц."
+

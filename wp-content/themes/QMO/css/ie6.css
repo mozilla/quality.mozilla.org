@@ -1,0 +1,71 @@
+/*----------------------------------------------------------------------------
+IE6 CSS file for Mozilla Student Reps
+Created by Craig Cook - focalcurve.com
+        for the Mozilla Foundation
+        on 4 April, 2010
+-----------------------------------------------------------------------------*/
+
+/* =Reset *********/
+html, body, form, fieldset, legend, 
+h1, h2, h3, h4, h5, h6, dt, dd { margin: 0; padding: 0; }
+blockquote:before, blockquote:after, q:before, q:after { content: ""; }
+blockquote, q { quotes: "" ""; }
+address, caption, cite, code, dfn, th, var { font-style: inherit; font-weight: inherit; }
+abbr, acronym, dfn { border-bottom: 1px dotted #666; font-variant: normal; cursor: help; }
+input, button, textarea, select, optgroup, option { font-family: inherit; font-size: inherit; font-style: inherit; font-weight: inherit; }
+table { border-collapse: collapse; border-spacing: 0; margin: 0 0 1.3em; }
+caption, th { text-align: left; }
+p, pre, blockquote, dl, ul, ol { margin: 0 0 1.3em; padding: 0; }
+li ul, li ol { margin-bottom: 0; }
+legend { color: inherit; }
+dt { font-style: italic; }
+dd { margin: 0 0 .5em 30px; }
+form ol, form ul { list-style: none; margin: 0 0 1.3em; }
+
+/* Body */
+
+body { width: 60%; margin: 0 auto; padding: 2em 0; background: #fff url("../img/bg-tile.jpg") center -110px repeat-x; font: 0.875em/1.725 Georgia, "Times New Roman", Times, serif; color: #333;
+  width: expression(document.body.clientWidth < 640? "640px" : document.body.clientWidth > 120? "120em" : "auto");
+}
+
+/*** =Links *********/
+a:link { text-decoration: none; color: #b30406; }
+a:visited { text-decoration: none; color: #9f534b; }
+a:hover, a:active, a:focus { text-decoration: underline; color: #e42600; }
+
+a:link img { border: 1px solid #b30406; }
+a:visited img { border: 1px solid #9f534b; }
+a:hover img, a:active img, a:focus img { border-color: #e42600; }
+
+/*** =Headings *********/
+h1, h2, h3, h4, h5, h6 { margin-bottom: .5em; line-height: 1.5; font-weight: normal; color: #4b4742; }
+h1 { font-size: 2.527em; }
+h2 { font-size: 1.714em; }
+h3 { font-size: 1.143em; }
+h4, h5 { font-size: 1em; }
+h6 { font-size: .857em; }
+
+.page-title { font-size: 3.714em; line-height: 1; margin-bottom: .15em; letter-spacing: -0.01em; }
+#page-head .dek { font-size: 1.714em; line-height: 1.3; padding-left: 3px; letter-spacing: -.01em; }
+
+#logo { font-size: 1.143em; font-weight: bold; }
+#nav-main { font-weight: bold; }
+
+#nav-access { position: absolute; top: -12em; }
+#nav-access a:focus, #nav-access a:active { position: absolute; top: 12em; }
+
+#site-info { border-top: 3px double #ccc; padding-top: 1em; }
+
+.section { border-top: 1px solid #ccc; padding-top: 1em; }
+
+.section ul { list-style: none; }
+.section ul li { line-height: 1.625; margin-bottom: .35em; padding-left: 12px; background: transparent url("../img/bullet.png") 0 .75em no-repeat; }
+.section li ul { margin: .25em 0 .35em 12px; }
+.rtl .section ul li { padding: 0 12px 0 0; background-position: right .75em; }
+.rtl .section li ul { margin: .25em 12px .35em 0; }
+
+
+label { font-weight: bold; display: block; }
+fieldset { margin : 0 0 1.3em; padding : 1em 1em 0; border : 1px solid #ccc; }
+legend { font-size: 1.143em; font-weight: bold; color: #4b4742; }
+

@@ -1,0 +1,129 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Flexi Pages Widget\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-09-03 12:08+0530\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Ove Kaufeldt <ove.kaufeldt@shin-ken.se>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Swedish\n"
+"X-Poedit-Country: SWEDEN\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: /flexi-pages-widget.php:36
+msgid "Pages"
+msgstr "Sidor"
+
+#: /flexi-pages-widget.php:46
+#: /flexi-pages-widget.php:279
+msgid "Home"
+msgstr "Hem"
+
+#: /flexi-pages-widget.php:385
+msgid "Title"
+msgstr "Titel"
+
+#: /flexi-pages-widget.php:390
+msgid "Sort by"
+msgstr "Sortera efter"
+
+#: /flexi-pages-widget.php:392
+msgid "Page title"
+msgstr "Sidnamn"
+
+#: /flexi-pages-widget.php:393
+msgid "Menu order"
+msgstr "Menyordning"
+
+#: /flexi-pages-widget.php:394
+msgid "Date created"
+msgstr "Datum skapat"
+
+#: /flexi-pages-widget.php:395
+msgid "Date modified"
+msgstr "Datum modifierat"
+
+#: /flexi-pages-widget.php:396
+msgid "Page ID"
+msgstr "Sid-ID"
+
+#: /flexi-pages-widget.php:397
+msgid "Page author ID"
+msgstr "Sidskaparens ID"
+
+#: /flexi-pages-widget.php:398
+msgid "Page slug"
+msgstr "Sidordning"
+
+#: /flexi-pages-widget.php:401
+msgid "ASC"
+msgstr "Stigande"
+
+#: /flexi-pages-widget.php:402
+msgid "DESC"
+msgstr "Fallande"
+
+#: /flexi-pages-widget.php:407
+msgid "Exclude"
+msgstr "Exkludera"
+
+#: /flexi-pages-widget.php:408
+msgid "Include"
+msgstr "Inkludera"
+
+#: /flexi-pages-widget.php:409
+msgid "pages"
+msgstr "sidor"
+
+#: /flexi-pages-widget.php:413
+msgid "use &lt;Ctrl&gt; key to select multiple pages"
+msgstr "använd &lt;Ctrl&gt; för att välja flera sidor"
+
+#: /flexi-pages-widget.php:417
+msgid "Show sub-pages"
+msgstr "Visa undersidor"
+
+#: /flexi-pages-widget.php:419
+msgid "Show all sub-pages"
+msgstr "Visa alla undersidor"
+
+#: /flexi-pages-widget.php:420
+msgid "Only related sub-pages"
+msgstr "Bara relaterade undersidor"
+
+#: /flexi-pages-widget.php:421
+msgid "Only strictly related sub-pages"
+msgstr "Bara strikt relaterade undersidor"
+
+#: /flexi-pages-widget.php:427
+msgid "Show hierarchy"
+msgstr "Visa hierarki"
+
+#: /flexi-pages-widget.php:431
+#, php-format
+msgid "%d levels deep"
+msgstr "%d nivåer ner"
+
+#: /flexi-pages-widget.php:433
+msgid "Unlimited depth"
+msgstr "Obegränsat antal nivåer"
+
+#: /flexi-pages-widget.php:438
+msgid "Show home page"
+msgstr "Visa Hem-sida"
+
+#: /flexi-pages-widget.php:442
+msgid "Show date"
+msgstr "Visa datum"
+
+#: /flexi-pages-widget.php:444
+msgid "Choose Format"
+msgstr "Välj format"
+
+#: /flexi-pages-widget.php:462
+msgid "A highly configurable widget to list pages and sub-pages."
+msgstr "En konfigurerbar widget för att lista sidor och undersidor."
+

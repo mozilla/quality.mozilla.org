@@ -1,0 +1,184 @@
+
+#cms_tpv_dashboard_widget {
+	z-index: 10;
+}
+
+
+#cms_tpv_container {
+	clear: both;
+	overflow: visible;
+	margin-top: 1.5em;
+}
+
+.pages_page_cms-tpv-pages-page .updated {
+	clear: both;
+}
+
+.cms-tpv-subsubsub li {
+	display: inline;
+}
+
+.cms-tpv-subsubsub li a.current {
+	font-weight: bold;
+	text-decoration: none;
+	color: black;
+}
+
+.pages_page_cms-tpv-pages-page .cms-tpv-subsubsub li {
+	zoom: 1; /* weird ie-problems otherwise, like li-items that disappear on search. */
+}
+
+#cms_tpv_search_no_hits {
+	clear: both;
+}
+
+.tree li {
+	margin-top: 2px !important;
+	margin-bottom: 2px !important;
+}
+
+
+.tree li span.cms_tpv_action_edit,
+.tree li span.cms_tpv_action_view,
+.tree li span.cms_tpv_action_add_page_after,
+.tree li span.cms_tpv_action_add_page_inside
+{
+	display: none;
+	text-decoration: underline;
+	border: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	padding: 0 0 0 .5ex;
+
+}
+.tree li span.cms_tpv_action_add_page {
+	display: none;
+	border: 0;
+	padding: 0 0 0 .5em;
+	color: #666;
+}
+
+.tree li a.search,
+.cms-tree-view-search
+{
+	background-color: #ffefba;
+	font-weight: bold;
+	font-family: "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+	font-size: 12px;
+}
+
+
+.cms_tpv_action_edit,
+.cms_tpv_action_view,
+.cms_tpv_action_add_page_after,
+.cms_tpv_action_add_page_inside
+{
+	color: #21759B !important;
+}
+
+.cms_tpv_action_edit:hover,
+.cms_tpv_action_view:hover,
+.cms_tpv_action_add_page_after:hover,
+cms_tpv_action_add_page_inside:hover
+ {
+	color: #d54e21 !important;
+}
+
+.tree ins {
+	cursor: move;
+}
+
+.tree-default li.open,
+.tree-default li.closed
+{
+	margin-top: 4px !important;
+	margin-bottom: 4px !important;
+	cursor: pointer;
+}
+
+.tree-default span.child_count {
+	background-color: transparent;
+	color: #999;
+	border: none;
+	font-size: .8em;
+}
+
+.tree li:nth-child(odd) {
+}
+
+.tree-default span.post_type {
+	background-color: #f85b11;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+	padding: 1px 4px 1px 4px;
+	color: white;
+	border: none;
+	font-size: .8em;
+	display: inline;
+	margin-right: .75ex;
+}
+.tree-default span.post_type_draft {
+	
+}
+.tree-default span.post_type_password {
+	background-color: #25b61a;
+}
+.tree-default span.post_type_private {
+	background-color: #25b61a;
+}
+.tree-default span.post_type_pending,
+.tree-default span.post_type_future
+{
+	background-color: #0069e0;
+}
+
+
+#jstree-dragged {
+	background-color: white;
+	opacity: .9;
+}
+
+#cms_tpv_open_all
+{
+	margin-left: 1em;
+}
+
+#cms_tree_view_search_form {
+	display: inline;
+	position: relative;
+	margin-left: 1em;
+}
+
+
+#cms_tpv_dashboard_widget #cms_tree_view_search_form {
+	display: block;
+	margin-left: 0;
+	margin-top: .5em;
+}
+
+#cms_tpv_dashboard_widget .cms-tpv-subsubsub {
+	margin-top: -6px;
+	position: relative;
+	right: auto;
+	left: auto;
+	top: auto;
+	bottom: auto;
+}
+
+#cms_tree_view_search {
+	width: 130px;
+}
+#cms_tree_view_search_form_working {
+	position: absolute;
+	left: 0;
+	top: 2em;
+	display: none;
+}
+
+#cms_tpv_working {
+	position: absolute;
+	line-height: 1;
+	display: none;
+}

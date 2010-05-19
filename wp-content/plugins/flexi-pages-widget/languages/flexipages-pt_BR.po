@@ -1,0 +1,130 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Flexi Pages Widget 1.5.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-09-03 12:08+0530\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Tzor More <tzor77@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: \n"
+
+#: /flexi-pages-widget.php:36
+msgid "Pages"
+msgstr "Páginas"
+
+#: /flexi-pages-widget.php:46
+#: /flexi-pages-widget.php:279
+msgid "Home"
+msgstr "Home"
+
+#: /flexi-pages-widget.php:385
+msgid "Title"
+msgstr "Título"
+
+#: /flexi-pages-widget.php:390
+msgid "Sort by"
+msgstr "Organizar por"
+
+#: /flexi-pages-widget.php:392
+msgid "Page title"
+msgstr "Título da página"
+
+#: /flexi-pages-widget.php:393
+msgid "Menu order"
+msgstr "Ordem do menu"
+
+#: /flexi-pages-widget.php:394
+msgid "Date created"
+msgstr "Data criada"
+
+#: /flexi-pages-widget.php:395
+msgid "Date modified"
+msgstr "Data modificada"
+
+#: /flexi-pages-widget.php:396
+msgid "Page ID"
+msgstr "ID da página"
+
+#: /flexi-pages-widget.php:397
+msgid "Page author ID"
+msgstr "ID do autor da página"
+
+#: /flexi-pages-widget.php:398
+msgid "Page slug"
+msgstr "Resumo da página"
+
+#: /flexi-pages-widget.php:401
+msgid "ASC"
+msgstr "ASC"
+
+#: /flexi-pages-widget.php:402
+msgid "DESC"
+msgstr "DESC"
+
+#: /flexi-pages-widget.php:407
+msgid "Exclude"
+msgstr "Excluir"
+
+#: /flexi-pages-widget.php:408
+msgid "Include"
+msgstr "Incluir"
+
+#: /flexi-pages-widget.php:409
+msgid "pages"
+msgstr "páginas"
+
+#: /flexi-pages-widget.php:413
+msgid "use &lt;Ctrl&gt; key to select multiple pages"
+msgstr "use a tecla &lt;Ctrl&gt; para selecionar páginas múltiplas"
+
+#: /flexi-pages-widget.php:417
+msgid "Show sub-pages"
+msgstr "Mostras as sub-páginas"
+
+#: /flexi-pages-widget.php:419
+msgid "Show all sub-pages"
+msgstr "Mostrar todas as sub-páginas"
+
+#: /flexi-pages-widget.php:420
+msgid "Only related sub-pages"
+msgstr "Somente sub-páginas relacionadas"
+
+#: /flexi-pages-widget.php:421
+msgid "Only strictly related sub-pages"
+msgstr "Somente sub-páginas estritamente relacionadas"
+
+#: /flexi-pages-widget.php:427
+msgid "Show hierarchy"
+msgstr "Mostrar hierarquia"
+
+#: /flexi-pages-widget.php:431
+#, php-format
+msgid "%d levels deep"
+msgstr "%d níveis de profundidade"
+
+#: /flexi-pages-widget.php:433
+msgid "Unlimited depth"
+msgstr "Profundidade ilimitada"
+
+#: /flexi-pages-widget.php:438
+msgid "Show home page"
+msgstr "Mostrar a página inicial"
+
+#: /flexi-pages-widget.php:442
+msgid "Show date"
+msgstr "Mostrar a data"
+
+#: /flexi-pages-widget.php:444
+msgid "Choose Format"
+msgstr "Escolher o formato"
+
+#: /flexi-pages-widget.php:462
+msgid "A highly configurable widget to list pages and sub-pages."
+msgstr "Um widget altamente configurável para listar páginas e sub-páginas"
+

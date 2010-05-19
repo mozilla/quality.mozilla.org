@@ -1,0 +1,137 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Flexi Pages Widget\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-09-03 12:08+0530\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Robert Buj Gelonch <robert.buj@gmail.com>\n"
+"Language-Team: Robert Buj Gelonch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Catalan\n"
+"X-Poedit-Country: SPAIN\n"
+"X-Poedit-SearchPath-0: \n"
+
+#: /flexi-pages-widget.php:36
+msgid "Pages"
+msgstr "Pàgines"
+
+#: /flexi-pages-widget.php:46
+#: /flexi-pages-widget.php:279
+msgid "Home"
+msgstr "Inici"
+
+#: /flexi-pages-widget.php:385
+msgid "Title"
+msgstr "Titol"
+
+#: /flexi-pages-widget.php:390
+msgid "Sort by"
+msgstr "Ordenar per"
+
+#: /flexi-pages-widget.php:392
+msgid "Page title"
+msgstr "Títol pàgina"
+
+#: /flexi-pages-widget.php:393
+msgid "Menu order"
+msgstr "Ordre menú"
+
+#: /flexi-pages-widget.php:394
+msgid "Date created"
+msgstr "Data creació"
+
+#: /flexi-pages-widget.php:395
+msgid "Date modified"
+msgstr "Data modificació"
+
+#: /flexi-pages-widget.php:396
+msgid "Page ID"
+msgstr "ID pàgina"
+
+#: /flexi-pages-widget.php:397
+msgid "Page author ID"
+msgstr "ID autor pàgina"
+
+#: /flexi-pages-widget.php:398
+msgid "Page slug"
+msgstr "Eslògan pàgina"
+
+#: /flexi-pages-widget.php:401
+msgid "ASC"
+msgstr "ASC"
+
+#: /flexi-pages-widget.php:402
+msgid "DESC"
+msgstr "DESC"
+
+#: /flexi-pages-widget.php:407
+msgid "Exclude"
+msgstr "Excloure"
+
+#: /flexi-pages-widget.php:408
+msgid "Include"
+msgstr "Incloure"
+
+#: /flexi-pages-widget.php:409
+msgid "pages"
+msgstr "pàgines"
+
+#: /flexi-pages-widget.php:413
+msgid "use &lt;Ctrl&gt; key to select multiple pages"
+msgstr "Utilitzeu la tecla &lt;Ctrl&gt; per a seleccionar diverses pàgines"
+
+#: /flexi-pages-widget.php:417
+msgid "Show sub-pages"
+msgstr "Mostrar sub-pàgines"
+
+#: /flexi-pages-widget.php:419
+msgid "Show all sub-pages"
+msgstr "Mostrar totes les sub-pàgines"
+
+#: /flexi-pages-widget.php:420
+msgid "Only related sub-pages"
+msgstr "Únicament sub-pàgines relacionades"
+
+#: /flexi-pages-widget.php:421
+msgid "Only strictly related sub-pages"
+msgstr "Únicament sub-pàgines estrictament relacionades"
+
+#: /flexi-pages-widget.php:427
+msgid "Show hierarchy"
+msgstr "Mostrar jerarquia"
+
+#: /flexi-pages-widget.php:431
+#, php-format
+msgid "%d levels deep"
+msgstr "%d nivells de profunditat"
+
+#: /flexi-pages-widget.php:433
+msgid "Unlimited depth"
+msgstr "Profunditat ilimitada"
+
+#: /flexi-pages-widget.php:438
+msgid "Show home page"
+msgstr "Mostrar pàgina d'inici"
+
+#: /flexi-pages-widget.php:442
+msgid "Show date"
+msgstr "Mostrar data"
+
+#: /flexi-pages-widget.php:444
+msgid "Choose Format"
+msgstr "Seleccionar format"
+
+#: /flexi-pages-widget.php:462
+msgid "A highly configurable widget to list pages and sub-pages."
+msgstr "Un giny força configurable per llistar les pàgines i sub-pàgines"
+
+msgid "Show as dropdown"
+msgstr "Mostrar com un desplegable"
+
+msgid "Go"
+msgstr "Anar"

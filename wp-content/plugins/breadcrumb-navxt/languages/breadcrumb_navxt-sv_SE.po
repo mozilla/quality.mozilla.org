@@ -1,0 +1,555 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Breadcrumb NavXT\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/breadcrumb-navxt\n"
+"POT-Creation-Date: 2009-12-05 22:23+0000\n"
+"PO-Revision-Date: 2009-12-09 14:57+0100\n"
+"Last-Translator: Patrik Spathon <patrik@patrikspathon.com>\n"
+"Language-Team: John Havlik <mtekkmonkey@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: English\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: C:\\Users\\John\\Documents\\Aptana Studio\\Breadcrumb NavXT\\trunk\n"
+
+#: breadcrumb_navxt_admin.php:134
+msgid "Insufficient privileges to proceed."
+msgstr "Otillräcklig privilegier för att fortsätta."
+
+#: breadcrumb_navxt_admin.php:190
+#: breadcrumb_navxt_class.php:216
+msgid "<a title=\"Go to the first page of search results for %title%.\" href=\"%link%\">"
+msgstr "<a title=\"Gå till första sökresultatsidan för %title%.\" href=\"%link%\">"
+
+#: breadcrumb_navxt_admin.php:540
+msgid "Settings"
+msgstr "Inställningar"
+
+#: breadcrumb_navxt_admin.php:594
+#: breadcrumb_navxt_admin.php:629
+#: breadcrumb_navxt_admin.php:802
+msgid "Breadcrumb NavXT Settings"
+msgstr "Breadcrumb NavXT Inställningar"
+
+#: breadcrumb_navxt_admin.php:630
+#, php-format
+msgid "Get help with \"%s\""
+msgstr "Få hjälp med \"%s\""
+
+#: breadcrumb_navxt_admin.php:641
+#, php-format
+msgid "Tips for the settings are located below select options. Please refer to the %sdocumentation%s for more information."
+msgstr "Tips för inställningarna finns under alternativen. Referera till % sdocumentation%s för mer information."
+
+#: breadcrumb_navxt_admin.php:642
+msgid "Go to the Breadcrumb NavXT online documentation"
+msgstr "Gå till Breadcrumb NavXT online dokumentation"
+
+#: breadcrumb_navxt_admin.php:697
+msgid "All of your current Breadcrumb NavXT settings will be overwritten with the default values. Are you sure you want to continue?"
+msgstr "Alla dina nuvarande Breadcrumb NavXT inställningar kommer bli överskrivna med standardvärden. Är du säker på att du vill fortsätta?"
+
+#: breadcrumb_navxt_admin.php:700
+msgid "All of your current Breadcrumb NavXT settings will be overwritten with the imported values. Are you sure you want to continue?"
+msgstr "Alla dina nuvarande Breadcrumb NavXT inställningar kommer bli överskrivna med importerade värden. Är du säker på att du vill fortsätta?"
+
+#: breadcrumb_navxt_admin.php:753
+#: breadcrumb_navxt_admin.php:1386
+msgid "Import"
+msgstr "Importera"
+
+#: breadcrumb_navxt_admin.php:753
+#: breadcrumb_navxt_admin.php:1387
+msgid "Export"
+msgstr "Exportera"
+
+#: breadcrumb_navxt_admin.php:753
+#: breadcrumb_navxt_admin.php:1388
+msgid "Reset"
+msgstr "Återställ"
+
+#: breadcrumb_navxt_admin.php:812
+msgid "General"
+msgstr "Allmänt"
+
+#: breadcrumb_navxt_admin.php:816
+msgid "Breadcrumb Separator"
+msgstr "Breadcrumb separator"
+
+#: breadcrumb_navxt_admin.php:820
+msgid "Placed in between each breadcrumb."
+msgstr "Placeras i mellan varje breadcrumb."
+
+#: breadcrumb_navxt_admin.php:825
+msgid "Breadcrumb Max Title Length"
+msgstr "Breadcrumb max titel längd"
+
+#: breadcrumb_navxt_admin.php:833
+msgid "Home Breadcrumb"
+msgstr "Hem Breadcrumb"
+
+#: breadcrumb_navxt_admin.php:838
+msgid "Place the home breadcrumb in the trail."
+msgstr "Placera hem breadcrumb i spåret."
+
+#: breadcrumb_navxt_admin.php:843
+msgid "Home Title: "
+msgstr "Hem titel: "
+
+#: breadcrumb_navxt_admin.php:852
+msgid "Blog Breadcrumb"
+msgstr "Blogg breadcrumb"
+
+#: breadcrumb_navxt_admin.php:857
+msgid "Place the blog breadcrumb in the trail."
+msgstr "Placera blogg breadcrumb i spåret."
+
+#: breadcrumb_navxt_admin.php:863
+msgid "Home Prefix"
+msgstr "Hem Prefix"
+
+#: breadcrumb_navxt_admin.php:871
+msgid "Home Suffix"
+msgstr "hem Suffix"
+
+#: breadcrumb_navxt_admin.php:879
+msgid "Home Anchor"
+msgstr "Hem Länk "
+
+#: breadcrumb_navxt_admin.php:883
+msgid "The anchor template for the home breadcrumb."
+msgstr "Länk mall för hem breadcrumb."
+
+#: breadcrumb_navxt_admin.php:888
+msgid "Blog Anchor"
+msgstr "Blogg länk"
+
+#: breadcrumb_navxt_admin.php:892
+msgid "The anchor template for the blog breadcrumb, used only in static front page environments."
+msgstr "Länk mall för blogg breadcrumb, används endast vid statisk framsida."
+
+#: breadcrumb_navxt_admin.php:898
+msgid "Current Item"
+msgstr "Nuvarande punkt"
+
+#: breadcrumb_navxt_admin.php:902
+msgid "Link Current Item"
+msgstr "Länk Nuvarande punkt"
+
+#: breadcrumb_navxt_admin.php:907
+msgid "Yes"
+msgstr "Ja"
+
+#: breadcrumb_navxt_admin.php:913
+msgid "Current Item Prefix"
+msgstr "Nuvarande punkt Prefix"
+
+#: breadcrumb_navxt_admin.php:917
+msgid "This is always placed in front of the last breadcrumb in the trail, before any other prefixes for that breadcrumb."
+msgstr "Detta placeras alltid framför den sista breadcrumb i spåret, innan någon annan prefix för den breadcrumb."
+
+#: breadcrumb_navxt_admin.php:922
+msgid "Current Item Suffix"
+msgstr "Nuvarande punkt Suffix"
+
+#: breadcrumb_navxt_admin.php:926
+msgid "This is always placed after the last breadcrumb in the trail, and after any other prefixes for that breadcrumb."
+msgstr "Denna är alltid placerad efter den sista breadcrumb i spåret, och efter något annat prefix för den breadcrumb."
+
+#: breadcrumb_navxt_admin.php:931
+msgid "Current Item Anchor"
+msgstr "Nuvarande punkt Länk"
+
+#: breadcrumb_navxt_admin.php:935
+msgid "The anchor template for current item breadcrumbs."
+msgstr "Länk mall för nuvarande punkt breadcrumbs."
+
+#: breadcrumb_navxt_admin.php:940
+msgid "Paged Breadcrumb"
+msgstr ""
+
+#: breadcrumb_navxt_admin.php:945
+msgid "Include the paged breadcrumb in the breadcrumb trail."
+msgstr "Inkludera den paged breadcrumb i breadcrumb spåret."
+
+#: breadcrumb_navxt_admin.php:947
+msgid "Indicates that the user is on a page other than the first on paginated posts/pages."
+msgstr "Betyder att användaren är på en annan sida än den första på ett flersidigt inlägg / sida."
+
+#: breadcrumb_navxt_admin.php:952
+msgid "Paged Prefix"
+msgstr ""
+
+#: breadcrumb_navxt_admin.php:960
+msgid "Paged Suffix"
+msgstr ""
+
+#: breadcrumb_navxt_admin.php:969
+msgid "Posts &amp; Pages"
+msgstr "Inlägg &amp; Sidor"
+
+#: breadcrumb_navxt_admin.php:973
+msgid "Post Prefix"
+msgstr "Inläggs Prefix"
+
+#: breadcrumb_navxt_admin.php:981
+msgid "Post Suffix"
+msgstr "Inläggs Suffix"
+
+#: breadcrumb_navxt_admin.php:989
+msgid "Post Anchor"
+msgstr "Inläggs Länk"
+
+#: breadcrumb_navxt_admin.php:993
+msgid "The anchor template for post breadcrumbs."
+msgstr "Länk mall för inläggs breadcrumbs."
+
+#: breadcrumb_navxt_admin.php:998
+msgid "Post Taxonomy Display"
+msgstr "Inläggs taxonomi visning"
+
+#: breadcrumb_navxt_admin.php:1003
+msgid "Show the taxonomy leading to a post in the breadcrumb trail."
+msgstr "Visa den taxonomi som leder till ett inlägg i breadcrumb spåret."
+
+#: breadcrumb_navxt_admin.php:1009
+msgid "Post Taxonomy"
+msgstr "Inäggs taxonomi"
+
+#: breadcrumb_navxt_admin.php:1014
+#: breadcrumb_navxt_admin.php:1091
+msgid "Categories"
+msgstr "Kategorier"
+
+#: breadcrumb_navxt_admin.php:1019
+msgid "Dates"
+msgstr "Datum"
+
+#: breadcrumb_navxt_admin.php:1024
+#: breadcrumb_navxt_admin.php:1141
+msgid "Tags"
+msgstr "Taggar"
+
+#: breadcrumb_navxt_admin.php:1044
+msgid "The taxonomy which the breadcrumb trail will show."
+msgstr "Den taxonomi som breadcrumb kommer att visa."
+
+#: breadcrumb_navxt_admin.php:1049
+msgid "Page Prefix"
+msgstr "Sido Prefix"
+
+#: breadcrumb_navxt_admin.php:1057
+msgid "Page Suffix"
+msgstr "Sido Suffix"
+
+#: breadcrumb_navxt_admin.php:1065
+msgid "Page Anchor"
+msgstr "Sido Länk"
+
+#: breadcrumb_navxt_admin.php:1069
+msgid "The anchor template for page breadcrumbs."
+msgstr "Länk mall för sido breadcrumbs."
+
+#: breadcrumb_navxt_admin.php:1074
+msgid "Attachment Prefix"
+msgstr ""
+
+#: breadcrumb_navxt_admin.php:1082
+msgid "Attachment Suffix"
+msgstr ""
+
+#: breadcrumb_navxt_admin.php:1095
+msgid "Category Prefix"
+msgstr "Kategori prefix"
+
+#: breadcrumb_navxt_admin.php:1099
+msgid "Applied before the anchor on all category breadcrumbs."
+msgstr "Tillämpad innan länken på alla kategori breadcrumb"
+
+#: breadcrumb_navxt_admin.php:1104
+msgid "Category Suffix"
+msgstr "Kategori Suffix"
+
+#: breadcrumb_navxt_admin.php:1108
+msgid "Applied after the anchor on all category breadcrumbs."
+msgstr "Tillämpad efter länken på alla kategori breadcrumb"
+
+#: breadcrumb_navxt_admin.php:1113
+msgid "Category Anchor"
+msgstr "Kategori länk"
+
+#: breadcrumb_navxt_admin.php:1117
+msgid "The anchor template for category breadcrumbs."
+msgstr "länk mall för kategori breadcrumbs"
+
+#: breadcrumb_navxt_admin.php:1122
+msgid "Archive by Category Prefix"
+msgstr "Arkiv av kategori prefix"
+
+#: breadcrumb_navxt_admin.php:1126
+msgid "Applied before the title of the current item breadcrumb on an archive by cateogry page."
+msgstr "Tillämpas innan rubriken på det aktuella breadcrumb på ett arkiv av kategori sida."
+
+#: breadcrumb_navxt_admin.php:1131
+msgid "Archive by Category Suffix"
+msgstr "Arkiv av Kategori Suffix"
+
+#: breadcrumb_navxt_admin.php:1135
+msgid "Applied after the title of the current item breadcrumb on an archive by cateogry page."
+msgstr "Tillämpas efter rubriken på det aktuella breadcrumb på ett arkiv av kategori sida."
+
+#: breadcrumb_navxt_admin.php:1145
+msgid "Tag Prefix"
+msgstr "Tagg Prefix"
+
+#: breadcrumb_navxt_admin.php:1149
+msgid "Applied before the anchor on all tag breadcrumbs."
+msgstr "Tillämpad innan länken på alla tagg breadcrumbs."
+
+#: breadcrumb_navxt_admin.php:1154
+msgid "Tag Suffix"
+msgstr "Tag Suffix"
+
+#: breadcrumb_navxt_admin.php:1158
+msgid "Applied after the anchor on all tag breadcrumbs."
+msgstr "Tillämpad efter länken på alla tagg breadcrumbs."
+
+#: breadcrumb_navxt_admin.php:1163
+msgid "Tag Anchor"
+msgstr "Tagg Länk"
+
+#: breadcrumb_navxt_admin.php:1167
+msgid "The anchor template for tag breadcrumbs."
+msgstr "Länk mall för tagg breadcrumbs."
+
+#: breadcrumb_navxt_admin.php:1172
+msgid "Archive by Tag Prefix"
+msgstr "Arkiv av Tagg Prefix"
+
+#: breadcrumb_navxt_admin.php:1176
+msgid "Applied before the title of the current item breadcrumb on an archive by tag page."
+msgstr "Tillämpas innan rubriken på den aktuella breadcrumb på ett arkiv med tagg sida."
+
+#: breadcrumb_navxt_admin.php:1181
+msgid "Archive by Tag Suffix"
+msgstr "Arkiv av Tagg Suffix"
+
+#: breadcrumb_navxt_admin.php:1185
+msgid "Applied after the title of the current item breadcrumb on an archive by tag page."
+msgstr "Tillämpas efter rubriken på den aktuella breadcrumb på ett arkiv med tagg sida."
+
+#: breadcrumb_navxt_admin.php:1203
+#, php-format
+msgid "%s Prefix"
+msgstr "%s Prefix"
+
+#: breadcrumb_navxt_admin.php:1207
+#, php-format
+msgid "Applied before the anchor on all %s breadcrumbs."
+msgstr "Tillämpad innan länken på alla %s breadcrumbs."
+
+#: breadcrumb_navxt_admin.php:1212
+#, php-format
+msgid "%s Suffix"
+msgstr "%s Suffix"
+
+#: breadcrumb_navxt_admin.php:1216
+#, php-format
+msgid "Applied after the anchor on all %s breadcrumbs."
+msgstr "Tillämpad efter länken på alla %s breadcrumbs."
+
+#: breadcrumb_navxt_admin.php:1221
+#, php-format
+msgid "%s Anchor"
+msgstr "%s Länk"
+
+#: breadcrumb_navxt_admin.php:1225
+#, php-format
+msgid "The anchor template for %s breadcrumbs."
+msgstr "Länk mall för %s breadcrumbs."
+
+#: breadcrumb_navxt_admin.php:1230
+#, php-format
+msgid "Archive by %s Prefix"
+msgstr "Arkiv av %s Prefix"
+
+#: breadcrumb_navxt_admin.php:1234
+#, php-format
+msgid "Applied before the title of the current item breadcrumb on an archive by %s page."
+msgstr "Tillämpas innan rubriken på den aktuella breadcrumb på ett arkiv med %s sida."
+
+#: breadcrumb_navxt_admin.php:1239
+#, php-format
+msgid "Archive by %s Suffix"
+msgstr "Arkiv av %s Suffix"
+
+#: breadcrumb_navxt_admin.php:1243
+#, php-format
+msgid "Applied after the title of the current item breadcrumb on an archive by %s page."
+msgstr "Tillämpas efter rubriken på den aktuella breadcrumb på ett arkiv med %s sida."
+
+#: breadcrumb_navxt_admin.php:1253
+msgid "Date Archives"
+msgstr "Datum Arkiv"
+
+#: breadcrumb_navxt_admin.php:1257
+msgid "Archive by Date Prefix"
+msgstr "Arkiv av datum Prefix"
+
+#: breadcrumb_navxt_admin.php:1261
+msgid "Applied before the anchor on all date breadcrumbs."
+msgstr "Tillämpad innan länken på alla datum breadcrumbs."
+
+#: breadcrumb_navxt_admin.php:1266
+msgid "Archive by Date Suffix"
+msgstr "Arkiv av daum suffix"
+
+#: breadcrumb_navxt_admin.php:1270
+msgid "Applied after the anchor on all date breadcrumbs."
+msgstr "Tillämpad efter länken på alla datum breadcrumbs."
+
+#: breadcrumb_navxt_admin.php:1275
+msgid "Date Anchor"
+msgstr "Datum länk"
+
+#: breadcrumb_navxt_admin.php:1279
+msgid "The anchor template for date breadcrumbs."
+msgstr "Länk mall för datum breadcrumbs."
+
+#: breadcrumb_navxt_admin.php:1285
+msgid "Miscellaneous"
+msgstr "Diverse"
+
+#: breadcrumb_navxt_admin.php:1289
+msgid "Author Prefix"
+msgstr "Författar Prefix"
+
+#: breadcrumb_navxt_admin.php:1297
+msgid "Author Suffix"
+msgstr "Författar Suffix"
+
+#: breadcrumb_navxt_admin.php:1305
+msgid "Author Display Format"
+msgstr "Författar visnings format"
+
+#: breadcrumb_navxt_admin.php:1311
+msgid "display_name uses the name specified in \"Display name publicly as\" under the user profile the others correspond to options in the user profile."
+msgstr "display_name använder namnet angett i \"Display name publicly as\" enligt användarprofilen andra motsvarar alternativ i användarens profil."
+
+#: breadcrumb_navxt_admin.php:1316
+msgid "Search Prefix"
+msgstr "Sök Prefix"
+
+#: breadcrumb_navxt_admin.php:1324
+msgid "Search Suffix"
+msgstr "Sök Suffix"
+
+#: breadcrumb_navxt_admin.php:1332
+msgid "Search Anchor"
+msgstr "Sök Länk"
+
+#: breadcrumb_navxt_admin.php:1336
+msgid "The anchor template for search breadcrumbs, used only when the search results span several pages."
+msgstr "Länk mall för sök breadcrumb, används endast när sökresultaten täcker flera sidor."
+
+#: breadcrumb_navxt_admin.php:1341
+msgid "404 Title"
+msgstr "404 Titel"
+
+#: breadcrumb_navxt_admin.php:1349
+msgid "404 Prefix"
+msgstr "404 Prefix"
+
+#: breadcrumb_navxt_admin.php:1357
+msgid "404 Suffix"
+msgstr "404 Suffix"
+
+#: breadcrumb_navxt_admin.php:1366
+msgid "Save Changes"
+msgstr "Spara ändringar"
+
+#: breadcrumb_navxt_admin.php:1372
+msgid "Import/Export/Reset Settings"
+msgstr "Importera/Exportera/Återställ inställningar"
+
+#: breadcrumb_navxt_admin.php:1373
+msgid "Import Breadcrumb NavXT settings from a XML file, export the current settings to a XML file, or reset to the default Breadcrumb NavXT settings."
+msgstr "Importera Breadcrumb NavXT inställningar från en XML-fil, exportera de aktuella inställningarna till en XML-fil, eller återställ till standard Breadcrumb NavXT inställningar."
+
+#: breadcrumb_navxt_admin.php:1377
+msgid "Settings File"
+msgstr "Inställnings fil"
+
+#: breadcrumb_navxt_admin.php:1381
+msgid "Select a XML settings file to upload and import settings from."
+msgstr "Välj en XML inställnings fil att ladda upp och importera inställningar från."
+
+#: breadcrumb_navxt_admin.php:1518
+msgid "Importing settings from file failed."
+msgstr "Importering av inställningar från fil misslyckades."
+
+#: breadcrumb_navxt_admin.php:1528
+msgid "The Breadcrumb NavXT settings were successfully imported from file."
+msgstr "Breadcrumb NavXT inställningarna importerades framgångsrikt från fil."
+
+#: breadcrumb_navxt_admin.php:1538
+msgid "The Breadcrumb NavXT settings were reset to the default values."
+msgstr "Breadcrumb NavXT inställningarna återställdes till standardvärdena"
+
+#: breadcrumb_navxt_class.php:149
+msgid "Blog"
+msgstr "Blogg"
+
+#: breadcrumb_navxt_class.php:151
+#: breadcrumb_navxt_class.php:155
+#: breadcrumb_navxt_class.php:179
+#: breadcrumb_navxt_class.php:193
+msgid "<a title=\"Go to %title%.\" href=\"%link%\">"
+msgstr "<a title=\"Gå till %title%.\" href=\"%link%\">"
+
+#: breadcrumb_navxt_class.php:168
+msgid "<a title=\"Reload the current page.\" href=\"%link%\">"
+msgstr "<a title=\"Ladda om nuvarande sida.\" href=\"%link%\">"
+
+#: breadcrumb_navxt_class.php:209
+msgid "404"
+msgstr "404"
+
+#: breadcrumb_navxt_class.php:212
+msgid "Search results for &#39;"
+msgstr "Sök resultat för &#39;"
+
+#: breadcrumb_navxt_class.php:223
+msgid "<a title=\"Go to the %title% tag archives.\" href=\"%link%\">"
+msgstr "<a title=\"Gå till %title% tagg arkiv.\" href=\"%link%\">"
+
+#: breadcrumb_navxt_class.php:226
+msgid "Articles by: "
+msgstr "Artiklar av:"
+
+#: breadcrumb_navxt_class.php:230
+msgid "<a title=\"Go to the first page of posts by %title%.\" href=\"%link%\">"
+msgstr "<a title=\"Gå till första sidan med inlägg i %title%.\" href=\"%link%\">"
+
+#: breadcrumb_navxt_class.php:239
+msgid "<a title=\"Go to the %title% category archives.\" href=\"%link%\">"
+msgstr "<a title=\"Gå till %title% kategorins arkiv.\" href=\"%link%\">"
+
+#: breadcrumb_navxt_class.php:242
+msgid "Archive by category &#39;"
+msgstr "Arkiv av kategorin &#39;"
+
+#: breadcrumb_navxt_class.php:246
+msgid "Archive by tag &#39;"
+msgstr "Arkiv av tagg &#39;"
+
+#: breadcrumb_navxt_class.php:249
+msgid "<a title=\"Go to the %title% archives.\" href=\"%link%\">"
+msgstr "<a title=\"Gå till %title% arkivet.\" href=\"%link%\">"
+
+#: breadcrumb_navxt_class.php:488
+msgid "Untagged"
+msgstr "Otaggad"
+
