@@ -10,6 +10,7 @@ $parent = $ancestors[$root]; // Top parent is the last in the array
 <ul id="nav-main" role="navigation">
 <?php // Home
       if ( (is_front_page()) && ($paged < 1) ) : ?><li class="current" title="This is the current page"><em>Home</em></li>
+<?php elseif (is_front_page()) : ?><li class="current"><a href="<?php echo bloginfo('url'); ?>" rel="home">Home</a></li>
 <?php else : ?><li><a href="<?php echo bloginfo('url'); ?>" rel="home">Home</a></li>
 <?php endif; ?>
 
@@ -23,8 +24,8 @@ $parent = $ancestors[$root]; // Top parent is the last in the array
 
 <?php // Community
   if (get_page_by_path('community')) :
-      if ( is_home() && $paged < 1 ) : ?><li class="current" title="This is the current page"><em>Community</em></li>
-<?php elseif (is_home() || is_category('syndicated') || is_category('twitter') ) : ?><li class="current"><a href="<?php echo get_permalink(get_page_by_path('community')->ID); ?>">Community</a></li>
+      if ( is_page('community') && $paged < 1 ) : ?><li class="current" title="This is the current page"><em>Community</em></li>
+<?php elseif (is_page('community') || is_category('syndicated') || is_category('twitter') ) : ?><li class="current"><a href="<?php echo get_permalink(get_page_by_path('community')->ID); ?>">Community</a></li>
 <?php else : ?><li><a href="<?php echo get_permalink(get_page_by_path('community')->ID); ?>">Community</a></li>
 <?php endif;
   endif; ?>

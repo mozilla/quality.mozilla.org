@@ -284,12 +284,6 @@ table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10
 #tec-events-loop .event-day { clear: both; margin: 1em 0; color: #390; font: bold .923em Verdana, Arial, Helvetica sans-serif; text-transform: uppercase; letter-spacing: .01em; }
 #tec-events-loop .entry-summary { margin: 0; padding: 0; }
 #tec-events-loop .event-date { font-size: 1em; }
-.tec-nav { font-size: 1.231em; font-weight: bold; margin: 1em 0; overflow: hidden; }
-.tec-nav a:visited { color: #369; }
-.tec-nav .tec-nav-previous { float: left; }
-.tec-nav .tec-nav-previous a { padding-left: 30px; background: url("img/gallery-prev.gif") 0 50% no-repeat; }
-.tec-nav .tec-nav-next { float: right; }
-.tec-nav .tec-nav-next a { padding-right: 30px; background: url("img/gallery-next.gif") 100% 50% no-repeat; }
 
 /* @Groups page *********/
 #groups-list .group { position: relative; min-height: 80px; padding: 2em 0 0 110px; margin-bottom: 2em; background: url("img/pencil-line.gif") center top repeat-x; }
@@ -394,13 +388,20 @@ table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10
 .pagination a:hover, .pagination a:focus, .pagination a:active, 
 .pages a:hover, .pages a:focus, .pages a:active { background: #dfe9f2; text-decoration: none; color: #333; }
 .pagination .prev { margin-right: 4px; }
-.prev a:before { content: "\00AB\00A0"; font-size: 1.2em; } /* laquo nbsp */
-.next a:after { content: "\00A0\00BB"; font-size: 1.2em; } /* nbsp raquo */
+.pagination .prev a:before { content: "\00AB\00A0"; font-size: 1.2em; } /* laquo nbsp */
+.pagination .next a:after { content: "\00A0\00BB"; font-size: 1.2em; } /* nbsp raquo */
 
 .pages { margin-bottom: 2em; }
 .pages b { padding: .15em .5em; border: 1px solid #ef8f30; background: #f93; color: #fff; }
 .pages a b { padding: 0; border: 0; background: transparent; color: #369; }
 .pages .current { padding: .15em .5em; border: 1px solid #ef8f30; background: #f93; color: #fff; }
+
+.nav-paging { list-style: none; font-size: 1.231em; font-weight: bold; margin: 1em 0; overflow: hidden; }
+.nav-paging a:visited { color: #369; }
+.nav-paging .prev { width: 45%; float: left; }
+.nav-paging .prev a { padding-left: 30px; background: url("img/gallery-prev.gif") 0 50% no-repeat; }
+.nav-paging .next { width: 45%; float: right; text-align: right; }
+.nav-paging .next a { padding-right: 30px; background: url("img/gallery-next.gif") 100% 50% no-repeat; }
 
 /* @Sidebar @Widgets *********/
 #content-sub .widget:first-child { margin-top: -15px; }

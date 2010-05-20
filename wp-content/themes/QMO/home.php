@@ -1,8 +1,7 @@
 <?php
-/* Template Name: Home Page */
 $events_cat = get_category_by_slug('events')->cat_ID;
 $news_cat = get_category_by_slug('qmo-news')->cat_ID;
-$home_intro = get_page_by_path('home/home-intro')->ID;
+$home_intro = get_page_by_path('home-intro')->ID;
 
 get_header(); ?>
 <div id="content-main" class="hfeed vcalendar" role="main">

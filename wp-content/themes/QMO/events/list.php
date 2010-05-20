@@ -67,31 +67,27 @@
   <?php endwhile; // posts ?>
   </div><!-- #tec-events-loop -->
 
-	<div class="tec-nav">
-
-		<div class="tec-nav-previous"><?php 
-		// Display Previous Page Navigation
+<?php if ( events_displaying_upcoming() || events_displaying_past() ) : ?>
+	<ul class="nav-paging">
+  <?php // Display Previous Page Navigation
 		if( events_displaying_upcoming() && get_previous_posts_link() ) : ?>
-			<?php previous_posts_link( '<span>Previous Events</span>' ); ?>
-		<?php elseif( events_displaying_upcoming() && !get_previous_posts_link( ) ) : ?>
-			<a href="<?php echo events_get_past_link(); ?>"><span><?php _e('Previous Events', $spEvents->pluginDomain ); ?></span></a>
-		<?php elseif( events_displaying_past() && get_next_posts_link() ) : ?>
-			<?php next_posts_link( '<span>Previous Events</span>' ); ?>
-		<?php endif; ?>
-		</div>
+		<li class="prev"><?php previous_posts_link( 'Previous Events' ); ?></li>
+  <?php elseif( events_displaying_upcoming() && !get_previous_posts_link( ) ) : ?>
+		<li class="prev"><a href="<?php echo events_get_past_link(); ?>"><?php _e('Previous Events', $spEvents->pluginDomain ); ?></a></li>
+  <?php elseif( events_displaying_past() && get_next_posts_link() ) : ?>
+		<li class="prev"><?php next_posts_link( 'Previous Events' ); ?></li>
+  <?php endif; ?>
 
-		<div class="tec-nav-next"><?php
-		// Display Next Page Navigation
+  <?php // Display Next Page Navigation
 		if( events_displaying_upcoming() && get_next_posts_link( ) ) : ?>
-			<?php next_posts_link( '<span>Next Events</span>' ); ?>
-		<?php elseif( events_displaying_past() && get_previous_posts_link( ) ) : ?>
-			<?php previous_posts_link( '<span>Next Events</span>' ); // a little confusing but in 'past view' to see newer events you want the previous page ?>
-		<?php elseif( events_displaying_past() && !get_previous_posts_link( ) ) : ?>
-			<a href="<?php echo events_get_upcoming_link(); ?>"><span><?php _e('Next Events', $spEvents->pluginDomain); ?></span></a>
+		<li class="next"><?php next_posts_link( '<span>Next Events</span>' ); ?></li>
+  <?php elseif( events_displaying_past() && get_previous_posts_link( ) ) : ?>
+		<li class="next"><?php previous_posts_link( '<span>Next Events</span>' ); ?></li>
+  <?php elseif( events_displaying_past() && !get_previous_posts_link( ) ) : ?>
+		<li class="next"><a href="<?php echo events_get_upcoming_link(); ?>"><?php _e('Next Events', $spEvents->pluginDomain); ?></a></li>
 		<?php endif; ?>
-		</div>
-
-	</div>
+	</ul>
+<?php endif; ?>
 
 </div><!-- /content-main -->
 
