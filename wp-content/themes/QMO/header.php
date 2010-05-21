@@ -9,7 +9,7 @@
 	<link rel="profile" href="http://gmpg.org/xfn/11">
 	<link rel="shortcut icon" type="image/ico" href="<?php bloginfo('stylesheet_directory'); ?>/favicon.ico">
 	<link rel="alternate" type="application/rss+xml" title="<?php bloginfo('name'); ?> News and Events Feed" href="<?php bloginfo('rss2_url'); echo '?cat='.$news_cat.','.$events_cat; ?>">
-		<link rel="alternate" type="application/rss+xml" title="<?php bloginfo('name'); ?> Community Feed" href="<?php bloginfo('rss2_url'); ?>">
+  <link rel="alternate" type="application/rss+xml" title="<?php bloginfo('name'); ?> Community Feed" href="<?php bloginfo('rss2_url'); ?>">
   <link rel="home" href="<?php echo bloginfo('url'); ?>">
   <link rel="copyright" href="#copyright">
 	  

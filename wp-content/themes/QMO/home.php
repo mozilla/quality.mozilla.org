@@ -32,7 +32,7 @@ get_header(); ?>
   <h2 class="section-title">Latest News</h2>
 <?php endif; ?>
 
-<?php $wp_query->query('cat='.$news_cat.','.$events_cat.'&paged='.$paged); // Only show news and events on the home page
+<?php $wp_query->query('cat='.$news_cat.','.$events_cat.'&posts_per_page=4&paged='.$paged); // Only show news and events on the home page
 if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
 
   <div id="post-<?php the_ID(); ?>" <?php if ( function_exists('is_event') && is_event() ) : post_class('vevent'); else : post_class(); endif; ?> role="article">

@@ -14,7 +14,7 @@
 	jQuery(document).ready(function(){
 	  jQuery("#nav-extra").addClass("js"); // style hook for graceful degradation
   	jQuery("#nav-extra a").hover(
-      function() { jQuery(this).animate({ marginTop: '-18px' },{ queue:false, duration:150}); }, // stand up fast
+      function() { jQuery(this).animate({ marginTop: '-12px' },{ queue:false, duration:150}); }, // stand up fast
       function() { jQuery(this).animate({ marginTop: '0' },{ queue:false, duration:500 }); } // sit down slow
     );
 	});
