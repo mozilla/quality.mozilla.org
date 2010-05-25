@@ -20,7 +20,6 @@
         <?php the_content('Read the rest of this entry &hellip;'); ?>
         <?php wp_link_pages(array('before' => '<p class="pages"><strong>Pages:</strong> ', 'after' => '</p>', 'next_or_number' => 'number', 'link_before' => '<b>', 'link_after' => '</b>')); ?>
       </div>
-    <?php endif; ?>
       
       <?php if (get_the_tags()) : ?>
         <?php the_tags('<p class="entry-tags"><strong>Tags:</strong> ',', ',''); ?>
@@ -35,7 +34,6 @@
       </div>
       
     </div>
-    
     <?php endwhile; ?>
     
     <?php comments_template(); ?>
