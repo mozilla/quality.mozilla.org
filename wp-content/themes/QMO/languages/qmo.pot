@@ -24,7 +24,7 @@ msgstr ""
 msgid "Localize Me!"
 msgstr "You Have Been Localized"
 
-#: searchform.php:16 searchform.php:18
+#: searchform.php:16
 msgid "Search"
 msgstr ""
 

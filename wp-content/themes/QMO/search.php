@@ -1,6 +1,7 @@
-<?php 
-$events_cat = get_category_by_slug('events')->cat_ID;
-$home_intro = get_page_by_path('home-intro')->ID;
+<?php
+// Fetch the formats
+$date_format = get_option("date_format");
+$time_format = get_option("time_format");
 
 $search_count = 0;
 $search = new WP_Query("s=$s & showposts=-1");
@@ -11,19 +12,7 @@ endwhile; endif;
 get_header(); ?>
 <div id="content-main" class="hfeed vcalendar" role="main">
 <?php if (have_posts()) : ?>
-
-<?php //$post = $posts[0]; // Hack. Set $post so that the_date() works. ?>
-  <h1 class="section-title">
-  <?php if (is_category()) : ?>Posts in <?php single_cat_title(); ?>
-  <?php elseif (is_tag()) : ?>Posts tagged &#8220;<?php single_tag_title(); ?>&#8221;
-  <?php elseif (is_day()) : ?>Posts for <?php the_time('F jS, Y'); ?>
-  <?php elseif (is_month()) : ?>Posts for <?php the_time('F, Y'); ?>
-  <?php elseif (is_year()) : ?>Posts for <?php the_time('Y'); ?>
-  <?php elseif (is_author()) : ?>Posts by <?php echo get_userdata(intval($author))->display_name; ?>
-  <?php elseif (is_search()) : ?>Search results for &#8220;<?php the_search_query(); ?>&#8221;
-  <?php else : ?>Posts
-  <?php endif; ?>
-  </h1>
+  <h1 class="section-title">We found <?php echo $wp_query->found_posts; ?> result<?php if($wp_query->found_posts > 1) { ?>s<?php } ?> for &#8220;<?php the_search_query(); ?>&#8221;</h1>
 
 <?php while (have_posts()) : the_post(); ?>
   <div id="post-<?php the_ID(); ?>" <?php if ( function_exists('is_event') && is_event() ) : post_class('vevent'); else : post_class(); endif; ?> role="article">
@@ -38,9 +27,9 @@ get_header(); ?>
       </p>
     </div>
   <?php elseif ( fc_is_child('docs') ) : ?>
-    <p class="event-flag">Doc</p>
+    <p class="doc-flag">Doc</p>
   <?php elseif ( fc_is_child('groups') ) : ?>
-    <p class="event-flag">Group</p>
+    <p class="group-flag">Group</p>
   <?php else : ?>
     <div class="entry-meta">
       <p class="entry-posted">
@@ -57,10 +46,7 @@ get_header(); ?>
   <?php endif; ?>
 
     <div class="entry-summary <?php if ( function_exists('is_event') && is_event() ) : echo 'description'; endif; ?>">
-    <?php if ( function_exists('is_event') && is_event() ) : 
-      // Fetch the formats
-      $date_format = get_option("date_format");
-      $time_format = get_option("time_format"); ?>
+    <?php if ( function_exists('is_event') && is_event() ) : ?>
       <div class="event-date compact">
         <p><strong>When:</strong>
         <?php // All day, single day
@@ -117,7 +103,7 @@ get_header(); ?>
   
 <?php else : // if there are no posts ?>
 
-  <h1 class="section-title"><?php _e('Sorry, nothing to display here.','qmo'); ?></h1>
+  <h1 class="page-title">Sorry, we didn&#8217;t find anything for &ldquo;<?php the_search_query(); ?>&rdquo;</h1>
 
 <?php endif; ?>
 

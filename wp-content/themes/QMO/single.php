@@ -51,7 +51,7 @@ get_header(); ?>
   
   <?php else : // if there are no posts ?>
 
-  <h1 class="entry-title"><?php _e('Sorry, nothing to display here.','qmo'); ?></h1>
+  <h1 class="page-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
 
 <?php endif; ?>
 

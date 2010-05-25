@@ -1,4 +1,4 @@
-<form id="fm-search" method="get" action="<?php bloginfo('url'); ?>/" role="search">
+<form class="fm-search" method="get" action="<?php bloginfo('url'); ?>/" role="search">
 <fieldset>
 <?php if ( is_search() ) { // If this is a search page ?>
   <legend>Search again?</legend>

@@ -4,9 +4,9 @@
 
     <?php if (fc_is_subpage()) : ?>
       <?php if(function_exists('bcn_display')) : ?>
-      <ol class="crumbs">
+      <p class="crumbs">
       <?php bcn_display(); ?>
-      </ol>
+      </p>
       <?php else : ?>
       <p class="crumbs"><a href="<?php echo get_permalink($post->post_parent); ?>" title="<?php _e('Return to &ldquo;'.get_the_title($post->post_parent).'&rdquo;','qmo'); ?>">&larr; <?php echo get_the_title($post->post_parent); ?></a></p>
       <?php endif; ?>    
@@ -20,13 +20,6 @@
         <?php the_content('Read the rest of this entry &hellip;'); ?>
         <?php wp_link_pages(array('before' => '<p class="pages"><strong>Pages:</strong> ', 'after' => '</p>', 'next_or_number' => 'number', 'link_before' => '<b>', 'link_after' => '</b>')); ?>
       </div>
-      
-    <?php $children = wp_list_pages('title_li=&child_of='.$post->ID.'&echo=0&sort_column=menu_order');
-      if ($children) : ?>
-      <h4>Further reading</h4>
-      <ul class="page-tree">
-      <?php echo $children; ?>
-      </ul>
     <?php endif; ?>
       
       <?php if (get_the_tags()) : ?>
@@ -49,7 +42,7 @@
 
   <?php else : ?>
 
-  <h1 class="page-title">Sorry, nothing to display here.</h1>
+  <h1 class="page-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
 
 <?php endif; ?>
 

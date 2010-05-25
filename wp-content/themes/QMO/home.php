@@ -141,7 +141,7 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
   
   <?php else : // if there are no posts ?>
 
-  <h1 class="page-title"><?php _e('Sorry, nothing to display here.','qmo'); ?></h1>
+  <h1 class="page-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
 
 <?php endif; ?>
 

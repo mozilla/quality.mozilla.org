@@ -508,3 +508,4 @@ function fc_get_post($id='GETPOST') {
   get_post_custom($post->ID);
   setup_postdata($post);
 }
+

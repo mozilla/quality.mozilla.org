@@ -4,9 +4,9 @@
 
     <?php if (fc_is_subpage()) : ?>
       <?php if(function_exists('bcn_display')) : ?>
-      <ol class="crumbs">
+      <p class="crumbs">
       <?php bcn_display(); ?>
-      </ol>
+      </p>
       <?php else : ?>
       <p class="crumbs"><a href="<?php echo get_permalink($post->post_parent); ?>" title="<?php _e('Return to &ldquo;'.get_the_title($post->post_parent).'&rdquo;','qmo'); ?>">&larr; <?php echo get_the_title($post->post_parent); ?></a></p>
       <?php endif; ?>    
@@ -35,7 +35,7 @@
 
   <?php else : ?>
 
-  <h1 class="page-title">Sorry, nothing to display here.</h1>
+  <h1 class="page-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
 
 <?php endif; ?>
 
