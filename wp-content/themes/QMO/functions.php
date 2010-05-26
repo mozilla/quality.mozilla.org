@@ -70,14 +70,14 @@ if ( function_exists('register_sidebars') ) :
   register_sidebar(array(
   'name' => 'Home/News Sidebar',
   'id' => 'sidebar-home',
-  'description' => 'Shown on the QMO home page (featuring QMO news posts).',
+  'description' => 'Shown on the QMO home page (featuring QMO news and events).',
   'before_widget' => '<div id="%1$s" class="widget %2$s">',
   'after_widget' => '</div>'
   ));
   
   /** Group pages */
   register_sidebar(array(
-  'name' => 'Single Group Page Sidebar',
+  'name' => 'Group Page Sidebar',
   'id' => 'sidebar-group-single',
   'description' => 'Shown on individual Group pages.',
   'before_widget' => '<div id="%1$s" class="widget %2$s">',

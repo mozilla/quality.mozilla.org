@@ -535,10 +535,10 @@ input[type='button']:hover, input[type='button']:focus {
 .page-tree { margin-left: 1.5em; }
 .page-tree li ul { margin-left: 1.5em; }
 
-.related_docs .page-tree { list-style: none; margin: 0 0 1.5em; line-height: 1.3; }
-.related_docs .page-tree li { padding: .2em 0; margin: .25em 0; }
-.related_docs .page-tree ul { list-style: none; margin: 0; }
-.related_docs .page-tree ul li { padding: .2em 0 .2em 20px; background: url("img/tree-node.gif") 3px 0 no-repeat; }
+.related_pages .page-tree { list-style: none; margin: 0 0 1.5em; line-height: 1.3; }
+.related_pages .page-tree li { padding: .2em 0; margin: .25em 0; }
+.related_pages .page-tree ul { list-style: none; margin: 0; }
+.related_pages .page-tree ul li { padding: .2em 0 .2em 20px; background: url("img/tree-node.gif") 3px 0 no-repeat; }
 
 /* @Footer *********/
 #site-info { clear: both; margin-top: 2em; padding: 2.5em 0 4em; text-align: center; font: .846em/1.2 Verdana, Arial, Helvetica, sans-serif; background: url("img/pencil-line-footer.gif") repeat-x; }
