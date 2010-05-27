@@ -119,7 +119,7 @@ h4, h5, h6 { font-size: 1em; }
 #home-head ul.groups-list a img { width: 100%; height: auto; text-decoration: none; display: block; margin: 0 auto .5em; }
 #home-head ul.groups-list a:hover img, #home-head ul.groups-list a:focus img, #home-head ul.groups-list a:active img { opacity: .85; }
 
-#home-head video { display: block; margin: 2em auto 1em; text-align: center; border: 7px solid #eee; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; }
+#home-head video, #home-head object { display: block; margin: 2em auto 1em; text-align: center; border: 7px solid #eee; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; }
 
 #stream-filter { list-style: none; margin: -1em 0 2em; padding: 0 0 2em; background: url("img/pencil-line.gif") right bottom repeat-x; }
 #stream-filter li { display: inline; margin: 0 10px 0 0; }
@@ -426,6 +426,9 @@ table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10
 .upcoming .vevent .date { font-size: 1.385em; line-height: 1; font-weight: bold; }
 .upcoming .vevent .summary { font-weight: bold; }
 .upcoming .vevent .location { font-size: .923em; }
+
+/* Temporarily hide the 'all events' link until they release a bug fix. */
+.dig-in { display: none; }
 
 /*** @Tag @Cloud *********/
 .widget_tag_cloud div, .wp-tag-cloud { text-align: center; margin-bottom: 1em; }

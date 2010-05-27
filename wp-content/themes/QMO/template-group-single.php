@@ -42,7 +42,7 @@ get_header(); ?>
 <?php $children = wp_list_pages('title_li=&child_of='.$post->ID.'&echo=0&sort_column=menu_order');
   if ($children) : ?>
   <div class="widget related_pages">
-    <h3 class="widgettitle">Related Pages</h3>
+    <h3 class="widgettitle">Subgroups</h3>
     <ul class="page-tree">
     <?php echo $children; ?>
     </ul>
