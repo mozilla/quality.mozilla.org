@@ -1,0 +1,130 @@
+# Translation of the WordPress plugin   by .
+# Copyright (C) 2010
+# This file is distributed under the same license as the  package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/cms-tree-page-view\n"
+"POT-Creation-Date: 2010-04-14 15:28+0000\n"
+"PO-Revision-Date: 2010-05-25 10:31+0100\n"
+"Last-Translator: Bertrand Andres <andres@jcd-dev.fr>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: functions.php:84
+msgid "settings"
+msgstr "paramètres"
+
+#: functions.php:91
+msgid "Show tree"
+msgstr "Voir l'arborescence"
+
+#: functions.php:95
+msgid "on the dashboard"
+msgstr "dans le menu"
+
+#: functions.php:98
+msgid "under the pages menu"
+msgstr "sous les pages du menu"
+
+#: functions.php:105
+msgid "Save Changes"
+msgstr "Enregistrer"
+
+#: functions.php:127
+msgid "All"
+msgstr "Toutes les pages"
+
+#: functions.php:128
+msgid "Public"
+msgstr "Pages publiées"
+
+#: functions.php:130
+msgid "Expand"
+msgstr "Dérouler"
+
+#: functions.php:131
+msgid "Collapse"
+msgstr "Refermer"
+
+#: functions.php:136
+msgid "Search"
+msgstr "Rechercher"
+
+#: functions.php:137
+msgid "Searching..."
+msgstr "Recherche en cours"
+
+#: functions.php:142
+msgid "Loading..."
+msgstr "Chargement en cours"
+
+#: functions.php:144
+msgid "Search: no pages found"
+msgstr "Recherche : aucune page trouvée"
+
+#: functions.php:146
+msgid "Loading tree"
+msgstr "Chargement de l'arborescence"
+
+#: functions.php:248
+msgid "<Untitled page>"
+msgstr "<Sans-titre>"
+
+#: functions.php:264
+msgid "Click to edit. Drag to move."
+msgstr "Cliquez pour modifier, vous pouvez aussi déplacer la page"
+
+#: functions.php:380
+msgid "New page"
+msgstr "Nouvelle page"
+
+#: scripts/cms_tree_page_view.php:85
+#: scripts/cms_tree_page_view.php:102
+msgid "Enter title of new page"
+msgstr "Saisissez le titre de la page"
+
+#: scripts/cms_tree_page_view.php:283
+msgid "child pages"
+msgstr "Pages sous cette page"
+
+#: scripts/cms_tree_page_view.php:293
+msgid "Edit page"
+msgstr "Modifier la page"
+
+#: scripts/cms_tree_page_view.php:293
+msgid "Edit"
+msgstr "Modifier"
+
+#: scripts/cms_tree_page_view.php:294
+msgid "View page"
+msgstr "Voir la page"
+
+#: scripts/cms_tree_page_view.php:294
+msgid "View"
+msgstr "Voir"
+
+#: scripts/cms_tree_page_view.php:296
+msgid "Add page"
+msgstr "Ajouter une page"
+
+#: scripts/cms_tree_page_view.php:297
+msgid "Add new page after"
+msgstr "Ajouter une page après cette page"
+
+#: scripts/cms_tree_page_view.php:297
+msgid "after"
+msgstr "après"
+
+#: scripts/cms_tree_page_view.php:298
+msgid "Add new page inside"
+msgstr "Ajouter une page sous cette page"
+
+#: scripts/cms_tree_page_view.php:298
+msgid "inside"
+msgstr "sous cette page"
+

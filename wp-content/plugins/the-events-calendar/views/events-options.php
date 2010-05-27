@@ -6,9 +6,14 @@ jQuery(document).ready(function() {
 		jQuery('#secondDonateRow').show();
 	} 
 	jQuery('#hideDonateButton').click(function() {
-		jQuery.post( '<?php bloginfo('url'); ?>/wp-admin/admin-ajax.php', { donateHidden: true, action: 'hideDonate' }, theEventsCalendarHideDonateButton, 'json' );
+		jQuery.post( '<?php bloginfo('wpurl'); ?>/wp-admin/admin-ajax.php', { donateHidden: true, action: 'hideDonate' }, theEventsCalendarHideDonateButton, 'json' );
 	});
 
+	function displayOptionsError() {
+		$.post('<?php bloginfo('wpurl'); ?>/wp-admin/admin-ajax.php', { action: 'getOptionsError' }, function(error) {
+		  $('#tec-options-error').append('<h3>Error</h3><p>' + error + '</p>')
+		});
+	}
 });
 </script>
 <style type="text/css">
@@ -28,7 +33,7 @@ jQuery(document).ready(function() {
 #hideDonateButton {}
 #checkBoxLabel {}
 .form-table form #secondSubmit {
-	background:#f2f2f2 url(<?php bloginfo('url'); ?>/images/white-grad-active.png) repeat-x scroll left top;
+	background:#f2f2f2 url(<?php bloginfo('wpurl'); ?>/images/white-grad-active.png) repeat-x scroll left top;
 	text-decoration: none;
 	font-size: 11px;
 	line-height: 16px;
@@ -50,11 +55,11 @@ jQuery(document).ready(function() {
 	text-transform: uppercase;
 }
 .form-table form #secondSubmit {
-	background: #f2f2f2 url(<?php bloginfo('url'); ?>/wp-admin/images/white-grad.png) repeat-x scroll left top;
+	background: #f2f2f2 url(<?php bloginfo('wpurl'); ?>/wp-admin/images/white-grad.png) repeat-x scroll left top;
 }
 
 .form-table form #secondSubmit:active {
-	background: #eee url(<?php bloginfo('url'); ?>/wp-admin/images/white-grad-active.png) repeat-x scroll left top;
+	background: #eee url(<?php bloginfo('wpurl'); ?>/wp-admin/images/white-grad-active.png) repeat-x scroll left top;
 }
 
 .form-table form #secondSubmit:hover {
@@ -67,9 +72,28 @@ div.snp_settings{
 </style>
 <div class="snp_settings wrap">
 <h2><?php _e('The Events Calendar Settings',$this->pluginDomain); ?></h2>
+<div id="tec-options-error" class="tec-events-error error"></div>
+<?php
+try {
+	do_action( 'sp_events_options_top' );
+	if ( !$this->optionsExceptionThrown ) {
+		//TODO error saving is breaking options saving, to be fixed and uncommented later
+		//$allOptions = $this->getOptions();
+		//$allOptions['error'] = "";
+		//$this->saveOptions( $allOptions );
+	}
+} catch( TEC_WP_Options_Exception $e ) {
+	$this->optionsExceptionThrown = true;
+	//$allOptions = $this->getOptions();
+	//$allOptions['error'] = $e->getMessage();
+	//$this->saveOptions( $allOptions );
+	//$e->displayMessage(); //
+}
+?>
 <div class="form">
 	<h3><?php _e('Need a hand?',$this->pluginDomain); ?></h3>
 	<p><?php _e('If you\'re stuck on these options, please <a href="http://wordpress.org/extend/plugins/the-events-calendar/">check out the documentation</a>. If you\'re still wondering what\'s going on, be sure to stop by the support <a href="http://wordpress.org/tags/the-events-calendar?forum_id=10">forum</a> and ask for help. The open source community is full of kind folks who are happy to help.',$this->pluginDomain); ?></p>
+	<p><?php _e('Here is the iCal feed URL for your events: ' ,$this->pluginDomain); ?><code><?php bloginfo('home'); ?>/?ical</code></p>
 	<table class="form-table">
 	    <tr id="mainDonateRow">
 	    	<th scope="row"><?php _e('Donate',$this->pluginDomain); ?></th>
@@ -186,7 +210,27 @@ div.snp_settings{
 			<?php 
 			$embedGoogleMapsValue = eventsGetOptionValue('embedGoogleMaps','off');                 
 	        ?>
-
+		<tr>
+			<th scope="row"><?php _e('Display Events on Homepage',$this->pluginDomain); ?></th>
+	        <td>
+	            <fieldset>
+	                <legend class="screen-reader-text">
+	                    <span><?php _e('Display Events on Homepage',$this->pluginDomain); ?></span>
+	                </legend>
+	                <label title='Yes'>
+	                    <?php 
+	                    $displayEventsOnHomepage = eventsGetOptionValue('displayEventsOnHomepage','on'); 
+	                    ?>
+	                    <input type="radio" name="displayEventsOnHomepage" value="off" <?php checked($displayEventsOnHomepage, 'off'); ?>  /> 
+	                    <?php _e('Off',$this->pluginDomain); ?>
+	                </label> 
+	                <label title='List View'>
+                    <input type="radio" name="displayEventsOnHomepage" value="on" <?php checked($displayEventsOnHomepage, 'on'); ?>  /> 
+	                    <?php _e('On',$this->pluginDomain); ?>
+	                </label>
+	            </fieldset>
+	        </td>
+		</tr>
 
 		<tr>
 			<th scope="row"><?php _e('Embed Google Maps',$this->pluginDomain); ?></th>
@@ -247,16 +291,55 @@ div.snp_settings{
 		            </fieldset>
 		        </td>
 			</tr>
-
-
-	    <?php do_action( 'sp_events_options_bottom' ); ?>
+			<?php if( '' != get_option('permalink_structure') ) : ?>
+			<tr>
+				<th scope="row"><?php _e('Use Pretty URLs',$this->pluginDomain); ?></th>
+		        <td>
+		            <fieldset>
+		                <legend class="screen-reader-text">
+		                    <span><?php _e('Use Pretty URLs',$this->pluginDomain); ?></span>
+		                </legend>
+		                <label title='Yes'>
+		                    <?php 
+		                    $useRewriteRules = eventsGetOptionValue('useRewriteRules','on'); 
+		                    ?>
+		                    <input type="radio" name="useRewriteRules" value="off" <?php checked($useRewriteRules, 'off'); ?>  /> 
+		                    <?php _e('Off',$this->pluginDomain); ?>
+		                </label> 
+		                <label title='List View'>
+	                    <input type="radio" name="useRewriteRules" value="on" <?php checked($useRewriteRules, 'on'); ?>  /> 
+		                    <?php _e('On',$this->pluginDomain); ?>
+		                </label>
+						<div>
+							<?php _e('Pretty URLs (ie, http://site/category/events/upcoming) may interfere with custom themes or plugins.',$this->pluginDomain); ?> 
+						</div>
+		<br />
+		            </fieldset>
+		        </td>
+			</tr>
+			<?php endif; // permalink structure ?>
+	    <?php
+		try {
+			do_action( 'sp_events_options_bottom' );
+			if ( !$this->optionsExceptionThrown ) {
+				//TODO error saving is breaking options saving, to be fixed and uncommented later
+				//$allOptions = $this->getOptions();
+				//$allOptions['error'] = "";
+				//$this->saveOptions( $allOptions );
+			}
+		} catch( TEC_WP_Options_Exception $e ) {
+			$this->optionsExceptionThrown = true;
+			//$allOptions = $this->getOptions();
+			//$allOptions['error'] = $e->getMessage();
+			//$this->saveOptions( $allOptions );
+			//$e->displayMessage();
+		}
+		?>
 		<tr>
 	    	<td>
 	    		<input id="saveEventsCalendarOptions" class="button-primary" type="submit" name="saveEventsCalendarOptions" value="<?php _e('Save Changes', $this->pluginDomain); ?>" />
 	        </td>
 	    </tr>
-
-
 </table>
 
 </form>
@@ -269,12 +352,9 @@ function showstuff(boxid){
 function hidestuff(boxid){
    document.getElementById(boxid).style.visibility="hidden";
 }
-
 <?php if( $embedGoogleMapsValue == 'off' ) { ?>
 hidestuff('googleEmbedSize');
 <?php }; ?>
-
 </script>
 </div>
-
 </div>

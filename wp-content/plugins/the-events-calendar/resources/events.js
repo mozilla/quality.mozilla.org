@@ -5,7 +5,6 @@ jQuery(document).ready(function($) {
 		$(this).find("td:gt(3)").addClass("tec-right");
 	});
 
-	
 	// popups
 	$("table.tec-calendar .tec-event a").hover(function() {
 		

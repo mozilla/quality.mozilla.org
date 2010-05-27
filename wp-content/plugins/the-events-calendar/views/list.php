@@ -1,9 +1,9 @@
 <?php
 	global $spEvents;
-	$spEvents->loadStylesAndScripts();
+	$spEvents->loadDomainStylesScripts();
 	
-	include (TEMPLATEPATH.'/header.php'); ?>
-	
+	get_header();
+?>
 	<div id="tec-content" class="upcoming">
 		<div id='tec-events-calendar-header' class="clearfix">
 			<h2 class="tec-cal-title"><?php _e('Calendar of Events', $spEvents->pluginDomain) ?></h2>
@@ -55,13 +55,13 @@
 		                    <td class="tec-event-meta-value"><?php echo $phone; ?></td>
 		                  </tr>
 		                  <?php endif; ?>
-		                  <?php
-		                    $address = the_event_address(); $city = the_event_city(); $state = the_event_state(); $zip = the_event_zip();
-		                    if (!empty( $address ) && !empty( $city ) && !empty( $state ) && !empty( $zip ) ) :
-		                  ?>
+		                  <?php if (tec_address_exists( $post->ID ) ) : ?>
 		                  <tr>
-		                    <td class="tec-event-meta-desc"><?php _e('Address:', $spEvents->pluginDomain) ?><br /><a class="gmap" href="<?php event_google_map_link() ?>" title="Click to view a Google Map" target="_blank"f><?php _e('Google Map', $this->pluginDomain ); ?></a></td>
-		                    <td class="tec-event-meta-value"><?php echo the_event_address(); ?> <br /> <?php echo the_event_city(); ?>, <?php echo the_event_state(); ?> <?php echo the_event_zip(); ?></td>
+							<td class="tec-event-meta-desc"><?php _e('Address:', $spEvents->pluginDomain); ?><br />
+							<?php if( get_post_meta( $post->ID, '_EventShowMapLink', true ) == 'true' ) : ?>
+								<a class="gmap" href="<?php event_google_map_link(); ?>" title="Click to view a Google Map" target="_blank"><?php _e('Google Map', $spEvents->pluginDomain ); ?></a>
+							<?php endif; ?></td>
+							<td class="tec-event-meta-value"><?php tec_event_address( $post->ID ); ?></td>
 		                  </tr>
 		                  <?php endif; ?>
 		                  <?php
@@ -114,4 +114,4 @@
 
 
 <?php
-include (TEMPLATEPATH.'/footer.php');
+get_footer();

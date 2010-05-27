@@ -12,6 +12,11 @@
 	<?php } ?>							
 	</select>
 </p>
+	<label for="<?php echo $this->get_field_id( 'no_upcoming_events' ); ?>"><?php _e('Don\'t show the widget if there are no upcoming events:',$this->pluginDomain);?></label>
+	<input id="<?php echo $this->get_field_id( 'no_upcoming_events' ); ?>" name="<?php echo $this->get_field_name( 'no_upcoming_events' ); ?>" type="checkbox" <?php checked( $instance['no_upcoming_events'], 1 ); ?> value="1" />
+<p>
+
+</p>
 
 <p><?php _e( 'Display:', $this->pluginDomain ); ?><br/>
 

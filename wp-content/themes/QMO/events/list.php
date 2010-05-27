@@ -1,9 +1,7 @@
 <?php
 	global $spEvents;
-	if (function_exists('loadDomainStylesScripts')) : $spEvents->loadDomainStylesScripts();
-	else : $spEvents->loadStylesAndScripts();
-	endif;
-		
+  $spEvents->loadDomainStylesScripts();
+
 	get_header();
 ?>
 <div id="content-main" class="hfeed vcalendar full" role="main">

@@ -101,7 +101,6 @@ h3 { font-size: 1.385em; }
 h4, h5, h6 { font-size: 1em; }
 
 .section-title, .single .entry-title { font-size: 2.32em; line-height: 1.2; margin-bottom: .75em; }
-.archive .entry-title, .search .entry-title { font-size: 1.385em; }
 
 /* @Layout *********/
 .section { width: 930px; padding: 0 15px; margin: 0 auto; }
@@ -119,6 +118,8 @@ h4, h5, h6 { font-size: 1em; }
 #home-head ul.groups-list li:last-child { margin-right: 0; }
 #home-head ul.groups-list a img { width: 100%; height: auto; text-decoration: none; display: block; margin: 0 auto .5em; }
 #home-head ul.groups-list a:hover img, #home-head ul.groups-list a:focus img, #home-head ul.groups-list a:active img { opacity: .85; }
+
+#home-head video { display: block; margin: 2em auto 1em; text-align: center; border: 7px solid #eee; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; }
 
 #stream-filter { list-style: none; margin: -1em 0 2em; padding: 0 0 2em; background: url("img/pencil-line.gif") right bottom repeat-x; }
 #stream-filter li { display: inline; margin: 0 10px 0 0; }
@@ -267,14 +268,14 @@ dl.column dd { margin-bottom: .5em; padding-left: 90px; }
 .category-events .calendar-switch { position: absolute; right: 0; top: 0; }
 .category-events .calendar-switch a { margin: 0 0 0 10px; }
 
-.category-events table.tec-calendar { margin: 0 0 1.4em; font-size: 1em; }
-table.tec-calendar th { background: #95a3a3 none; font: bold .846em Verdana, Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: .01em; text-shadow: -1px -1px 0 rgba(0,0,0,.1); }
-table.tec-calendar td { border: 1px solid #aaa; color: inherit; }
+.category-events table.tec-calendar { margin: 0 0 1.4em; font-size: 1em; width: 100%; border-collapse: collapse; }
+table.tec-calendar th { padding: 4px 0; background: #95a3a3 none; font: bold .846em Verdana, Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: .01em; color: #fff; text-shadow: -1px -1px 0 rgba(0,0,0,.1); }
+table.tec-calendar td { border: 1px solid #aaa; padding: 0; color: inherit; height: 100px; width: 14.28%; vertical-align: top; }
 table.tec-calendar .daynum { font-size: 1em; padding: .5em 9px; background: #d8e6e6; font: .77em Verdana, Arial, Helvetica, sans-serif; }
 table.tec-calendar td.tec-past .daynum { color: #aaa; background: #ebebeb; }
 table.tec-calendar td.tec-present .daynum { background: #390; font-weight: bold; color: #fff; }
 table.tec-calendar td .tec-event { line-height: 1.2; padding: .5em 10px; }
-table.tec-calendar hr { background: #bcc; }
+table.tec-calendar hr { background: #bcc; height: 1px; margin: 0 9px; border: 0; }
 table.tec-calendar .tec-tooltip .tec-event-body { font-size: 1em; padding: 0 10px; margin: 0 0 .75em; }
 table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10px; margin: .25em 0; background: transparent none; color: #390; }
 
@@ -393,10 +394,12 @@ table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10
 
 .nav-paging { list-style: none; font-size: 1.231em; font-weight: bold; margin: 1em 0; overflow: hidden; }
 .nav-paging a:visited { color: #369; }
-.nav-paging .prev { width: 45%; float: left; }
+.nav-paging .prev { width: 45%; float: left; text-align: left; }
 .nav-paging .prev a { padding-left: 30px; background: url("img/gallery-prev.gif") 0 50% no-repeat; }
 .nav-paging .next { width: 45%; float: right; text-align: right; }
 .nav-paging .next a { padding-right: 30px; background: url("img/gallery-next.gif") 100% 50% no-repeat; }
+
+.calendar-control .next, .calendar-control .prev { width: 30%; }
 
 /* @Sidebar @Widgets *********/
 #content-sub .widget:first-child { margin-top: -15px; }
@@ -416,7 +419,7 @@ table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10
 .widget_categoryposts .cat-post-item, .flexipages_widget .page_item { border-top: 1px dashed #999; padding: .15em 1px; }
 
 /*** @Events widgets *********/
-.dig-in { font-size: .846em; border-bottom: 1px dashed #999; padding: 0 3px .5em; margin-bottom: 1em; }
+.dig-in { font-size: .846em; margin: 1em 0; }
 .upcoming .vevent { padding-left: 50px; clear: both; margin-bottom: 1em; min-height: 2.5em; line-height: 1.4; }
 .upcoming .vevent .dtstart { width: 35px; text-align: center; float: left; margin-left: -50px; border: 0; }
 .upcoming .vevent .month { display: block; font: bold .7em/1.1 Verdana, Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: 0.1em; }

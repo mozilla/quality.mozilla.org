@@ -1,8 +1,6 @@
 <?php
 	global $spEvents;
-	if (function_exists('loadDomainStylesScripts')) : $spEvents->loadDomainStylesScripts();
-	else : $spEvents->loadStylesAndScripts();
-	endif;
+  $spEvents->loadDomainStylesScripts();
   
   // Fetch the formats
   $date_format = get_option("date_format");

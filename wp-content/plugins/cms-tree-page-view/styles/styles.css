@@ -80,8 +80,8 @@
 .cms_tpv_action_edit:hover,
 .cms_tpv_action_view:hover,
 .cms_tpv_action_add_page_after:hover,
-cms_tpv_action_add_page_inside:hover
- {
+.cms_tpv_action_add_page_inside:hover
+{
 	color: #d54e21 !important;
 }
 
