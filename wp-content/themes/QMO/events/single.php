@@ -9,7 +9,7 @@
   get_header();
 ?>
 <div id="content-main" class="hfeed vcalendar" role="main">
-  <?php the_post(); global $post; ?>
+  <?php the_post(); global $post; global $authordata; ?>
       <div id="post-<?php the_ID() ?>" <?php post_class('vevent') ?> role="article">
         <h1 class="entry-title summary"><?php the_title() ?></h1>
         <div class="entry-meta">

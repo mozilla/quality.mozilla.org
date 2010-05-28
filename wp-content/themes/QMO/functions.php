@@ -33,9 +33,9 @@ add_action('login_head', 'fc_custom_login');
 add_theme_support( 'post-thumbnails' );
 
 /*********
-* Thumbnail size for small Group icons
+* Thumbnail size for small Team icons
 */
-add_image_size( 'group-icon-small', 80, 80, true );
+add_image_size( 'team-icon-small', 80, 80, true );
 
 /*********
 * Add default posts and comments RSS feed links to head
@@ -87,11 +87,11 @@ if ( function_exists('register_sidebars') ) :
   'after_widget' => '</div>'
   ));
   
-  /** Group pages */
+  /** Team pages */
   register_sidebar(array(
-  'name' => 'Group Page Sidebar',
-  'id' => 'sidebar-group-single',
-  'description' => 'Shown on individual Group pages.',
+  'name' => 'Team Page Sidebar',
+  'id' => 'sidebar-team-single',
+  'description' => 'Shown on individual Team pages.',
   'before_widget' => '<div id="%1$s" class="widget %2$s">',
   'after_widget' => '</div>'
   ));

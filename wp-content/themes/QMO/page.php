@@ -20,10 +20,11 @@
         <?php wp_link_pages(array('before' => '<p class="pages"><strong>Pages:</strong> ', 'after' => '</p>', 'next_or_number' => 'number', 'link_before' => '<b>', 'link_after' => '</b>')); ?>
       </div>
 
-      <?php if (get_the_tags()) : ?>
-        <?php the_tags('<p class="entry-tags"><strong>Tags:</strong> ',', ',''); ?>
-      <?php endif; ?>
-
+    <?php if (get_the_tags()) : ?>
+      <?php the_tags('<p class="entry-tags"><strong>Tags:</strong> ',', ',''); ?>
+    <?php endif; ?>
+      
+    <?php if (is_user_logged_in()) : ?>
       <div class="entry-meta">
         <p class="vcard">Last modified by <a class="fn url author" title="See all <?php the_author_posts() ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a>
         on <?php the_modified_time(get_option('date_format')); ?>
@@ -31,6 +32,7 @@
         <?php if ( current_user_can( 'edit_page', $post->ID ) ) : ?><span class="edit"><?php edit_post_link('Edit', '', ''); ?></span><?php endif; ?>
         </p>
       </div>
+    <?php endif; ?>
     </div>
     <?php endwhile; ?>
 

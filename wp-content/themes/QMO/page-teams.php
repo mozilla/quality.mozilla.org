@@ -22,15 +22,15 @@
 
   <?php endwhile; ?>
 
-    <?php $groups_page = get_page_by_path('groups')->ID;
-    $groups = new WP_Query(array('post_type' => 'page','post_status' => 'publish','post_parent' => $groups_page, 'order' => 'ASC', 'orderby' => 'menu_order'));
-    if ( $groups->have_posts() ) : ?>
-      <div id="groups-list">
-      <?php while ( $groups->have_posts() ) : $post = $groups->next_post(); ?>
-        <div id="page-<?php echo $post->ID; ?>" class="group hentry">
+    <?php $teams_page = get_page_by_path('teams')->ID;
+    $teams = new WP_Query(array('post_type' => 'page','post_status' => 'publish','post_parent' => $teams_page, 'order' => 'ASC', 'orderby' => 'menu_order'));
+    if ( $teams->have_posts() ) : ?>
+      <div id="teams-list">
+      <?php while ( $teams->have_posts() ) : $post = $teams->next_post(); ?>
+        <div id="page-<?php echo $post->ID; ?>" class="team hentry">
           <h2 class="entry-title"><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent link to &#8220;<?php the_title_attribute(); ?>&#8221;">
           <?php if (function_exists('the_post_thumbnail') && has_post_thumbnail($post->ID) ) : ?>
-            <?php echo get_the_post_thumbnail( $post->ID, 'group-icon-small', array('alt' => "", 'title' => "") ); ?>
+            <?php echo get_the_post_thumbnail( $post->ID, 'team-icon-small', array('alt' => "", 'title' => "") ); ?>
           <?php endif; ?>
             <?php the_title(); ?></a>
           </h2>

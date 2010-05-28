@@ -14,16 +14,16 @@ get_header(); ?>
   <div id="home-head">
     <h2 class="section-title"><?php the_title(); ?></h2>
 
-    <?php $groups_page = get_page_by_path('groups')->ID;
-    $groups = new WP_Query(array('post_type' => 'page',
+    <?php $teams_page = get_page_by_path('teams')->ID;
+    $teams = new WP_Query(array('post_type' => 'page',
                                  'post_status' => 'publish',
-                                 'post_parent' => $groups_page,
+                                 'post_parent' => $teams_page,
                                  'order' => 'ASC',
                                  'orderby' => 'menu_order'));
 
-    if ( $groups->have_posts() ) : ?>
-      <ul class="groups-list">
-      <?php while ( $groups->have_posts() ) : $post = $groups->next_post(); ?>
+    if ( $teams->have_posts() ) : ?>
+      <ul class="teams-list">
+      <?php while ( $teams->have_posts() ) : $post = $teams->next_post(); ?>
         <li><a href="<?php the_permalink() ?>">
           <?php if (function_exists('the_post_thumbnail') && has_post_thumbnail($post->ID) ) : ?>
             <?php echo get_the_post_thumbnail( $post->ID, 'thumbnail', array('alt' => "", 'title' => "") ); ?>
@@ -56,8 +56,8 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
     </div>
   <?php elseif ( fc_is_child('docs') ) : ?>
     <p class="doc-flag">Doc</p>
-  <?php elseif ( fc_is_child('groups') ) : ?>
-    <p class="group-flag">Group</p>
+  <?php elseif ( fc_is_child('teams') ) : ?>
+    <p class="team-flag">Team</p>
   <?php else : ?>
     <div class="entry-meta">
       <p class="entry-posted">

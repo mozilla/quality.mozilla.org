@@ -38,8 +38,8 @@ get_header(); ?>
     </div>
   <?php elseif ( fc_is_child('docs') ) : ?>
     <p class="doc-flag">Doc</p>
-  <?php elseif ( fc_is_child('groups') ) : ?>
-    <p class="group-flag">Group</p>
+  <?php elseif ( fc_is_child('teams') ) : ?>
+    <p class="team-flag">Team</p>
   <?php elseif ( in_category('twitter') ) : ?>
     <p class="tweet-flag">Tweet</p>
   <?php elseif ( function_exists('is_syndicated') && is_syndicated() ) : ?>

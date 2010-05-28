@@ -1,7 +1,7 @@
 /* Styles for print */
 
 #site-nav, #site-utils, .pagination, #respond, #content-sub { display: none; }
-.post .event-flag, .post .tweet-flag, .page .doc-flag, .page .group-flag { display: none; }
+.post .event-flag, .post .tweet-flag, .page .doc-flag, .page .team-flag { display: none; }
 
 body { width: auto; margin: 0 .5in; font: 12pt/1.5 Georgia, "Times New Roman", Times, serif; color: #000; }
 h1, .section-title, .single .entry-title { font-size: 170%; }

@@ -40,8 +40,8 @@ input, select, textarea { font-family: inherit; font-size: 100%; }
 .dtstart, .dtend, .published, .updated { border: 0; }
 
 /* @General elements *********/
-html { background: #fff url("img/bg-canvas-topfade.gif") 0 2.43em repeat-x; }
-body { background: transparent url("img/bg-body.gif") 54% 3em no-repeat; min-width: 960px; padding-top: 5.5em; font: .812em/1.538 Georgia, Times, serif; color: #333; }
+html { background: #fff url("img/bg-canvas.png") 0 0 repeat-x; }
+body { background: transparent url("img/bg-body.png") 54% 3.5em no-repeat; min-width: 960px; padding-top: 5.5em; font: .812em/1.538 Georgia, Times, serif; color: #333; }
 
 /*** @Links *********/
 :link { text-decoration: none; color: #369; }
@@ -59,7 +59,8 @@ body { background: transparent url("img/bg-body.gif") 54% 3em no-repeat; min-wid
 .category-events .entry-title a:visited { color: #ef8a1d; }
 
 /*** @Buttons *********/
-a.button { height: auto; padding: .35em 14px .5em; color: #fff; font: bold .923em/1.2 Verdana, Arial, Helvetica, sans-serif;
+a.button:link, 
+a.button:visited { height: auto; padding: .35em 14px .5em; color: #fff; font: bold .923em/1.2 Verdana, Arial, Helvetica, sans-serif; text-decoration: none;
   text-shadow: -1px -1px 0 rgba(0,0,0,.2);
   border: 1px solid;
   border-color: #679bd3 #346ca7 #346ca7 #5e8fc4;
@@ -79,7 +80,8 @@ a.button:active { text-decoration: none;
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #659ad3), color-stop(70%, #5089c5));
 }
 
-a.button.on {
+a.button.on:link, 
+a.button.on:visited {
   border-color: #ffbe71 #eb8826 #eb8826 #ffbe71;
   background: #f93;
   background: -moz-linear-gradient(top, #ffab49 0, #f93 70%); 
@@ -113,31 +115,33 @@ h4, h5, h6 { font-size: 1em; }
 #content-main.full { width: 100%; }
 #content-sub { width: 210px; float: right; }
 
+/* @Home page *********/
 #home-head { padding: 0 0 2em; margin-bottom: 2em; background: url("img/squiggle.png") 100% 100% repeat-x; }
-#home-head ul.groups-list { list-style: none; margin: 1em 0; font-size: 1.231em; line-height: 1.2; overflow: hidden; }
-#home-head ul.groups-list li { width: 17.5%; margin-right: 3%; float: left; text-align: center; }
-#home-head ul.groups-list li:last-child { margin-right: 0; }
-#home-head ul.groups-list a img { width: 100%; height: auto; text-decoration: none; display: block; margin: 0 auto .5em; }
-#home-head ul.groups-list a:hover img, #home-head ul.groups-list a:focus img, #home-head ul.groups-list a:active img { opacity: .85; }
+#home-head ul.teams-list { list-style: none; margin: 1em -3% 1em 0; font-size: 1.231em; line-height: 1.2; overflow: hidden; }
+#home-head ul.teams-list li { width: 17.25%; margin-right: 2.75%; float: left; text-align: center; }
+/* #home-head ul.teams-list li:last-child { margin-right: 0; } */
+#home-head ul.teams-list a img { width: 100%; height: auto; text-decoration: none; display: block; margin: 0 auto .5em; }
+#home-head ul.teams-list a:hover img, #home-head ul.teams-list a:focus img, #home-head ul.teams-list a:active img { opacity: .85; }
 
-#home-head video { display: block; width: 640px; height: 360px; margin: 2em auto 1em; text-align: center; border: 7px solid #eee; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; }
+#home-head .video_wrap { display: block; width: 640px; height: 360px; margin: 2em auto 1em; text-align: center; border: 7px solid #eee; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; }
 
-#stream-filter { list-style: none; margin: -1em 0 2em; padding: 0 0 2em; background: url("img/pencil-line.gif") right bottom repeat-x; }
+/* @Community page *********/
+#stream-filter { position: relative; top: -1em; list-style: none; margin: 0 0 2em; padding: 0 0 2em; background: url("img/pencil-line.gif") right bottom repeat-x; }
 #stream-filter li { display: inline; margin: 0 10px 0 0; }
 
 /* @Posts *********/
-div.post, div.page, div.attachment { padding: 0 0 1em 80px; overflow: hidden; margin-bottom: 2em; position: relative; background: url("img/pencil-line.gif") center bottom repeat-x; }
+div.post, div.page, div.attachment { padding: 0 0 1em 80px; min-height: 6em; overflow: hidden; margin-bottom: 2em; position: relative; background: url("img/pencil-line.gif") center bottom repeat-x; }
 div.post:nth-child(even), div.page:nth-child(even) { background-position: left bottom; }
 
 body.single div.post, body.single div.attachment { padding-bottom: 0; background-image: none; }
 body.page div.page { padding: 0; background-image: none; }
 
 /*** @Flags *********/
-.post .event-flag, .post .tweet-flag, .page .doc-flag, .page .group-flag { position: absolute; left: 0; top: 0; width: 50px; padding-top: 50px; text-align: center; font: bold .846em Verdana, Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: 0.1em; color: #390; }
+.post .event-flag, .post .tweet-flag, .page .doc-flag, .page .team-flag { position: absolute; left: 0; top: 0; width: 50px; padding-top: 50px; text-align: center; font: bold .846em Verdana, Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: 0.1em; color: #390; }
 .post .event-flag { background: url("img/flag-event.png") 50% 0 no-repeat; }
 .post .tweet-flag { background: url("img/flag-tweet.png") 50% 0 no-repeat; }
 .page .doc-flag, .type-page .doc-flag { background: url("img/flag-docs.png") 50% 0 no-repeat; }
-.page .group-flag, .type-page .group-flag { background: url("img/flag-groups.png") 50% 0 no-repeat; }
+.page .team-flag, .type-page .team-flag { background: url("img/flag-teams.png") 50% 0 no-repeat; }
 
 .post .entry-content, .post .entry-symmary, .page .entry-content { margin-bottom: 1em; }
 .entry-content:after, .entry-summary:after { content: "."; clear: both; display: block; height: 0; visibility: hidden; }
@@ -222,8 +226,8 @@ a .alignright { margin: -2px -2px 15px 1em; }
   background: -moz-linear-gradient(top, #f3f3f3 0, #fff 20%); 
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #eee), color-stop(20%, #fff));
 }
-.entry-posted .posted-year { display: block; font-size: .7em; background: #f3f3f3; color: #777; border-top: 1px solid #d6e4e5; padding: .2em 1px 0; }
-.entry-posted .updated { display: block; font-size: .7em; border: 0; background: #f3f3f3; color: #777; padding: 0 1px .2em; }
+.entry-posted .posted-year { display: block; font: 9px Helvetica, Arial, sans-serif; background: #f3f3f3; color: #777; border-top: 1px solid #d6e4e5; padding: .2em 1px 0; }
+.entry-posted .updated { display: block; font: 9px Helvetica, Arial, sans-serif; border: 0; background: #f3f3f3; color: #777; padding: 0 1px .2em; }
 
 /*** @Event date *********/
 .event-date { border: 1px solid #f0dfc0; font-size: 1.07em; text-align: center; margin: 0 0 1em 30px; padding: .5em 10px; width: 188px; float: right; 
@@ -266,41 +270,43 @@ dl.column dd { margin-bottom: .5em; padding-left: 90px; }
 
 .calendar-control { text-align: center; margin: 0 0 1.4em; }
 .calendar-control select.tec-events-dropdown { margin: 0 10px; font-size: 1.07em; background: #fff; border: 1px solid #ccc; }
+.calendar-control .cal-jump { width: 30%; float: left; margin: 0 4%; }
 .category-events .calendar-switch { position: absolute; right: 0; top: 0; }
 .category-events .calendar-switch a { margin: 0 0 0 10px; }
 
 .category-events table.tec-calendar { margin: 0 0 1.4em; font-size: 1em; width: 100%; border-collapse: collapse; }
 table.tec-calendar th { padding: 4px 0; background: #95a3a3 none; font: bold .846em Verdana, Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: .01em; color: #fff; text-shadow: -1px -1px 0 rgba(0,0,0,.1); }
 table.tec-calendar td { border: 1px solid #aaa; padding: 0; color: inherit; height: 100px; width: 14.28%; vertical-align: top; }
-table.tec-calendar .daynum { font-size: 1em; padding: .5em 9px; background: #d8e6e6; font: .77em Verdana, Arial, Helvetica, sans-serif; }
+table.tec-calendar .daynum { padding: .5em 9px; background: #d8e6e6; font: bold .77em Verdana, Arial, Helvetica, sans-serif; }
 table.tec-calendar td.tec-past .daynum { color: #aaa; background: #ebebeb; }
 table.tec-calendar td.tec-present .daynum { background: #390; font-weight: bold; color: #fff; }
 table.tec-calendar td .tec-event { line-height: 1.2; padding: .5em 10px; }
 table.tec-calendar hr { background: #bcc; height: 1px; margin: 0 9px; border: 0; }
-table.tec-calendar .tec-tooltip .tec-event-body { font-size: 1em; padding: 0 10px; margin: 0 0 .75em; }
-table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10px; margin: .25em 0; background: transparent none; color: #390; }
+table.tec-calendar .tec-tooltip .tec-event-body { font-size: 1em; padding: 0 10px; margin: 0 0 .75em; max-height: 10.25em; overflow: hidden; }
+table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10px; margin: .25em 0; background: transparent none; color: #390; height: auto; line-height: 1.2; }
+table.tec-calendar .tec-event-date { font-weight: bold; }
 
-/* @Events Calendar @List *********/
+/* @Events @Calendar @List *********/
 #tec-events-loop .post.vevent { padding: 0 0 1em; margin-bottom: 1em; }
 #tec-events-loop .event-day { clear: both; margin: 1em 0; color: #390; font: bold .923em Verdana, Arial, Helvetica sans-serif; text-transform: uppercase; letter-spacing: .01em; }
 #tec-events-loop .entry-summary { margin: 0; padding: 0; }
 #tec-events-loop .event-date { font-size: 1em; }
 
-/* @Groups page *********/
-#groups-list .group { position: relative; min-height: 80px; padding: 2em 0 0 110px; margin-bottom: 2em; background: url("img/pencil-line.gif") center top repeat-x; }
-#groups-list .group:nth-child(even) { background-position: -40% top; }
-#groups-list .group .entry-title { font-size: 1.385em; }
-#groups-list .group .wp-post-image { position: absolute; left: 0; top: 1.44em; padding: 2px; }
+/* @Teams page *********/
+#teams-list .team { position: relative; min-height: 80px; padding: 2em 0 0 110px; margin-bottom: 2em; background: url("img/pencil-line.gif") center top repeat-x; }
+#teams-list .team:nth-child(even) { background-position: -40% top; }
+#teams-list .team .entry-title { font-size: 1.385em; }
+#teams-list .team .wp-post-image { position: absolute; left: 0; top: 1.44em; padding: 2px; }
 
 /* @Breadcrumbs *********/
 .crumbs { list-style: none; font: .846em/1.1 Verdana, Arial, Helvetica, sans-serif; }
 
 /* @Main @Navigation *********/
-#site-nav { position: absolute; top: 0; left: 0; width: 100%; height: 3em; padding-top: .5em; background: #4c81ba url("img/bg-topbar.gif") center bottom repeat-x; border-bottom: 1px solid #fff; }
+#site-nav { position: absolute; top: 0; left: 0; width: 100%; height: 3em; padding-top: .55em; }
 #site-nav .section { position: relative; height: 3em; }
 #nav-main { position: absolute; bottom: 0; left: 15px; width: 690px; margin: 0; list-style: none; overflow: hidden; }
 #nav-main li { float: left; margin-right: 1px; font: bold .923em/1.5 Verdana, Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: .1em; }
-#nav-main a { display: block; padding: .35em 14px .5em; color: #fff;
+#nav-main a:link, #nav-main a:visited { display: block; padding: .35em 14px .5em; color: #fff; text-decoration: none;
   text-shadow: -1px -1px 0 rgba(0,0,0,.3);
   border: 1px solid;
   border-color: #679bd3 #346ca7 #346ca7 #5e8fc4;
@@ -317,7 +323,7 @@ table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10
   background: -moz-linear-gradient(top, #659ad3 0, #5089c5 70%);
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #659ad3), color-stop(70%, #5089c5));
 }
-#nav-main .current a, #nav-main .current em { display: block; padding: .35em 14px .5em; color: #fff; font-style: normal;
+#nav-main .current a:link, #nav-main .current a:visited, #nav-main .current em { display: block; padding: .35em 14px .5em; color: #fff; font-style: normal;
   text-shadow: -1px -1px 0 rgba(0,0,0,.2);
   border: 1px solid;
   border-color: #ffbe71 #eb8826 #eb8826 #ffbe71;
@@ -446,9 +452,9 @@ ul.wp-tag-cloud li { display: inline; }
 
 /* @Comments *********/
 #comments { padding-top: 3.5em; margin-top: 3em; background: url("img/squiggle.png") 50% 0 repeat-x; }
-.comments-head { clear: both; margin: 0 0 1em; padding-left: 80px; }
-.comments-head h3 { display: inline; margin-right: 1em; }
-.comments-head .cmt-post { font-weight: bold; background: url("img/feedback-arrow.png") 0 50% no-repeat; float: right; padding: .25em 0 .25em 60px; }
+.comments-head { clear: both; margin: 0 0 1em; padding-left: 80px; overflow: hidden; }
+.comments-head h3 { width: 70%; float: left; }
+.comments-head .cmt-post { width: 20%; float: right; font-weight: bold; background: url("img/feedback-arrow.png") 0 50% no-repeat; padding: .25em 0 .25em 60px; }
 .comments-head .cmt-post:visited { color: #369; }
 
 #comments .entry-title { font: .923em/1 Verdana, Arial, Helvetica, sans-serif; color: #390; margin-bottom: 0; }

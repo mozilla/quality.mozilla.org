@@ -17,14 +17,14 @@ $parent = $ancestors[$root]; // Top parent is the last in the array
   <li><a href="<?php echo bloginfo('url'); ?>" rel="home">Home</a></li>
 <?php endif; ?>
 
-<?php // Groups 
-  if (get_page_by_path('groups')) :
-    if ( is_page('groups') ) : ?>
-  <li class="current" title="This is the current page"><em>Groups</em></li>
-<?php elseif ( ($post->post_parent) && ($parent == get_page_by_path('groups')->ID) ) : ?>
-  <li class="current"><a href="<?php echo get_permalink(get_page_by_path('groups')->ID); ?>">Groups</a></li>
+<?php // Teams 
+  if (get_page_by_path('teams')) :
+    if ( is_page('teams') ) : ?>
+  <li class="current" title="This is the current page"><em>Teams</em></li>
+<?php elseif ( ($post->post_parent) && ($parent == get_page_by_path('teams')->ID) ) : ?>
+  <li class="current"><a href="<?php echo get_permalink(get_page_by_path('teams')->ID); ?>">Teams</a></li>
 <?php else : ?>
-  <li><a href="<?php echo get_permalink(get_page_by_path('groups')->ID); ?>">Groups</a></li>
+  <li><a href="<?php echo get_permalink(get_page_by_path('teams')->ID); ?>">Teams</a></li>
 <?php endif; 
   endif; ?>
 

@@ -13,7 +13,7 @@
   <link rel="home" href="<?php echo bloginfo('url'); ?>">
   <link rel="copyright" href="#copyright">
 
-  <!--[if !IE 6]><!--><link rel="stylesheet" type="text/css" media="screen,projection" href="<?php bloginfo('stylesheet_url'); ?>"><!--<![endif]-->
+  <link rel="stylesheet" type="text/css" media="screen,projection" href="<?php bloginfo('stylesheet_url'); ?>">
   <!--[if lte IE 7]><link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo('stylesheet_directory'); ?>/css/ie7.css"><![endif]-->
   <!--[if lte IE 6]><link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo('stylesheet_directory'); ?>/css/ie6.css"><![endif]-->
   <link rel="stylesheet" type="text/css" media="print,handheld" href="<?php bloginfo('stylesheet_directory'); ?>/css/print.css">

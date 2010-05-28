@@ -13,8 +13,10 @@
           <a href="<?php echo events_get_previous_month_link(); ?>"><?php echo events_get_previous_month_text(); ?></a>
         </span>
       <?php endif; ?>
-
+      
+      <div class="cal-jump">
         <?php get_jump_to_date_calendar( "tec-" ); ?>
+      </div>
 
       <?php if (events_get_next_month_link()) : ?>
         <span class="next">
