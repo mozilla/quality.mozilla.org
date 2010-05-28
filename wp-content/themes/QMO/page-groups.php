@@ -14,22 +14,19 @@
 
     <div id="post-<?php the_ID(); ?>" <?php post_class(); ?> role="article">
       <h1 class="entry-title section-title"><?php the_title(); ?></h1>
-
       <div class="entry-content"> 
         <?php the_content('Read the rest of this entry &hellip;'); ?>
         <?php wp_link_pages(array('before' => '<p class="pages"><strong>Pages:</strong> ', 'after' => '</p>', 'next_or_number' => 'number', 'link_before' => '<b>', 'link_after' => '</b>')); ?>
       </div>
-        
     </div>
-    
+
   <?php endwhile; ?>
-  
+
     <?php $groups_page = get_page_by_path('groups')->ID;
     $groups = new WP_Query(array('post_type' => 'page','post_status' => 'publish','post_parent' => $groups_page, 'order' => 'ASC', 'orderby' => 'menu_order'));
     if ( $groups->have_posts() ) : ?>
       <div id="groups-list">
       <?php while ( $groups->have_posts() ) : $post = $groups->next_post(); ?>
-    
         <div id="page-<?php echo $post->ID; ?>" class="group hentry">
           <h2 class="entry-title"><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent link to &#8220;<?php the_title_attribute(); ?>&#8221;">
           <?php if (function_exists('the_post_thumbnail') && has_post_thumbnail($post->ID) ) : ?>
@@ -39,14 +36,13 @@
           </h2>
           <p><?php echo $post->post_excerpt; ?></p>
         </div>
-    
       <?php endwhile; ?>
       </div>
     <?php endif; ?>
 
   <?php else : ?>
 
-  <h1 class="page-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
+  <h1 class="section-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
 
 <?php endif; ?>
 

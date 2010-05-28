@@ -14,7 +14,6 @@
 
     <div id="post-<?php the_ID(); ?>" <?php post_class(); ?> role="article">
       <h1 class="entry-title section-title"><?php the_title(); ?></h1>
-
       <div class="entry-content"> 
         <?php the_content('Read the rest of this entry &hellip;'); ?>
         <?php wp_link_pages(array('before' => '<p class="pages"><strong>Pages:</strong> ', 'after' => '</p>', 'next_or_number' => 'number', 'link_before' => '<b>', 'link_after' => '</b>')); ?>
@@ -26,16 +25,15 @@
         <?php echo $children; ?>
         </ul>
       <?php endif; ?>
-        
     </div>
-    
+
     <?php endwhile; ?>
-    
+
     <?php comments_template(); ?>
 
   <?php else : ?>
 
-  <h1 class="page-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
+  <h1 class="section-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
 
 <?php endif; ?>
 

@@ -4,7 +4,7 @@
 .post .event-flag, .post .tweet-flag, .page .doc-flag, .page .group-flag { display: none; }
 
 body { width: auto; margin: 0 .5in; font: 12pt/1.5 Georgia, "Times New Roman", Times, serif; color: #000; }
-h1, .page-title { font-size: 170%; }
+h1, .section-title, .single .entry-title { font-size: 170%; }
 h2 { font-size: 150%; }
 h3 { font-size: 125%; }
 h4 { font-size: 115%; }

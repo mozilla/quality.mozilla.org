@@ -22,12 +22,12 @@ function fc_pagination_page_of_page($max_page, $paged, $page_of_page_text, $page
       $pagingString .= 'Page ';
     else
       $pagingString .= $page_of_page_text . ' ';
-    
+
     if ( $paged != "" )
       $pagingString .= $paged;
     else
       $pagingString .= 1;
-    
+
     if($page_of_of == "")
       $pagingString .= ' of ';
     else
@@ -219,7 +219,6 @@ function fc_pagination() {
   } 
 } /* *** end function fc_pagination *** */
 
-
 function fc_pagination_settings() {
   if(isset($_POST['submitted'])) {
     if($_POST["page_of_page"] == "")
@@ -272,7 +271,7 @@ function fc_pagination_settings() {
   <div class="wrap">
     <div id="icon-options-general" class="icon32"><br /></div>
     <h2>Pagination Settings</h2>
-    
+
     <h3>Text</h3>
     <p>You can set all the text strings to any values you like, though numbers will always be numbers. The text strings will fall back to their default values if left blank. To prevent part of the menu from displaying, uncheck the show/hide option for that component.</p>
     <table style="width: 100%;" border="0">

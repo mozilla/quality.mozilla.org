@@ -18,8 +18,7 @@ get_header(); ?>
 </ul>
 <?php endif; ?>
 
-<?php 
-$wp_query->query('paged='.$paged);
+<?php $wp_query->query('paged='.$paged);
 if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
 
   <div id="post-<?php the_ID(); ?>" 
@@ -70,43 +69,9 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
   <?php endif; ?>
 
     <div class="entry-content <?php if ( function_exists('is_event') && is_event() ) : echo 'description'; endif; ?>">
-    <?php if ( function_exists('is_event') && is_event($post->ID) ) : ?>
-      <div class="event-date">
-        <h3>When</h3>
-        <?php // All day, single day
-          if (get_post_meta( $post->ID, '_EventAllDay' ) && (the_event_start_date($post->ID) == the_event_end_date($post->ID)) ) : ?>
-            <p><abbr class="dtstart" title="<?php echo the_event_start_date( $post->ID, false, 'Y-m-d' ); ?>"><?php echo the_event_start_date( $post->ID, false, $date_format ); ?></abbr></p>
-        <?php // All day, multiple days
-          elseif (get_post_meta( $post->ID, '_EventAllDay' ) && (the_event_start_date($post->ID) != the_event_end_date($post->ID)) ) : ?>
-            <p>
-            <span class="start"><em>Start:</em> <abbr class="dtstart" title="<?php echo the_event_start_date( $post->ID, false, 'Y-m-d' ); ?>"><?php echo the_event_start_date( $post->ID, false, $date_format ); ?></abbr></span>
-            <span class="end"><em>End:</em> <abbr class="dtend" title="<?php echo the_event_end_date( $post->ID, false, 'Y-m-d' ); ?>"><?php echo the_event_end_date( $post->ID, false, $date_format ); ?></abbr></span>
-            </p>
-        <?php // Not all day, but the time spans more than one date (e.g., runs past midnight)
-          elseif (!get_post_meta( $post->ID, '_EventAllDay' ) && (the_event_start_date($post->ID, false, $date_format) < the_event_end_date($post->ID, false, $date_format)) ) : ?>
-            <p>
-            <span class="start"><em>Start:</em> <abbr class="dtstart" title="<?php echo the_event_start_date( $post->ID, false, 'Y-m-d\TH:i:s' ); ?>"><?php echo the_event_start_date( $post->ID, false, $date_format )."<br>".the_event_start_date( $post->ID, false, $time_format ); ?></abbr></span>
-            <span class="end"><em>End:</em> <abbr class="dtend" title="<?php echo the_event_end_date( $post->ID, false, 'Y-m-d\TH:i:s' ); ?>"><?php echo the_event_end_date( $post->ID, false, $date_format )."<br>".the_event_end_date( $post->ID, false, $time_format ); ?></abbr></span>
-            </p>
-        <?php // Just a normal event.
-          else : ?>
-            <p><abbr class="dtstart" title="<?php echo the_event_start_date( $post->ID, false, 'Y-m-d\TH:i:s' ); ?>"><?php echo the_event_start_date( $post->ID, false, $date_format ); ?></abbr>
-            <span class="start"><em>Start:</em> <?php echo the_event_start_date( $post->ID, false, $time_format ); ?></span>
-            <span class="end"><em>End:</em> <abbr class="dtend" title="<?php echo the_event_end_date( $post->ID, false, 'Y-m-d\TH:i:s' ); ?>"><?php echo the_event_end_date( $post->ID, false, $time_format ); ?></abbr></span>
-            </p>
-        <?php endif; ?>
-        
-        <?php // If there's more info to show, link to the event page
-          if ( the_event_venue($post->ID) || the_event_cost($post->ID) || the_event_address($post->ID) || the_event_phone($post->ID) ) : ?>
-          <p><a class="more-link" href="<?php echo get_permalink($post->ID) ?>">More info</a></p>
-        <?php endif; ?>
-        
-        <?php // If the current datetime is greater than event datetime, the event is in the past
-          if ( date('c') > the_event_end_date($post->ID, false, 'c') ) : ?>
-          <p class="passed description"><strong>This event has passed.</strong></p>
-        <?php endif; ?>
-      </div>
-    <?php endif; /* is_event */ ?>
+    <?php if ( function_exists('is_event') && is_event($post->ID) ) :
+      include (TEMPLATEPATH . '/event-card.php');
+    endif; ?>
     <?php if(in_category('twitter')) : ?>
       <?php the_content(); ?>
       <p class="tweet-meta">Posted on <?php the_time($date_format); ?> at <abbr class="updated" title="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></abbr>.</p>
@@ -116,11 +81,11 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
       <?php wp_link_pages(array('before' => '<p class="pages"><strong>Pages:</strong> ', 'after' => '</p>', 'next_or_number' => 'next', 'link_before' => '<b>', 'link_after' => '</b>')); ?>
     <?php endif; ?>
     </div>
-    
+
     <?php if (get_the_tags()) : ?>
       <?php the_tags('<p class="entry-tags"><strong>'.__('Tags:','qmo').'</strong> ',', ',''); ?>
     <?php endif; ?>
-  
+
   <?php $comment_count = get_comment_count($post->ID);
   if ( comments_open() || $comment_count['approved'] > 0 ) : ?>
     <ul class="discuss">
@@ -147,7 +112,7 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
   
   <?php else : // if there are no posts ?>
 
-  <h1 class="page-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
+  <h1 class="section-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
 
 <?php endif; ?>
 

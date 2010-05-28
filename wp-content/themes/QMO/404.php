@@ -1,6 +1,6 @@
 <?php get_header(); ?>
 <div id="content-main" class="error" role="main">
-  <h1 class="page-title">Sorry, we couldn&#8217;t find that</h1>
+  <h1 class="section-title">Sorry, we couldn&#8217;t find that</h1>
   <div class="entry-content">
     <p><img src="<?php bloginfo('stylesheet_directory'); ?>/img/qmo-bug.png" width="200" height="200" alt="" class="alignright"> 
     We looked everywhere, but we couldn&#8217;t find the page or file you were looking for. A few possible explanations:</p>

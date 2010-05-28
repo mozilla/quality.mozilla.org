@@ -13,7 +13,7 @@ get_header(); ?>
       </p>
       <?php else : ?>
       <p class="crumbs"><a href="<?php echo get_permalink($post->post_parent); ?>" title="<?php _e('Return to &ldquo;'.get_the_title($post->post_parent).'&rdquo;','qmo'); ?>">&larr; <?php echo get_the_title($post->post_parent); ?></a></p>
-      <?php endif; ?>    
+      <?php endif; ?>
     <?php endif;?>
 
     <div id="post-<?php the_ID(); ?>" <?php post_class(); ?> role="article">
@@ -24,14 +24,14 @@ get_header(); ?>
         <?php wp_link_pages(array('before' => '<p class="pages"><strong>Pages:</strong> ', 'after' => '</p>', 'next_or_number' => 'number', 'link_before' => '<b>', 'link_after' => '</b>')); ?>
       </div>
     </div>
-    
+
     <?php endwhile; ?>
-    
+
     <?php comments_template(); ?>
 
   <?php else : ?>
 
-  <h1 class="page-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
+  <h1 class="section-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
 
 <?php endif; ?>
 
@@ -47,7 +47,7 @@ get_header(); ?>
     </ul>
   </div>
 <?php endif; ?>
-      
+
 <?php if ( function_exists('dynamic_sidebar') && dynamic_sidebar('sidebar-docs-section') ) : else : endif; ?>
 </div>
 

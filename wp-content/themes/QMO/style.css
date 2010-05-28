@@ -51,7 +51,8 @@ body { background: transparent url("img/bg-body.gif") 54% 3em no-repeat; min-wid
 :link:focus, :visited:focus { text-decoration: underline; }
 
 .entry-title :visited { color: #369; }
-.entry-content :link, .entry-content :visited { color: #ef8a1d; font-weight: bold; }
+.entry-content :link, .entry-content :visited, 
+.entry-summary :link, .entry-summary :visited { color: #ef8a1d; font-weight: bold; }
 
 /* Override The Events Calendar styles */
 .category-events .entry-title a:link { color: #369; }
@@ -100,7 +101,7 @@ h2, .entry-content h1, .entry-title { font-size: 1.69em; line-height: 1.2; margi
 h3 { font-size: 1.385em; }
 h4, h5, h6 { font-size: 1em; }
 
-.section-title, .single .entry-title { font-size: 2.32em; line-height: 1.2; margin-bottom: .75em; }
+.section-title, .single .entry-title { font-size: 2.32em; line-height: 1.2; margin-bottom: .75em; overflow: hidden; }
 
 /* @Layout *********/
 .section { width: 930px; padding: 0 15px; margin: 0 auto; }
@@ -119,13 +120,13 @@ h4, h5, h6 { font-size: 1em; }
 #home-head ul.groups-list a img { width: 100%; height: auto; text-decoration: none; display: block; margin: 0 auto .5em; }
 #home-head ul.groups-list a:hover img, #home-head ul.groups-list a:focus img, #home-head ul.groups-list a:active img { opacity: .85; }
 
-#home-head video, #home-head object { display: block; margin: 2em auto 1em; text-align: center; border: 7px solid #eee; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; }
+#home-head video { display: block; width: 640px; height: 360px; margin: 2em auto 1em; text-align: center; border: 7px solid #eee; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; }
 
 #stream-filter { list-style: none; margin: -1em 0 2em; padding: 0 0 2em; background: url("img/pencil-line.gif") right bottom repeat-x; }
 #stream-filter li { display: inline; margin: 0 10px 0 0; }
 
 /* @Posts *********/
-div.post, div.page, div.attachment { padding: 0 0 1em 80px; margin-bottom: 2em; position: relative; background: url("img/pencil-line.gif") center bottom repeat-x; }
+div.post, div.page, div.attachment { padding: 0 0 1em 80px; overflow: hidden; margin-bottom: 2em; position: relative; background: url("img/pencil-line.gif") center bottom repeat-x; }
 div.post:nth-child(even), div.page:nth-child(even) { background-position: left bottom; }
 
 body.single div.post, body.single div.attachment { padding-bottom: 0; background-image: none; }
@@ -165,7 +166,7 @@ del { text-decoration: line-through; color: #a88; }
 
 a.more-link:link, a.more-link:visited { color: #369; font-weight: bold; padding:0.25em 0 0.25em 20px; background: url("img/more-arrow.gif") 0 50% no-repeat; }
 
-.tweet .entry-content { font-size: 1.231em; min-height: 65px; }
+.tweet .entry-content, .tweet .entry-summary { font-size: 1.231em; min-height: 65px; }
 .tweet .tweet-meta { margin: -.5em 0 0; font: .687em Verdana, Arial, Helvetica, sans-serif; }
 
 /*** @Images *********/
@@ -185,7 +186,7 @@ a .alignright { margin: -2px -2px 15px 1em; }
 .wp-caption.aligncenter a img.size-large { margin: 0 0 0 -2px; }
 .wp-caption-text { margin: .3em 5px; font-size: .923em; font-style: italic; }
 
-.entry-content .wp-post-image { float: right; margin: 0 0 .5em 15px; }
+.entry-content .wp-post-image, .entry-summary .wp-post-image { float: right; margin: 0 0 .5em 15px; }
 
 /*** @Meta *********/
 .entry-meta { clear: both; margin: .5em 0 2em; padding: .35em 1px; border: solid #c4e6b3; border-width: 1px 0; font: .846em Verdana, Arial, Helvetica, sans-serif; }
@@ -194,10 +195,10 @@ a .alignright { margin: -2px -2px 15px 1em; }
 .entry-meta .edit a:link, .entry-meta .edit a:visited { font-weight: bold; padding: 1px 6px; background: #eee; }
 .entry-meta a:link, .entry-meta a:visited { color: #369; font-weight: normal; }
 
-.archive .entry-meta, .search .entry-meta { padding: 0; border: 0; margin-bottom: 1em; }
+.entry-tags { margin: 0 0 1em; font: .923em Verdana, Arial, Helvetica, sans-serif; }
 
 /*** @Discussion *********/
-.discuss, .entry-tags { list-style: none; margin: 1em 0; font: .923em Verdana, Arial, Helvetica, sans-serif; }
+.discuss { list-style: none; margin: 1em 0; font: .923em Verdana, Arial, Helvetica, sans-serif; }
 .discuss li { display: inline; font-weight: bold; }
 .discuss li:after { content: "\00A0\00A0|\00A0"; font-weight: normal; } /* space space | space */
 .discuss li:last-child:after { content: ""; }
@@ -363,6 +364,7 @@ table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10
 .fm-search #s:hover { border-color: #666; background: #fff; }
 .fm-search #s:focus { border-color: #369; background: #fff; }
 .fm-search button { width: 25px; padding: 0; height: 22px; text-indent: -999em; overflow: hidden; border: 1px outset #fff; background: #e0e0e0 url("img/btn-search.png") 50% 50% no-repeat; }
+.fm-search button:hover, .fm-search button:focus { border-color: #369; background: #fff url("img/btn-search.png") 50% 50% no-repeat; }
 
 /*** @Utility nav *********/
 #nav-util { list-style: none; text-align: right; margin: 1em 0 0; font: .923em Verdana, Arial, Helvetica, sans-serif; }

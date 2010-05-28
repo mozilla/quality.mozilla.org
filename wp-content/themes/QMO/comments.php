@@ -27,9 +27,7 @@
   <?php if ( get_comment_pages_count() > 1 ) : // If comment paging is enabled and there are enough comments to paginate, show the comment paging ?>
     <p class="pages">More comments: <?php paginate_comments_links(); ?></p>
   <?php endif; ?>
-  
 
-  
 <?php endif; ?>
 
 <?php if (comments_open()) : ?>
