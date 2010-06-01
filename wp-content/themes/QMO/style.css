@@ -144,7 +144,7 @@ body.page div.page { padding: 0; background-image: none; }
 .page .doc-flag, .type-page .doc-flag { background: url("img/flag-docs.png") 50% 0 no-repeat; }
 .page .team-flag, .type-page .team-flag { background: url("img/flag-teams.png") 50% 0 no-repeat; }
 
-.post .entry-content, .post .entry-symmary, .page .entry-content { margin-bottom: 1em; }
+.post .entry-content, .post .entry-summary, .page .entry-content { margin-bottom: 1em; }
 .entry-content:after, .entry-summary:after { content: "."; clear: both; display: block; height: 0; visibility: hidden; }
 
 /*** @Basics *********/
@@ -172,7 +172,7 @@ del { text-decoration: line-through; color: #a88; }
 a.more-link:link, a.more-link:visited { color: #369; font-weight: bold; padding:0.25em 0 0.25em 20px; background: url("img/more-arrow.gif") 0 50% no-repeat; }
 
 .tweet .entry-content, .tweet .entry-summary { font-size: 1.231em; min-height: 65px; }
-.tweet .tweet-meta { margin: -.5em 0 0; font: .687em Verdana, Arial, Helvetica, sans-serif; }
+.tweet .tweet-meta { margin: -.5em 0 .5em; font: .687em Verdana, Arial, Helvetica, sans-serif; }
 
 /*** @Images *********/
 #content img { max-width: 100%; height: auto; }

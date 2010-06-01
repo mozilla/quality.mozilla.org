@@ -1,7 +1,14 @@
-<?php 
-$events_cat = get_category_by_slug('events')->cat_ID;
-get_header(); ?>
+<?php
+// Fetch the formats
+$date_format = get_option("date_format");
+$time_format = get_option("time_format");
 
+// Fetch some IDs
+$events_cat = get_category_by_slug('events')->cat_ID;
+$synd_cat = get_category_by_slug('syndicated')->cat_ID;
+$twitter_cat = get_category_by_slug('twitter')->cat_ID;
+
+get_header(); ?>
 <div id="content-main" class="hfeed" role="main">
 <?php if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
 

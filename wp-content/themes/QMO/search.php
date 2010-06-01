@@ -1,4 +1,14 @@
 <?php
+// Fetch the formats
+$date_format = get_option("date_format");
+$time_format = get_option("time_format");
+
+// Fetch some IDs
+$events_cat = get_category_by_slug('events')->cat_ID;
+$synd_cat = get_category_by_slug('syndicated')->cat_ID;
+$twitter_cat = get_category_by_slug('twitter')->cat_ID;
+
+// Count search results
 $search_count = 0;
 $search = new WP_Query("s=$s & showposts=-1");
 if($search->have_posts()) : while($search->have_posts()) : $search->the_post();

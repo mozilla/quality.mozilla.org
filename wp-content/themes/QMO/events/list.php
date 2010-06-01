@@ -1,12 +1,12 @@
 <?php
-  global $spEvents;
-  $spEvents->loadDomainStylesScripts();
+global $spEvents;
+$spEvents->loadDomainStylesScripts();
 
-  // Fetch the formats
-  $date_format = get_option("date_format");
-  $time_format = get_option("time_format");
+// Fetch the formats
+$date_format = get_option("date_format");
+$time_format = get_option("time_format");
 
-  get_header();
+get_header();
 ?>
 <div id="content-main" class="hfeed vcalendar full" role="main">
   <div id="events-calendar-header">
