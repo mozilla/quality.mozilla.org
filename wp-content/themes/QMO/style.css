@@ -163,7 +163,7 @@ body.page div.page { padding: 0; background-image: none; }
 .entry-content th, .entry-content td { border-bottom: 1px solid #d4d1c3; padding: 0 4px; }
 .entry-content thead th { font-size: 90%; text-align: left; font-weight: normal; }
 .entry-content tbody th { text-align: left; }
-.entry-content code { font-size: 1.07em; color: #360; }
+.entry-content code { font-size: 1.17em; color: #360; }
 
 ins { text-decoration: none; background: #cde1ef; }
 del { text-decoration: line-through; color: #a88; }
