@@ -1,6 +1,5 @@
 <?php 
 $events_cat = get_category_by_slug('events')->cat_ID;
-
 get_header(); ?>
 
 <div id="content-main" class="hfeed" role="main">

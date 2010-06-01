@@ -17,11 +17,8 @@ class FeedWordPressAuthorsPage extends FeedWordPressAdminPage {
 		$unfamiliar = array ('create' => '','default' => '','filter' => '');
 
 		if ($page->for_feed_settings()) :
-			if (is_string($link->settings["unfamiliar author"])) :
-				$key = $link->settings["unfamiliar author"];
-			else:
-				$key = 'site-default';
-			endif;
+			$key = $link->setting('unfamiliar author', NULL, 'site-default');
+			$unfamiliar['site-default'] = '';
 		else :
 			$key = FeedWordPress::on_unfamiliar('author');
 		endif;
@@ -41,9 +38,9 @@ class FeedWordPressAuthorsPage extends FeedWordPressAdminPage {
 <?php if ($page->for_feed_settings()) : ?>
     <option value="site-default"<?php print $unfamiliar['site-default']; ?>>are handled according to the default for all feeds</option>
 <?php endif; ?>
-    <option value="create"<?php $unfamiliar['create']; ?>>will have a new author account created for them</option>
+    <option value="create"<?php print $unfamiliar['create']; ?>>will have a new author account created for them</option>
     <?php foreach ($page->authorlist as $author_id => $author_name) : ?>
-      <option value="<?php echo $author_id; ?>"<?php print $unfamiliar[$author_id]; ?>>will have their posts attributed to <?php echo $author_name; ?></option>
+      <option value="<?php echo $author_id; ?>"<?php print (isset($unfamiliar[$author_id]) ? $unfamiliar[$author_id] : ''); ?>>will have their posts attributed to <?php echo $author_name; ?></option>
     <?php endforeach; ?>
     <option value="newuser">will have their posts attributed to a new user...</option>
     <option value="filter"<?php print $unfamiliar['filter'] ?>>get filtered out</option>
@@ -167,7 +164,6 @@ function fwp_authors_page () {
 	FeedWordPressCompatibility::validate_http_request(/*action=*/ 'feedwordpress_author_settings', /*capability=*/ 'manage_links');
 
 	$link = FeedWordPressAdminPage::submitted_link();
-	$link_id = $link->id;
 	$authorsPage = new FeedWordPressAuthorsPage($link);
 
 	$mesg = null;
@@ -207,7 +203,7 @@ function fwp_authors_page () {
 			FROM {$wpdb->posts}, {$wpdb->postmeta}
 			WHERE ({$wpdb->posts}.id = {$wpdb->postmeta}.post_id)
 			AND {$wpdb->postmeta}.meta_key = 'syndication_feed_id'
-			AND {$wpdb->postmeta}.meta_value = '{$link_id}'
+			AND {$wpdb->postmeta}.meta_value = '{$link->id}'
 			AND {$wpdb->posts}.post_author = '{$fix_mismatch_from_id}'
 			");
 			
@@ -289,24 +285,15 @@ function fwp_authors_page () {
 					endif;
 				endif;
 			endif;
-
-			$alter[] = "link_notes = '".$wpdb->escape($link->settings_to_notes())."'";
-
-			$alter_set = implode(", ", $alter);
-
-			// issue update query
-			$result = $wpdb->query("
-			UPDATE $wpdb->links
-			SET $alter_set
-			WHERE link_id='$link_id'
-			");
+			
+			// Save settings
+			$link->save_settings(/*reload=*/ true);
 			$updated_link = true;
-
-			// reload link information from DB
-			if (function_exists('clean_bookmark_cache')) :
-				clean_bookmark_cache($link_id);
-			endif;
-			$link =& new SyndicatedLink($link_id);
+			
+			// Reset, reload
+			$link_id = $link->id;
+			unset($link);
+			$link = new SyndicatedLink($link_id);
 		else :
 			if ('newuser'==$GLOBALS['fwp_post']['unfamiliar_author']) :
 				$newuser_name = trim($GLOBALS['fwp_post']['unfamiliar_author_newuser']);
@@ -361,7 +348,7 @@ function fwp_authors_page () {
 ?>
 <div class="updated"><p>Syndicated author settings updated.</p></div>
 <?php elseif (!is_null($mesg)) : ?>
-<div class="updated"><p><?php print wp_specialchars($mesg, 1); ?></p></div>
+<div class="updated"><p><?php print esc_html($mesg); ?></p></div>
 <?php endif;
 
 	if (function_exists('add_meta_box')) :

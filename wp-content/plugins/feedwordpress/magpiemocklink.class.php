@@ -6,7 +6,14 @@ class MagpieMockLink extends SyndicatedLink {
 
 	function MagpieMockLink ($rss, $url) {
 		$this->link = $rss;
-		$this->magpie = $rss;
+		
+		if (is_array($rss) and isset($rss['simplepie']) and isset($rss['magpie'])) :
+			$this->simplepie = $rss['simplepie'];
+			$this->magpie = $rss['magpie'];
+		else :
+			$this->magpie = $rss;
+		endif;
+
 		$this->url = $url;
 		$this->id = -1;
 		$this->settings = array(
@@ -17,7 +24,9 @@ class MagpieMockLink extends SyndicatedLink {
 
 	function poll ($crash_ts = NULL) {
 		// Do nothing but update copy of feed
-		$this->magpie = fetch_rss($this->url);
+		$this->simplepie = FeedWordPress::fetch($this->url);
+		$this->magpie = new MagpieFromSimplePie($this->simplepie);
+
 		$this->link = $this->magpie;
 	} /* function MagpieMockLink::poll () */
 
@@ -26,8 +35,12 @@ class MagpieMockLink extends SyndicatedLink {
 	} /* function MagpieMockLink::uri() */
 
 	function homepage () {
-		return (is_object($this->magpie) ? $this->magpie->channel['link'] : null);
+		return (!is_wp_error($this->simplepie) ? $this->simplepie->get_link() : null);
 	} /* function MagpieMockLink::homepage () */
+	
+	function save_settings ($reload = false) {
+		// NOOP.
+	}
 } /* class MagpieMockLink */
 
 

@@ -13,7 +13,7 @@
           <a href="<?php echo events_get_previous_month_link(); ?>"><?php echo events_get_previous_month_text(); ?></a>
         </span>
       <?php endif; ?>
-      
+
       <div class="cal-jump">
         <?php get_jump_to_date_calendar( "tec-" ); ?>
       </div>
@@ -24,11 +24,12 @@
         </span>
       <?php endif; ?>
     </div>
-    <p class="calendar-switch"> 
+    <p class="calendar-switch">
+      <a class="ical" href="<?php bloginfo('url'); ?>/?ical">Download iCal</a>
       <a class="button" href="<?php echo events_get_listview_link(); ?>"><?php _e('Event List', $spEvents->pluginDomain)?></a>
       <a class="button on" href="<?php echo events_get_gridview_link(); ?>"><?php _e('Calendar', $spEvents->pluginDomain)?></a>
     </p>
   </div><!--#events-calendar-header-->
-  <?php event_grid_view(); // See the plugins/the-events-calendar/views/table.php template for customization ?> 
+  <?php event_grid_view(); // See the plugins/the-events-calendar/views/table.php template for customization ?>
 </div>
 <?php get_footer(); ?>

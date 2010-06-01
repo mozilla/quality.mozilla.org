@@ -1,3 +1,8 @@
+<?php
+// Fetch the formats
+$date_format = get_option("date_format");
+$time_format = get_option("time_format");
+?>
 <div class="event-date compact">
   <p><strong>When:</strong>
   <?php // All day, single day

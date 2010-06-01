@@ -20,12 +20,12 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 
 	function accept_POST ($post) {
 		global $wpdb;
-		
-		$link_id = $this->link->id;
 
 		// User mashed a Save Changes button
 		if (isset($post['save']) or isset($post['submit'])) :
 			// custom post settings
+			$custom_settings = $this->custom_post_settings();
+
 			foreach ($post['notes'] as $mn) :
 				$mn['key0'] = trim($mn['key0']);
 				$mn['key1'] = trim($mn['key1']);
@@ -48,7 +48,13 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 				if (isset($post['resolve_relative'])) :
 					$this->link->settings['resolve relative'] = $post['resolve_relative'];
 				endif;
-				
+				if (isset($post['munge_permalink'])) :
+					$this->link->settings['munge permalink'] = $post['munge_permalink'];
+				endif;
+				if (isset($post['munge_comments_feed_links'])) :
+					$this->link->settings['munge comments feed links'] = $post['munge_comments_feed_links'];
+				endif;
+
 				// Post status, comment status, ping status
 				foreach (array('post', 'comment', 'ping') as $what) :
 					$sfield = "feed_{$what}_status";
@@ -61,22 +67,14 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 					endif;
 				endforeach;
 
-				$alter[] = "link_notes = '".$wpdb->escape($this->link->settings_to_notes())."'";
-				$alter_set = implode(", ", $alter);
-	
-				// issue update query
-				$result = $wpdb->query("
-				UPDATE $wpdb->links
-				SET $alter_set
-				WHERE link_id='$link_id'
-				");
+				// Save settings
+				$this->link->save_settings(/*reload=*/ true);
 				$this->updated = true;
-			
-				// reload link information from DB
-				if (function_exists('clean_bookmark_cache')) :
-					clean_bookmark_cache($link_id);
-				endif;
-				$link =& new SyndicatedLink($link_id);
+
+				// Reset, reload
+				$link_id = $this->link->id;
+				unset($this->link);
+				$this->link = new SyndicatedLink($link_id);
 			else :
 				// update_option ...
 				if (isset($post['feed_post_status'])) :
@@ -91,6 +89,9 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 	
 				if (isset($post['resolve_relative'])) :
 					update_option('feedwordpress_resolve_relative', $post['resolve_relative']);
+				endif;
+				if (isset($post['munge_comments_feed_links'])) :
+					update_option('feedwordpress_munge_comments_feed_links', $post['munge_comments_feed_links']);
 				endif;
 				if (isset($_REQUEST['feed_comment_status']) and ($_REQUEST['feed_comment_status'] == 'open')) :
 					update_option('feedwordpress_syndicated_comment_status', 'open');
@@ -125,8 +126,6 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 	 * @uses FeedWordPress::syndicated_status()
 	 * @uses SyndicatedLink::syndicated_status()
 	 * @uses SyndicatedPost::use_api()
-	 * @uses fwp_option_box_opener()
-	 * @uses fwp_option_box_closer()
 	 */ 
 	/*static*/ function publication_box ($page, $box = NULL) {
 		global $fwp_path;
@@ -204,8 +203,6 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 	 *	a page for one feed's settings or for global defaults
 	 * @param array $box
 	 *
-	 * @uses fwp_option_box_opener()
-	 * @uses fwp_option_box_closer()
 	 */ 
 	function formatting_box ($page, $box = NULL) {
 		global $fwp_path;
@@ -271,21 +268,36 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 	 *	a page for one feed's settings or for global defaults
 	 * @param array $box
 	 *
-	 * @uses fwp_option_box_opener()
-	 * @uses fwp_option_box_closer()
 	 */
 	/*static*/ function links_box ($page, $box = NULL) {
-		$munge_permalink = get_option('feedwordpress_munge_permalink');
-		$use_aggregator_source_data = get_option('feedwordpress_use_aggregator_source_data');
+		$setting = array(
+			'munge_permalink' => array(
+				'yes' => 'the copy on the original website',
+				'no' => 'the local copy on this website',
+			),
+		);
+
+		$global_munge_permalink = get_option('feedwordpress_munge_permalink');
+		if ($page->for_feed_settings()) :
+			$munge_permalink = $page->link->setting('munge permalink', NULL);
+		else :
+			$munge_permalink = $global_munge_permalink;
+			$use_aggregator_source_data = get_option('feedwordpress_use_aggregator_source_data');
+		endif;
+
 		?>
 		<table class="form-table" cellspacing="2" cellpadding="5">
-		<tr><th  scope="row">Permalinks:</th>
-		<td><select name="munge_permalink" size="1">
-		<option value="yes"<?php echo ($munge_permalink=='yes')?' selected="selected"':''; ?>>point to the copy on the original website</option>
-		<option value="no"<?php echo ($munge_permalink=='no')?' selected="selected"':''; ?>>point to the local copy on this website</option>
-		</select></td>
+		<tr><th  scope="row">Permalinks point to:</th>
+		<td><ul class="options">	
+		<?php if ($page->for_feed_settings()) : ?>
+		<li><label><input type="radio" name="munge_permalink" value="default"<?php echo ($munge_permalink!='yes' and $munge_permalink != 'no')?' checked="checked"':''; ?>/> use site-wide setting (currently <?php print $setting['munge_permalink'][$global_munge_permalink]; ?>)</label></li>
+		<?php endif; ?>
+		<li><label><input type="radio" name="munge_permalink" value="yes"<?php echo ($munge_permalink=='yes')?' checked="checked"':''; ?>><?php print $setting['munge_permalink']['yes']; ?></label></li>
+		<li><label><input type="radio" name="munge_permalink" value="no"<?php echo ($munge_permalink=='no')?' checked="checked"':''; ?>><?php print $setting['munge_permalink']['no']; ?></label></li>
+		</ul></td>
 		</tr>
 		
+		<?php if (!$page->for_feed_settings()) : ?>
 		<tr><th scope="row">Posts from aggregator feeds:</th>
 		<td><ul class="options">
 		<li><label><input type="radio" name="use_aggregator_source_data" value="no"<?php echo ($use_aggregator_source_data!="yes")?' checked="checked"':''; ?>> Give the aggregator itself as the source of posts from an aggregator feed.</label></li>
@@ -295,6 +307,7 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 		This setting controls what FeedWordPress will give as the source of posts from
 		such an aggregator feed.</p>
 		</td></tr>
+		<?php endif; ?>
 		</table>
 
 		<?php
@@ -308,10 +321,10 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 	 *	a page for one feed's settings or for global defaults
 	 * @param array $box
 	 *
-	 * @uses fwp_option_box_opener()
-	 * @uses fwp_option_box_closer()
 	 */
 	/*static*/ function comments_and_pings_box ($page, $box = NULL) {
+		global $fwp_path;
+
 		$setting = array();
 		$selector = array();
 
@@ -320,6 +333,24 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 			'ping' => array('label' => __('Pings'), 'accept' => 'Accept pings'),
 		);
 		$onThesePosts = 'on '.$page->these_posts_phrase();
+
+		$selected = array(
+			'munge_comments_feed_links' => array('yes' => '', 'no' => '')
+		);
+		
+		$globalMungeCommentsFeedLinks = get_option('feedwordpress_munge_comments_feed_links', 'yes');
+		if ($page->for_feed_settings()) :
+			$selected['munge_comments_feed_links']['default'] = '';
+			
+			$sel =  $page->link->setting('munge comments feed links', NULL, 'default');
+		else :
+			$sel = $globalMungeCommentsFeedLinks;
+		endif;
+		$selected['munge_comments_feed_links'][$sel] = ' checked="checked"';
+		
+		if ($globalMungeCommentsFeedLinks != 'no') : $siteWide = __('comment feeds from the original website');
+		else : $siteWide = __('local comment feeds on this website');
+		endif;
 
 		foreach ($whatsits as $what => $how) :
 			$whatsits[$what]['default'] = FeedWordPress::syndicated_status($what, /*default=*/ 'closed');
@@ -368,10 +399,43 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 		  <?php endforeach; ?>
 		  </ul></td></tr>
 		<?php endforeach; ?>
+		  <tr><th scope="row"><?php _e('Comment feeds'); ?></th>
+		  <td><p>When WordPress feeds and templates link to comments
+		  feeds for <?php print $page->these_posts_phrase(); ?>, the
+		  URLs for the feeds should...</p>
+		  <ul class="options">
+		  <?php if ($page->for_feed_settings()) : ?>
+		  <li><label><input type="radio" name="munge_comments_feed_links" value="default"<?php print $selected['munge_comments_feed_links']['default']; ?> /> Use <a href="admin.php?page=<?php print $href; ?>">site-wide setting</a> (currently: <strong><?php _e($siteWide); ?></strong>)</label></li>
+		  <?php endif; ?>
+		  <li><label><input type="radio" name="munge_comments_feed_links" value="yes"<?php print $selected['munge_comments_feed_links']['yes']; ?> /> <?php _e('Point to comment feeds from the original website (when provided by the syndicated feed)'); ?></label></li>
+		  <li><label><input type="radio" name="munge_comments_feed_links" value="no"<?php print $selected['munge_comments_feed_links']['no']; ?> /> <?php _e('Point to local comment feeds on this website'); ?></label></li>
+		  </ul></td></tr>
 		</table>
 
 		<?php
 	} /* FeedWordPressPostsPage::comments_and_pings_box() */
+	
+	/*static*/ function custom_post_settings ($page = NULL) {
+		if (is_null($page)) :
+			$page = $this;
+		endif;
+
+		if ($page->for_feed_settings()) :
+			$custom_settings = $page->link->settings["postmeta"];
+		else :
+			$custom_settings = get_option('feedwordpress_custom_settings');
+		endif;
+
+		if ($custom_settings and !is_array($custom_settings)) :
+			$custom_settings = unserialize($custom_settings);
+		endif;
+		
+		if (!is_array($custom_settings)) :
+			$custom_settings = array();
+		endif;
+
+		return $custom_settings;
+	} /* FeedWordPressPostsPage::custom_post_settings() */
 	
 	/**
 	 * Output "Custom Post Settings" settings box
@@ -380,33 +444,12 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 	 * @param object $page of class FeedWordPressPostsPage tells us whether this is
 	 *	a page for one feed's settings or for global defaults
 	 * @param array $box
-	 *
-	 * @uses fwp_option_box_opener()
-	 * @uses fwp_option_box_closer()
 	 */
 	/*static*/ function custom_post_settings_box ($page, $box = NULL) {
-		if ($page->for_feed_settings()) :
-			$custom_settings = $page->link->settings["postmeta"];
-			if ($custom_settings and !is_array($custom_settings)) :
-				$custom_settings = unserialize($custom_settings);
-			endif;
-			
-			if (!is_array($custom_settings)) :
-				$custom_settings = array();
-			endif;
-		else :
-			$custom_settings = get_option('feedwordpress_custom_settings');
-			if ($custom_settings and !is_array($custom_settings)) :
-				$custom_settings = unserialize($custom_settings);
-			endif;
-	
-			if (!is_array($custom_settings)) :
-				$custom_settings = array();
-			endif;
-		endif;
-
+		$custom_settings = FeedWordPressPostsPage::custom_post_settings($page);
 		?>
 		<div id="postcustomstuff">
+		<p>Custom fields can be used to add extra metadata to a post that you can <a href="http://codex.wordpress.org/Using_Custom_Fields">use in your theme</a>.</p>
 		<table id="meta-list" cellpadding="3">
 		<tr>
 		<th>Key</th>
@@ -419,9 +462,9 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 		foreach ($custom_settings as $key => $value) :
 		?>
 		  <tr style="vertical-align:top">
-		    <th width="30%" scope="row"><input type="hidden" name="notes[<?php echo $i; ?>][key0]" value="<?php echo wp_specialchars($key, 'both'); ?>" />
-		    <input id="notes-<?php echo $i; ?>-key" name="notes[<?php echo $i; ?>][key1]" value="<?php echo wp_specialchars($key, 'both'); ?>" /></th>
-		    <td width="60%"><textarea rows="2" cols="40" id="notes-<?php echo $i; ?>-value" name="notes[<?php echo $i; ?>][value]"><?php echo wp_specialchars($value, 'both'); ?></textarea></td>
+		    <th width="30%" scope="row"><input type="hidden" name="notes[<?php echo $i; ?>][key0]" value="<?php echo esc_html($key); ?>" />
+		    <input id="notes-<?php echo $i; ?>-key" name="notes[<?php echo $i; ?>][key1]" value="<?php echo esc_html($key); ?>" /></th>
+		    <td width="60%"><textarea rows="2" cols="40" id="notes-<?php echo $i; ?>-value" name="notes[<?php echo $i; ?>][value]"><?php echo esc_html($value); ?></textarea></td>
 		    <td width="10%"><select name="notes[<?php echo $i; ?>][action]">
 		    <option value="update">save changes</option>
 		    <option value="delete">delete this setting</option>
@@ -433,9 +476,15 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 		endforeach;
 		?>
 
-		  <tr>
+		  <tr style="vertical-align: top">
 		    <th scope="row"><input type="text" size="10" name="notes[<?php echo $i; ?>][key1]" value="" /></th>
-		    <td><textarea name="notes[<?php echo $i; ?>][value]" rows="2" cols="40"></textarea></td>
+		    <td><textarea name="notes[<?php echo $i; ?>][value]" rows="2" cols="40"></textarea>
+		      <p>Enter a text value, or a path to a data element from the syndicated item.<br/>
+		      For data elements, you can use an XPath-like syntax wrapped in <code>$( ... )</code>.<br/>
+		      <code>hello</code> = the text value <code><span style="background-color: #30FFA0;">hello</span></code><br/>
+		      <code>$(author/email)</code> = the contents of <code>&lt;author&gt;&lt;email&gt;<span style="background-color: #30FFA0">...</span>&lt;/email&gt;&lt;/author&gt;</code><br/>
+		      <code>$(media:content/@url)</code> = the contents of <code>&lt;media:content url="<span style="background-color: #30FFA0">...</span>"&gt;...&lt;/media:content&gt;</code></p>
+		    </td>
 		    <td><em>add new setting...</em><input type="hidden" name="notes[<?php echo $i; ?>][action]" value="update" /></td>
 		  </tr>
 		</table>
@@ -458,7 +507,7 @@ function fwp_posts_page () {
 	FeedWordPressCompatibility::validate_http_request(/*action=*/ 'feedwordpress_posts_settings', /*capability=*/ 'manage_links');
 
 	$link = FeedWordPressAdminPage::submitted_link();
-	$link_id = $link->id;
+
 	$postsPage = new FeedWordPressPostsPage($link);
 
 	$mesg = null;
@@ -476,7 +525,7 @@ function fwp_posts_page () {
 	if ($postsPage->updated) : ?>
 <div class="updated"><p>Syndicated posts settings updated.</p></div>
 <?php elseif (!is_null($mesg)) : ?>
-<div class="updated"><p><?php print wp_specialchars($mesg, 1); ?></p></div>
+<div class="updated"><p><?php print esc_html($mesg); ?></p></div>
 <?php endif; ?>
 
 <?php
@@ -497,11 +546,6 @@ $boxes_by_methods = array(
 	'comments_and_pings_box' => __('Comments & Pings'),
 	'custom_post_settings_box' => __('Custom Post Settings (to apply to each syndicated post)'),
 );
-
-// Feed-level settings don't exist for these.
-if ($postsPage->for_feed_settings()) :
-	unset($boxes_by_methods['links_box']);
-endif;
 
 	foreach ($boxes_by_methods as $method => $title) :
 		fwp_add_meta_box(

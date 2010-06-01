@@ -433,3 +433,41 @@ function fc_get_post($id='GETPOST') {
   get_post_custom($post->ID);
   setup_postdata($post);
 }
+
+/**********
+* Customize the feeds
+*/
+function qmo_feed_content( $content ) {
+  global $post, $id;
+  $blog_key = substr( md5( get_bloginfo('url') ), 0, 16 );
+  if ( ! is_feed() ) return $content;
+
+// Fetch the formats
+  $date_format = get_option("date_format");
+  $time_format = get_option("time_format");
+  $datetime = $date_format.', '.$time_format;
+
+// Fetch the custom fields ***
+  $is_event = get_post_meta($post->ID, '_isEvent', true);
+  $allday = get_post_meta( $post->ID, '_EventAllDay', true);
+  $event_date = date ( $date_format, strtotime( get_post_meta( $post->ID, '_EventStartDate', true ) ) );
+  $event_start = date ( $datetime, strtotime( get_post_meta( $post->ID, '_EventStartDate', true ) ) );
+  $event_end = date( $datetime, strtotime( get_post_meta($post->ID, '_EventEndDate', true) ) );
+
+// Display the content ***
+  // If this is an event post, add the date
+  if ( $is_event ) {
+    // If it's an all-day event, only show the start date and no start time
+    if ( $allday ) {
+      $content = $content . '<p><strong>When:</strong> '.$event_date.'.</p>';    
+    }
+    else {
+      $content = $content . '<p><strong>When:</strong><br /> Starts: '.$event_start.'<br /> Ends: '.$event_end.'</p>';
+    }
+  }
+	else {
+    $content = $content;
+	}		    
+  return $content;
+} // End function
+add_filter('the_content', 'qmo_feed_content');

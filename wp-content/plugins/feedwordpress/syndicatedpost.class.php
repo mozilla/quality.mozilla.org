@@ -1,38 +1,97 @@
 <?php
+require_once(dirname(__FILE__).'/feedtime.class.php');
+
+/**
+ * class SyndicatedPost: FeedWordPress uses to manage the conversion of
+ * incoming items from the feed parser into posts for the WordPress
+ * database. It contains several internal management methods primarily
+ * of interest to someone working on the FeedWordPress source, as well
+ * as some utility methods for extracting useful data from many
+ * different feed formats, which may be useful to FeedWordPress users
+ * who make use of feed data in PHP add-ons and filters.
+ *
+ * @version 2010.0531
+ */
 class SyndicatedPost {
-	var $item = null;
-	
+	var $item = null;	// MagpieRSS representation
+	var $entry = null;	// SimplePie_Item representation
+
 	var $link = null;
 	var $feed = null;
 	var $feedmeta = null;
 	
+	var $xmlns = array ();
+
 	var $post = array ();
 
 	var $_freshness = null;
 	var $_wp_id = null;
 
-	function SyndicatedPost ($item, $link) {
+	/**
+	 * SyndicatedPost constructor: Given a feed item and the source from
+	 * which it was taken, prepare a post that can be inserted into the
+	 * WordPress database on request, or updated in place if it has already
+	 * been syndicated.
+	 *
+	 * @param array $item The item syndicated from the feed.
+	 * @param SyndicatedLink $source The feed it was syndicated from.
+	 */
+	function SyndicatedPost ($item, $source) {
 		global $wpdb;
 
-		$this->link = $link;
-		$feedmeta = $link->settings;
-		$feed = $link->magpie;
+		if (is_array($item)
+		and isset($item['simplepie'])
+		and isset($item['magpie'])) :
+			$this->entry = $item['simplepie'];
+			$this->item = $item['magpie'];
+			$item = $item['magpie'];
+		else :
+			$this->item = $item;
+		endif;
 
-		# This is ugly as all hell. I'd like to use apply_filters()'s
-		# alleged support for a variable argument count, but this seems
-		# to have been broken in WordPress 1.5. It'll be fixed somehow
-		# in WP 1.5.1, but I'm aiming at WP 1.5 compatibility across
-		# the board here.
+		FeedWordPress::diagnostic('feed_items', 'Considering item ['.$this->guid().'] "'.$this->entry->get_title().'"');
+
+		$this->link = $source;
+		$this->feed = $source->magpie;
+		$this->feedmeta = $source->settings;
+
+		# Dealing with namespaces can get so fucking fucked.
+		$this->xmlns['forward'] = $source->magpie->_XMLNS_FAMILIAR;
+		$this->xmlns['reverse'] = array();
+		foreach ($this->xmlns['forward'] as $url => $ns) :
+			if (!isset($this->xmlns['reverse'][$ns])) :
+				$this->xmlns['reverse'][$ns] = array();
+			endif;
+			$this->xmlns['reverse'][$ns][] = $url; 
+		endforeach;
+		
+		// Fucking SimplePie.
+		$this->xmlns['reverse']['rss'][] = '';
+
+		# These globals were originally an ugly kludge around a bug in
+		# apply_filters from WordPress 1.5. The bug was fixed in 1.5.1,
+		# and I sure hope at this point that nobody writing filters for
+		# FeedWordPress is still relying on them.
 		#
-		# Cf.: <http://mosquito.wordpress.org/view.php?id=901>
+		# Anyway, I hereby declare them DEPRECATED as of 8 February
+		# 2010. I'll probably remove the globals within 1-2 releases in
+		# the interests of code hygiene and memory usage. If you
+		# currently use them in your filters, I advise you switch off to
+		# accessing the public members SyndicatedPost::feed and
+		# SyndicatedPost::feedmeta.
+
 		global $fwp_channel, $fwp_feedmeta;
-		$fwp_channel = $feed; $fwp_feedmeta = $feedmeta;
+		$fwp_channel = $this->feed; $fwp_feedmeta = $this->feedmeta;
 
-		$this->feed = $feed;
-		$this->feedmeta = $feedmeta;
-
-		$this->item = $item;
+		// Trigger global syndicated_item filter.
 		$this->item = apply_filters('syndicated_item', $this->item, $this);
+		
+		// Allow for feed-specific syndicated_item filters.
+		$this->item = apply_filters(
+			"syndicated_item_".$source->uri(),
+			$this->item,
+			$this
+		);
 
 		# Filters can halt further processing by returning NULL
 		if (is_null($this->item)) :
@@ -43,59 +102,39 @@ class SyndicatedPost {
 			# of insertion, not here, to avoid double-escaping and
 			# to avoid screwing with syndicated_post filters
 
-			$this->post['post_title'] = apply_filters('syndicated_item_title', $this->item['title'], $this);
+			$this->post['post_title'] = apply_filters(
+				'syndicated_item_title',
+				$this->entry->get_title(), $this
+			);
 
-			// This just gives us an alphanumeric representation of
-			// the author. We will look up (or create) the numeric
-			// ID for the author in SyndicatedPost::add()
-			$this->post['named']['author'] = apply_filters('syndicated_item_author', $this->author(), $this);
+			$this->post['named']['author'] = apply_filters(
+				'syndicated_item_author',
+				$this->author(), $this
+			);
+			// This just gives us an alphanumeric name for the author.
+			// We look up (or create) the numeric ID for the author
+			// in SyndicatedPost::add().
 
-			# Identify content and sanitize it.
-			# ---------------------------------
-			if (isset($this->item['atom_content'])) :
-				$content = $this->item['atom_content'];
-			elseif (isset($this->item['xhtml']['body'])) :
-				$content = $this->item['xhtml']['body'];
-			elseif (isset($this->item['xhtml']['div'])) :
-				$content = $this->item['xhtml']['div'];
-			elseif (isset($this->item['content']['encoded']) and $this->item['content']['encoded']):
-				$content = $this->item['content']['encoded'];
-			else:
-				$content = $this->item['description'];
-			endif;
-			$this->post['post_content'] = apply_filters('syndicated_item_content', $content, $this);
-
-			# Identify and sanitize excerpt
-			$excerpt = NULL;
-			if ( isset($this->item['description']) and $this->item['description'] ) :
-				$excerpt = $this->item['description'];
-			elseif ( isset($content) and $content ) :
-				$excerpt = strip_tags($content);
-				if (strlen($excerpt) > 255) :
-					$excerpt = substr($excerpt,0,252).'...';
-				endif;
-			endif;
-			$excerpt = apply_filters('syndicated_item_excerpt', $excerpt, $this); 
-
+			$this->post['post_content'] = apply_filters(
+				'syndicated_item_content',
+				$this->content(), $this
+			);
+			
+			$excerpt = apply_filters('syndicated_item_excerpt', $this->excerpt(), $this);
 			if (!is_null($excerpt)):
 				$this->post['post_excerpt'] = $excerpt;
 			endif;
 			
-			// This is unnecessary if we use wp_insert_post
-			if (!$this->use_api('wp_insert_post')) :
-				$this->post['post_name'] = sanitize_title($this->post['post_title']);
-			endif;
-
 			$this->post['epoch']['issued'] = apply_filters('syndicated_item_published', $this->published(), $this);
 			$this->post['epoch']['created'] = apply_filters('syndicated_item_created', $this->created(), $this);
 			$this->post['epoch']['modified'] = apply_filters('syndicated_item_updated', $this->updated(), $this);
 
 			// Dealing with timestamps in WordPress is so fucking fucked.
 			$offset = (int) get_option('gmt_offset') * 60 * 60;
-			$this->post['post_date'] = gmdate('Y-m-d H:i:s', $this->published() + $offset);
-			$this->post['post_modified'] = gmdate('Y-m-d H:i:s', $this->updated() + $offset);
-			$this->post['post_date_gmt'] = gmdate('Y-m-d H:i:s', $this->published());
-			$this->post['post_modified_gmt'] = gmdate('Y-m-d H:i:s', $this->updated());
+			$this->post['post_date'] = gmdate('Y-m-d H:i:s', $this->published(/*fallback=*/ true, /*default=*/ -1) + $offset);
+			$this->post['post_modified'] = gmdate('Y-m-d H:i:s', $this->updated(/*fallback=*/ true, /*default=*/ -1) + $offset);
+			$this->post['post_date_gmt'] = gmdate('Y-m-d H:i:s', $this->published(/*fallback=*/ true, /*default=*/ -1));
+			$this->post['post_modified_gmt'] = gmdate('Y-m-d H:i:s', $this->updated(/*fallback=*/ true, /*default=*/ -1));
 
 			// Use feed-level preferences or the global default.
 			$this->post['post_status'] = $this->link->syndicated_status('post', 'publish');
@@ -121,18 +160,47 @@ class SyndicatedPost {
 			if (!is_array($custom_settings)) :
 				$custom_settings = array();
 			endif;
-			$this->post['meta'] = array_merge($default_custom_settings, $custom_settings);
+			
+			$postMetaIn = array_merge($default_custom_settings, $custom_settings);
+			$postMetaOut = array();
 
+			// Big ugly fuckin loop to do any element substitutions
+			// that we may need.
+			foreach ($postMetaIn as $key => $values) :
+				if (is_string($values)) : $values = array($values); endif;
+				
+				$postMetaOut[$key] = array();
+				foreach ($values as $value) :
+					if (preg_match('/\$\( ([^)]+) \)/x', $value, $ref)) :
+						$elements = $this->query($ref[1]);
+						foreach ($elements as $element) :
+							$postMetaOut[$key][] = str_replace(
+								$ref[0],
+								$element,
+								$value
+							);
+						endforeach;
+					else :
+						$postMetaOut[$key][] = $value;	
+					endif;
+				endforeach;
+			endforeach;
+
+			foreach ($postMetaOut as $key => $values) :
+				$this->post['meta'][$key] = array();
+				foreach ($values as $value) :
+					$this->post['meta'][$key][] = apply_filters("syndicated_post_meta_{$key}", $value, $this);
+				endforeach;
+			endforeach;
+			
 			// RSS 2.0 / Atom 1.0 enclosure support
-			if ( isset($this->item['enclosure#']) ) :
-				for ($i = 1; $i <= $this->item['enclosure#']; $i++) :
-					$eid = (($i > 1) ? "#{$id}" : "");
-					$this->post['meta']['enclosure'][] =
-						apply_filters('syndicated_item_enclosure_url', $this->item["enclosure{$eid}@url"], $this)."\n".
-						apply_filters('syndicated_item_enclosure_length', $this->item["enclosure{$eid}@length"], $this)."\n".
-						apply_filters('syndicated_item_enclosure_type', $this->item["enclosure{$eid}@type"], $this);
-				endfor;
-			endif;
+			$enclosures = $this->entry->get_enclosures();
+			if (is_array($enclosures)) : foreach ($enclosures as $enclosure) :
+				$this->post['meta']['enclosure'][] =
+					apply_filters('syndicated_item_enclosure_url', $enclosure->get_link(), $this)."\n".
+					apply_filters('syndicated_item_enclosure_length', $enclosure->get_length(), $this)."\n".
+					apply_filters('syndicated_item_enclosure_type', $enclosure->get_type(), $this);
+			endforeach; endif;
 
 			// In case you want to point back to the blog this was syndicated from
 			if (isset($this->feed->channel['title'])) :
@@ -157,27 +225,16 @@ class SyndicatedPost {
 			endif;
 
 			// Store information on human-readable and machine-readable comment URIs
-			if (isset($this->item['comments'])) :
-				$this->post['meta']['rss:comments'] = apply_filters('syndicated_item_comments', $this->item['comments']);
-			endif;
 			
-			// RSS 2.0 comment feeds extension
-			if (isset($this->item['wfw']['commentrss'])) :
-				$this->post['meta']['wfw:commentRSS'] = apply_filters('syndicated_item_commentrss', $this->item['wfw']['commentrss']);
-			endif;
+			// Human-readable comment URI
+			$commentLink = apply_filters('syndicated_item_comments', $this->comment_link(), $this);
+			if (!is_null($commentLink)) : $this->post['meta']['rss:comments'] = $commentLink; endif;
 
-			// Atom 1.0 comment feeds link-rel
-			if (isset($this->item['link_replies'])) :
-				// There may be multiple <link rel="replies"> elements; feeds have a feed MIME type
-				$N = isset($this->item['link_replies#']) ? $this->item['link_replies#'] : 1;
-				for ($i = 1; $i <= $N; $i++) :
-					$currentElement = 'link_replies'.(($i > 1) ? '#'.$i : '');
-					if (isset($this->item[$currentElement.'@type'])
-					and preg_match("\007application/(atom|rss|rdf)\+xml\007i", $this->item[$currentElement.'@type'])) :
-						$this->post['meta']['wfw:commentRSS'] = apply_filters('syndicated_item_commentrss', $this->item[$currentElement]);
-					endif;
-				endfor;
-			endif;
+			// Machine-readable content feed URI
+			$commentFeed = apply_filters('syndicated_item_commentrss', $this->comment_feed(), $this);
+			if (!is_null($commentFeed)) :	$this->post['meta']['wfw:commentRSS'] = $commentFeed; endif;
+			// Yeah, yeah, now I know that it's supposed to be
+			// wfw:commentRss. Oh well. Path dependence, sucka.
 
 			// Store information to identify the feed that this came from
 			if (isset($this->feedmeta['link/uri'])) :
@@ -192,17 +249,7 @@ class SyndicatedPost {
 			endif;
 
 			// In case you want to know the external permalink...
-			if (isset($this->item['link'])) :
-				$permalink = $this->item['link'];
-
-			// No <link> element. See if this feed has <guid isPermalink="true"> ....
-			elseif (isset($this->item['guid'])) :
-				if (isset($this->item['guid@ispermalink']) and strtolower(trim($this->item['guid@ispermalink'])) != 'false') :
-					$permalink = $this->item['guid'];
-				endif;
-			endif;
-
-			$this->post['meta']['syndication_permalink'] = apply_filters('syndicated_item_link', $permalink);
+			$this->post['meta']['syndication_permalink'] = apply_filters('syndicated_item_link', $this->permalink());
 
 			// Store a hash of the post content for checking whether something needs to be updated
 			$this->post['meta']['syndication_item_hash'] = $this->update_hash();
@@ -253,12 +300,678 @@ class SyndicatedPost {
 			endif;
 			$this->post['tags_input'] = apply_filters('syndicated_item_tags', $this->post['tags_input'], $this);
 		endif;
-	} // SyndicatedPost::SyndicatedPost()
+	} /* SyndicatedPost::SyndicatedPost() */
 
-	function filtered () {
-		return is_null($this->post);
+	#####################################
+	#### EXTRACT DATA FROM FEED ITEM ####
+	#####################################
+	
+	/**
+	 * SyndicatedPost::query uses an XPath-like syntax to query arbitrary
+	 * elements within the syndicated item.
+	 *
+	 * @param string $path
+	 * @returns array of string values representing contents of matching
+	 * elements or attributes
+	 */
+	 function query ($path) {
+	 	$urlHash = array();
+
+	 	// Allow {url} notation for namespaces. URLs will contain : and /, so...
+	 	preg_match_all('/{([^}]+)}/', $path, $match, PREG_SET_ORDER);
+	 	foreach ($match as $ref) :
+	 	 	$urlHash[md5($ref[1])] = $ref[1];
+		endforeach;
+	
+		foreach ($urlHash as $hash => $url) :
+			$path = str_replace('{'.$url.'}', '{#'.$hash.'}', $path); 
+		endforeach;
+
+		$path = explode('/', $path);
+		foreach ($path as $index => $node) :
+			if (preg_match('/{#([^}]+)}/', $node, $ref)) :
+				if (isset($urlHash[$ref[1]])) :
+					$path[$index] = str_replace(
+						'{#'.$ref[1].'}',
+						'{'.$urlHash[$ref[1]].'}',
+						$node
+					);
+				endif;
+			endif;
+		endforeach;
+
+		// Start out with a get_item_tags query.
+		$node = '';
+		while (strlen($node)==0 and !is_null($node)) :
+			$node = array_shift($path);
+		endwhile;
+		
+		switch ($node) :
+		case 'feed' :
+		case 'channel' :
+			$method = "get_${node}_tags";
+			$node = array_shift($path);
+			break;
+		case 'item' :
+			$node = array_shift($path);
+		default :
+			$method = NULL;
+		endswitch;
+
+		$data = array();
+		if (!is_null($node)) :
+			list($namespaces, $element) = $this->xpath_extended_name($node);
+			
+			$matches = array();
+			foreach ($namespaces as $ns) :
+				if (!is_null($method)) :	
+					$el = $this->link->simplepie->{$method}($ns, $element);
+				else :
+					$el = $this->entry->get_item_tags($ns, $element);
+				endif;
+
+				if (!is_null($el)) :
+					$matches = array_merge($matches, $el);
+				endif;
+			endforeach;
+			$data = $matches;
+		
+			$node = array_shift($path);
+		endif;
+
+		while (!is_null($node)) :
+			if (strlen($node) > 0) :
+				$matches = array();
+		
+				list($ns, $element) = $this->xpath_extended_name($node);
+		
+				if (preg_match('/^@(.*)$/', $element, $ref)) :
+					$element = $ref[1];
+					$axis = 'attribs';
+				else :
+					$axis = 'child';
+				endif;
+
+				foreach ($data as $datum) :
+					foreach ($namespaces as $ns) :
+						if (!is_string($datum)
+						and isset($datum[$axis][$ns][$element])) :
+							if (is_string($datum[$axis][$ns][$element])) :
+								$matches[] = $datum[$axis][$ns][$element];
+							else :
+								$matches = array_merge($matches, $datum[$axis][$ns][$element]);
+							endif;
+						endif;
+					endforeach;
+				endforeach;
+		
+				$data = $matches;
+			endif;
+			$node = array_shift($path);
+		endwhile;
+	
+		$matches = array();
+		foreach ($data as $datum) :
+			if (is_string($datum)) :
+				$matches[] = $datum;
+			elseif (isset($datum['data'])) :
+				$matches[] = $datum['data'];
+			endif;
+		endforeach;
+		return $matches;
+	} /* SyndicatedPost::query() */
+
+	function xpath_default_namespace () {
+		// Get the default namespace.
+		$type = $this->link->simplepie->get_type();
+		if ($type & SIMPLEPIE_TYPE_ATOM_10) :
+			$defaultNS = SIMPLEPIE_NAMESPACE_ATOM_10;
+		elseif ($type & SIMPLEPIE_TYPE_ATOM_03) :
+			$defaultNS = SIMPLEPIE_NAMESPACE_ATOM_03;
+		elseif ($type & SIMPLEPIE_TYPE_RSS_090) :
+			$defaultNS = SIMPLEPIE_NAMESPACE_RSS_090;
+		elseif ($type & SIMPLEPIE_TYPE_RSS_10) :
+			$defaultNS = SIMPLEPIE_NAMESPACE_RSS_10;
+		elseif ($type & SIMPLEPIE_TYPE_RSS_20) :
+			$defaultNS = SIMPLEPIE_NAMESPACE_RSS_20;
+		else :
+			$defaultNS = SIMPLEPIE_NAMESPACE_RSS_20;
+		endif;
+		return $defaultNS;	
+	} /* SyndicatedPost::xpath_default_namespace() */
+	
+	function xpath_extended_name ($node) {
+		$ns = NULL; $element = NULL;
+		
+		if (substr($node, 0, 1)=='@') :
+			$attr = '@'; $node = substr($node, 1);
+		else :
+			$attr = '';
+		endif;
+				
+		if (preg_match('/^{([^}]*)}(.*)$/', $node, $ref)) :
+			$ns = array($ref[1]); $element = $ref[2];
+		elseif (strpos($node, ':') !== FALSE) :
+			list($xmlns, $element) = explode(':', $node, 2);
+			if (isset($this->xmlns['reverse'][$xmlns])) :
+				$ns = $this->xmlns['reverse'][$xmlns];
+			else :
+				$ns = array($xmlns);
+			endif;
+			
+			// Fucking SimplePie. For attributes in default xmlns.
+			if ($xmlns==$this->xmlns['forward'][$defaultNS[0]]) :
+				$ns[] = '';
+			endif;
+		else :
+			// Often in SimplePie, the default namespace gets stored
+			// as an empty string rather than a URL.
+			$ns = array($this->xpath_default_namespace(), '');
+			$element = $node;
+		endif;
+		return array(array_unique($ns), $attr.$element);
+	} /* SyndicatedPost::xpath_extended_name () */
+
+	function content () {
+		$content = NULL;
+		if (isset($this->item['atom_content'])) :
+			$content = $this->item['atom_content'];
+		elseif (isset($this->item['xhtml']['body'])) :
+			$content = $this->item['xhtml']['body'];
+		elseif (isset($this->item['xhtml']['div'])) :
+			$content = $this->item['xhtml']['div'];
+		elseif (isset($this->item['content']['encoded']) and $this->item['content']['encoded']):
+			$content = $this->item['content']['encoded'];
+		else:
+			$content = $this->item['description'];
+		endif;
+		return $content;
+	} /* SyndicatedPost::content() */
+
+	function excerpt () {
+		# Identify and sanitize excerpt: atom:summary, or rss:description
+		$excerpt = $this->entry->get_description();
+			
+		# Many RSS feeds use rss:description, inadvisably, to
+		# carry the entire post (typically with escaped HTML).
+		# If that's what happened, we don't want the full
+		# content for the excerpt.
+		$content = $this->content();
+		if ( is_null($excerpt) or $excerpt == $content ) :
+			# If content is available, generate an excerpt.
+			if ( strlen(trim($content)) > 0 ) :
+				$excerpt = strip_tags($content);
+				if (strlen($excerpt) > 255) :
+					$excerpt = substr($excerpt,0,252).'...';
+				endif;
+			endif;
+		endif;
+		return $excerpt;
+	} /* SyndicatedPost::excerpt() */
+
+	function permalink () {
+		// Handles explicit <link> elements and also RSS 2.0 cases with
+		// <guid isPermaLink="true">, etc. Hooray!
+		$permalink = $this->entry->get_link();
+		return $permalink;
 	}
 
+	function created () {
+		$date = '';
+		if (isset($this->item['dc']['created'])) :
+			$date = $this->item['dc']['created'];
+		elseif (isset($this->item['dcterms']['created'])) :
+			$date = $this->item['dcterms']['created'];
+		elseif (isset($this->item['created'])): // Atom 0.3
+			$date = $this->item['created'];
+		endif;
+
+		$epoch = new FeedTime($date);
+		return $epoch->timestamp();
+	} /* SyndicatedPost::created() */
+
+	function published ($fallback = true, $default = NULL) {
+		$date = '';
+
+		# RSS is a fucking mess. Figure out whether we have a date in
+		# <dc:date>, <issued>, <pubDate>, etc., and get it into Unix
+		# epoch format for reformatting. If we can't find anything,
+		# we'll use the last-updated time.
+		if (isset($this->item['dc']['date'])):				// Dublin Core
+			$date = $this->item['dc']['date'];
+		elseif (isset($this->item['dcterms']['issued'])) :		// Dublin Core extensions
+			$date = $this->item['dcterms']['issued'];
+		elseif (isset($this->item['published'])) : 			// Atom 1.0
+			$date = $this->item['published'];
+		elseif (isset($this->item['issued'])): 				// Atom 0.3
+			$date = $this->item['issued'];
+		elseif (isset($this->item['pubdate'])):				// RSS 2.0
+			$date = $this->item['pubdate'];
+		endif;
+		
+		if (strlen($date) > 0) :
+			$time = new FeedTime($date);
+			$epoch = $time->timestamp();
+		elseif ($fallback) :						// Fall back to <updated> / <modified> if present
+			$epoch = $this->updated(/*fallback=*/ false, /*default=*/ $default);
+		endif;
+		
+		# If everything failed, then default to the current time.
+		if (is_null($epoch)) :
+			if (-1 == $default) :
+				$epoch = time();
+			else :
+				$epoch = $default;
+			endif;
+		endif;
+		
+		return $epoch;
+	} /* SyndicatedPost::published() */
+
+	function updated ($fallback = true, $default = -1) {
+		$date = '';
+
+		# As far as I know, only dcterms and Atom have reliable ways to
+		# specify when something was *modified* last. If neither is
+		# available, then we'll try to get the time of publication.
+		if (isset($this->item['dc']['modified'])) : 			// Not really correct
+			$date = $this->item['dc']['modified'];
+		elseif (isset($this->item['dcterms']['modified'])) :		// Dublin Core extensions
+			$date = $this->item['dcterms']['modified'];
+		elseif (isset($this->item['modified'])):			// Atom 0.3
+			$date = $this->item['modified'];
+		elseif (isset($this->item['updated'])):				// Atom 1.0
+			$date = $this->item['updated'];
+		endif;
+		
+		if (strlen($date) > 0) :
+			$time = new FeedTime($date);
+			$epoch = $time->timestamp();
+		elseif ($fallback) :						// Fall back to issued / dc:date
+			$epoch = $this->published(/*fallback=*/ false, /*default=*/ $default);
+		endif;
+		
+		# If everything failed, then default to the current time.
+		if (is_null($epoch)) :
+			if (-1 == $default) :
+				$epoch = time();
+			else :
+				$epoch = $default;
+			endif;
+		endif;
+
+		return $epoch;
+	} /* SyndicatedPost::updated() */
+
+	function update_hash () {
+		return md5(serialize($this->item));
+	} /* SyndicatedPost::update_hash() */
+
+	function guid () {
+		$guid = null;
+		if (isset($this->item['id'])): 			// Atom 0.3 / 1.0
+			$guid = $this->item['id'];
+		elseif (isset($this->item['atom']['id'])) :	// Namespaced Atom
+			$guid = $this->item['atom']['id'];
+		elseif (isset($this->item['guid'])) :		// RSS 2.0
+			$guid = $this->item['guid'];
+		elseif (isset($this->item['dc']['identifier'])) :// yeah, right
+			$guid = $this->item['dc']['identifier'];
+		else :
+			// The feed does not seem to have provided us with a
+			// unique identifier, so we'll have to cobble together
+			// a tag: URI that might work for us. The base of the
+			// URI will be the host name of the feed source ...
+			$bits = parse_url($this->feedmeta['link/uri']);
+			$guid = 'tag:'.$bits['host'];
+
+			// If we have a date of creation, then we can use that
+			// to uniquely identify the item. (On the other hand, if
+			// the feed producer was consicentious enough to
+			// generate dates of creation, she probably also was
+			// conscientious enough to generate unique identifiers.)
+			if (!is_null($this->created())) :
+				$guid .= '://post.'.date('YmdHis', $this->created());
+			
+			// Otherwise, use both the URI of the item, *and* the
+			// item's title. We have to use both because titles are
+			// often not unique, and sometimes links aren't unique
+			// either (e.g. Bitch (S)HITLIST, Mozilla Dot Org news,
+			// some podcasts). But it's rare to have *both* the same
+			// title *and* the same link for two different items. So
+			// this is about the best we can do.
+			else :
+				$guid .= '://'.md5($this->item['link'].'/'.$this->item['title']);
+			endif;
+		endif;
+		return $guid;
+	} /* SyndicatedPost::guid() */
+	
+	function author () {
+		$author = array ();
+		
+		if (isset($this->item['author_name'])):
+			$author['name'] = $this->item['author_name'];
+		elseif (isset($this->item['dc']['creator'])):
+			$author['name'] = $this->item['dc']['creator'];
+		elseif (isset($this->item['dc']['contributor'])):
+			$author['name'] = $this->item['dc']['contributor'];
+		elseif (isset($this->feed->channel['dc']['creator'])) :
+			$author['name'] = $this->feed->channel['dc']['creator'];
+		elseif (isset($this->feed->channel['dc']['contributor'])) :
+			$author['name'] = $this->feed->channel['dc']['contributor'];
+		elseif (isset($this->feed->channel['author_name'])) :
+			$author['name'] = $this->feed->channel['author_name'];
+		elseif ($this->feed->is_rss() and isset($this->item['author'])) :
+			// The author element in RSS is allegedly an
+			// e-mail address, but lots of people don't use
+			// it that way. So let's make of it what we can.
+			$author = parse_email_with_realname($this->item['author']);
+			
+			if (!isset($author['name'])) :
+				if (isset($author['email'])) :
+					$author['name'] = $author['email'];
+				else :
+					$author['name'] = $this->feed->channel['title'];
+				endif;
+			endif;
+		else :
+			$author['name'] = $this->feed->channel['title'];
+		endif;
+		
+		if (isset($this->item['author_email'])):
+			$author['email'] = $this->item['author_email'];
+		elseif (isset($this->feed->channel['author_email'])) :
+			$author['email'] = $this->feed->channel['author_email'];
+		endif;
+		
+		if (isset($this->item['author_url'])):
+			$author['uri'] = $this->item['author_url'];
+		elseif (isset($this->feed->channel['author_url'])) :
+			$author['uri'] = $this->item['author_url'];
+		else:
+			$author['uri'] = $this->feed->channel['link'];
+		endif;
+
+		return $author;
+	} /* SyndicatedPost::author() */
+
+	/**
+	 * SyndicatedPost::isTaggedAs: Test whether a feed item is
+	 * tagged / categorized with a given string. Case and leading and
+	 * trailing whitespace are ignored.
+	 *
+	 * @param string $tag Tag to check for
+	 *
+	 * @return bool Whether or not at least one of the categories / tags on 
+	 *	$this->item is set to $tag (modulo case and leading and trailing
+	 * 	whitespace)
+	 */
+	function isTaggedAs ($tag) {
+		$desiredTag = strtolower(trim($tag)); // Normalize case and whitespace
+
+		// Check to see if this is tagged with $tag
+		$currentCategory = 'category';
+		$currentCategoryNumber = 1;
+
+		// If we have the new MagpieRSS, the number of category elements
+		// on this item is stored under index "category#".
+		if (isset($this->item['category#'])) :
+			$numberOfCategories = (int) $this->item['category#'];
+		
+		// We REALLY shouldn't have the old and busted MagpieRSS, but in
+		// case we do, it doesn't support multiple categories, but there
+		// might still be a single value under the "category" index.
+		elseif (isset($this->item['category'])) :
+			$numberOfCategories = 1;
+
+		// No standard category or tag elements on this feed item.
+		else :
+			$numberOfCategories = 0;
+
+		endif;
+
+		$isSoTagged = false; // Innocent until proven guilty
+
+		// Loop through category elements; if there are multiple
+		// elements, they are indexed as category, category#2,
+		// category#3, ... category#N
+		while ($currentCategoryNumber <= $numberOfCategories) :
+			if ($desiredTag == strtolower(trim($this->item[$currentCategory]))) :
+				$isSoTagged = true; // Got it!
+				break;
+			endif;
+
+			$currentCategoryNumber += 1;
+			$currentCategory = 'category#'.$currentCategoryNumber;
+		endwhile;
+
+		return $isSoTagged;
+	} /* SyndicatedPost::isTaggedAs() */
+
+	/**
+	 * SyndicatedPost::enclosures: returns an array with any enclosures
+	 * that may be attached to this syndicated item.
+	 *
+	 * @param string $type If you only want enclosures that match a certain
+	 *	MIME type or group of MIME types, you can limit the enclosures
+	 *	that will be returned to only those with a MIME type which
+	 *	matches this regular expression.
+	 * @return array
+	 */
+	function enclosures ($type = '/.*/') {
+		$enclosures = array();
+
+		if (isset($this->item['enclosure#'])) :
+			// Loop through enclosure, enclosure#2, enclosure#3, ....
+			for ($i = 1; $i <= $this->item['enclosure#']; $i++) :
+				$eid = (($i > 1) ? "#{$id}" : "");
+
+				// Does it match the type we want?
+				if (preg_match($type, $this->item["enclosure{$eid}@type"])) :
+					$enclosures[] = array(
+						"url" => $this->item["enclosure{$eid}@url"],
+						"type" => $this->item["enclosure{$eid}@type"],
+						"length" => $this->item["enclosure{$eid}@length"],
+					);
+				endif;
+			endfor;
+		endif;
+		return $enclosures;		
+	} /* SyndicatedPost::enclosures() */
+
+	function comment_link () {
+		$url = null;
+		
+		// RSS 2.0 has a standard <comments> element:
+		// "<comments> is an optional sub-element of <item>. If present,
+		// it is the url of the comments page for the item."
+		// <http://cyber.law.harvard.edu/rss/rss.html#ltcommentsgtSubelementOfLtitemgt>
+		if (isset($this->item['comments'])) :
+			$url = $this->item['comments'];
+		endif;
+
+		// The convention in Atom feeds is to use a standard <link>
+		// element with @rel="replies" and @type="text/html".
+		// Unfortunately, SimplePie_Item::get_links() allows us to filter
+		// by the value of @rel, but not by the value of @type. *sigh*
+		
+		// Try Atom 1.0 first
+		$linkElements = $this->entry->get_item_tags(SIMPLEPIE_NAMESPACE_ATOM_10, 'link');
+		
+		// Fall back and try Atom 0.3
+		if (is_null($linkElements)) : $linkElements =  $this->entry->get_item_tags(SIMPLEPIE_NAMESPACE_ATOM_03, 'link'); endif;
+		
+		// Now loop through the elements, screening by @rel and @type
+		if (is_array($linkElements)) : foreach ($linkElements as $link) :
+			$rel = (isset($link['attribs']['']['rel']) ? $link['attribs']['']['rel'] : 'alternate');
+			$type = (isset($link['attribs']['']['type']) ? $link['attribs']['']['type'] : NULL);
+			$href = (isset($link['attribs']['']['href']) ? $link['attribs']['']['href'] : NULL);
+
+			if (strtolower($rel)=='replies' and $type=='text/html' and !is_null($href)) :
+				$url = $href;
+			endif;
+		endforeach; endif;
+
+		return $url;
+	}
+
+	function comment_feed () {
+		$feed = null;
+
+		// Well Formed Web comment feeds extension for RSS 2.0
+		// <http://www.sellsbrothers.com/spout/default.aspx?content=archive.htm#exposingRssComments>
+		//
+		// N.B.: Correct capitalization is wfw:commentRss, but
+		// wfw:commentRSS is common in the wild (partly due to a typo in
+		// the original spec). In any case, our item array is normalized
+		// to all lowercase anyways.
+		if (isset($this->item['wfw']['commentrss'])) :
+			$feed = $this->item['wfw']['commentrss'];
+		endif;
+
+		// In Atom 1.0, the convention is to use a standard link element
+		// with @rel="replies". Sometimes this is also used to pass a
+		// link to the human-readable comments page, so we also need to
+		// check link/@type for a feed MIME type.
+		//
+		// Which is why I'm not using the SimplePie_Item::get_links()
+		// method here, incidentally: it doesn't allow you to filter by
+		// @type. *sigh*
+		if (isset($this->item['link_replies'])) :
+			// There may be multiple <link rel="replies"> elements; feeds have a feed MIME type
+			$N = isset($this->item['link_replies#']) ? $this->item['link_replies#'] : 1;
+			for ($i = 1; $i <= $N; $i++) :
+				$currentElement = 'link_replies'.(($i > 1) ? '#'.$i : '');
+				if (isset($this->item[$currentElement.'@type'])
+				and preg_match("\007application/(atom|rss|rdf)\+xml\007i", $this->item[$currentElement.'@type'])) :
+					$feed = $this->item[$currentElement];
+				endif;
+			endfor;
+		endif;
+		return $feed;
+	} /* SyndicatedPost::comment_feed() */
+
+	##################################
+	#### BUILT-IN CONTENT FILTERS ####
+	##################################
+
+	var $uri_attrs = array (
+		array('a', 'href'),
+		array('applet', 'codebase'),
+		array('area', 'href'),
+		array('blockquote', 'cite'),
+		array('body', 'background'),
+		array('del', 'cite'),
+		array('form', 'action'),
+		array('frame', 'longdesc'),
+		array('frame', 'src'),
+		array('iframe', 'longdesc'),
+		array('iframe', 'src'),
+		array('head', 'profile'),
+		array('img', 'longdesc'),
+		array('img', 'src'),
+		array('img', 'usemap'),
+		array('input', 'src'),
+		array('input', 'usemap'),
+		array('ins', 'cite'),
+		array('link', 'href'),
+		array('object', 'classid'),
+		array('object', 'codebase'),
+		array('object', 'data'),
+		array('object', 'usemap'),
+		array('q', 'cite'),
+		array('script', 'src')
+	); /* var SyndicatedPost::$uri_attrs */
+
+	var $_base = null;
+
+	function resolve_single_relative_uri ($refs) {
+		$tag = FeedWordPressHTML::attributeMatch($refs);
+		$url = Relative_URI::resolve($tag['value'], $this->_base);
+		return $tag['prefix'] . $url . $tag['suffix'];
+	} /* function SyndicatedPost::resolve_single_relative_uri() */
+
+	function resolve_relative_uris ($content, $obj) {
+		$set = $obj->link->setting('resolve relative', 'resolve_relative', 'yes');
+		if ($set and $set != 'no') : 
+			// Fallback: if we don't have anything better, use the
+			// item link from the feed
+			$obj->_base = $obj->item['link']; // Reset the base for resolving relative URIs
+
+			// What we should do here, properly, is to use
+			// SimplePie_Item::get_base() -- but that method is
+			// currently broken. Or getting down and dirty in the
+			// SimplePie representation of the content tags and
+			// grabbing the xml_base member for the content element.
+			// Maybe someday...
+
+			foreach ($obj->uri_attrs as $pair) :
+				list($tag, $attr) = $pair;
+				$pattern = FeedWordPressHTML::attributeRegex($tag, $attr);
+				$content = preg_replace_callback (
+					$pattern,
+					array(&$obj, 'resolve_single_relative_uri'),
+					$content
+				);
+			endforeach;
+		endif;
+		
+		return $content;
+	} /* function SyndicatedPost::resolve_relative_uris () */
+
+	var $strip_attrs = array (
+		array('[a-z]+', 'target'),
+//		array('[a-z]+', 'style'),
+//		array('[a-z]+', 'on[a-z]+'),
+	);
+
+	function strip_attribute_from_tag ($refs) {
+		$tag = FeedWordPressHTML::attributeMatch($refs);
+		return $tag['before_attribute'].$tag['after_attribute'];
+	}
+
+	function sanitize_content ($content, $obj) {
+		# This kind of sucks. I intend to replace it with
+		# lib_filter sometime soon.
+		foreach ($obj->strip_attrs as $pair):
+			list($tag,$attr) = $pair;
+			$pattern = FeedWordPressHTML::attributeRegex($tag, $attr);
+
+			$content = preg_replace_callback (
+				$pattern,
+				array(&$obj, 'strip_attribute_from_tag'),
+				$content
+			);
+		endforeach;
+		return $content;
+	} /* SyndicatedPost::sanitize() */
+
+	#####################
+	#### POST STATUS ####
+	#####################
+
+	/**
+	 * SyndicatedPost::filtered: check whether or not this post has been
+	 * screened out by a registered filter.
+	 *
+	 * @return bool TRUE iff post has been filtered out by a previous filter
+	 */
+	function filtered () {
+		return is_null($this->post);
+	} /* SyndicatedPost::filtered() */
+
+	/**
+	 * SyndicatedPost::freshness: check whether post is a new post to be
+	 * inserted, a previously syndicated post that needs to be updated to
+	 * match the latest revision, or a previously syndicated post that is
+	 * still up-to-date.
+	 *
+	 * @return int A status code representing the freshness of the post
+	 *	0 = post already syndicated; no update needed
+	 *	1 = post already syndicated, but needs to be updated to latest
+	 *	2 = post has not yet been syndicated; needs to be created
+	 */
 	function freshness () {
 		global $wpdb;
 
@@ -282,7 +995,7 @@ class SyndicatedPost {
 					$stored_update_hash = $stored_update_hashes[0];
 					$update_hash_changed = ($stored_update_hash != $this->update_hash());
 				else :
-					$update_hash_changed = false;
+					$update_hash_changed = true; // Can't find syndication meta-data
 				endif;
 
 				preg_match('/([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $result->post_modified_gmt, $backref);
@@ -322,6 +1035,10 @@ class SyndicatedPost {
 		endif;
 		return $this->_freshness;
 	}
+
+	#################################################
+	#### INTERNAL STORAGE AND MANAGEMENT METHODS ####
+	#################################################
 
 	function wp_id () {
 		if ($this->filtered()) : // This should never happen.
@@ -386,28 +1103,53 @@ class SyndicatedPost {
 		if (!$this->filtered() and $freshness > 0) :
 			unset($this->post['named']);
 			$this->post = apply_filters('syndicated_post', $this->post, $this);
+
+			// Allow for feed-specific syndicated_post filters.
+			$this->post = apply_filters(
+				"syndicated_post_".$this->link->uri(),
+				$this->post,
+				$this
+			);
 		endif;
 		
+		// Hook in early to make sure these get inserted if at all possible
+		add_action(
+			/*hook=*/ 'transition_post_status',
+			/*callback=*/ array(&$this, 'add_rss_meta'),
+			/*priority=*/ -10000, /* very early */
+			/*arguments=*/ 3
+		);
+
 		if (!$this->filtered() and $freshness == 2) :
 			// The item has not yet been added. So let's add it.
+			FeedWordPress::diagnostic('syndicated_posts', 'Inserting new post "'.$this->post['post_title'].'"');
+
 			$this->insert_new();
-			$this->add_rss_meta();
 			do_action('post_syndicated_item', $this->wp_id(), $this);
 
 			$ret = 'new';
 		elseif (!$this->filtered() and $freshness == 1) :
+			FeedWordPress::diagnostic('syndicated_posts', 'Updating existing post # '.$this->wp_id().', "'.$this->post['post_title'].'"');
+
 			$this->post['ID'] = $this->wp_id();
 			$this->update_existing();
-			$this->add_rss_meta();
 			do_action('update_syndicated_item', $this->wp_id(), $this);
 
 			$ret = 'updated';			
 		else :
 			$ret = false;
 		endif;
-		
+
+		// Remove add_rss_meta hook
+		remove_action(
+			/*hook=*/ 'transition_post_status',
+			/*callback=*/ array(&$this, 'add_rss_meta'),
+			/*priority=*/ -10000, /* very early */
+			/*arguments=*/ 3
+		);
+
 		return $ret;
-	} // function SyndicatedPost::store ()
+	} /* function SyndicatedPost::store () */
 	
 	function insert_new () {
 		global $wpdb, $wp_db_version;
@@ -690,10 +1432,12 @@ class SyndicatedPost {
 	// syndicated post other than author, title, timestamp, categories, and
 	// guid). It's also used to hook into WordPress's support for
 	// enclosures.
-	function add_rss_meta () {
+	function add_rss_meta ($new_status, $old_status, $post) {
+		FeedWordPress::diagnostic('syndicated_posts:meta_data', 'Adding post meta-data: {'.implode(", ", array_keys($this->post['meta'])).'}');
+
 		global $wpdb;
 		if ( is_array($this->post) and isset($this->post['meta']) and is_array($this->post['meta']) ) :
-			$postId = $this->wp_id();
+			$postId = $post->ID;
 			
 			// Aggregated posts should NOT send out pingbacks.
 			// WordPress 2.1-2.2 claim you can tell them not to
@@ -705,33 +1449,20 @@ class SyndicatedPost {
 			");
 
 			foreach ( $this->post['meta'] as $key => $values ) :
-
-				$key = $wpdb->escape($key);
+				$eKey = $wpdb->escape($key);
 
 				// If this is an update, clear out the old
 				// values to avoid duplication.
 				$result = $wpdb->query("
 				DELETE FROM $wpdb->postmeta
-				WHERE post_id='$postId' AND meta_key='$key'
+				WHERE post_id='$postId' AND meta_key='$eKey'
 				");
 
 				// Allow for either a single value or an array
 				if (!is_array($values)) $values = array($values);
 				foreach ( $values as $value ) :
-					$value = $wpdb->escape($value);
-					$result = $wpdb->query("
-					INSERT INTO $wpdb->postmeta
-					SET
-						post_id='$postId',
-						meta_key='$key',
-						meta_value='$value'
-					");
-					if (!$result) :
-						$err = mysql_error();
-						if (FEEDWORDPRESS_DEBUG) :
-							echo "[DEBUG:".date('Y-m-d H:i:S')."][feedwordpress]: post metadata insertion FAILED for field '$key' := '$value': [$err]";
-						endif;
-					endif;
+				FeedWordPress::diagnostic('syndicated_posts:meta_data', "Adding post meta-datum to post [$postId]: [$key] = ".FeedWordPress::val($value, /*no newlines=*/ true));
+					add_post_meta($postId, $key, $value, /*unique=*/ false);
 				endforeach;
 			endforeach;
 		endif;
@@ -785,69 +1516,48 @@ class SyndicatedPost {
 		else :
 			// Check the database for an existing author record that might fit
 
-			#-- WordPress 2.0+
-			if (fwp_test_wp_version(FWP_SCHEMA_HAS_USERMETA)) :
-
-				// First try the user core data table.
-				$id = $wpdb->get_var(
-				"SELECT ID FROM $wpdb->users
-				WHERE
-					TRIM(LCASE(user_login)) = TRIM(LCASE('$login'))
-					OR (
-						LENGTH(TRIM(LCASE(user_email))) > 0
-						AND TRIM(LCASE(user_email)) = TRIM(LCASE('$test_email'))
-					)
-					OR TRIM(LCASE(user_nicename)) = TRIM(LCASE('$nice_author'))
-				");
+			// First try the user core data table.
+			$id = $wpdb->get_var(
+			"SELECT ID FROM $wpdb->users
+			WHERE
+				TRIM(LCASE(user_login)) = TRIM(LCASE('$login'))
+				OR (
+					LENGTH(TRIM(LCASE(user_email))) > 0
+					AND TRIM(LCASE(user_email)) = TRIM(LCASE('$test_email'))
+				)
+				OR TRIM(LCASE(user_nicename)) = TRIM(LCASE('$nice_author'))
+			");
 	
-				// If that fails, look for aliases in the user meta data table
-				if (is_null($id)) :
-					$id = $wpdb->get_var(
-					"SELECT user_id FROM $wpdb->usermeta
-					WHERE
-						(meta_key = 'description' AND TRIM(LCASE(meta_value)) = TRIM(LCASE('$author')))
-						OR (
-							meta_key = 'description'
-							AND TRIM(LCASE(meta_value))
-							RLIKE CONCAT(
-								'(^|\\n)a\\.?k\\.?a\\.?( |\\t)*:?( |\\t)*',
-								TRIM(LCASE('$reg_author')),
-								'( |\\t|\\r)*(\\n|\$)'
-							)
-						)
-					");
-				endif;
-
-			#-- WordPress 1.5.x
-			else :
+			// If that fails, look for aliases in the user meta data table
+			if (is_null($id)) :
 				$id = $wpdb->get_var(
-				"SELECT ID from $wpdb->users
-				 WHERE
-					TRIM(LCASE(user_login)) = TRIM(LCASE('$login')) OR
-					(
-						LENGTH(TRIM(LCASE(user_email))) > 0
-						AND TRIM(LCASE(user_email)) = TRIM(LCASE('$test_email'))
-					) OR
-					TRIM(LCASE(user_firstname)) = TRIM(LCASE('$author')) OR
-					TRIM(LCASE(user_nickname)) = TRIM(LCASE('$author')) OR
-					TRIM(LCASE(user_nicename)) = TRIM(LCASE('$nice_author')) OR
-					TRIM(LCASE(user_description)) = TRIM(LCASE('$author')) OR
-					(
-						LOWER(user_description)
+				"SELECT user_id FROM $wpdb->usermeta
+				WHERE
+					(meta_key = 'description' AND TRIM(LCASE(meta_value)) = TRIM(LCASE('$author')))
+					OR (
+						meta_key = 'description'
+						AND TRIM(LCASE(meta_value))
 						RLIKE CONCAT(
 							'(^|\\n)a\\.?k\\.?a\\.?( |\\t)*:?( |\\t)*',
-							LCASE('$reg_author'),
+							TRIM(LCASE('$reg_author')),
 							'( |\\t|\\r)*(\\n|\$)'
 						)
 					)
 				");
-
 			endif;
 
 			// ... if you don't find one, then do what you need to do
 			if (is_null($id)) :
 				if ($unfamiliar_author === 'create') :
 					$userdata = array();
+
+					// WordPress 3 is going to pitch a fit if we attempt to register
+					// more than one user account with an empty e-mail address, so we
+					// need *something* here. Ugh.
+					if (strlen($email) == 0 or FeedWordPress::is_null_email($email)) :
+						$url = parse_url($this->feed->channel['link']);
+						$email = $nice_author.'@'.$url['host'];
+					endif;
 
 					#-- user table data
 					$userdata['ID'] = NULL; // new user
@@ -857,7 +1567,7 @@ class SyndicatedPost {
 					$userdata['user_email'] = $email;
 					$userdata['user_url'] = $url;
 					$userdata['display_name'] = $author;
-	
+
 					$id = wp_insert_user($userdata);
 				elseif (is_numeric($unfamiliar_author) and get_userdata((int) $unfamiliar_author)) :
 					$id = (int) $unfamiliar_author;
@@ -990,313 +1700,5 @@ class SyndicatedPost {
 		return $ret;		
 	} // function SyndicatedPost::use_api ()
 
-	#### EXTRACT DATA FROM FEED ITEM ####
-
-	function created () {
-		$epoch = null;
-		if (isset($this->item['dc']['created'])) :
-			$epoch = @parse_w3cdtf($this->item['dc']['created']);
-		elseif (isset($this->item['dcterms']['created'])) :
-			$epoch = @parse_w3cdtf($this->item['dcterms']['created']);
-		elseif (isset($this->item['created'])): // Atom 0.3
-			$epoch = @parse_w3cdtf($this->item['created']);
-		endif;
-		return $epoch;
-	}
-	function published ($fallback = true) {
-		$epoch = null;
-
-		# RSS is a fucking mess. Figure out whether we have a date in
-		# <dc:date>, <issued>, <pubDate>, etc., and get it into Unix
-		# epoch format for reformatting. If we can't find anything,
-		# we'll use the last-updated time.
-		if (isset($this->item['dc']['date'])):				// Dublin Core
-			$epoch = @parse_w3cdtf($this->item['dc']['date']);
-		elseif (isset($this->item['dcterms']['issued'])) :		// Dublin Core extensions
-			$epoch = @parse_w3cdtf($this->item['dcterms']['issued']);
-		elseif (isset($this->item['published'])) : 			// Atom 1.0
-			$epoch = @parse_w3cdtf($this->item['published']);
-		elseif (isset($this->item['issued'])): 				// Atom 0.3
-			$epoch = @parse_w3cdtf($this->item['issued']);
-		elseif (isset($this->item['pubdate'])): 			// RSS 2.0
-			$epoch = strtotime($this->item['pubdate']);
-		elseif ($fallback) :						// Fall back to <updated> / <modified> if present
-			$epoch = $this->updated(/*fallback=*/ false);
-		endif;
-		
-		# If everything failed, then default to the current time.
-		if (is_null($epoch)) :
-			if (-1 == $default) :
-				$epoch = time();
-			else :
-				$epoch = $default;
-			endif;
-		endif;
-		
-		return $epoch;
-	}
-	function updated ($fallback = true, $default = -1) {
-		$epoch = null;
-
-		# As far as I know, only dcterms and Atom have reliable ways to
-		# specify when something was *modified* last. If neither is
-		# available, then we'll try to get the time of publication.
-		if (isset($this->item['dc']['modified'])) : 			// Not really correct
-			$epoch = @parse_w3cdtf($this->item['dc']['modified']);
-		elseif (isset($this->item['dcterms']['modified'])) :		// Dublin Core extensions
-			$epoch = @parse_w3cdtf($this->item['dcterms']['modified']);
-		elseif (isset($this->item['modified'])):			// Atom 0.3
-			$epoch = @parse_w3cdtf($this->item['modified']);
-		elseif (isset($this->item['updated'])):				// Atom 1.0
-			$epoch = @parse_w3cdtf($this->item['updated']);
-		elseif ($fallback) :						// Fall back to issued / dc:date
-			$epoch = $this->published(/*fallback=*/ false, /*default=*/ $default);
-		endif;
-		
-		# If everything failed, then default to the current time.
-		if (is_null($epoch)) :
-			if (-1 == $default) :
-				$epoch = time();
-			else :
-				$epoch = $default;
-			endif;
-		endif;
-
-		return $epoch;
-	}
-
-	function update_hash () {
-		return md5(serialize($this->item));
-	}
-
-	function guid () {
-		$guid = null;
-		if (isset($this->item['id'])): 			// Atom 0.3 / 1.0
-			$guid = $this->item['id'];
-		elseif (isset($this->item['atom']['id'])) :	// Namespaced Atom
-			$guid = $this->item['atom']['id'];
-		elseif (isset($this->item['guid'])) :		// RSS 2.0
-			$guid = $this->item['guid'];
-		elseif (isset($this->item['dc']['identifier'])) :// yeah, right
-			$guid = $this->item['dc']['identifier'];
-		else :
-			// The feed does not seem to have provided us with a
-			// unique identifier, so we'll have to cobble together
-			// a tag: URI that might work for us. The base of the
-			// URI will be the host name of the feed source ...
-			$bits = parse_url($this->feedmeta['link/uri']);
-			$guid = 'tag:'.$bits['host'];
-
-			// If we have a date of creation, then we can use that
-			// to uniquely identify the item. (On the other hand, if
-			// the feed producer was consicentious enough to
-			// generate dates of creation, she probably also was
-			// conscientious enough to generate unique identifiers.)
-			if (!is_null($this->created())) :
-				$guid .= '://post.'.date('YmdHis', $this->created());
-			
-			// Otherwise, use both the URI of the item, *and* the
-			// item's title. We have to use both because titles are
-			// often not unique, and sometimes links aren't unique
-			// either (e.g. Bitch (S)HITLIST, Mozilla Dot Org news,
-			// some podcasts). But it's rare to have *both* the same
-			// title *and* the same link for two different items. So
-			// this is about the best we can do.
-			else :
-				$guid .= '://'.md5($this->item['link'].'/'.$this->item['title']);
-			endif;
-		endif;
-		return $guid;
-	}
-	
-	function author () {
-		$author = array ();
-		
-		if (isset($this->item['author_name'])):
-			$author['name'] = $this->item['author_name'];
-		elseif (isset($this->item['dc']['creator'])):
-			$author['name'] = $this->item['dc']['creator'];
-		elseif (isset($this->item['dc']['contributor'])):
-			$author['name'] = $this->item['dc']['contributor'];
-		elseif (isset($this->feed->channel['dc']['creator'])) :
-			$author['name'] = $this->feed->channel['dc']['creator'];
-		elseif (isset($this->feed->channel['dc']['contributor'])) :
-			$author['name'] = $this->feed->channel['dc']['contributor'];
-		elseif (isset($this->feed->channel['author_name'])) :
-			$author['name'] = $this->feed->channel['author_name'];
-		elseif ($this->feed->is_rss() and isset($this->item['author'])) :
-			// The author element in RSS is allegedly an
-			// e-mail address, but lots of people don't use
-			// it that way. So let's make of it what we can.
-			$author = parse_email_with_realname($this->item['author']);
-			
-			if (!isset($author['name'])) :
-				if (isset($author['email'])) :
-					$author['name'] = $author['email'];
-				else :
-					$author['name'] = $this->feed->channel['title'];
-				endif;
-			endif;
-		else :
-			$author['name'] = $this->feed->channel['title'];
-		endif;
-		
-		if (isset($this->item['author_email'])):
-			$author['email'] = $this->item['author_email'];
-		elseif (isset($this->feed->channel['author_email'])) :
-			$author['email'] = $this->feed->channel['author_email'];
-		endif;
-		
-		if (isset($this->item['author_url'])):
-			$author['uri'] = $this->item['author_url'];
-		elseif (isset($this->feed->channel['author_url'])) :
-			$author['uri'] = $this->item['author_url'];
-		else:
-			$author['uri'] = $this->feed->channel['link'];
-		endif;
-
-		return $author;
-	} // SyndicatedPost::author()
-
-	/**
-	 * SyndicatedPost::isTaggedAs: Test whether a feed item is
-	 * tagged / categorized with a given string. Case and leading and
-	 * trailing whitespace are ignored.
-	 *
-	 * @param string $tag Tag to check for
-	 *
-	 * @return bool Whether or not at least one of the categories / tags on 
-	 *	$this->item is set to $tag (modulo case and leading and trailing
-	 * 	whitespace)
-	 */
-	function isTaggedAs ($tag) {
-		$desiredTag = strtolower(trim($tag)); // Normalize case and whitespace
-
-		// Check to see if this is tagged with $tag
-		$currentCategory = 'category';
-		$currentCategoryNumber = 1;
-
-		// If we have the new MagpieRSS, the number of category elements
-		// on this item is stored under index "category#".
-		if (isset($this->item['category#'])) :
-			$numberOfCategories = (int) $this->item['category#'];
-		
-		// We REALLY shouldn't have the old and busted MagpieRSS, but in
-		// case we do, it doesn't support multiple categories, but there
-		// might still be a single value under the "category" index.
-		elseif (isset($this->item['category'])) :
-			$numberOfCategories = 1;
-
-		// No standard category or tag elements on this feed item.
-		else :
-			$numberOfCategories = 0;
-
-		endif;
-
-		$isSoTagged = false; // Innocent until proven guilty
-
-		// Loop through category elements; if there are multiple
-		// elements, they are indexed as category, category#2,
-		// category#3, ... category#N
-		while ($currentCategoryNumber <= $numberOfCategories) :
-			if ($desiredTag == strtolower(trim($this->item[$currentCategory]))) :
-				$isSoTagged = true; // Got it!
-				break;
-			endif;
-
-			$currentCategoryNumber += 1;
-			$currentCategory = 'category#'.$currentCategoryNumber;
-		endwhile;
-
-		return $isSoTagged;
-	} /* SyndicatedPost::isTaggedAs() */
-
-	var $uri_attrs = array (
-		array('a', 'href'),
-		array('applet', 'codebase'),
-		array('area', 'href'),
-		array('blockquote', 'cite'),
-		array('body', 'background'),
-		array('del', 'cite'),
-		array('form', 'action'),
-		array('frame', 'longdesc'),
-		array('frame', 'src'),
-		array('iframe', 'longdesc'),
-		array('iframe', 'src'),
-		array('head', 'profile'),
-		array('img', 'longdesc'),
-		array('img', 'src'),
-		array('img', 'usemap'),
-		array('input', 'src'),
-		array('input', 'usemap'),
-		array('ins', 'cite'),
-		array('link', 'href'),
-		array('object', 'classid'),
-		array('object', 'codebase'),
-		array('object', 'data'),
-		array('object', 'usemap'),
-		array('q', 'cite'),
-		array('script', 'src')
-	); /* var SyndicatedPost::$uri_attrs */
-
-	var $_base = null;
-
-	function resolve_single_relative_uri ($refs) {
-		$tag = FeedWordPressHTML::attributeMatch($refs);
-		$url = Relative_URI::resolve($tag['value'], $this->_base);
-		return $tag['prefix'] . $url . $tag['suffix'];
-	} /* function SyndicatedPost::resolve_single_relative_uri() */
-
-	function resolve_relative_uris ($content, $obj) {
-		$set = $obj->link->setting('resolve relative', 'resolve_relative', 'yes');
-		if ($set and $set != 'no') : 
-			# The MagpieRSS upgrade has some `xml:base` support baked in.
-			# However, sometimes people do silly things, like putting
-			# relative URIs out on a production RSS 2.0 feed or other feeds
-			# with no good support for `xml:base`. So we'll do our best to
-			# try to catch any remaining relative URIs and resolve them as
-			# best we can.
-			$obj->_base = $obj->item['link']; // Reset the base for resolving relative URIs
-	
-			foreach ($obj->uri_attrs as $pair) :
-				list($tag, $attr) = $pair;
-				$pattern = FeedWordPressHTML::attributeRegex($tag, $attr);
-				$content = preg_replace_callback (
-					$pattern,
-					array(&$obj, 'resolve_single_relative_uri'),
-					$content
-				);
-			endforeach;
-		endif;
-		
-		return $content;
-	} /* function SyndicatedPost::resolve_relative_uris () */
-
-	var $strip_attrs = array (
-		array('[a-z]+', 'target'),
-//		array('[a-z]+', 'style'),
-//		array('[a-z]+', 'on[a-z]+'),
-	);
-
-	function strip_attribute_from_tag ($refs) {
-		$tag = FeedWordPressHTML::attributeMatch($refs);
-		return $tag['before_attribute'].$tag['after_attribute'];
-	}
-
-	function sanitize_content ($content, $obj) {
-		# This kind of sucks. I intend to replace it with
-		# lib_filter sometime soon.
-		foreach ($obj->strip_attrs as $pair):
-			list($tag,$attr) = $pair;
-			$pattern = FeedWordPressHTML::attributeRegex($tag, $attr);
-
-			$content = preg_replace_callback (
-				$pattern,
-				array(&$obj, 'strip_attribute_from_tag'),
-				$content
-			);
-		endforeach;
-		return $content;
-	}
-} // class SyndicatedPost
+} /* class SyndicatedPost */
 

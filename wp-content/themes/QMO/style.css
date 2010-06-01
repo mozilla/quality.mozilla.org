@@ -97,11 +97,12 @@ a.button.on:active {
 }
 
 /*** @Headings *********/
-h1, h2, h3 { color: #390; font-weight: normal; }
+h1, h2, h3, h4 { color: #390; font-weight: normal; }
 h1 { font-size: 2.32em; }
 h2, .entry-content h1, .entry-title { font-size: 1.69em; line-height: 1.2; margin-bottom: .5em; }
 h3 { font-size: 1.385em; }
-h4, h5, h6 { font-size: 1em; }
+h4 { font-size: 1.2em; }
+h5, h6 { font-size: 1em; }
 
 .section-title, .single .entry-title { font-size: 2.32em; line-height: 1.2; margin-bottom: .75em; overflow: hidden; }
 
@@ -271,8 +272,11 @@ dl.column dd { margin-bottom: .5em; padding-left: 90px; }
 .calendar-control { text-align: center; margin: 0 0 1.4em; }
 .calendar-control select.tec-events-dropdown { margin: 0 10px; font-size: 1.07em; background: #fff; border: 1px solid #ccc; }
 .calendar-control .cal-jump { width: 30%; float: left; margin: 0 4%; }
-.category-events .calendar-switch { position: absolute; right: 0; top: 0; }
+.category-events .calendar-switch { position: absolute; right: 0; top: 0; text-align: right; }
 .category-events .calendar-switch a { margin: 0 0 0 10px; }
+
+.category-events .calendar-switch a.ical { padding-left: 20px; margin-right: 20px; background: transparent url("img/icn-cal.png") 0 0.15em no-repeat; font: .846em Verdana, Arial, Helvetica, sans-serif; }
+.category-events .calendar-switch a.ical:visited { color: #369; }
 
 .category-events table.tec-calendar { margin: 0 0 1.4em; font-size: 1em; width: 100%; border-collapse: collapse; }
 table.tec-calendar th { padding: 4px 0; background: #95a3a3 none; font: bold .846em Verdana, Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: .01em; color: #fff; text-shadow: -1px -1px 0 rgba(0,0,0,.1); }
@@ -287,6 +291,7 @@ table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10
 table.tec-calendar .tec-event-date { font-weight: bold; }
 
 /* @Events @Calendar @List *********/
+.category-events #content #tec-content { width: auto; background: transparent none; margin: 0; padding: 0; }
 #tec-events-loop .post.vevent { padding: 0 0 1em; margin-bottom: 1em; }
 #tec-events-loop .event-day { clear: both; margin: 1em 0; color: #390; font: bold .923em Verdana, Arial, Helvetica sans-serif; text-transform: uppercase; letter-spacing: .01em; }
 #tec-events-loop .entry-summary { margin: 0; padding: 0; }
@@ -302,7 +307,7 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 .crumbs { list-style: none; font: .846em/1.1 Verdana, Arial, Helvetica, sans-serif; }
 
 /* @Main @Navigation *********/
-#site-nav { position: absolute; top: 0; left: 0; width: 100%; height: 3em; padding-top: .55em; }
+#site-nav { position: absolute; top: 0; left: 0; width: 100%; height: 40px; padding-top: 7px; }
 #site-nav .section { position: relative; height: 3em; }
 #nav-main { position: absolute; bottom: 0; left: 15px; width: 690px; margin: 0; list-style: none; overflow: hidden; }
 #nav-main li { float: left; margin-right: 1px; font: bold .923em/1.5 Verdana, Arial, Helvetica, sans-serif; text-transform: uppercase; letter-spacing: .1em; }

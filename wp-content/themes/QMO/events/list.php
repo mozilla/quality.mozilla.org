@@ -11,7 +11,8 @@
 <div id="content-main" class="hfeed vcalendar full" role="main">
   <div id="events-calendar-header">
     <h1 class="section-title"><?php _e('Events List', $spEvents->pluginDomain) ?></h1>
-    <p class="calendar-switch"> 
+    <p class="calendar-switch">
+      <a class="ical" href="<?php bloginfo('url'); ?>/?ical">Download iCal</a>
       <a class="button on" href="<?php echo events_get_listview_link(); ?>"><?php _e('Event List', $spEvents->pluginDomain)?></a>
       <a class="button" href="<?php echo events_get_gridview_link(); ?>"><?php _e('Calendar', $spEvents->pluginDomain)?></a>
     </p>

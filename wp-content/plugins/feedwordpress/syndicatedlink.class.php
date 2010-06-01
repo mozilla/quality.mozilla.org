@@ -33,10 +33,13 @@
 #	Values of keys in link_notes are accessible from templates using
 #	the function `get_feed_meta($key)` if this plugin is activated.
 
+require_once(dirname(__FILE__).'/magpiefromsimplepie.class.php');
+
 class SyndicatedLink {
 	var $id = null;
 	var $link = null;
 	var $settings = array ();
+	var $simplepie = null;
 	var $magpie = null;
 
 	function SyndicatedLink ($link) {
@@ -124,7 +127,7 @@ class SyndicatedLink {
 	} /* SyndicatedLink::SyndicatedLink () */
 	
 	function found () {
-		return is_object($this->link);
+		return is_object($this->link) and !is_wp_error($this->link);
 	} /* SyndicatedLink::found () */
 
 	function stale () {
@@ -146,7 +149,21 @@ class SyndicatedLink {
 	function poll ($crash_ts = NULL) {
 		global $wpdb;
 
-		$this->magpie = fetch_rss($this->link->link_rss);
+		FeedWordPress::diagnostic('updated_feeds', 'Polling feed <'.$this->link->link_rss.'>');
+
+		$this->simplepie = apply_filters(
+			'syndicated_feed',
+			FeedWordPress::fetch($this->link->link_rss),
+			$this
+		);
+		
+		// Filter compatibility mode
+		if (is_wp_error($this->simplepie)) :
+			$this->magpie = $this->simplepie;
+		else :
+			$this->magpie = new MagpieFromSimplePie($this->simplepie);
+		endif;
+
 		$new_count = NULL;
 
 		$resume = FeedWordPress::affirmative($this->settings, 'update/unfinished');
@@ -158,7 +175,9 @@ class SyndicatedLink {
 			$processed = array();
 		endif;
 
-		if (is_object($this->magpie)) :
+		if (is_wp_error($this->simplepie)) :
+			$new_count = $this->simplepie;
+		elseif (is_object($this->simplepie)) :
 			$new_count = array('new' => 0, 'updated' => 0);
 
 			# -- Update Link metadata live from feed
@@ -193,12 +212,11 @@ class SyndicatedLink {
 				$this->settings['update/timed'] = 'feed';
 			else :
 				// spread out over a time interval for staggered updates
-				if (isset($this->settings['update/window'])) :
-					$updateWindow = $this->settings['update/window'];
-				else :
-					$updateWindow = get_option('feedwordpress_update_window');
-				endif;
-				
+				$updateWindow = $this->setting(
+					'update/window',
+					'update_window',
+					DEFAULT_UPDATE_PERIOD
+				);
 				if (!is_numeric($updateWindow) or ($updateWindow < 1)) :
 					$updateWindow = DEFAULT_UPDATE_PERIOD;
 				endif;
@@ -225,13 +243,24 @@ class SyndicatedLink {
 				SET $update_set
 				WHERE link_id='$this->id'
 			");
+			do_action('update_syndicated_feed', $this->id, $this);
 
 			# -- Add new posts from feed and update any updated posts
 			$crashed = false;
 
-			if (is_array($this->magpie->items)) :
-				foreach ($this->magpie->items as $item) :
-					$post =& new SyndicatedPost($item, $this);
+			$posts = apply_filters(
+				'syndicated_feed_items',
+				$this->magpie->originals,
+				$this
+			);
+			if (is_array($posts)) :
+				foreach ($posts as $key => $original) :
+					$item = $this->magpie->items[$key];
+					$post = new SyndicatedPost(array(
+						'simplepie' => $original,
+						'magpie' => $item,
+					), $this);
+
 					if (!$resume or !in_array(trim($post->guid()), $processed)) :
 						$processed[] = $post->guid();
 						if (!$post->filtered()) :
@@ -244,9 +273,13 @@ class SyndicatedLink {
 							break;
 						endif;
 					endif;
+					unset($post);
 				endforeach;
 			endif;
-			
+			$suffix = ($crashed ? 'crashed' : 'completed');
+			do_action('update_syndicated_feed_items', $this->id, $this);
+			do_action("update_syndicated_feed_items_${suffix}", $this->id, $this);
+
 			// Copy back any changes to feed settings made in the course of updating (e.g. new author rules)
 			$to_notes = $this->settings;
 
@@ -263,6 +296,8 @@ class SyndicatedLink {
 			SET $update_set
 			WHERE link_id='$this->id'
 			");
+			
+			do_action("update_syndicated_feed_completed", $this->id, $this);
 		endif;
 		
 		return $new_count;
@@ -365,9 +400,17 @@ class SyndicatedLink {
 	function save_settings ($reload = false) {
 		global $wpdb;
 
-		$update_set = "link_notes = '".$wpdb->escape($this->settings_to_notes())."'";
-			
-		// Update the properties of the link from the feed information
+		// Save channel-level meta-data
+		foreach (array('link_name', 'link_description', 'link_url') as $what) :
+			$alter[] = "{$what} = '".$wpdb->escape($this->link->{$what})."'";
+		endforeach;
+
+		// Save settings to the notes field
+		$alter[] = "link_notes = '".$wpdb->escape($this->settings_to_notes())."'";
+
+		// Update the properties of the link from settings changes, etc.
+		$update_set = implode(", ", $alter);
+
 		$result = $wpdb->query("
 		UPDATE $wpdb->links
 		SET $update_set
@@ -375,7 +418,7 @@ class SyndicatedLink {
 		");
 		
 		if ($reload) :
-			// reload link information from DB
+			// force reload of link information from DB
 			if (function_exists('clean_bookmark_cache')) :
 				clean_bookmark_cache($this->id);
 			endif;
@@ -397,11 +440,21 @@ class SyndicatedLink {
 			$ret = $this->settings[$name];
 		endif;
 		
-		if ((is_null($ret) or strtolower($ret)=='default') and !is_null($fallback_global)) :
+		$no_value = (
+			is_null($ret)
+			or (is_string($ret) and strtolower($ret)=='default')
+		);
+
+		if ($no_value and !is_null($fallback_global)) :
 			$ret = get_option('feedwordpress_'.$fallback_global, /*default=*/ NULL);
 		endif;
 
-		if ((is_null($ret) or strtolower($ret)=='default') and !is_null($fallback_value)) :
+		$no_value = (
+			is_null($ret)
+			or (is_string($ret) and strtolower($ret)=='default')
+		);
+
+		if ($no_value and !is_null($fallback_value)) :
 			$ret = $fallback_value;
 		endif;
 		return $ret;

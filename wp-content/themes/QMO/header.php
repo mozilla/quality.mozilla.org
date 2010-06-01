@@ -1,3 +1,8 @@
+<?php 
+  // Fetch the category IDs
+  $events_cat = get_category_by_slug('events')->cat_ID;
+  $news_cat = get_category_by_slug('qmo-news')->cat_ID; 
+?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -51,10 +56,7 @@
 
     <div id="site-nav">
       <div class="section">
-        <?php include (TEMPLATEPATH . '/main-nav.php'); 
-          $events_cat = get_category_by_slug('events')->cat_ID;
-          $news_cat = get_category_by_slug('qmo-news')->cat_ID;
-        ?>
+        <?php include (TEMPLATEPATH . '/main-nav.php'); ?>
         <ul id="nav-extra">
           <li><a href="http://www.facebook.com/pages/Mozilla-QA/122167964300" class="navex-facebook" rel="external" title="Follow us on Facebook">Facebook</a></li>
           <li><a href="http://twitter.com/mozillaqa" class="navex-twitter" rel="external" title="Follow @mozillaqa on Twitter">Twitter</a></li>

@@ -1,8 +1,4 @@
 <?php
-// Fetch the formats
-$date_format = get_option("date_format");
-$time_format = get_option("time_format");
-
 $search_count = 0;
 $search = new WP_Query("s=$s & showposts=-1");
 if($search->have_posts()) : while($search->have_posts()) : $search->the_post();

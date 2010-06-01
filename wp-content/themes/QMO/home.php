@@ -3,10 +3,6 @@ $events_cat = get_category_by_slug('events')->cat_ID;
 $news_cat = get_category_by_slug('qmo-news')->cat_ID;
 $home_intro = get_page_by_path('home-intro')->ID;
 
-// Fetch the formats
-$date_format = get_option("date_format");
-$time_format = get_option("time_format");
-
 get_header(); ?>
 <div id="content-main" class="hfeed vcalendar" role="main">
 <?php if ( is_front_page() && ($paged < 1) && $home_intro ) :

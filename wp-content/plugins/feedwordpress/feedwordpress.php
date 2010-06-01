@@ -3,11 +3,16 @@
 Plugin Name: FeedWordPress
 Plugin URI: http://feedwordpress.radgeek.com/
 Description: simple and flexible Atom/RSS syndication for WordPress
-Version: 2010.0127
+Version: 2010.0531
 Author: Charles Johnson
 Author URI: http://radgeek.com/
 License: GPL
 */
+
+/**
+ * @package FeedWordPress
+ * @version 2010.0531
+ */
 
 # This uses code derived from:
 # -	wp-rss-aggregate.php by Kellan Elliot-McCrea <kellan@protest.net>
@@ -28,7 +33,7 @@ License: GPL
 
 # -- Don't change these unless you know what you're doing...
 
-define ('FEEDWORDPRESS_VERSION', '2010.0127');
+define ('FEEDWORDPRESS_VERSION', '2010.0531');
 define ('FEEDWORDPRESS_AUTHOR_CONTACT', 'http://radgeek.com/contact');
 
 // Defaults
@@ -66,29 +71,29 @@ if (FEEDWORDPRESS_DEBUG) :
 	// Help us to pick out errors, if any.
 	ini_set('error_reporting', E_ALL & ~E_NOTICE);
 	ini_set('display_errors', true);
-	define('MAGPIE_DEBUG', true);
 	
 	 // When testing we don't want cache issues to interfere. But this is
 	 // a VERY BAD SETTING for a production server. Webmasters will eat your 
 	 // face for breakfast if you use it, and the baby Jesus will cry. So
 	 // make sure FEEDWORDPRESS_DEBUG is FALSE for any site that will be
 	 // used for more than testing purposes!
-	define('MAGPIE_CACHE_AGE', 1);
+	define('FEEDWORDPRESS_CACHE_AGE', 1);
+	define('FEEDWORDPRESS_CACHE_LIFETIME', 1);
+	define('FEEDWORDPRESS_FETCH_TIME_OUT', 60);
 else :
-	define('MAGPIE_DEBUG', false);
-	
-	define('MAGPIE_CACHE_AGE', 1*60);
+	// Hold onto data all day for conditional GET purposes,
+	// but consider it stale after 1 min (requiring a conditional GET)
+	define('FEEDWORDPRESS_CACHE_LIFETIME', 24*60*60);
+	define('FEEDWORDPRESS_CACHE_AGE', 1*60);
+	define('FEEDWORDPRESS_FETCH_TIME_OUT', 10);
 endif;
 
-// Note that the rss-functions.php that comes prepackaged with WordPress is
-// old & busted. For the new hotness, drop a copy of rss.php from
-// this archive into wp-includes/rss.php
+// Use our the cache settings that we want.
+add_filter('wp_feed_cache_transient_lifetime', array('FeedWordPress', 'cache_lifetime'));
 
-if (is_readable(ABSPATH . WPINC . '/rss.php')) :
-	require_once (ABSPATH . WPINC . '/rss.php');
-else :
-	require_once (ABSPATH . WPINC . '/rss-functions.php');
-endif;
+// Ensure that we have SimplePie loaded up and ready to go.
+// We no longer need a MagpieRSS upgrade module. Hallelujah!
+require_once(ABSPATH . WPINC . '/feed.php');
 
 if (isset($wp_db_version)) :
 	if ($wp_db_version >= FWP_SCHEMA_23) :
@@ -177,6 +182,13 @@ if (!FeedWordPress::needs_upgrade()) : // only work if the conditions are safe!
 	# Filter in original permalinks if the user wants that
 	add_filter('post_link', 'syndication_permalink', 1);
 
+	# When foreign URLs are used for permalinks in feeds or display
+	# contexts, they need to be escaped properly.
+	add_filter('the_permalink', 'syndication_permalink_escaped');
+	add_filter('the_permalink_rss', 'syndication_permalink_escaped');
+	
+	add_filter('post_comments_feed_link', 'syndication_comments_feed_link');
+
 	# WTF? By default, wp_insert_link runs incoming link_url and link_rss
 	# URIs through default filters that include `wp_kses()`. But `wp_kses()`
 	# just happens to escape any occurrence of & to &amp; -- which just
@@ -187,12 +199,12 @@ if (!FeedWordPress::needs_upgrade()) : // only work if the conditions are safe!
 	# Admin menu
 	add_action('admin_menu', 'fwp_add_pages');
 	add_action('admin_notices', 'fwp_check_debug');
-	add_action('admin_notices', 'fwp_check_magpie');
-	add_action('init', 'feedwordpress_check_for_magpie_fix');
 
 	add_action('admin_menu', 'feedwordpress_add_post_edit_controls');
 	add_action('save_post', 'feedwordpress_save_post_edit_controls');
 
+	add_action('admin_footer', array('FeedWordPress', 'admin_footer'));
+	
 	# Inbound XML-RPC update methods
 	add_filter('xmlrpc_methods', 'feedwordpress_xmlrpc_hook');
 	
@@ -216,12 +228,16 @@ if (!FeedWordPress::needs_upgrade()) : // only work if the conditions are safe!
 		add_action('feedwordpress_update_complete', 'log_feedwordpress_update_complete', 100);
 	endif;
 	
-	if (FeedWordPress::update_requested() and FEEDWORDPRESS_DEBUG) :
-		add_action('post_syndicated_item', 'debug_out_feedwordpress_post', 100);
-		add_action('update_syndicated_item', 'debug_out_feedwordpress_update_post', 100);
-		add_action('feedwordpress_update', 'debug_out_feedwordpress_update_feeds', 100);
-		add_action('feedwordpress_check_feed', 'debug_out_feedwordpress_check_feed', 100);
-		add_action('feedwordpress_update_complete', 'debug_out_feedwordpress_update_complete', 100);
+	if (FeedWordPress::update_requested()) :
+		if (FEEDWORDPRESS_DEBUG) :
+			add_action('post_syndicated_item', 'debug_out_feedwordpress_post', 100);
+			add_action('update_syndicated_item', 'debug_out_feedwordpress_update_post', 100);
+			add_action('feedwordpress_update', 'debug_out_feedwordpress_update_feeds', 100);
+			add_action('feedwordpress_check_feed', 'debug_out_feedwordpress_check_feed', 100);
+			add_action('feedwordpress_update_complete', 'debug_out_feedwordpress_update_complete', 100);
+		endif;
+
+		add_action('feedwordpress_check_feed_complete', 'debug_out_feedwordpress_feed_error', 100, 3);
 	endif;
 
 	# Cron-less auto-update. Hooray!
@@ -242,42 +258,9 @@ else :
 	add_action('admin_menu', 'fwp_add_pages');
 endif; // if (!FeedWordPress::needs_upgrade())
 
-function feedwordpress_check_for_magpie_fix () {
-	if (isset($_POST['action']) and $_POST['action']=='fix_magpie_version') :
-		FeedWordPressCompatibility::validate_http_request(/*action=*/ 'feedwordpress_fix_magpie', /*capability=*/ 'edit_files');
-
-		$back_to = $_SERVER['REQUEST_URI'];
-		if (isset($_POST['ignore'])) :
-			// kill error message by telling it we ignored the upgrade request for this version
-			update_option('feedwordpress_magpie_ignored_upgrade_to', EXPECTED_MAGPIE_VERSION);
-			$ret = 'ignored';
-		elseif (isset($_POST['upgrade'])) :
-			$source = dirname(__FILE__)."/MagpieRSS-upgrade/rss.php";
-			$destination = ABSPATH . WPINC . '/rss.php';
-			$success = @copy($source, $destination);
-
-			// Copy over rss-functions.php, too, to avoid collisions
-			// on pre-lapsarian versions of WordPress.
-			if ($success) :			
-				$source = dirname(__FILE__)."/MagpieRSS-upgrade/rss-functions.php";
-				$destination = ABSPATH . WPINC . '/rss-functions.php';
-				$success = @copy($source, $destination);
-			endif;
-			$ret = (int) $success;
-		endif;
-
-		if (strpos($back_to, '?')===false) : $sep = '?';
-		else : $sep = '&';
-		endif;
-
-		header("Location: {$back_to}{$sep}feedwordpress_magpie_fix=".$ret);
-		exit;
-	endif;
-} /* feedwordpress_check_for_magpie_fix() */
-
 function feedwordpress_auto_update () {
 	if (FeedWordPress::stale()) :
-		$feedwordpress =& new FeedWordPress;
+		$feedwordpress = new FeedWordPress;
 		$feedwordpress->update();
 	endif;
 } /* feedwordpress_auto_update () */
@@ -287,7 +270,7 @@ function feedwordpress_update_magic_url () {
 
 	// Explicit update request in the HTTP request (e.g. from a cron job)
 	if (FeedWordPress::update_requested()) :
-		$feedwordpress =& new FeedWordPress;
+		$feedwordpress = new FeedWordPress;
 		$feedwordpress->update(FeedWordPress::update_requested_url());
 		
 		if (FEEDWORDPRESS_DEBUG and count($wpdb->queries) > 0) :
@@ -386,11 +369,31 @@ function debug_out_feedwordpress_update_complete ($delta) {
 		: implode(' and ', $mesg))."\n");
 }
 
+function debug_out_feedwordpress_feed_error ($feed, $added, $dt) {
+	if (is_wp_error($added)) :
+		$mesgs = $added->get_error_messages();
+		foreach ($mesgs as $mesg) :
+			echo "[feedwordpress] Error updating [{$feed['link/uri']}]: $mesg\n";
+		endforeach;		
+	endif;
+}
+
 ################################################################################
 ## TEMPLATE API: functions to make your templates syndication-aware ############
 ################################################################################
 
-function is_syndicated ($id = NULL) { return (strlen(get_syndication_feed_id($id)) > 0); }
+/**
+ * is_syndicated: Tests whether the current post in a Loop context, or a post
+ * given by ID number, was syndicated by FeedWordPress. Useful for templates
+ * to determine whether or not to retrieve syndication-related meta-data in
+ * displaying a post.
+ *
+ * @param int $id The post to check for syndicated status. Defaults to the current post in a Loop context.
+ * @return bool TRUE if the post's meta-data indicates it was syndicated; FALSE otherwise 
+ */ 
+function is_syndicated ($id = NULL) {
+	return (strlen(get_syndication_feed_id($id)) > 0);
+} /* function is_syndicated() */
 
 function get_syndication_source_link ($original = NULL, $id = NULL) {
 	if (is_null($original)) : $original = FeedWordPress::use_aggregator_source_data();
@@ -422,6 +425,7 @@ function feedwordpress_display_url ($url, $before = 60, $after = 0) {
 	$url = (isset($bits['user'])?$bits['user'].'@':'')
 		.(isset($bits['host'])?$bits['host']:'')
 		.(isset($bits['path'])?$bits['path']:'')
+		.(isset($uri_bits['port'])?':'.$uri_bits['port']:'')
 		.(isset($bits['query'])?'?'.$bits['query']:'');
 
 	if (strlen($url) > ($before+$after)) :
@@ -502,20 +506,28 @@ function get_syndication_feed_id ($id = NULL) { list($u) = get_post_custom_value
 function the_syndication_feed_id ($id = NULL) { echo get_syndication_feed_id($id); }
 
 $feedwordpress_linkcache =  array (); // only load links from database once
+function get_syndication_feed_object ($id = NULL) {
+	global $feedwordpress_linkcache;
 
-function get_feed_meta ($key, $id = NULL) {
-	global $wpdb, $feedwordpress_linkcache;
+	$link = NULL;
+
 	$feed_id = get_syndication_feed_id($id);
-
-	$ret = NULL;
 	if (strlen($feed_id) > 0):
 		if (isset($feedwordpress_linkcache[$feed_id])) :
 			$link = $feedwordpress_linkcache[$feed_id];
 		else :
-			$link =& new SyndicatedLink($feed_id);
+			$link = new SyndicatedLink($feed_id);
 			$feedwordpress_linkcache[$feed_id] = $link;
 		endif;
+	endif;
+	return $link;
+}
 
+function get_feed_meta ($key, $id = NULL) {
+	$ret = NULL;
+
+	$link = get_syndication_feed_object($id);
+	if (is_object($link) and isset($link->settings[$key])) :
 		$ret = $link->settings[$key];
 	endif;
 	return $ret;
@@ -528,11 +540,53 @@ function the_syndication_permalink ($id = NULL) {
 	echo get_syndication_permalink($id);
 }
 
+/**
+ * get_local_permalink: returns a string containing the internal permalink
+ * for a post (whether syndicated or not) on your local WordPress installation.
+ * This may be useful if you want permalinks to point to the original source of
+ * an article for most purposes, but want to retrieve a URL for the local
+ * representation of the post for one or two limited purposes (for example,
+ * linking to a comments page on your local aggregator site).
+ *
+ * @param $id The numerical ID of the post to get the permalink for. If empty,
+ * 	defaults to the current post in a Loop context.
+ * @return string The URL of the local permalink for this post.
+ *
+ * @uses get_permalink()
+ * @global $feedwordpress_the_original_permalink
+ *
+ * @since 2010.0217
+ */
+function get_local_permalink ($id = NULL) {
+	global $feedwordpress_the_original_permalink;
+	
+	// get permalink, and thus activate filter and force global to be filled
+	// with original URL.
+	$url = get_permalink($id);
+	return $feedwordpress_the_original_permalink;
+} /* get_local_permalink() */
+
+/**
+ * the_original_permalink: displays the contents of get_original_permalink()
+ *
+ * @param $id The numerical ID of the post to get the permalink for. If empty,
+ * 	defaults to the current post in a Loop context.
+ *
+ * @uses get_local_permalinks()
+ * @uses apply_filters
+ *
+ * @since 2010.0217
+ */
+function the_local_permalink ($id = NULL) {
+	print apply_filters('the_permalink', get_local_permalink($id));
+} /* function the_local_permalink() */
+
 ################################################################################
 ## FILTERS: syndication-aware handling of post data for templates and feeds ####
 ################################################################################
 
 $feedwordpress_the_syndicated_content = NULL;
+$feedwordpress_the_original_permalink = NULL;
 
 function feedwordpress_preserve_syndicated_content ($text) {
 	global $feedwordpress_the_syndicated_content;
@@ -585,14 +639,128 @@ function feedwordpress_item_feed_data () {
 	endif;
 }
 
+/**
+ * syndication_permalink: Allow WordPress to use the original remote URL of
+ * syndicated posts as their permalink. Can be turned on or off by by setting in
+ * Syndication => Posts & Links. Saves the old internal permalink in a global
+ * variable for later use.
+ *
+ * @param string $permalink The internal permalink
+ * @return string The new permalink. Same as the old if the post is not
+ *	syndicated, or if FWP is set to use internal permalinks, or if the post
+ *	was syndicated, but didn't have a proper permalink recorded.
+ *
+ * @uses FeedWordPress::munge_permalinks()
+ * @uses get_syndication_permalink()
+ * @global $feedwordpress_the_original_permalink
+ */ 
 function syndication_permalink ($permalink = '') {
-	if (get_option('feedwordpress_munge_permalink') != 'no'):
-		$uri = get_syndication_permalink();
-		return ((strlen($uri) > 0) ? $uri : $permalink);
-	else:
-		return $permalink;
+	global $feedwordpress_the_original_permalink;
+	
+	// Save the local permalink in case we need to retrieve it later.
+	$feedwordpress_the_original_permalink = $permalink;
+
+	// Map this permalink to a post ID so we can get the correct permalink
+	// even outside of the Post Loop. Props Björn.
+	$id = url_to_postid($permalink);
+
+	$munge = false;
+	$link = get_syndication_feed_object($id);
+	if (is_object($link)) :
+		$munge = ($link->setting('munge permalink', 'munge_permalink', 'yes') != 'no');
 	endif;
-} // function syndication_permalink ()
+
+	if ($munge):
+		$uri = get_syndication_permalink($id);
+		$permalink = ((strlen($uri) > 0) ? $uri : $permalink);
+	endif;
+	return $permalink;
+} /* function syndication_permalink () */
+
+/**
+ * syndication_permalink_escaped: Escape XML special characters in syndicated
+ * permalinks when used in feed contexts and HTML display contexts.
+ *
+ * @param string $permalink
+ * @return string
+ *
+ * @uses is_syndicated()
+ * @uses FeedWordPress::munge_permalinks()
+ *
+ */
+function syndication_permalink_escaped ($permalink) {
+	if (is_syndicated() and FeedWordPress::munge_permalinks()) :
+		// This is a foreign link; WordPress can't vouch for its not
+		// having any entities that need to be &-escaped. So we'll do
+		// it here.
+		$permalink = esc_html($permalink);
+	endif;
+	return $permalink;
+} /* function syndication_permalink_escaped() */ 
+
+/**
+ * syndication_comments_feed_link: Escape XML special characters in comments
+ * feed links 
+ *
+ * @param string $link
+ * @return string
+ *
+ * @uses is_syndicated()
+ * @uses FeedWordPress::munge_permalinks()
+ */
+function syndication_comments_feed_link ($link) {
+	global $feedwordpress_the_original_permalink, $id;
+
+	if (is_syndicated() and FeedWordPress::munge_permalinks()) :
+		// If the source post provided a comment feed URL using
+		// wfw:commentRss or atom:link/@rel="replies" we can make use of
+		// that value here.
+		$source = get_syndication_feed_object();
+		$replacement = NULL;
+		if ($source->setting('munge comments feed links', 'munge_comments_feed_links', 'yes') != 'no') :
+			$commentFeeds = get_post_custom_values('wfw:commentRSS');
+			if (
+				is_array($commentFeeds)
+				and (count($commentFeeds) > 0)
+				and (strlen($commentFeeds[0]) > 0)
+			) :
+				$replacement = $commentFeeds[0];
+				
+				// This is a foreign link; WordPress can't vouch for its not
+				// having any entities that need to be &-escaped. So we'll do it
+				// here.
+				$replacement = esc_html($replacement);
+			endif;
+		endif;
+		
+		if (is_null($replacement)) :
+			// Q: How can we get the proper feed format, since the
+			// format is, stupidly, not passed to the filter?
+			// A: Kludge kludge kludge kludge!
+			$fancy_permalinks = ('' != get_option('permalink_structure'));
+			if ($fancy_permalinks) :
+				preg_match('|/feed(/([^/]+))?/?$|', $link, $ref);
+
+				$format = (isset($ref[2]) ? $ref[2] : '');
+				if (strlen($format) == 0) : $format = get_default_feed(); endif;
+
+				$replacement = trailingslashit($feedwordpress_the_original_permalink) . 'feed';
+				if ($format != get_default_feed()) :
+					$replacement .= '/'.$format;
+				endif;
+				$replacement = user_trailingslashit($replacement, 'single_feed');
+			else :
+				// No fancy permalinks = no problem
+				// WordPress doesn't call get_permalink() to
+				// generate the comment feed URL, so the
+				// comments feed link is never munged by FWP.
+			endif;
+		endif;
+		
+		if (!is_null($replacement)) : $link = $replacement; endif;
+	endif;
+	return $link;
+} /* function syndication_comments_feed_link() */
 
 ################################################################################
 ## ADMIN MENU ADD-ONS: register Dashboard management pages #####################
@@ -613,7 +781,8 @@ function fwp_add_pages () {
 	add_submenu_page($fwp_path.'/syndication.php', 'Syndicated Posts & Links', 'Posts & Links', $fwp_capability['manage_options'], $fwp_path.'/posts-page.php');
 	add_submenu_page($fwp_path.'/syndication.php', 'Syndicated Authors', 'Authors', $fwp_capability['manage_options'], $fwp_path.'/authors-page.php');
 	add_submenu_page($fwp_path.'/syndication.php', 'Categories'.FEEDWORDPRESS_AND_TAGS, 'Categories'.FEEDWORDPRESS_AND_TAGS, $fwp_capability['manage_options'], $fwp_path.'/categories-page.php');
-	add_submenu_page($fwp_path.'/syndication.php', 'FeedWordPress Back End', 'Back End', $fwp_capability['manage_options'], $fwp_path.'/backend-page.php');
+	add_submenu_page($fwp_path.'/syndication.php', 'FeedWordPress Performance', 'Performance', $fwp_capability['manage_options'], $fwp_path.'/performance-page.php');
+	add_submenu_page($fwp_path.'/syndication.php', 'FeedWordPress Diagnostics', 'Diagnostics', $fwp_capability['manage_options'], $fwp_path.'/diagnostics-page.php');
 } /* function fwp_add_pages () */
 
 function fwp_check_debug () {
@@ -637,95 +806,6 @@ for a production server.</p>
 <?php
 	endif;
 } /* function fwp_check_debug () */
-
-define('EXPECTED_MAGPIE_VERSION', '2010.0122');
-function fwp_check_magpie () {
-	if (isset($_REQUEST['feedwordpress_magpie_fix'])) :
-		if ($_REQUEST['feedwordpress_magpie_fix']=='ignored') :
-?>
-<div class="updated fade">
-<p>O.K., we'll ignore the problem for now. FeedWordPress will not display any
-more error messages.</p>
-</div>
-<?php
-		elseif ((bool) $_REQUEST['feedwordpress_magpie_fix']) :
-?>
-<div class="updated fade">
-<p>Congratulations! Your MagpieRSS has been successfully upgraded to the version
-shipped with FeedWordPress.</p>
-</div>
-<?php
-		else :
-			$source = dirname(__FILE__)."/MagpieRSS-upgrade/rss.php";
-			$destination = ABSPATH . WPINC . '/rss.php';
-			$cmd = "cp '".htmlspecialchars(addslashes($source))."' '".htmlspecialchars(addslashes($destination))."'";
-			$cmd = wordwrap($cmd, /*width=*/ 75, /*break=*/ " \\\n\t");
-
-?>
-<div class="error">
-<p><strong>FeedWordPress was unable to automatically upgrade your copy of MagpieRSS.</strong></p>
-<p>It's likely that you need to change the file permissions on <code><?php print htmlspecialchars($source); ?></code>
-to allow FeedWordPress to overwrite it.</p>
-<p><strong>To perform the upgrade manually,</strong> you can
-use a SFTP or FTP client to upload a copy of <code>rss.php</code> from the
-<code>MagpieRSS-upgrades/</code> directory of your FeedWordPress archive so that
-it overwrites <code><?php print htmlspecialchars($destination); ?></code>. Or,
-if your web host provides shell access, you can issue the following command from
-a command prompt to perform the upgrade:</p>
-<pre>
-<samp>$</samp> <kbd><?php print $cmd; ?></kbd>
-</pre>
-<p><strong>If you've fixed the file permissions,</strong> you can try the
-automatic upgrade again.</p>
-
-<?php			feedwordpress_upgrade_old_and_busted_buttons(); ?>
-</div>
-<?php
-		endif;
-	else :
-		$magpie_version = FeedWordPress::magpie_version();
-
-		$ignored = get_option('feedwordpress_magpie_ignored_upgrade_to');
-		if (EXPECTED_MAGPIE_VERSION != $magpie_version and EXPECTED_MAGPIE_VERSION != $ignored) :
-			if (current_user_can('edit_files')) :
-				$youAre = 'you are';
-				$itIsRecommendedThatYou = 'It is <strong>strongly recommended</strong> that you';
-			else :
-				$youAre = 'this site is';
-				$itIsRecommendedThatYou = 'You may want to contact the administrator of the site; it is <strong>strongly recommended</strong> that they';
-			endif;
-			print '<div class="error">';
-?>
-<p style="font-style: italic"><strong>FeedWordPress has detected that <?php print $youAre; ?> currently using a version of
-MagpieRSS other than the upgraded version that ships with this version of FeedWordPress.</strong></p>
-<ul>
-<li><strong>Currently running:</strong> MagpieRSS <?php print $magpie_version; ?></li>
-<li><strong>Version included with FeedWordPress <?php print FEEDWORDPRESS_VERSION; ?>:</strong> MagpieRSS <?php print EXPECTED_MAGPIE_VERSION; ?></li>
-</ul>
-<p><?php print $itIsRecommendedThatYou; ?> install the upgraded
-version of MagpieRSS supplied with FeedWordPress. The version of
-MagpieRSS that ships with WordPress is very old and buggy, and
-encounters a number of errors when trying to parse modern Atom
-and RSS feeds.</p>
-<?php
-			feedwordpress_upgrade_old_and_busted_buttons();
-			print '</div>';
-		endif;
-	endif;
-}
-
-function feedwordpress_upgrade_old_and_busted_buttons() {
-	if (current_user_can('edit_files')) :
-?>
-<form action="" method="post"><div>
-<?php FeedWordPressCompatibility::stamp_nonce('feedwordpress_fix_magpie'); ?>
-<input type="hidden" name="action" value="fix_magpie_version" />
-<input class="button-secondary" type="submit" name="ignore" value="<?php _e('Ignore this problem'); ?>" />
-<input class="button-primary" type="submit" name="upgrade" value="<?php _e('Upgrade'); ?>" />
-</div></form>
-<?php
-	endif;
-}
 
 ################################################################################
 ## fwp_hold_pings() and fwp_release_pings(): Outbound XML-RPC ping reform   ####
@@ -797,8 +877,8 @@ function fwp_publish_post_hook ($post_id) {
 		if (is_syndicated($post->ID)) :
 		?>
 		<p>This is a syndicated post, which originally appeared at
-		<cite><?php print wp_specialchars(get_syndication_source(NULL, $post->ID)); ?></cite>.
-		<a href="<?php print wp_specialchars(get_syndication_permalink($post->ID)); ?>">View original post</a>.</p>
+		<cite><?php print esc_html(get_syndication_source(NULL, $post->ID)); ?></cite>.
+		<a href="<?php print esc_html(get_syndication_permalink($post->ID)); ?>">View original post</a>.</p>
 		
 		<p><input type="hidden" name="feedwordpress_noncename" id="feedwordpress_noncename" value="<?php print wp_create_nonce(plugin_basename(__FILE__)); ?>" />
 		<label><input type="checkbox" name="freeze_updates" value="yes" <?php if ($frozen_post) : ?>checked="checked"<?php endif; ?> /> <strong>Manual editing.</strong>
@@ -833,12 +913,14 @@ function fwp_publish_post_hook ($post_id) {
 		
 		// OK, we're golden. Now let's save some data.
 		if (isset($_POST['freeze_updates'])) :
-			update_post_meta($post_id, '_syndication_freeze_updates', $_POST['freeze_updates']); 
+			update_post_meta($post_id, '_syndication_freeze_updates', $_POST['freeze_updates']);
+			$ret = $_POST['freeze_updates'];
 		else :
 			delete_post_meta($post_id, '_syndication_freeze_updates');
+			$ret = NULL;
 		endif;
 		
-		return $_POST['freeze_updates'];
+		return $ret;
 	} // function feedwordpress_save_edit_controls
 
 ################################################################################
@@ -886,7 +968,7 @@ class FeedWordPress {
 		$this->feeds = array ();
 		$links = FeedWordPress::syndicated_links();
 		if ($links): foreach ($links as $link):
-			$this->feeds[] =& new SyndicatedLink($link);
+			$this->feeds[] = new SyndicatedLink($link);
 		endforeach; endif;
 	} // FeedWordPress::FeedWordPress ()
 
@@ -992,8 +1074,10 @@ class FeedWordPress {
 				$added = $feed->poll($crash_ts);
 				do_action('feedwordpress_check_feed_complete', $feed->settings, $added, time() - $start_ts);
 
-				if (isset($added['new'])) : $delta['new'] += $added['new']; endif;
-				if (isset($added['updated'])) : $delta['updated'] += $added['updated']; endif;
+				if (is_array($added)) : // Success
+					if (isset($added['new'])) : $delta['new'] += $added['new']; endif;
+					if (isset($added['updated'])) : $delta['updated'] += $added['updated']; endif;
+				endif;
 			endif;
 		endforeach;
 
@@ -1149,6 +1233,17 @@ class FeedWordPress {
 		return apply_filters('syndicated_post_use_aggregator_source_data', ($ret=='yes'));
 	}
 
+	/**
+	 * FeedWordPress::munge_permalinks: check whether or not FeedWordPress
+	 * should rewrite permalinks for syndicated items to reflect their
+	 * original location.
+	 *
+	 * @return bool TRUE if FeedWordPress SHOULD rewrite permalinks; FALSE otherwise
+	 */
+	/*static*/ function munge_permalinks () {
+		return (get_option('feedwordpress_munge_permalink', /*default=*/ 'yes') != 'no');
+	} /* FeedWordPress::munge_permalinks() */
+
 	function syndicated_links () {
 		$contributors = FeedWordPress::link_category_id();
 		if (function_exists('get_bookmarks')) :
@@ -1234,55 +1329,11 @@ class FeedWordPress {
 		if (is_null($from) or $from <= 0.96) : $from = 0.96; endif;
 
 		switch ($from) :
-		case 0.96: // account for changes to syndication custom values and guid
-			echo "<p>Upgrading database from {$from} to ".FEEDWORDPRESS_VERSION."...</p>\n";
-
-			$cat_id = FeedWordPress::link_category_id();
-			
-			// Avoid duplicates
-			$wpdb->query("DELETE FROM `{$wpdb->postmeta}` WHERE meta_key = 'syndication_feed_id'");
-			
-			// Look up all the link IDs
-			$wpdb->query("
-			CREATE TEMPORARY TABLE tmp_custom_values
-			SELECT
-				NULL AS meta_id,
-				post_id,
-				'syndication_feed_id' AS meta_key,
-				link_id AS meta_value
-			FROM `{$wpdb->postmeta}`, `{$wpdb->links}`
-			WHERE
-				meta_key='syndication_feed'
-				AND meta_value=link_rss
-				AND link_category = {$cat_id}
-			");
-			
-			// Now attach them to their posts
-			$wpdb->query("INSERT INTO `{$wpdb->postmeta}` SELECT * FROM tmp_custom_values");
-			
-			// And clean up after ourselves.
-			$wpdb->query("DROP TABLE tmp_custom_values");
-			
-			// Now fix the guids to avoid duplicate posts
-			echo "<ul>";
-			foreach ($this->feeds as $syndicatedLink) :
-				$feed = $syndicatedLink->settings;
-				echo "<li>Fixing post meta-data for <cite>".$feed['link/name']."</cite> &#8230; "; flush();
-				$rss = @fetch_rss($feed['link/uri']);
-				if (is_array($rss->items)) :
-					foreach ($rss->items as $item) :
-						$post = new SyndicatedPost($item, $syndicatedLink);
-						$guid = $wpdb->escape($post->guid()); // new GUID algorithm
-						$link = $wpdb->escape($item['link']);
-						
-						$wpdb->query("
-						UPDATE `{$wpdb->posts}` SET guid='{$guid}' WHERE guid='{$link}'
-						");
-					endforeach;
-				endif;
-				echo "<strong>complete.</strong></li>\n";
-			endforeach;
-			echo "</ul>\n";
+		case 0.96:
+			 // Dropping legacy upgrade code. If anyone is still
+			 // using 0.96 and just now decided to upgrade, well, I'm
+			 // sorry about that. You'll just have to cope with a few
+			 // duplicate posts.
 
 			// Mark the upgrade as successful.
 			update_option('feedwordpress_version', FEEDWORDPRESS_VERSION);
@@ -1290,6 +1341,25 @@ class FeedWordPress {
 		echo "<p>Upgrade complete. FeedWordPress is now ready to use again.</p>";
 	} /* FeedWordPress::upgrade_database() */
 
+	function has_guid_index () {
+		global $wpdb;
+		
+		$found = false; // Guilty until proven innocent.
+
+		$results = $wpdb->get_results("
+		SHOW INDEXES FROM {$wpdb->posts}
+		");
+		if ($results) :
+			foreach ($results as $index) :
+				if (isset($index->Column_name)
+				and ('guid' == $index->Column_name)) :
+					$found = true;
+				endif;
+			endforeach;
+		endif;
+		return $found;
+	} /* FeedWordPress::has_guid_index () */
+	
 	function create_guid_index () {
 		global $wpdb;
 		
@@ -1298,26 +1368,69 @@ class FeedWordPress {
 		");
 	} /* FeedWordPress::create_guid_index () */
 	
+	function remove_guid_index () {
+		global $wpdb;
+		
+		$wpdb->query("
+		DROP INDEX {$wpdb->posts}_guid_idx ON {$wpdb->posts}
+		");
+	}
+
+	/*static*/ function fetch ($url) {
+		require_once (ABSPATH . WPINC . '/class-feed.php');
+		$feed = new SimplePie();
+		$feed->set_feed_url($url);
+		$feed->set_cache_class('WP_Feed_Cache');
+		$feed->set_file_class('WP_SimplePie_File');
+		$feed->set_cache_duration(FeedWordPress::cache_duration());
+		$feed->init();
+		$feed->handle_content_type();
+		
+		if ($feed->error()) :
+			$ret = new WP_Error('simplepie-error', $feed->error());
+		else :
+			$ret = $feed;
+		endif;
+		return $ret;
+	} /* FeedWordPress::fetch () */
+	
 	function clear_cache () {
 		global $wpdb;
 		
-		// MagpieRSS stores its cached feeds in options table rows with
-		// name = `rss_{md5 of url}` and timestamps for cached feeds in
-		// table rows with name = `rss_{md5 of url}_ts`. The md5 is
-		// always 32 characters in length, so the total option_name is
-		// always over 32 characters.
-		$wpdb->query("
+		// The WordPress SimplePie module stores its cached feeds as
+		// transient records in the options table. The data itself is
+		// stored in `_transient_feed_{md5 of url}` and the last-modified
+		// timestamp in `_transient_feed_mod_{md5 of url}`. Timeouts for
+		// these records are stored in `_transient_timeout_feed_{md5}`.
+		// Since the md5 is always 32 characters in length, the
+		// option_name is always over 32 characters.
+		$ret = $wpdb->query("
 		DELETE FROM {$wpdb->options}
-		WHERE LOCATE('rss_', option_name) AND LENGTH(option_name) > 32
+		WHERE option_name LIKE '_transient%_feed_%' AND LENGTH(option_name) > 32
 		");
+		return (int) ($ret / 4); // Each transient has 4 rows: the data, the modified timestamp; and the timeouts for each
 	} /* FeedWordPress::clear_cache () */
 
-	function magpie_version () {
-		if (!defined('MAGPIE_VERSION')) : $magpie_version = $GLOBALS['wp_version'].'-default';
-		else : $magpie_version = MAGPIE_VERSION;
+	function cache_duration () {
+		$duration = NULL;
+		if (defined('FEEDWORDPRESS_CACHE_AGE')) :
+			$duration = FEEDWORDPRESS_CACHE_AGE;
 		endif;
-		return $magpie_version;
+		return $duration;
 	}
+	function cache_lifetime ($duration) {
+		// Check for explicit setting of a lifetime duration
+		if (defined('FEEDWORDPRESS_CACHE_LIFETIME')) :
+			$duration = FEEDWORDPRESS_CACHE_LIFETIME;
+
+		// Fall back to the cache freshness duration
+		elseif (defined('FEEDWORDPRESS_CACHE_AGE')) :
+			$duration = FEEDWORDPRESS_CACHE_AGE;
+		endif;
+		
+		// Fall back to WordPress default
+		return $duration;
+	} /* FeedWordPress::cache_lifetime () */
 
 	# Utility functions for handling text settings
 	function negative ($f, $setting) {
@@ -1335,15 +1448,10 @@ class FeedWordPress {
 	function critical_bug ($varname, $var, $line) {
 		global $wp_version;
 
-		if (defined('MAGPIE_VERSION')) : $mv = MAGPIE_VERSION;
-		else : $mv = 'WordPress '.$wp_version.' default.';
-		endif;
-
 		echo '<p>There may be a bug in FeedWordPress. Please <a href="'.FEEDWORDPRESS_AUTHOR_CONTACT.'">contact the author</a> and paste the following information into your e-mail:</p>';
 		echo "\n<plaintext>";
 		echo "Triggered at line # ".$line."\n";
 		echo "FeedWordPress version: ".FEEDWORDPRESS_VERSION."\n";
-		echo "MagpieRSS version: {$mv}\n";
 		echo "WordPress version: {$wp_version}\n";
 		echo "PHP version: ".phpversion()."\n";
 		echo "\n";
@@ -1356,7 +1464,52 @@ class FeedWordPress {
 			FeedWordPress::critical_bug($varname, $var, $line);
 		endif;
 	}
+	
+	function val ($v, $no_newlines = false) {
+		ob_start();
+		var_dump($v);
+		$out = ob_get_contents(); ob_end_clean();
+		
+		if ($no_newlines) :
+			$out = preg_replace('/\s+/', " ", $out);
+		endif;
+		return $out;
+	} /* FeedWordPress:val () */
+
+	function diagnostic ($level, $out) {
+		global $feedwordpress_admin_footer;
+
+		$output = get_option('feedwordpress_diagnostics_output', array());
+		$show = get_option('feedwordpress_diagnostics_show', array());
+		
+		$diagnostic_nesting = count(explode(":", $level));
+
+		if (in_array($level, $show)) :
+			foreach ($output as $method) :
+				switch ($method) :
+				case 'echo' :
+					echo "<div><pre><strong>Diag".str_repeat('====', $diagnostic_nesting-1).'|</strong> '.esc_html($out)."</pre></div>";
+					break;
+				case 'admin_footer' :
+					$feedwordpress_admin_footer[] = $out;
+					break;
+				case 'error_log' :
+					error_log('[feedwordpress]' . $out);
+					break;
+				endswitch;
+			endforeach;
+		endif;
+	} /* FeedWordPress::diagnostic () */
+	
+	function admin_footer () {
+		global $feedwordpress_admin_footer;
+		foreach ($feedwordpress_admin_footer as $line) :
+			echo '<div><pre>'.esc_html($line).'</pre></div>';
+		endforeach;
+	} /* FeedWordPress::admin_footer () */
 } // class FeedWordPress
+
+$feedwordpress_admin_footer = array();
 
 require_once(dirname(__FILE__) . '/syndicatedpost.class.php');
 require_once(dirname(__FILE__) . '/syndicatedlink.class.php');
@@ -1371,7 +1524,7 @@ function feedwordpress_xmlrpc_hook ($args = array ()) {
 }
 
 function feedwordpress_pong ($args) {
-	$feedwordpress =& new FeedWordPress;
+	$feedwordpress = new FeedWordPress;
 	$delta = @$feedwordpress->update($args[1]);
 	if (is_null($delta)):
 		return array('flerror' => true, 'message' => "Sorry. I don't syndicate <$args[1]>.");
@@ -1384,11 +1537,7 @@ function feedwordpress_pong ($args) {
 	endif;
 }
 
-# The upgraded MagpieRSS also uses this class. So if we have it loaded
-# in, don't load it again.
-if (!class_exists('Relative_URI')) {
-	require_once(dirname(__FILE__) . '/relative_uri.class.php');
-}
+require_once(dirname(__FILE__) . '/relative_uri.class.php');
 
 // take your best guess at the realname and e-mail, given a string
 define('FWP_REGEX_EMAIL_ADDY', '([^@"(<\s]+@[^"@(<\s]+\.[^"@(<\s]+)');

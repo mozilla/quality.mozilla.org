@@ -52,7 +52,7 @@ class FeedWordPressAdminPage {
 	/*static*/ function submitted_link () {
 		$link_id = FeedWordPressAdminPage::submitted_link_id();
 		if (is_numeric($link_id) and $link_id) :
-			$link =& new SyndicatedLink($link_id);
+			$link = new SyndicatedLink($link_id);
 		else :
 			$link = NULL;
 		endif;
@@ -62,7 +62,7 @@ class FeedWordPressAdminPage {
 	function stamp_link_id ($field = null) {
 		if (is_null($field)) : $field = 'save_link_id'; endif;
 		?>
-	<input type="hidden" name="<?php print wp_specialchars($field, 'both'); ?>" value="<?php print ($this->for_feed_settings() ? $this->link->id : '*'); ?>" />
+	<input type="hidden" name="<?php print esc_html($field); ?>" value="<?php print ($this->for_feed_settings() ? $this->link->id : '*'); ?>" />
 		<?php
 	} /* FeedWordPressAdminPage::stamp_link_id () */
 
@@ -133,8 +133,8 @@ class FeedWordPressAdminPage {
 				position:relative;
 			}
 			.fwpfs {
-				color: #dddddd;
-				background:#797979 url(<?php bloginfo('home') ?>/wp-admin/images/fav.png) repeat-x scroll left center;
+				color: #dddddd !important; background-color: #333 !important;
+				background:#797979 url(<?php bloginfo('url') ?>/wp-admin/images/fav.png) repeat-x scroll left center;
 				border-color:#777777 #777777 #666666 !important; -moz-border-radius-bottomleft:12px;
 				-moz-border-radius-bottomright:12px;
 				-moz-border-radius-topleft:12px;
@@ -150,7 +150,7 @@ class FeedWordPressAdminPage {
 				-moz-border-radius-bottomright:0;
 				-moz-border-radius-topleft:12px;
 				-moz-border-radius-topright:12px;
-				background-image:url(<?php bloginfo('home') ?>/wp-admin/images/fav-top.png);
+				background-image:url(<?php bloginfo('url') ?>/wp-admin/images/fav-top.png);
 				background-position:0 top;
 				background-repeat:repeat-x;
 				border-bottom-style:solid;
@@ -179,7 +179,7 @@ class FeedWordPressAdminPage {
 		<select name="link_id" class="fwpfs" style="max-width: 20.0em;">
 		  <option value="*"<?php if ($this->for_default_settings()) : ?> selected="selected"<?php endif; ?>>- defaults for all feeds -</option>
 		<?php if ($links) : foreach ($links as $ddlink) : ?>
-		  <option value="<?php print (int) $ddlink->link_id; ?>"<?php if (!is_null($this->link) and ($this->link->id==$ddlink->link_id)) : ?> selected="selected"<?php endif; ?>><?php print wp_specialchars($ddlink->link_name, 1); ?></option>
+		  <option value="<?php print (int) $ddlink->link_id; ?>"<?php if (!is_null($this->link) and ($this->link->id==$ddlink->link_id)) : ?> selected="selected"<?php endif; ?>><?php print esc_html($ddlink->link_name); ?></option>
 		<?php endforeach; endif; ?>
 		</select>
 		<input class="button" type="submit" name="go" value="<?php _e('Go') ?> &raquo;" />
@@ -190,12 +190,12 @@ class FeedWordPressAdminPage {
 	function display_sheet_header ($pagename = 'Syndication', $all = false) {
 		if (FeedWordPressCompatibility::test_version(FWP_SCHEMA_27)) :
 			?>
-			<div class="icon32"><img src="<?php print wp_specialchars(WP_PLUGIN_URL.'/'.$GLOBALS['fwp_path'].'/feedwordpress.png', 1); ?>" alt="" /></div>
+			<div class="icon32"><img src="<?php print esc_html(WP_PLUGIN_URL.'/'.$GLOBALS['fwp_path'].'/feedwordpress.png'); ?>" alt="" /></div>
 			<?php
 		endif;
 		?>
 
-		<h2><?php print wp_specialchars(__($pagename.($all ? '' : ' Settings')), 1); ?><?php if ($this->for_feed_settings()) : ?>: <?php echo wp_specialchars($this->link->link->link_name, 1); ?><?php endif; ?></h2>
+		<h2><?php print esc_html(__($pagename.($all ? '' : ' Settings'))); ?><?php if ($this->for_feed_settings()) : ?>: <?php echo esc_html($this->link->link->link_name); ?><?php endif; ?></h2>
 		<?php
 	}
 
@@ -211,7 +211,7 @@ class FeedWordPressAdminPage {
 		if (!is_null($mesg)) :
 			?>
 			<div class="updated">
-			<p><?php print wp_specialchars($mesg, 1); ?></p>
+			<p><?php print esc_html($mesg); ?></p>
 			</div>
 			<?php
 		endif;
@@ -221,7 +221,7 @@ class FeedWordPressAdminPage {
 		if ($this->for_feed_settings()) :
 		?>
 	<p>These settings only affect posts syndicated from
-	<strong><?php echo wp_specialchars($this->link->link->link_name, 1); ?></strong>.</p>
+	<strong><?php echo esc_html($this->link->link->link_name); ?></strong>.</p>
 		<?php
 		else :
 		?>
@@ -508,7 +508,15 @@ function update_feeds_mention ($feed) {
 	flush();
 }
 function update_feeds_finish ($feed, $added, $dt) {
-	echo " completed in $dt second".(($dt==1)?'':'s')."</li>\n";
+	if (is_wp_error($added)) :
+		$mesgs = $added->get_error_messages();
+		foreach ($mesgs as $mesg) :
+			echo "<br/><strong>Feed error:</strong> <code>$mesg</code>";
+		endforeach;
+		echo "</li>\n";
+	else :
+		echo " completed in $dt second".(($dt==1)?'':'s')."</li>\n";
+	endif;
 }
 
 function fwp_author_list () {

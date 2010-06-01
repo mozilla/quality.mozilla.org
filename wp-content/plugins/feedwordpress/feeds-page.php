@@ -82,6 +82,7 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 		'postmeta',
 		'resolve relative',
 		'freeze updates',
+		'munge permalink',
 		'update/.*',
 		'feed/.*',
 		'link/.*',
@@ -226,9 +227,9 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 		<div id="cron-job-explanation" class="setting-description">
 		<p>If you want to use a cron job,
 		you can perform scheduled updates by sending regularly-scheduled
-		requests to <a href="<?php bloginfo('home'); ?>?update_feedwordpress=1"><code><?php bloginfo('home') ?>?update_feedwordpress=1</code></a>
+		requests to <a href="<?php bloginfo('home'); ?>?update_feedwordpress=1"><code><?php bloginfo('url') ?>?update_feedwordpress=1</code></a>
 		For example, inserting the following line in your crontab:</p>
-		<pre style="font-size: 0.80em"><code>*/10 * * * * /usr/bin/curl --silent <?php bloginfo('home'); ?>?update_feedwordpress=1</code></pre>
+		<pre style="font-size: 0.80em"><code>*/10 * * * * /usr/bin/curl --silent <?php bloginfo('url'); ?>?update_feedwordpress=1</code></pre>
 		<p class="setting-description">will check in every 10 minutes
 		and check for updates on any feeds that are ready to be polled for updates.</p>
 		</div>
@@ -330,9 +331,9 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 	function feed_information_box ($page, $box = NULL) {
 		global $wpdb;
 		if ($page->for_feed_settings()) :
-			$info['name'] = wp_specialchars($page->link->link->link_name, 1);
-			$info['description'] = wp_specialchars($page->link->link->link_description, 'both');
-			$info['url'] = wp_specialchars($page->link->link->link_url, 1);
+			$info['name'] = esc_html($page->link->link->link_name);
+			$info['description'] = esc_html($page->link->link->link_description);
+			$info['url'] = esc_html($page->link->link->link_url);
 			$rss_url = $page->link->link->link_rss;
 
 			$hardcode['name'] = $page->link->hardcode('name');
@@ -340,24 +341,23 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 			$hardcode['url'] = $page->link->hardcode('url');
 		else :
 			$cat_id = FeedWordPress::link_category_id();
-			if (FeedWordPressCompatibility::test_version(FWP_SCHEMA_21)) :
-				$results = get_categories(array(
-					"type" => 'link',
-					"hide_empty" => false,	
-				));
-				
-				// Guarantee that the Contributors category will be in the drop-down chooser, even if it is empty.
-				$found_link_category_id = false;
-				foreach ($results as $row) :
-					// Normalize case
-					if (!isset($row->cat_id)) : $row->cat_id = $row->cat_ID; endif;
 
-					if ($row->cat_id == $cat_id) :	$found_link_category_id = true;	endif;
-				endforeach;
+			$results = get_categories(array(
+				"taxonomy" => 'link_category',
+				"hide_empty" => false,	
+			));
 				
-				if (!$found_link_category_id) :	$results[] = get_category($cat_id); endif;
-			else :
-				$results = $wpdb->get_results("SELECT cat_id, cat_name, auto_toggle FROM $wpdb->linkcategories ORDER BY cat_id");
+			// Guarantee that the Contributors category will be in the drop-down chooser, even if it is empty.
+			$found_link_category_id = false;
+			foreach ($results as $row) :
+				// Normalize case
+				if (!isset($row->cat_id)) : $row->cat_id = $row->cat_ID; endif;
+
+				if ($row->cat_id == $cat_id) :	$found_link_category_id = true;	endif;
+			endforeach;
+			
+			if (!$found_link_category_id) :
+				$results[] = get_category($cat_id);
 			endif;
 	
 			$info = array();
@@ -383,9 +383,9 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 
 		<tr>
 		<th scope="row"><?php _e('Feed URL:') ?></th>
-		<td><a href="<?php echo wp_specialchars($rss_url, 'both'); ?>"><?php echo wp_specialchars($rss_url, 'both'); ?></a>
+		<td><a href="<?php echo esc_html($rss_url); ?>"><?php echo esc_html($rss_url); ?></a>
 		(<a href="<?php echo FEEDVALIDATOR_URI; ?>?url=<?php echo urlencode($rss_url); ?>"
-		title="Check feed &lt;<?php echo wp_specialchars($rss_url, 'both'); ?>&gt; for validity">validate</a>)
+		title="Check feed &lt;<?php echo esc_html($rss_url); ?>&gt; for validity">validate</a>)
 		<input type="submit" name="feedfinder" value="switch &rarr;" style="font-size:smaller" /></td>
 		</tr>
 
@@ -438,7 +438,7 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 				if ($row->cat_id == $cat_id) :
 					echo " selected='selected'";
 				endif;
-				echo ">$row->cat_id: ".wp_specialchars($row->cat_name);
+				echo ">$row->cat_id: ".esc_html($row->cat_name);
 				echo "</option>\n";
 			endforeach;
 		?></select></p>
@@ -469,15 +469,18 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 	} /* FeedWordPressFeedsPage::feed_information_box() */
 
 	function posts_box ($page, $box = NULL) {
-		FeedWordPressSettingsUI::instead_of_posts_box($page->link->id);
+		$id = (isset($page->link) ? $page->link->id : NULL); 
+		FeedWordPressSettingsUI::instead_of_posts_box($id);
 	} /* FeedWordPressFeedsPage::posts_box() */
 
 	function authors_box ($page, $box = NULL) {
-		FeedWordPressSettingsUI::instead_of_authors_box($page->link->id);
+		$id = (isset($page->link) ? $page->link->id : NULL); 
+		FeedWordPressSettingsUI::instead_of_authors_box($id);
 	} /* FeedWordPressFeedsPage::authors_box() */
 	
 	function categories_box ($page, $box = NULL) {
-		FeedWordPressSettingsUI::instead_of_categories_box($page->link->id);
+		$id = (isset($page->link) ? $page->link->id : NULL); 
+		FeedWordPressSettingsUI::instead_of_categories_box($id);
 	} /* FeedWordPressFeedsPage::categories_box() */
 
 	function custom_settings_box ($page, $box = NULL) {
@@ -501,9 +504,9 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 			if (!preg_match("\007^((".implode(')|(', $page->special_settings)."))$\007i", $key)) :
 	?>
 				<tr style="vertical-align:top">
-				<th width="30%" scope="row"><input type="hidden" name="notes[<?php echo $i; ?>][key0]" value="<?php echo wp_specialchars($key, 'both'); ?>" />
-				<input id="notes-<?php echo $i; ?>-key" name="notes[<?php echo $i; ?>][key1]" value="<?php echo wp_specialchars($key, 'both'); ?>" /></th>
-				<td width="60%"><textarea rows="2" cols="40" id="notes-<?php echo $i; ?>-value" name="notes[<?php echo $i; ?>][value]"><?php echo wp_specialchars($value, 'both'); ?></textarea></td>
+				<th width="30%" scope="row"><input type="hidden" name="notes[<?php echo $i; ?>][key0]" value="<?php echo esc_html($key); ?>" />
+				<input id="notes-<?php echo $i; ?>-key" name="notes[<?php echo $i; ?>][key1]" value="<?php echo esc_html($key); ?>" /></th>
+				<td width="60%"><textarea rows="2" cols="40" id="notes-<?php echo $i; ?>-value" name="notes[<?php echo $i; ?>][value]"><?php echo esc_html($value); ?></textarea></td>
 				<td width="10%"><select name="notes[<?php echo $i; ?>][action]">
 				<option value="update">save changes</option>
 				<option value="delete">delete this setting</option>
@@ -531,9 +534,9 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 
 		if ($this->for_feed_settings()) : // Existing feed?
 			if (is_null($lookup)) : $lookup = $this->link->link->link_url; endif;
-			$name = wp_specialchars($this->link->link->link_name, 'both');
+			$name = esc_html($this->link->link->link_name);
 		else: // Or a new subscription to add?
-			$name = "Subscribe to <code>".wp_specialchars(feedwordpress_display_url($lookup))."</code>";
+			$name = "Subscribe to <code>".esc_html(feedwordpress_display_url($lookup))."</code>";
 		endif;
 		?>
 		<style type="text/css">
@@ -565,26 +568,30 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 		<h2>Feed Finder: <?php echo $name; ?></h2>
 
 		<?php
-		$f =& new FeedFinder($lookup);
+		$f = new FeedFinder($lookup);
 		$feeds = $f->find();
 		if (count($feeds) > 0):
 			foreach ($feeds as $key => $f):
-				$rss = @fetch_rss($f);
-				if ($rss):
+				$pie = FeedWordPress::fetch($f);
+				$rss = (is_wp_error($pie) ? $pie : new MagpieFromSimplePie($pie));
+
+				if ($rss and !is_wp_error($rss)):
 					$feed_title = isset($rss->channel['title'])?$rss->channel['title']:$rss->channel['link'];
 					$feed_link = isset($rss->channel['link'])?$rss->channel['link']:'';
 					$feed_type = ($rss->feed_type ? $rss->feed_type : 'Unknown');
+					$feed_version = $rss->feed_version;
 				else :
 					// Give us some sucky defaults
 					$feed_title = feedwordpress_display_url($lookup);
 					$feed_link = $lookup;
 					$feed_type = 'Unknown';
+					$feed_version = '';
 				endif;
 				?>
 					<form action="admin.php?page=<?php print $GLOBALS['fwp_path'] ?>/syndication.php" method="post">
 					<div><?php FeedWordPressCompatibility::stamp_nonce('feedwordpress_switchfeed'); ?></div>
 					<fieldset>
-					<legend><?php echo $feed_type; ?> <?php echo $rss->feed_version; ?> feed</legend>
+					<legend><?php echo $feed_type; ?> <?php echo $feed_version; ?> feed</legend>
 
 					<?php
 					$this->stamp_link_id();
@@ -594,23 +601,24 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 					// and homepage URL for the new Link.
 					if (!$this->for_feed_settings()):
 						?>
-						<input type="hidden" name="feed_title" value="<?php echo wp_specialchars($feed_title, 'both'); ?>" />
-						<input type="hidden" name="feed_link" value="<?php echo wp_specialchars($feed_link, 'both'); ?>" />
+						<input type="hidden" name="feed_title" value="<?php echo esc_html($feed_title); ?>" />
+						<input type="hidden" name="feed_link" value="<?php echo esc_html($feed_link); ?>" />
 						<?php
 					endif;
 					?>
 
-					<input type="hidden" name="feed" value="<?php echo wp_specialchars($f, 'both'); ?>" />
+					<input type="hidden" name="feed" value="<?php echo esc_html($f); ?>" />
 					<input type="hidden" name="action" value="switchfeed" />
 
 					<div>
 					<div class="feed-sample">
-					
 					<?php
-					if (count($rss->items) > 0):
+					$link = NULL;
+					$post = NULL;
+					if (!is_wp_error($rss) and count($rss->items) > 0):
 						// Prepare to display Sample Item
-						$link =& new MagpieMockLink($rss, $f);
-						$post =& new SyndicatedPost($rss->items[0], $link);
+						$link = new MagpieMockLink(array('simplepie' => $pie, 'magpie' => $rss), $f);
+						$post = new SyndicatedPost(array('simplepie' => $rss->originals[0], 'magpie' => $rss->items[0]), $link);
 						?>
 						<h3>Sample Item</h3>
 						<ul>
@@ -621,13 +629,14 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 						<?php print $post->post['post_content']; ?>
 						</div>
 						<?php
+						do_action('feedwordpress_feed_finder_sample_item', $f, $post, $link);
 					else:
-						if (magpie_error()) :
+						if (is_wp_error($rss)) :
 							print '<div class="feed-problem">';
 							print "<h3>Problem:</h3>\n";
 							print "<p>FeedWordPress encountered the following error
 							when trying to retrieve this feed:</p>";
-							print '<p style="margin: 1.0em 3.0em"><code>'.magpie_error().'</code></p>';
+							print '<p style="margin: 1.0em 3.0em"><code>'.$rss->get_error_message().'</code></p>';
 							print "<p>If you think this is a temporary problem, you can still force FeedWordPress to add the subscription. FeedWordPress will not be able to find any syndicated posts until this problem is resolved.</p>";
 							print "</div>";
 						endif;
@@ -643,10 +652,11 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 					<h3>Feed Information</h3>
 					<ul>
 					<li><strong>Homepage:</strong> <a href="<?php echo $feed_link; ?>"><?php echo is_null($feed_title)?'<em>Unknown</em>':$feed_title; ?></a></li>
-					<li><strong>Feed URL:</strong> <a href="<?php echo wp_specialchars($f, 'both'); ?>"><?php echo wp_specialchars($f, 'both'); ?></a> (<a title="Check feed &lt;<?php echo wp_specialchars($f, 'both'); ?>&gt; for validity" href="http://feedvalidator.org/check.cgi?url=<?php echo urlencode($f); ?>">validate</a>)</li>
-					<li><strong>Encoding:</strong> <?php echo isset($rss->encoding)?wp_specialchars($rss->encoding, 'both'):"<em>Unknown</em>"; ?></li>
-					<li><strong>Description:</strong> <?php echo isset($rss->channel['description'])?wp_specialchars($rss->channel['description'], 'both'):"<em>Unknown</em>"; ?></li>
+					<li><strong>Feed URL:</strong> <a href="<?php echo esc_html($f); ?>"><?php echo esc_html($f); ?></a> (<a title="Check feed &lt;<?php echo esc_html($f); ?>&gt; for validity" href="http://feedvalidator.org/check.cgi?url=<?php echo urlencode($f); ?>">validate</a>)</li>
+					<li><strong>Encoding:</strong> <?php echo isset($rss->encoding)?esc_html($rss->encoding):"<em>Unknown</em>"; ?></li>
+					<li><strong>Description:</strong> <?php echo isset($rss->channel['description'])?esc_html($rss->channel['description']):"<em>Unknown</em>"; ?></li>
 					</ul>
+					<?php do_action('feedwordpress_feedfinder_form', $f, $post, $link, $this->for_feed_settings()); ?>
 					<div class="submit"><input type="submit" name="Use" value="&laquo; Use this feed" /></div>
 					<div class="submit"><input type="submit" name="Cancel" value="&laquo; Cancel" /></div>
 					</div>
@@ -654,6 +664,8 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 					</fieldset>
 					</form>
 					<?php
+				unset($link);
+				unset($post);
 			endforeach;
 		else:
 			print "<p><strong>".__('Error').":</strong> ".__("FeedWordPress couldn't find any feeds at").' <code><a href="'.htmlspecialchars($lookup).'">'.htmlspecialchars($lookup).'</a></code>';
@@ -740,7 +752,7 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 					// We have a checkbox for "No," so if it's unchecked, mark as "Yes."
 					$this->link->settings["hardcode {$what}"] = (isset($post["hardcode_{$what}"]) ? $post["hardcode_{$what}"] : 'yes');
 					if (FeedWordPress::affirmative($this->link->settings, "hardcode {$what}")) :
-						$alter[] = "link_{$what} = '".$wpdb->escape($post['link'.$what])."'";
+						$this->link->link->{'link_'.$what} = $post['link'.$what];
 					endif;
 				endforeach;
 				
@@ -787,23 +799,24 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 			$this->updatedPosts->accept_POST($post);
 
 			if ($this->for_feed_settings()) :
-				$alter[] = "link_notes = '".$wpdb->escape($this->link->settings_to_notes())."'";
-
-				$alter_set = implode(", ", $alter);
+				// Save changes to channel-level meta-data
+				//$alter_set = implode(", ", $alter);
 
 				// issue update query
-				$result = $wpdb->query("
-				UPDATE $wpdb->links
-				SET $alter_set
-				WHERE link_id='{$this->link->id}'
-				");
+				//$result = $wpdb->query("
+				//UPDATE $wpdb->links
+				//SET $alter_set
+				//WHERE link_id='{$this->link->id}'
+				//");
+				
+				// Save settings
+				$this->link->save_settings(/*reload=*/ true);
+
 				$this->updated = true;
 
-				// reload link information from DB
-				if (function_exists('clean_bookmark_cache')) :
-					clean_bookmark_cache($this->link->id);
-				endif;
-				$this->link = new SyndicatedLink($this->link->id);
+				// Reset, reload
+				$link_id = $this->link->id; unset($this->link);
+				$this->link = new SyndicatedLink($link_id);
 			endif;
 
 		// Probably a "Go" button for the drop-down
