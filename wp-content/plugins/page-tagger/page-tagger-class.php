@@ -25,6 +25,8 @@ class PageTagger
 {
 	static $instance = NULL;
 	
+	private $using_wordpress_3_or_above = FALSE;
+	
 	static function init()
 	{
 		if (NULL == self::$instance)
@@ -33,9 +35,13 @@ class PageTagger
 	
 	function PageTagger()
 	{
-		// if we're editing or adding a page
+		global $wp_version;
+		$this->using_wordpress_3_or_above = (3 <= substr($wp_version,0,1));
+
+		// for WP 3 we will do the 'is editing page' check later
 		global $pagenow;
-		if ( isset($pagenow) && in_array( $pagenow, array('page.php', 'page-new.php') ) )
+		if ($this->using_wordpress_3_or_above || 
+				(isset($pagenow) && in_array( $pagenow, array('page.php', 'page-new.php') )) )
 		{
 			add_action('admin_head',array(&$this, 'admin_head_hook') );
 		}	
@@ -52,6 +58,15 @@ class PageTagger
 	 */ 
 	function admin_head_hook()
 	{
+		// WP 3
+		if ($this->using_wordpress_3_or_above)
+		{
+			// check that we're editing a page
+			global $current_screen, $editing;
+			if (!$editing || empty($current_screen) || 'page' != $current_screen->post_type)
+				return;			
+		}
+		
 		wp_register_script('page-tagger', WP_PLUGIN_URL.'/'.PAGE_TAGGER_PARENT_DIR.'/page-tagger.js', array('jquery','suggest'), false);
 		wp_localize_script('page-tagger','pageTaggerL10n', 
 				array(
@@ -61,18 +76,7 @@ class PageTagger
 		);
 		wp_print_scripts('page-tagger');
 		
-		
-		// all tag-style post taxonomies
-		foreach ( get_object_taxonomies('post') as $tax_name )
-		{
-			if ( !is_taxonomy_hierarchical($tax_name) )
-			{
-				$taxonomy = get_taxonomy($tax_name);
-				$label = isset($taxonomy->label) ? esc_attr($taxonomy->label) : $tax_name;
-				
-				add_meta_box('tagsdiv-'.$tax_name, $label, array(&$this, 'add_tags_meta_box'), 'page', 'side', 'default');
-			}
-		}
+		add_meta_box('tagsdiv-post_tag', 'Tags', array(&$this, 'add_tags_meta_box'), 'page', 'side', 'default');
 	}
 
 	
@@ -121,6 +125,8 @@ class PageTagger
 	 */
 	function add_tags_meta_box($post, $box) 
 	{
+		$css = ($this->using_wordpress_3_or_above ? 'wp3' : '');
+		
 		$tax_name = esc_attr(substr($box['id'], 8));
 		$taxonomy = get_taxonomy($tax_name);
 		$helps = isset($taxonomy->helps) ? esc_attr($taxonomy->helps) : __('Separate tags with commas.');
@@ -139,7 +145,7 @@ class PageTagger
 			<p class="howto"><?php echo $helps; ?></p>
 			<div class="tagchecklist"></div>
 		</div>
-		<p class="tagcloud-link hide-if-no-js"><a href="#titlediv" class="tagcloud-link" id="link-<?php echo $tax_name; ?>"><?php printf( __('Choose from the most used tags in %s'), $box['title'] ); ?></a></p>
+		<p class="tagcloud-link hide-if-no-js"><a href="#titlediv" class="tagcloud-link <?php echo $css; ?>" id="link-<?php echo $tax_name; ?>"><?php printf( __('Choose from the most used tags in %s'), $box['title'] ); ?></a></p>
 	<?php
 	}
 	

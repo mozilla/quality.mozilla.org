@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 Plugin Name: Page Tagger
 Plugin URI: http://www.hiddentao.com/code/wordpress-page-tagger-plugin/
 Description: Enables tagging for pages. PHP 5 required.
-Version: 0.3.5
+Version: 0.3.6
 Author: Ramesh Nair
 Author URI: http://www.hiddentao.com/
 */
@@ -154,7 +154,11 @@ var tagCloud;
 	tagCloud = {
 		init : function() {
 			$('.tagcloud-link').click(function(){
-				tagCloud.get($(this).attr('id'));
+				
+				// in WP 3 this call already gets made elsewhere
+				if (!$(this).hasClass('wp3'))
+					tagCloud.get($(this).attr('id'));
+				
 				$(this).unbind().click(function(){
 					$(this).siblings('.the-tagcloud').toggle();
 					return false;
