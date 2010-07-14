@@ -94,6 +94,7 @@ try {
 	<h3><?php _e('Need a hand?',$this->pluginDomain); ?></h3>
 	<p><?php _e('If you\'re stuck on these options, please <a href="http://wordpress.org/extend/plugins/the-events-calendar/">check out the documentation</a>. If you\'re still wondering what\'s going on, be sure to stop by the support <a href="http://wordpress.org/tags/the-events-calendar?forum_id=10">forum</a> and ask for help. The open source community is full of kind folks who are happy to help.',$this->pluginDomain); ?></p>
 	<p><?php _e('Here is the iCal feed URL for your events: ' ,$this->pluginDomain); ?><code><?php bloginfo('home'); ?>/?ical</code></p>
+	<p><?php _e('The iCal feed can be sorted by sub-category. Add the category slug to the above URL: ' ,$this->pluginDomain); ?><code><?php bloginfo('home'); ?>/?ical=some-sub-category</code></p>
 	<table class="form-table">
 	    <tr id="mainDonateRow">
 	    	<th scope="row"><?php _e('Donate',$this->pluginDomain); ?></th>

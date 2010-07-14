@@ -3,7 +3,7 @@
 Plugin Name: FeedWordPress
 Plugin URI: http://feedwordpress.radgeek.com/
 Description: simple and flexible Atom/RSS syndication for WordPress
-Version: 2010.0531
+Version: 2010.0623
 Author: Charles Johnson
 Author URI: http://radgeek.com/
 License: GPL
@@ -11,13 +11,14 @@ License: GPL
 
 /**
  * @package FeedWordPress
- * @version 2010.0531
+ * @version 2010.0623
  */
 
 # This uses code derived from:
 # -	wp-rss-aggregate.php by Kellan Elliot-McCrea <kellan@protest.net>
-# -	HTTP Navigator 2 by Keyvan Minoukadeh <keyvan@k1m.com>
+# -	MagpieRSS by Kellan Elliot-McCrea <kellan@protest.net>
 # -	Ultra-Liberal Feed Finder by Mark Pilgrim <mark@diveintomark.org>
+# -	WordPress Blog Tool and Publishing Platform <http://wordpress.org/>
 # according to the terms of the GNU General Public License.
 #
 # INSTALLATION: see readme.txt or <http://projects.radgeek.com/install>
@@ -33,7 +34,7 @@ License: GPL
 
 # -- Don't change these unless you know what you're doing...
 
-define ('FEEDWORDPRESS_VERSION', '2010.0531');
+define ('FEEDWORDPRESS_VERSION', '2010.0623');
 define ('FEEDWORDPRESS_AUTHOR_CONTACT', 'http://radgeek.com/contact');
 
 // Defaults
@@ -58,6 +59,7 @@ define ('FEEDVALIDATOR_URI', 'http://feedvalidator.org/check.cgi');
 define ('FEEDWORDPRESS_FRESHNESS_INTERVAL', 10*60); // Every ten minutes
 
 define ('FWP_SCHEMA_HAS_USERMETA', 2966);
+define ('FWP_SCHEMA_USES_ARGS_TAXONOMY', 12694); // Revision # for using $args['taxonomy'] to get link categories
 define ('FWP_SCHEMA_20', 3308); // Database schema # for WP 2.0
 define ('FWP_SCHEMA_21', 4772); // Database schema # for WP 2.1
 define ('FWP_SCHEMA_23', 5495); // Database schema # for WP 2.3
@@ -66,6 +68,7 @@ define ('FWP_SCHEMA_26', 8201); // Database schema # for WP 2.6
 define ('FWP_SCHEMA_27', 9872); // Database schema # for WP 2.7
 define ('FWP_SCHEMA_28', 11548); // Database schema # for WP 2.8
 define ('FWP_SCHEMA_29', 12329); // Database schema # for WP 2.9
+define ('FWP_SCHEMA_30', 12694); // Database schema # for WP 3.0
 
 if (FEEDWORDPRESS_DEBUG) :
 	// Help us to pick out errors, if any.
@@ -94,21 +97,15 @@ add_filter('wp_feed_cache_transient_lifetime', array('FeedWordPress', 'cache_lif
 // Ensure that we have SimplePie loaded up and ready to go.
 // We no longer need a MagpieRSS upgrade module. Hallelujah!
 require_once(ABSPATH . WPINC . '/feed.php');
+require_once(ABSPATH . WPINC . '/class-feed.php');
+require_once(ABSPATH . WPINC . '/class-simplepie.php');
 
-if (isset($wp_db_version)) :
-	if ($wp_db_version >= FWP_SCHEMA_23) :
-		require_once (ABSPATH . WPINC . '/registration.php'); 		// for wp_insert_user
-	elseif ($wp_db_version >= FWP_SCHEMA_21) : // WordPress 2.1 and 2.2, but not 2.3
-		require_once (ABSPATH . WPINC . '/registration.php'); 		// for wp_insert_user
-		require_once (ABSPATH . 'wp-admin/admin-db.php'); 		// for wp_insert_category 
-	elseif ($wp_db_version >= FWP_SCHEMA_20) : // WordPress 2.0
-		require_once (ABSPATH . WPINC . '/registration-functions.php');	// for wp_insert_user
-		require_once (ABSPATH . 'wp-admin/admin-db.php');		// for wp_insert_category
-	endif;
-endif;
+require_once (ABSPATH . WPINC . '/registration.php'); // for wp_insert_user
 
+require_once(dirname(__FILE__) . '/admin-ui.php');
 require_once(dirname(__FILE__) . '/compatability.php'); // LEGACY API: Replicate or mock up functions for legacy support purposes
 require_once(dirname(__FILE__) . '/feedwordpresshtml.class.php');
+require_once(dirname(__FILE__) . '/feedwordpress-content-type-sniffer.class.php');
 
 // Magic quotes are just about the stupidest thing ever.
 if (is_array($_POST)) :
@@ -128,30 +125,16 @@ else : // Something went wrong. Let's just guess.
 	$fwp_path = 'feedwordpress';
 endif;
 
-function feedwordpress_admin_scripts () {
-	wp_enqueue_script('post'); // for magic tag and category boxes
-	wp_enqueue_script('admin-forms'); // for checkbox selection
-}
-
 // If this is a FeedWordPress admin page, queue up scripts for AJAX functions that FWP uses
 // If it is a display page or a non-FeedWordPress admin page, don't.
-if (is_admin() and isset($_REQUEST['page']) and preg_match("|^{$fwp_path}/|", $_REQUEST['page'])) :
-	if (function_exists('wp_enqueue_script')) :
-		if (FeedWordPressCompatibility::test_version(FWP_SCHEMA_29)) :
-			add_action('admin_print_scripts', 'feedwordpress_admin_scripts');
-		elseif (FeedWordPressCompatibility::test_version(FWP_SCHEMA_25)) :
-			wp_enqueue_script('post'); // for magic tag and category boxes
-			wp_enqueue_script('thickbox'); // for fold-up boxes
-			wp_enqueue_script('admin-forms'); // for checkbox selection
-		else :
-			wp_enqueue_script( 'ajaxcat' ); // Provides the handy-dandy new category text box
-		endif;
-	endif;
-	if (function_exists('wp_enqueue_style')) :
-		if (fwp_test_wp_version(FWP_SCHEMA_25)) :
-			wp_enqueue_style('dashboard');
-		endif;
-	endif;
+if (FeedWordPressSettingsUI::is_admin()) :
+	add_action('admin_print_scripts', array('FeedWordPressSettingsUI', 'admin_scripts'));
+
+	wp_register_style('feedwordpress-elements', WP_PLUGIN_URL.'/'.$fwp_path.'/feedwordpress-elements.css');
+
+	wp_enqueue_style('dashboard');
+	wp_enqueue_style('feedwordpress-elements');
+
 	if (function_exists('wp_admin_css')) :
 		if (fwp_test_wp_version(FWP_SCHEMA_25)) :
 			wp_admin_css('css/dashboard');
@@ -180,7 +163,7 @@ if (!FeedWordPress::needs_upgrade()) : // only work if the conditions are safe!
 	add_action('atom_entry', 'feedwordpress_item_feed_data');
 	
 	# Filter in original permalinks if the user wants that
-	add_filter('post_link', 'syndication_permalink', 1);
+	add_filter('post_link', 'syndication_permalink', /*priority=*/ 1, /*arguments=*/ 3);
 
 	# When foreign URLs are used for permalinks in feeds or display
 	# contexts, they need to be escaped properly.
@@ -240,6 +223,11 @@ if (!FeedWordPress::needs_upgrade()) : // only work if the conditions are safe!
 		add_action('feedwordpress_check_feed_complete', 'debug_out_feedwordpress_feed_error', 100, 3);
 	endif;
 
+	add_action('wp_footer', 'debug_out_feedwordpress_footer', -100);
+	add_action('admin_footer', 'debug_out_feedwordpress_footer', -100);
+	
+	add_action('init', 'feedwordpress_clear_cache_magic_url');
+
 	# Cron-less auto-update. Hooray!
 	$autoUpdateHook = get_option('feedwordpress_automatic_updates');
 	if ($autoUpdateHook != 'init') :
@@ -264,6 +252,12 @@ function feedwordpress_auto_update () {
 		$feedwordpress->update();
 	endif;
 } /* feedwordpress_auto_update () */
+
+function feedwordpress_clear_cache_magic_url () {
+	if (FeedWordPress::clear_cache_requested()) :
+		FeedWordPress::clear_cache();
+	endif;
+}
 
 function feedwordpress_update_magic_url () {
 	global $wpdb;
@@ -292,6 +286,7 @@ function feedwordpress_update_magic_url () {
 			echo "[feedwordpress] $wpdb->num_queries queries. $mysqlTime seconds in MySQL. Total of "; timer_stop(1); print " seconds.";
 		endif;
 
+		debug_out_feedwordpress_footer();
 
     		// Magic URL should return nothing but a 200 OK header packet
 		// when successful.
@@ -377,6 +372,28 @@ function debug_out_feedwordpress_feed_error ($feed, $added, $dt) {
 		endforeach;		
 	endif;
 }
+
+function debug_out_human_readable_bytes ($quantity) {
+	$quantity = (int) $quantity;
+	$magnitude = 'B';
+	$orders = array('KB', 'MB', 'GB', 'TB');
+	while (($quantity > 1024) and (count($orders) > 0)) :
+		$quantity = floor($quantity / 1024);
+		$magnitude = array_shift($orders);
+	endwhile;
+	return "${quantity} ${magnitude}";
+}
+
+function debug_out_feedwordpress_footer () {
+	if (FeedWordPress::diagnostic_on('memory_usage')) :
+		if (function_exists('memory_get_usage')) :
+			FeedWordPress::diagnostic ('memory_usage', "Memory: Current usage: ".debug_out_human_readable_bytes(memory_get_usage()));
+		endif;
+		if (function_exists('memory_get_peak_usage')) :
+			FeedWordPress::diagnostic ('memory_usage', "Memory: Peak usage: ".debug_out_human_readable_bytes(memory_get_peak_usage()));
+		endif;
+	endif;
+} /* debug_out_feedwordpress_footer() */
 
 ################################################################################
 ## TEMPLATE API: functions to make your templates syndication-aware ############
@@ -650,28 +667,41 @@ function feedwordpress_item_feed_data () {
  *	syndicated, or if FWP is set to use internal permalinks, or if the post
  *	was syndicated, but didn't have a proper permalink recorded.
  *
- * @uses FeedWordPress::munge_permalinks()
+ * @uses SyndicatedLink::setting()
  * @uses get_syndication_permalink()
+ * @uses get_syndication_feed_object()
+ * @uses url_to_postid()
+ * @global $id
  * @global $feedwordpress_the_original_permalink
- */ 
-function syndication_permalink ($permalink = '') {
+ */
+function syndication_permalink ($permalink = '', $post = null, $leavename = false) {
+	global $id;
 	global $feedwordpress_the_original_permalink;
 	
 	// Save the local permalink in case we need to retrieve it later.
 	$feedwordpress_the_original_permalink = $permalink;
 
-	// Map this permalink to a post ID so we can get the correct permalink
-	// even outside of the Post Loop. Props Björn.
-	$id = url_to_postid($permalink);
+	if (is_object($post) and isset($post->ID) and !empty($post->ID)) :
+		// Use the post ID we've been provided with.
+		$postId = $post->ID;
+	elseif (is_string($permalink) and strlen($permalink) > 0) :
+		// Map this permalink to a post ID so we can get the correct
+		// permalink even outside of the Post Loop. Props Björn.
+		$postId = url_to_postid($permalink);
+	else :
+		// If the permalink string is empty but Post Loop context
+		// provides an id.
+		$postId = $id;
+	endif;
 
 	$munge = false;
-	$link = get_syndication_feed_object($id);
+	$link = get_syndication_feed_object($postId);
 	if (is_object($link)) :
 		$munge = ($link->setting('munge permalink', 'munge_permalink', 'yes') != 'no');
 	endif;
 
 	if ($munge):
-		$uri = get_syndication_permalink($id);
+		$uri = get_syndication_permalink($postId);
 		$permalink = ((strlen($uri) > 0) ? $uri : $permalink);
 	endif;
 	return $permalink;
@@ -689,6 +719,7 @@ function syndication_permalink ($permalink = '') {
  *
  */
 function syndication_permalink_escaped ($permalink) {
+	/* FIXME: This should review link settings not just global settings */
 	if (is_syndicated() and FeedWordPress::munge_permalinks()) :
 		// This is a foreign link; WordPress can't vouch for its not
 		// having any entities that need to be &-escaped. So we'll do
@@ -1117,6 +1148,13 @@ class FeedWordPress {
 		return $ret;
 	} // FeedWordPress::stale()
 	
+	function clear_cache_requested () {
+		return (
+			isset($_GET['clear_cache'])
+			and $_GET['clear_cache']
+		);
+	} /* FeedWordPress::clear_cache_requested() */
+
 	function update_requested () {
 		return (
 			isset($_REQUEST['update_feedwordpress'])
@@ -1244,13 +1282,12 @@ class FeedWordPress {
 		return (get_option('feedwordpress_munge_permalink', /*default=*/ 'yes') != 'no');
 	} /* FeedWordPress::munge_permalinks() */
 
-	function syndicated_links () {
+	function syndicated_links ($args = array()) {
 		$contributors = FeedWordPress::link_category_id();
-		if (function_exists('get_bookmarks')) :
-			$links = get_bookmarks(array("category" => $contributors));
-		else: 
-			$links = get_linkobjects($contributors); // deprecated as of WP 2.1
-		endif;
+		$links = get_bookmarks(array_merge(
+			array("category" => $contributors),
+			$args
+		));
 		return $links;
 	} // function FeedWordPress::syndicated_links()
 
@@ -1376,12 +1413,14 @@ class FeedWordPress {
 		");
 	}
 
-	/*static*/ function fetch ($url) {
-		require_once (ABSPATH . WPINC . '/class-feed.php');
+	/*static*/ function fetch ($url, $force_feed = true) {
 		$feed = new SimplePie();
 		$feed->set_feed_url($url);
 		$feed->set_cache_class('WP_Feed_Cache');
 		$feed->set_file_class('WP_SimplePie_File');
+		$feed->set_content_type_sniffer_class('FeedWordPress_Content_Type_Sniffer');
+		$feed->set_file_class('FeedWordPress_File');
+		$feed->force_feed($force_feed);
 		$feed->set_cache_duration(FeedWordPress::cache_duration());
 		$feed->init();
 		$feed->handle_content_type();
@@ -1397,6 +1436,12 @@ class FeedWordPress {
 	function clear_cache () {
 		global $wpdb;
 		
+		// Just in case, clear out any old MagpieRSS cache records.
+		$magpies = $wpdb->query("
+		DELETE FROM {$wpdb->options}
+		WHERE option_name LIKE 'rss_%' AND LENGTH(option_name) > 32
+		");
+
 		// The WordPress SimplePie module stores its cached feeds as
 		// transient records in the options table. The data itself is
 		// stored in `_transient_feed_{md5 of url}` and the last-modified
@@ -1404,11 +1449,13 @@ class FeedWordPress {
 		// these records are stored in `_transient_timeout_feed_{md5}`.
 		// Since the md5 is always 32 characters in length, the
 		// option_name is always over 32 characters.
-		$ret = $wpdb->query("
+		$simplepies = $wpdb->query("
 		DELETE FROM {$wpdb->options}
 		WHERE option_name LIKE '_transient%_feed_%' AND LENGTH(option_name) > 32
 		");
-		return (int) ($ret / 4); // Each transient has 4 rows: the data, the modified timestamp; and the timeouts for each
+		$simplepies = (int) ($simplepies / 4); // Each transient has 4 rows: the data, the modified timestamp; and the timeouts for each
+
+		return ($magpies + $simplepies);
 	} /* FeedWordPress::clear_cache () */
 
 	function cache_duration () {
@@ -1443,7 +1490,6 @@ class FeedWordPress {
 		return (isset($f[$setting]) and in_array(strtolower($f[$setting]), $affirmo));
 	}
 
-
 	# Internal debugging functions
 	function critical_bug ($varname, $var, $line) {
 		global $wp_version;
@@ -1474,17 +1520,21 @@ class FeedWordPress {
 			$out = preg_replace('/\s+/', " ", $out);
 		endif;
 		return $out;
-	} /* FeedWordPress:val () */
+	} /* FeedWordPress::val () */
+
+	function diagnostic_on ($level) {
+		$show = get_option('feedwordpress_diagnostics_show', array());
+		return (in_array($level, $show));
+	} /* FeedWordPress::diagnostic_on () */
 
 	function diagnostic ($level, $out) {
 		global $feedwordpress_admin_footer;
 
 		$output = get_option('feedwordpress_diagnostics_output', array());
-		$show = get_option('feedwordpress_diagnostics_show', array());
 		
 		$diagnostic_nesting = count(explode(":", $level));
 
-		if (in_array($level, $show)) :
+		if (FeedWordPress::diagnostic_on($level)) :
 			foreach ($output as $method) :
 				switch ($method) :
 				case 'echo' :
@@ -1508,6 +1558,18 @@ class FeedWordPress {
 		endforeach;
 	} /* FeedWordPress::admin_footer () */
 } // class FeedWordPress
+
+class FeedWordPress_File extends WP_SimplePie_File {
+	function FeedWordPress_File ($url, $timeout = 10, $redirects = 5, $headers = null, $useragent = null, $force_fsockopen = false) {
+		WP_SimplePie_File::WP_SimplePie_File($url, $timeout, $redirects, $headers, $useragent, $force_fsockopen);
+
+		// SimplePie makes a strongly typed check against integers with
+		// this, but WordPress puts a string in. Which causes caching
+		// to break and fall on its ass when SimplePie is getting a 304,
+		// but doesn't realize it because this member is "304" instead.
+		$this->status_code = (int) $this->status_code;
+	}
+} /* class FeedWordPress_File () */
 
 $feedwordpress_admin_footer = array();
 
@@ -1536,8 +1598,6 @@ function feedwordpress_pong ($args) {
 		return array('flerror' => false, 'message' => "Thanks for the ping.".implode(' and', $mesg));
 	endif;
 }
-
-require_once(dirname(__FILE__) . '/relative_uri.class.php');
 
 // take your best guess at the realname and e-mail, given a string
 define('FWP_REGEX_EMAIL_ADDY', '([^@"(<\s]+@[^"@(<\s]+\.[^"@(<\s]+)');

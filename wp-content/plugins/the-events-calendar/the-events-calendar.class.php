@@ -400,6 +400,12 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
             }
             return $this->defaultOptions;
         }
+
+		public function getSingleOption( $key ) {
+			if( $this->latestOptions ) return $this->latestOptions[$key];
+			$options = $this->getOptions();
+			return $options[$key];
+		}
 		        
         private function saveOptions($options) {
             if (!is_array($options)) {
@@ -434,7 +440,7 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 					load_template( dirname( __FILE__ ) . '/views/gridview.php' );
 				}
 				exit;
-	        }    
+	        }
 			// single event
 			if (is_single() && in_category( $this->eventCategory() ) ) {
 				if( '' == locate_template( array( 'events/single.php' ), true ) ) {
@@ -445,7 +451,6 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 		}
 		
 		public function truncate($text, $excerpt_length = 44) {
-
 			$text = strip_shortcodes( $text );
 
 			$text = apply_filters('the_content', $text);
@@ -458,8 +463,7 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 				$text = implode(' ', $words);
 				$text = rtrim($text);
 				$text .= '&hellip;';
-				}
-
+			}
 			return $text;
 		}
 		
@@ -467,8 +471,30 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 			load_plugin_textdomain( $this->pluginDomain, false, basename(dirname(__FILE__)) . '/lang/');
 			$eventsURL = trailingslashit( WP_PLUGIN_URL ) . trailingslashit( plugin_basename( dirname( __FILE__ ) ) ) . 'resources/';
 			wp_enqueue_script('sp-events-calendar-script', $eventsURL.'events.js', array('jquery') );
-			wp_enqueue_style('sp-events-calendar-style', $eventsURL.'events.css');
+			if( file_exists( TEMPLATEPATH.'/events/events.css' ) ) {
+				$templateArray = explode( '/', TEMPLATEPATH );
+				$themeName = $templateArray[count($templateArray)-1];
+				wp_enqueue_style('sp-events-calendar-style', WP_CONTENT_URL.'/themes/'.$themeName.'/events/events.css' );
+			} else wp_enqueue_style('sp-events-calendar-style', $eventsURL.'events.css' );
 		}
+		
+		/* possible new check for events.css in child themes */
+		/*
+		public function loadDomainStylesScripts() {
+			load_plugin_textdomain( $this->pluginDomain, false, basename(dirname(__FILE__)) . '/lang/');
+			$eventsURL = trailingslashit( WP_PLUGIN_URL ) . trailingslashit( plugin_basename( dirname( __FILE__ ) ) ) . 'resources/';
+			wp_enqueue_script('sp-events-calendar-script', $eventsURL.'events.js', array('jquery') );
+			if( file_exists( TEMPLATEPATH.'/events/events.css' ) ) {
+				$templateArray = explode( '/', TEMPLATEPATH );
+				$themeName = $templateArray[count($templateArray)-1];
+				wp_enqueue_style('sp-events-calendar-style', WP_CONTENT_URL.'/themes/'.$themeName.'/events/events.css' );
+			} else if( file_exists( STYLESHEETPATH.'/events/events.css' ) ) {
+				$templateArray = explode( '/', STYLESHEETPATH );
+				$themeName = $templateArray[count($templateArray)-1];
+				wp_enqueue_style('sp-events-calendar-style', WP_CONTENT_URL.'/themes/'.$themeName.'/events/events.css' );
+			} else wp_enqueue_style('sp-events-calendar-style', $eventsURL.'events.css' );
+		}
+		*/
 	
 		/**
 		 * Helper method to return an array of 1-12 for months
@@ -544,8 +570,20 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 			return $years;
 		}
 		
+		private function updateMapPostMeta() {
+			$eventsCatId = get_cat_ID( The_Events_Calendar::CATEGORYNAME );
+			$eventPosts = get_posts('numberposts=-1&category='.$eventsCatId);
+			foreach( $eventPosts as $place => $object ) {
+				$keys = get_post_custom_keys($object->ID);
+				if( !in_array( '_EventShowMap', $keys ) ) {
+					add_post_meta( $object->ID, '_EventShowMapLink', 'true', true);
+					if( $this->getSingleOption( 'embedGoogleMaps' ) == 'on' ) add_post_meta( $object->ID, '_EventShowMap', 'true', true);
+				}
+			}
+		}
+		
 		/**
-		 * Creates the category and sets up the theme resource folder with sample config files.
+		 * Creates the category and sets up the theme resource folder with sample config files. Calls updateMapPostMeta().
 		 * 
 		 * @return void
 		 */
@@ -555,6 +593,7 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 			wp_schedule_event( $firstTime, 'daily', 'reschedule_event_post'); // schedule this for midnight, daily
 			$this->create_category_if_not_exists( );	
 			$this->flushRewriteRules();
+			$this->updateMapPostMeta();
 		}
 		/**
 		* This function is scheduled to run at midnight.  If any posts are set with EventStartDate
@@ -853,11 +892,12 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 					$this->postExceptionThrown = true;
 					update_post_meta( $postId, self::EVENTSERROROPT, trim( $e->getMessage() ) );
 				}	
-				//update meta fields		
+				//update meta fields
 				foreach ( $this->metaTags as $tag ) {
 					$htmlElement = ltrim( $tag, '_' );
 					if ( $tag != self::EVENTSERROROPT ) {
 						if ( isset( $_POST[$htmlElement] ) ) {
+							if( is_string($_POST[$htmlElement]) ) $_POST[$htmlElement] = filter_var($_POST[$htmlElement], FILTER_SANITIZE_STRING);
 							update_post_meta( $postId, $tag, $_POST[$htmlElement] );
 						}
 					}
@@ -1235,9 +1275,10 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 			}
 		}
 		public function getDateString( $date ) {
+			$monthNames = $this->monthNames();
 			$dateParts = split( '-', $date );
 		    $timestamp = mktime( 0, 0, 0, $dateParts[1], 1, $dateParts[0] );
-		    return date( "F Y", $timestamp );
+		    return $monthNames[date( "F", $timestamp )] . " " . $dateParts[0];
 		}
 		/**
 	     * echo the next tab index
@@ -1250,16 +1291,26 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 		/**
 		 * build an ical feed from events posts
 		 */
-		public function iCalFeed( $postId = null ) {
-		    $getstring = $_GET['ical'];
+		public function iCalFeed() {
+			$getVal = $_GET['ical'];
+			$catObj = get_category_by_slug( $getVal );
+			$eventsCatId = get_cat_id( The_Events_Calendar::CATEGORYNAME );
+			if( $catObj && cat_is_ancestor_of( $eventsCatId, $catObj ) ) {
+				$categoryId = $catObj->term_id;
+				$includePosts = '';
+			} elseif( is_numeric($getVal) ) {
+				$categoryId = $eventsCatId;
+				$includePosts = '&include=' . $getVal;
+			} else {
+				$categoryId = $eventsCatId;
+				$includePosts = '';
+			}
 			$wpTimezoneString = get_option("timezone_string");
-			$categoryId = get_cat_id( The_Events_Calendar::CATEGORYNAME );
 			$events = "";
 			$lastBuildDate = "";
 			$eventsTestArray = array();
 			$blogHome = get_bloginfo('home');
 			$blogName = get_bloginfo('name');
-			$includePosts = ( $postId ) ? '&include=' . $postId : '';
 			$eventPosts = get_posts( 'numberposts=-1&category=' . $categoryId . $includePosts );
 			foreach( $eventPosts as $eventPost ) {
 				// convert 2010-04-08 00:00:00 to 20100408T000000 or YYYYMMDDTHHMMSS

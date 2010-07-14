@@ -440,9 +440,6 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 .upcoming .vevent .summary { font-weight: bold; }
 .upcoming .vevent .location { font-size: .923em; }
 
-/* Temporarily hide the 'all events' link until they release a bug fix. */
-.dig-in { display: none; }
-
 /*** @Tag @Cloud *********/
 .widget_tag_cloud div, .wp-tag-cloud { text-align: center; margin-bottom: 1em; }
 ul.wp-tag-cloud li { display: inline; }

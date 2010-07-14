@@ -177,7 +177,40 @@ class SyndicatedLink {
 
 		if (is_wp_error($this->simplepie)) :
 			$new_count = $this->simplepie;
+			// Error; establish an error setting.
+			$theError = array();
+			$theError['ts'] = time();
+			$theError['since'] = time();
+			$theError['object'] = $this->simplepie;
+
+			$oldError = $this->setting('update/error', NULL, NULL);
+			if (is_string($oldError)) :
+				$oldError = unserialize($oldError);
+			endif;
+
+			if (!is_null($oldError)) :
+				// Copy over the in-error-since timestamp
+				$theError['since'] = $oldError['since'];
+				
+				// If this is a repeat error, then we should take
+				// a step back before we try to fetch it again.
+				$this->settings['update/last'] = time();
+				$this->settings['update/ttl'] = $this->automatic_ttl();
+				$this->settings['update/ttl'] = apply_filters('syndicated_feed_ttl', $this->settings['update/ttl'], $this);
+				$this->settings['update/ttl'] = apply_filters('syndicated_feed_ttl_from_error', $this->settings['update/ttl'], $this);
+
+				$this->settings['update/timed'] = 'automatically';
+			endif;
+			
+			$this->settings['update/error'] = serialize($theError);
+			$this->save_settings(/*reload=*/ true);
+
 		elseif (is_object($this->simplepie)) :
+			// Success; clear out error setting, if any.
+			if (isset($this->settings['update/error'])) :
+				unset($this->settings['update/error']);
+			endif;
+
 			$new_count = array('new' => 0, 'updated' => 0);
 
 			# -- Update Link metadata live from feed
@@ -211,18 +244,7 @@ class SyndicatedLink {
 				$this->settings['update/ttl'] = $ttl;
 				$this->settings['update/timed'] = 'feed';
 			else :
-				// spread out over a time interval for staggered updates
-				$updateWindow = $this->setting(
-					'update/window',
-					'update_window',
-					DEFAULT_UPDATE_PERIOD
-				);
-				if (!is_numeric($updateWindow) or ($updateWindow < 1)) :
-					$updateWindow = DEFAULT_UPDATE_PERIOD;
-				endif;
-				
-				$fudgedInterval = $updateWindow+rand(0, 2*($updateWindow/3));
-				$this->settings['update/ttl'] = apply_filters('syndicated_feed_automatic_ttl', $fudgedInterval, $this);
+				$this->settings['update/ttl'] = $this->automatic_ttl();
 				$this->settings['update/timed'] = 'automatically';
 			endif;
 			$this->settings['update/ttl'] = apply_filters('syndicated_feed_ttl', $this->settings['update/ttl'], $this);
@@ -332,18 +354,7 @@ class SyndicatedLink {
 		global $wpdb;
 
 		if (strlen($newuser_name) > 0) :
-			$userdata = array();
-			$userdata['ID'] = NULL;
-			
-			$userdata['user_login'] = sanitize_user($newuser_name);
-			$userdata['user_login'] = apply_filters('pre_user_login', $userdata['user_login']);
-			
-			$userdata['user_nicename'] = sanitize_title($newuser_name);
-			$userdata['user_nicename'] = apply_filters('pre_user_nicename', $userdata['user_nicename']);
-			
-			$userdata['display_name'] = $wpdb->escape($newuser_name);
-		
-			$newuser_id = wp_insert_user($userdata);
+			$newuser_id = fwp_insert_new_user($newuser_name);
 			if (is_numeric($newuser_id)) :
 				if (is_null($name)) : // Unfamiliar author
 					$this->settings['unfamiliar author'] = $newuser_id;
@@ -464,22 +475,27 @@ class SyndicatedLink {
 		return (is_object($this->link) ? $this->link->link_rss : NULL);
 	} /* SyndicatedLink::uri () */
 
-	function homepage ($fromFeed = true) {
+	function property_cascade ($fromFeed, $link_field, $setting, $simplepie_method) {
+		$value = NULL;
 		if ($fromFeed) :
-			$url = (isset($this->settings['feed/link']) ? $this->settings['feed/link'] : NULL);
+			if (isset($this->settings[$setting])) :
+				$value = $this->settings[$setting];
+			elseif (is_object($this->simplepie)
+			and method_exists($this->simplepie, $simplepie_method)) :
+				$value = $this->simplepie->{$simplepie_method}();
+			endif;
 		else :
-			$url = $this->link->link_url;
+			$value = $this->link->{$link_field};
 		endif;
-		return $url;
+		return $value;
+	} /* SyndicatedLink::property_cascade () */
+	
+	function homepage ($fromFeed = true) {
+		return $this->property_cascade($fromFeed, 'link_url', 'feed/link', 'get_link');
 	} /* SyndicatedLink::homepage () */
 
 	function name ($fromFeed = true) {
-		if ($fromFeed) :
-			$name = (isset($this->settings['feed/title']) ? $this->settings['feed/title'] : NULL);
-		else :
-			$name = $this->link->link_name;
-		endif;
-		return $name;
+		return $this->property_cascade($fromFeed, 'link_name', 'feed/title', 'get_title');
 	} /* SyndicatedLink::name () */
 
 	function ttl () {
@@ -527,6 +543,17 @@ class SyndicatedLink {
 		endif;
 		return $ret;
 	} /* SyndicatedLink::ttl() */
+
+	function automatic_ttl () {
+		// spread out over a time interval for staggered updates
+		$updateWindow = $this->setting('update/window', 'update_window', DEFAULT_UPDATE_PERIOD);
+		if (!is_numeric($updateWindow) or ($updateWindow < 1)) :
+			$updateWindow = DEFAULT_UPDATE_PERIOD;
+		endif;
+
+		$fudgedInterval = $updateWindow+rand(0, 2*($updateWindow/3));
+		return apply_filters('syndicated_feed_automatic_ttl', $fudgedInterval, $this);
+	} /* SyndicatedLink::automatic_ttl () */
 
 	// SyndicatedLink::flatten_array (): flatten an array. Useful for
 	// hierarchical and namespaced elements.

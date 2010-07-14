@@ -6,7 +6,7 @@ require_once(dirname(__FILE__).'/feedtime.class.php');
  * from breaking.
  *
  * @since 2010.0203
- *
+ * @version 2010.0612
  */
 
 class MagpieFromSimplePie {
@@ -50,6 +50,8 @@ class MagpieFromSimplePie {
 	'http://www.itunes.com/dtds/podcast-1.0.dtd' => 'itunes',
 	'http://a9.com/-/spec/opensearchrss/1.0/' => 'openSearch',
 	'http://purl.org/rss/1.0/modules/slash/' => 'slash',
+	'http://www.google.com/schemas/reader/atom/' => 'gr',
+	'urn:atom-extension:indexing' => 'indexing', 
 	);
 
 	/**
@@ -74,6 +76,7 @@ class MagpieFromSimplePie {
 		// In case anyone goes poking around our private members (uh...)
 		$this->feed_type = ($this->is_atom() ? 'Atom' : 'RSS');
 		$this->feed_version = $this->feed_version();
+		$this->encoding = $pie->get_encoding();
 	} /* MagpieFromSimplePie constructor */
 	
 	/**

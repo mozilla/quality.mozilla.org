@@ -1,6 +1,7 @@
 <?php
 
 function cms_tpv_admin_head() {
+
 	global $cms_tpv_view;
 	if (isset($_GET["cms_tpv_view"])) {
 		$cms_tpv_view = $_GET["cms_tpv_view"];
@@ -9,9 +10,11 @@ function cms_tpv_admin_head() {
 	}
 	?>
 	<script type="text/javascript">
+		/* <![CDATA[ */
 		var CMS_TPV_URL = "<?php echo CMS_TPV_URL ?>";
 		var CMS_TPV_AJAXURL = "?action=cms_tpv_get_childs&view=";
 		var CMS_TPV_VIEW = "<?php echo $cms_tpv_view ?>";
+		/* ]]> */
 	</script>
 
     <!--[if IE 6]>
@@ -27,12 +30,37 @@ function cms_tpv_admin_head() {
 }
 
 function cms_tpv_admin_init() {
+
+	define( "CMS_TPV_PAGE_FILE", menu_page_url("cms-tpv-pages-page", false)); // this no longer feels nasty! :)
 	wp_enqueue_style( "cms_tpv_styles", CMS_TPV_URL . "styles/styles.css", false, CMS_TPV_VERSION );
-	wp_enqueue_script( "jquery-cookie", CMS_TPV_URL . "scripts/jquery.cookie.js", array("jquery"));
-	wp_enqueue_script( "jquery-jstree", CMS_TPV_URL . "scripts/jquery.tree.js", false, CMS_TPV_VERSION);
-	wp_enqueue_script( "jquery-jstree-plugin-cookie", CMS_TPV_URL . "scripts/plugins/jquery.tree.cookie.js", false, CMS_TPV_VERSION);
-	wp_enqueue_script( "cms_tree_page_view", CMS_TPV_URL . "scripts/cms_tree_page_view.php?wp-abspath=" . urlencode(ABSPATH), false, CMS_TPV_VERSION);
+	wp_enqueue_style( "jquery-alerts", CMS_TPV_URL . "styles/jquery.alerts.css", false, CMS_TPV_VERSION );
+	wp_enqueue_script( "jquery-cookie", CMS_TPV_URL . "scripts/jquery.biscuit.js", array("jquery")); // renamed from cookie to fix problems with mod_security
+	wp_enqueue_script( "jquery-jstree", CMS_TPV_URL . "scripts/jquery.jstree.js", false, CMS_TPV_VERSION);
+	wp_enqueue_script( "jquery-alerts", CMS_TPV_URL . "scripts/jquery.alerts.js", false, CMS_TPV_VERSION);
+
+	wp_enqueue_script( "cms_tree_page_view", CMS_TPV_URL . "scripts/cms_tree_page_view.js", false, CMS_TPV_VERSION);
+
 	load_plugin_textdomain('cms-tree-page-view', WP_CONTENT_DIR . "/plugins/languages", "/cms-tree-page-view/languages");
+	$oLocale = array(
+		"Enter_title_of_new_page" => __("Enter title of new page", 'cms-tree-page-view'),
+		"child_pages"  => __("child pages", 'cms-tree-page-view'),
+		"Edit_page"  => __("Edit page", 'cms-tree-page-view'),
+		"View_page"  => __("View page", 'cms-tree-page-view'),
+		"Edit"  => __("Edit", 'cms-tree-page-view'),
+		"View"  => __("View", 'cms-tree-page-view'),
+		"Add_page"  => __("Add page", 'cms-tree-page-view'),
+		"Add_new_page_after"  => __("Add new page after", 'cms-tree-page-view'),
+		"after"  => __("after", 'cms-tree-page-view'),
+		"inside"  => __("inside", 'cms-tree-page-view'),
+		"Add_new_page_inside"  => __("Add new page inside", 'cms-tree-page-view'),
+		"Status_draft" => __("draft", 'cms-tree-page-view'),
+		"Status_future" => __("future", 'cms-tree-page-view'),
+		"Status_password" => __("protected", 'cms-tree-page-view'),	// is "protected" word better than "password" ?
+		"Status_pending" => __("pending", 'cms-tree-page-view'),
+		"Status_private" => __("private", 'cms-tree-page-view'),
+		"Password_protected_page" => __("Password protected page", 'cms-tree-page-view')
+	);
+	wp_localize_script( "cms_tree_page_view", 'cmstpv_l10n', $oLocale);
 
 }
 
@@ -43,8 +71,6 @@ function cms_tpv_wp_dashboard_setup() {
 }
 
 function cms_tpv_show_on_dashboard() {
-	// @todo: fix this
-	return false;
 	if ( get_option('cms_tpv_show_on_dashboard', 1) == 1 && current_user_can("edit_pages") ) {
 		return true;
 	} else {
@@ -64,6 +90,7 @@ function cms_tpv_show_under_pages() {
  */
 function cms_tpv_dashboard() {
 
+	cms_tpv_show_annoying_box();
 	cms_tpv_print_common_tree_stuff();
 
 }
@@ -93,12 +120,10 @@ function cms_tpv_options() {
 						<?php _e("Show tree", 'cms-tree-page-view') ?>
 					</th>
 					<td>
-						<!--
-						@todo: fix this
 						<input type="checkbox" name="cms_tpv_show_on_dashboard" id="cms_tpv_show_on_dashboard" value="1" <?php echo get_option('cms_tpv_show_on_dashboard', 1) ? " checked='checked'" : "" ?> />
 						<label for="cms_tpv_show_on_dashboard"><?php _e("on the dashboard", 'cms-tree-page-view') ?></label>
 						<br />
-						-->
+						
 						<input type="checkbox" name="cms_tpv_show_under_pages" id="cms_tpv_show_under_pages" value="1" <?php echo get_option('cms_tpv_show_under_pages', 1) ? " checked='checked'" : "" ?> />
 						<label for="cms_tpv_show_under_pages"><?php _e("under the pages menu", 'cms-tree-page-view') ?></label>
 					</td>
@@ -122,22 +147,23 @@ function cms_tpv_options() {
 function cms_tpv_print_common_tree_stuff() {
 	$pages = cms_tpv_get_pages();
 	if (empty($pages)) {
-		echo '<div class="updated fade below-h2"><p>No pages found. Maybe you want to <a href="page-new.php">add a new page</a>?</p></div>';
+		echo '<div class="updated fade below-h2"><p>' . __("No pages found. Maybe you want to <a href='post-new.php?post_type=page'>add a new page</a>?", 'cms-tree-page-view') . '</p></div>';
 	} else {
 		// start the party!
 		global $cms_tpv_view;
 		?>
 
 		<ul class="cms-tpv-subsubsub">
-			<li><a id="cms_tvp_view_all" class="<?php echo ($cms_tpv_view=="all") ? "current" : "" ?>" href="<?php echo CMS_TPV_PAGE_FILE ?>&amp;cms_tpv_view=all"><?php _e("All", 'cms-tree-page-view') ?></a> |</li>
-			<li><a id="cms_tvp_view_public" class="<?php echo ($cms_tpv_view=="public") ? "current" : "" ?>" href="<?php echo CMS_TPV_PAGE_FILE ?>&amp;cms_tpv_view=public"><?php _e("Public", 'cms-tree-page-view') ?></a></li>
+			<li><a id="cms_tvp_view_all" class="<?php echo ($cms_tpv_view=="all") ? "current" : "" ?>" href="#"><?php _e("All", 'cms-tree-page-view') ?></a> |</li>
+			<li><a id="cms_tvp_view_public" class="<?php echo ($cms_tpv_view=="public") ? "current" : "" ?>" href="#"><?php _e("Public", 'cms-tree-page-view') ?></a></li>
 
 			<li><a href="#" id="cms_tpv_open_all"><?php _e("Expand", 'cms-tree-page-view') ?></a> |</li>
 			<li><a href="#" id="cms_tpv_close_all"><?php _e("Collapse", 'cms-tree-page-view') ?></a></li>
 			
 			<li>
-				<form id="cms_tree_view_search_form">
+				<form id="cms_tree_view_search_form" method="get" action="">
 					<input type="text" name="search" id="cms_tree_view_search" />
+					<a title="<?php _e("Clear search", 'cms-tree-page-view') ?>" id="cms_tree_view_search_form_reset" href="#">x</a>
 					<input type="submit" id="cms_tree_view_search_submit" value="<?php _e("Search", 'cms-tree-page-view') ?>" />
 					<span id="cms_tree_view_search_form_working"><?php _e("Searching...", 'cms-tree-page-view') ?></span>
 				</form>
@@ -150,7 +176,24 @@ function cms_tpv_print_common_tree_stuff() {
 		
 		<div id="cms_tpv_container" class="tree-default"><?php _e("Loading tree", 'cms-tree-page-view') ?></div>
 		<div style="clear: both;"></div>
-	
+		<div id="cms_tpv_page_actions">
+			<p>
+				<a href="#" title='<?php _e("Edit page", "cms-tree-page-view")?>' class='cms_tpv_action_edit'><?php _e("Edit", "cms-tree-page-view")?></a> | 
+				<a href="#" title='<?php _e("View page", "cms-tree-page-view")?>' class='cms_tpv_action_view'><?php _e("View", "cms-tree-page-view")?></a>
+			</p>
+			<p>
+				<span class='cms_tpv_action_add_page'><?php _e("Add page", "cms-tree-page-view")?></span>
+				<a href="#" title='<?php _e("Add new page after", "cms-tree-page-view")?>' class='cms_tpv_action_add_page_after'><?php _e("after", "cms-tree-page-view")?></a> | 
+				<a href="#" title='<?php _e("Add new page inside", "cms-tree-page-view")?>' class='cms_tpv_action_add_page_inside'><?php _e("inside", "cms-tree-page-view")?></a>
+			</ul>
+			<dl>
+				<dt><?php  _e("Last modified", "cms-tree-page-view") ?></dt>
+				<dd><span id="cms_tpv_page_actions_modified_time"></span> <?php _e("by", "cms-tree-page-view") ?> <span id="cms_tpv_page_actions_modified_by"></span></dd>
+				<dt><?php  _e("Page ID", "cms-tree-page-view") ?></dt>
+				<dd><span id="cms_tpv_page_actions_page_id"></span></dd>
+			</dl>
+			<span id="cms_tpv_page_actions_arrow"></span>
+		</div>
 		<?php
 	}
 } // func
@@ -163,21 +206,19 @@ function cms_tpv_print_common_tree_stuff() {
 function cms_tpv_pages_page() {
 	?>
 	<div class="wrap">
-
 		<h2><?php echo CMS_TPV_NAME ?></h2>
-		
+
 		<?php
+		cms_tpv_show_annoying_box();
+
 		cms_tpv_print_common_tree_stuff();
 		?>
-	
 	</div>
 	<?php
 }
 
 /**
  * Stripped down code from get_pages. Modified to get drafts and some other stuff too.
- *
- * @todo: cache, check permissions for private pages
  */
 function cms_tpv_get_pages($args = null) {
 
@@ -215,7 +256,6 @@ function cms_tpv_get_pages($args = null) {
 
 
 
-
 /**
  * Output JSON for the children of a node
  * $arrOpenChilds = array with id of pages to open children on
@@ -227,7 +267,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null) {
 		?>[<?php
 		for ($i=0, $pagesCount = sizeof($arrPages); $i<$pagesCount; $i++) {
 			$onePage = $arrPages[$i];
-			$editLink = get_edit_post_link($onePage->ID, 'display');
+			$editLink = get_edit_post_link($onePage->ID, 'notDisplay');
 			$content = wp_specialchars($onePage->post_content);
 			$content = str_replace(array("\n","\r"), "", $content);
 			$hasChildren = false;
@@ -248,26 +288,54 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null) {
 				$rel = "password";
 			}
 			
+			// modified time
+			$post_modified_time = get_post_modified_time('U', false, $onePage, false);
+			$post_modified_time =  date_i18n(get_option('date_format'), $post_modified_time, false);
+			
+			// last edited by
+			global $post;
+			$tmpPost = $post;
+			$post = $onePage;
+			$post_author = get_the_modified_author();
+			if (empty($post_author)) {
+				$post_author = __("Unknown user", 'cms-tree-page-view');
+			}
+			$post = $tmpPost;
+			
 			$title = get_the_title($onePage->ID); // so hooks and stuff will do their work
 			if (empty($title)) {
 				$title = __("<Untitled page>", 'cms-tree-page-view');
 			}
 			$title = wp_specialchars($title);
+			#$title = html_entity_decode($title, ENT_COMPAT, "UTF-8");
+			#$title = html_entity_decode($title, ENT_COMPAT);
 			?>
 			{
 				"data": {
 					"title": "<?php echo $title ?>",
-					"attributes": {
-						"href": "<?php echo $editLink ?>"
-					}
+					"attr": {
+						"href": "<?php echo $editLink ?>",
+						"xid": "cms-tpv-<?php echo $onePage->ID ?>"
+					},
+					"xicon": "<?php echo CMS_TPV_URL . "images/page_white_text.png" ?>"
+				},
+				"attr": {
+					"xhref": "<?php echo $editLink ?>",
+					"id": "cms-tpv-<?php echo $onePage->ID ?>",
+					"xtitle": "<?php _e("Click to edit. Drag to move.", 'cms-tree-page-view') ?>"
 				},
 				<?php echo $strState ?>
-				"attributes": {
+				"metadata": {
 					"id": "cms-tpv-<?php echo $onePage->ID ?>",
+					"post_id": "<?php echo $onePage->ID ?>",
+					"post_type": "<?php echo $onePage->post_type ?>",
+					"post_status": "<?php echo $onePage->post_status ?>",
 					"rel": "<?php echo $rel ?>",
 					"childCount": <?php echo sizeof($arrChildPages) ?>,
-					"title": "<?php _e("Click to edit. Drag to move.", 'cms-tree-page-view') ?>",
-					"permalink": "<?php echo get_permalink($onePage->ID) ?>"
+					"permalink": "<?php echo htmlspecialchars_decode(get_permalink($onePage->ID)) ?>",
+					"editlink": "<?php echo htmlspecialchars_decode($editLink) ?>",
+					"modified_time": "<?php echo $post_modified_time ?>",
+					"modified_author": "<?php echo $post_author ?>"
 				}
 				<?php
 				// if id is in $arrOpenChilds then also output children on this one
@@ -292,9 +360,11 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null) {
 // Act on AJAX-call
 function cms_tpv_get_childs() {
 
+	header("Content-type: application/json");
+
 	$action = $_GET["action"];
 	$view = $_GET["view"]; // all | public
-	$search = trim($_GET["search"]); // exits if we're doing a search
+	$search = trim($_GET["search_string"]); // exits if we're doing a search
 	if ($action) {
 	
 		if ($search) {
@@ -333,16 +403,24 @@ function cms_tpv_get_childs() {
 			
 			$arrNodesToOpen = array_merge($arrNodesToOpen, $arrNodesToOpen2);
 			$sReturn = "";
+			#foreach ($arrNodesToOpen as $oneNodeID) {
+			#	$sReturn .= "cms-tpv-{$oneNodeID},";
+			#}
+			#$sReturn = preg_replace("/,$/", "", $sReturn);
+			
 			foreach ($arrNodesToOpen as $oneNodeID) {
-				$sReturn .= "cms-tpv-{$oneNodeID},";
+				$sReturn .= "\"#cms-tpv-{$oneNodeID}\",";
 			}
-			$sReturn = preg_replace("/,$/", "", $sReturn);
+			$sReturn = preg_replace('/,$/', "", $sReturn);
+			if ($sReturn) {
+				$sReturn = "[" . $sReturn . "]";
+			}
 			
 			if ($sReturn) {
 				echo $sReturn;
 			} else {
 				// if no hits
-				echo 0;
+				echo "[]";
 			}
 
 			exit;
@@ -354,9 +432,10 @@ function cms_tpv_get_childs() {
 			$jstree_open = array();
 			if ( isset( $_COOKIE["jstree_open"] ) ) {
 				$jstree_open = $_COOKIE["jstree_open"]; // like this: [jstree_open] => cms-tpv-1282,cms-tpv-1284,cms-tpv-3
+				#var_dump($jstree_open); string(22) "#cms-tpv-14,#cms-tpv-2"
 				$jstree_open = explode( ",", $jstree_open );
 				for( $i=0; $i<sizeof( $jstree_open ); $i++ ) {
-					$jstree_open[$i] = (int) str_replace("cms-tpv-", "", $jstree_open[$i]);
+					$jstree_open[$i] = (int) str_replace("#cms-tpv-", "", $jstree_open[$i]);
 				}
 			}
 			
@@ -468,6 +547,7 @@ function cms_tpv_move_page() {
 			
 			// post_node is moved inside ref_post_node
 			// add ref_post_node as parent to post_node and set post_nodes menu_order to 0
+			// @todo: shouldn't menu order of existing items be changed?
 			$post_to_save = array(
 				"ID" => $post_node->ID,
 				"menu_order" => 0,
@@ -512,10 +592,42 @@ function cms_tpv_move_page() {
 	exit;
 }
 
+
+/**
+ * Show a box with some dontate-links and stuff
+ */
+function cms_tpv_show_annoying_box() {
+	#update_option('cms_tpv_show_annoying_little_box', 1); // enable this to show box
+	if ( "cms_tpv_remove_annoying_box" == $_GET["action"] ) {
+		$show_box = 0;
+		update_option('cms_tpv_show_annoying_little_box', $show_box);
+	} else {
+		$show_box = get_option('cms_tpv_show_annoying_little_box', 1);
+	}
+	if ($show_box) {
+		?>
+		<div id="cms_tpv_annoying_little_box">
+			<p id="cms_tpv_annoying_little_box_close"><a href="<?php echo CMS_TPV_PAGE_FILE ?>&action=cms_tpv_remove_annoying_box">Close</a></p>
+			<p><strong>Thank you for using my plugin!</strong> If you need help please check out the <a href="http://eskapism.se/code-playground/cms-tree-page-view/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox">plugin homepage</a> or the <a href="http://wordpress.org/tags/cms-tree-page-view?forum_id=10">support forum</a>.</p>
+			<p>If you like this plugin, please <a href="http://eskapism.se/sida/donate/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox">support my work by donating</a> - or at least say something nice about this plugin in a blog post or tweet.</p>
+			<!-- <p>Thank you</p>
+			<p><img src="<?php echo CMS_TPV_URL ?>/images/signature.gif" alt="Pär Thernström's signature" /></p>
+			<p>Pär Thernström
+			<br /><a href="mailto:par.thernstrom@gmail.com">par.thernstrom@gmail.com</a>
+			<br /><a href="twitter.com/eskapism">twitter.com/eskapism</a>
+			</p> -->
+		</div>
+		<?php
+	}
+}
+
+
+if (!function_exists("bonny_d")) {
 function bonny_d($var) {
 	echo "<pre>";
 	print_r($var);
 	echo "</pre>";
+}
 }
 
 ?>

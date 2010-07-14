@@ -3,7 +3,7 @@
 Plugin Name: Tweet Import
 Plugin URI: http://skinju.com/wordpress/tweet-import
 Description: A WordPress plugin that imports twitter posts from multiple twitter accounts, favorites, and lists to WordPress. It allows importing each account, favorite or list to different categories, and allows tagging imported tweets using the tweet content #hashtags. Requires no authentication and can be used to import the user posted tweets and retweets from the specified twitter accounts and lists.
-Version: 1.3
+Version: 1.3.1
 Author: Khaled Afiouni
 Author URI: http://www.afiouni.com/
 Lincense: Released under the GPL license (http://www.opensource.org/licenses/gpl-license.php)
@@ -88,7 +88,7 @@ endif; //skinju_options_page
 
 
 //-- Tweet Import Functions
-define('TWEETIMPORT_VERSION', '1.2');
+define('TWEETIMPORT_VERSION', '1.3.1');
 define('TWEETIMPORT_API_FAVORITES_URL', 'http://twitter.com/favorites/#=#USER#=#.atom');
 define('TWEETIMPORT_API_USER_TIMELINE_URL', 'http://twitter.com/statuses/user_timeline/#=#USER#=#.atom');
 define('TWEETIMPORT_API_LIST_URL', 'http://api.twitter.com/1/#=#USER#=#/lists/#=#LIST#=#/statuses.atom');
@@ -344,7 +344,10 @@ function tweetimport_display_account_list_table()
         echo '&nbsp;&nbsp;&nbsp;&nbsp;*Importing List';
       echo '</td>';
       echo '<td class="desc"><p>';
-      echo 'Assign <strong>' . get_userdata($account['author'])->user_login . '</strong> as the author<br />';
+      # The following two lines are a workaround for the PHP 4 lack of Method Chaining (allowed by PHP 5)
+      $tmp_user_data = get_userdata($account['author']);
+      $tmp_user_login = $tmp_user_data->user_login;
+      echo 'Assign <strong>' . $tmp_user_login . '</strong> as the author<br />';
       echo 'Import tweets to <strong>' . get_cat_name($account['category']) . '</strong> category<br />';
       echo 'Tag tweets with: <strong>' . $account['add_tag'] . '</strong><br />';
       echo 'Make Names clickable: <strong>' . ($account['names_clickable']==1?'Yes':'No') . '</strong><br />';

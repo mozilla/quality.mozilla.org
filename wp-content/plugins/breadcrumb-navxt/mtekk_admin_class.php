@@ -227,7 +227,7 @@ abstract class mtekk_admin
 		//We want to catch errors ourselves
 		set_error_handler('error');
 		//Load the user uploaded file, handle failure gracefully
-		if($dom->load($_FILES[$this->unique_prefix . 'admin_import_file']['tmp_name']))
+		if($dom->load($_FILES[$this->unique_prefix . '_admin_import_file']['tmp_name']))
 		{
 			//Have to use an xpath query otherwise we run into problems
 			$xpath = new DOMXPath($dom);  

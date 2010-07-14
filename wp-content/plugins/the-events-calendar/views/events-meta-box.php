@@ -45,7 +45,7 @@
 			}
 		}
 		
-		spShowHideCorrectStateProvinceInput( jQuery("#EventCountry > option:first").attr('label') );
+		spShowHideCorrectStateProvinceInput( jQuery("#EventCountry > option:selected").attr('label') );
 		
 		jQuery("#EventCountry").change(function() {
 			var countryLabel = jQuery(this).find('option:selected').attr('label');
@@ -133,7 +133,7 @@
 			
 			if( event_phone.length > 0 && event_phone.val().length && !event_phone.val().match(/^((\+\d{1,3}(-| )?\(?\d\)?(-| )?\d{1,5})|(\(?\d{2,6}\)?))(-| )?(\d{3,4})(-| )?(\d{4})(( x| ext)\d{1,5}){0,1}$/) ) {
 				event_phone.focus();
-				alert('<?php _e('Phone',$this->pluginDomain); ?> <?php _e('is not valid.', $this->pluginDomain); ?>  <?php _e('Valid values are local format (eg. 02 1234 5678 or 123 123 4567) or international format (eg. +61 (0) 2 1234 5678 or +1 123 123 4567).  You may also use an optional extension of up to five digits prefixed by x or ext (eg. 123 123 4567 x89)'); ?> ');
+				alert("<?php _e('Phone',$this->pluginDomain); ?> <?php _e('is not valid.', $this->pluginDomain); ?>  <?php _e('Valid values are local format (eg. 02 1234 5678 or 123 123 4567) or international format (eg. +61 (0) 2 1234 5678 or +1 123 123 4567).  You may also use an optional extension of up to five digits prefixed by x or ext (eg. 123 123 4567 x89)'); ?> ");
 				return false;
 			}
 			return true;
@@ -426,18 +426,13 @@ try {
 		<tr id="google_map_link_toggle"<?php if( !tec_address_exists( $postId ) ) echo ' class="tec_hide"'; ?>>
 			<td><?php _e('Show Google Map Link:',$this->pluginDomain); ?></td>
 			<td>
-				<?php // is the post new?
-					$tecPostCustomKeys = get_post_custom_keys($postId);
-					$tecHasCustomKeys = count( $tecPostCustomKeys );
-					$tecNewPost = ( $tecHasCustomKeys ) ? !in_array( "_EventShowMapLink", $tecPostCustomKeys ) : true;
-				?>
-				<input tabindex="<?php $this->tabIndex(); ?>" type="checkbox" id="EventShowMapLink" name="EventShowMapLink" size="6" value="true" <?php if( $tecNewPost || get_post_meta( $postId, '_EventShowMapLink', true ) == 'true' ) echo 'checked="checked"'?> />
+				<input tabindex="<?php $this->tabIndex(); ?>" type="checkbox" id="EventShowMapLink" name="EventShowMapLink" size="6" value="true" <?php if( get_post_meta( $postId, '_EventShowMapLink', true ) == 'true' ) echo 'checked="checked"'?> />
 			</td>
 		</tr>
 		<?php if( eventsGetOptionValue('embedGoogleMaps') == 'on' ) : ?>
 			<tr id="google_map_toggle"<?php if( !tec_address_exists( $postId ) ) echo ' class="tec_hide"'; ?>>
 				<td><?php _e('Show Google Map:',$this->pluginDomain); ?></td>
-				<td><input tabindex="<?php $this->tabIndex(); ?>" type="checkbox" id="EventShowMap" name="EventShowMap" size="6" value="true" <?php if( $tecNewPost || get_post_meta( $postId, '_EventShowMap', true ) == 'true' ) echo 'checked="checked"'; ?> /></td>
+				<td><input tabindex="<?php $this->tabIndex(); ?>" type="checkbox" id="EventShowMap" name="EventShowMap" size="6" value="true" <?php if( get_post_meta( $postId, '_EventShowMap', true ) == 'true' ) echo 'checked="checked"'; ?> /></td>
 			</tr>
 		<?php endif; ?>
 		<tr>
@@ -465,8 +460,6 @@ try {
 				<p><?php _e('Interested in selling tickets and tracking registrations? Now you can do it for free using our <a href="http://wordpress.org/extend/plugins/eventbrite-for-the-events-calendar/">Eventbrite Integration Plugin</a>. Eventbrite is a feature rich easy-to-use event management tool. "Wow, you\'re selling Eventbrite pretty hard. You must get a kickback."  Well, now that you mention it... we do. We get a little something for everyone that registers an event using our referral link. It\'s how we\'re able to keep supporting and building plugins for the open source community. ', $this->pluginDomain); ?> <a href="http://www.eventbrite.com/r/simpleevents"><?php _e('Check it out here.', $this->pluginDomain); ?></a></p>
 			</td>
 		</tr>
-		
-		
 	</table>
 	</div>
 	<?php

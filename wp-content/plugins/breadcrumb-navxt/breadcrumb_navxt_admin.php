@@ -3,7 +3,7 @@
 Plugin Name: Breadcrumb NavXT
 Plugin URI: http://mtekk.weblogs.us/code/breadcrumb-navxt/
 Description: Adds a breadcrumb navigation showing the visitor&#39;s path to their current location. For details on how to use this plugin visit <a href="http://mtekk.weblogs.us/code/breadcrumb-navxt/">Breadcrumb NavXT</a>. 
-Version: 3.5.0
+Version: 3.5.1
 Author: John Havlik
 Author URI: http://mtekk.weblogs.us/
 */
@@ -50,7 +50,7 @@ class bcn_admin extends mtekk_admin
 	 * 
 	 * @var   string
 	 */
-	protected $version = '3.5.0';
+	protected $version = '3.5.1';
 	protected $full_name = 'Breadcrumb NavXT Settings';
 	protected $short_name = 'Breadcrumb NavXT';
 	protected $access_level = 'manage_options';
@@ -168,7 +168,7 @@ class bcn_admin extends mtekk_admin
 					{
 						$opts[$taxonomy->name . '_prefix'] = '';
 						$opts[$taxonomy->name . '_suffix'] = '';
-						$opts[$taxonomy->name . '_anchor'] = __(sprintf('<a title="Go to the %%title%% %s archives." href="%%link%%">'), 'breadcrumb_navxt');
+						$opts[$taxonomy->name . '_anchor'] = __(sprintf('<a title="Go to the %%title%% %s archives." href="%%link%%">',  ucwords(__($taxonomy->label))), 'breadcrumb_navxt');
 						$opts['archive_' . $taxonomy->name . '_prefix'] = '';
 						$opts['archive_' . $taxonomy->name . '_suffix'] = '';
 					}
@@ -192,7 +192,7 @@ class bcn_admin extends mtekk_admin
 				strlen($temp['blog_anchor']) == 0 || 
 				strlen($temp['page_anchor']) == 0 || 
 				strlen($temp['post_anchor']) == 0 || 
-				strlen($temp['tag_anchor']) == 0 ||
+				strlen($temp['post_tag_anchor']) == 0 ||
 				strlen($temp['date_anchor']) == 0 ||
 				strlen($temp['category_anchor']) == 0)
 			{
@@ -213,6 +213,23 @@ class bcn_admin extends mtekk_admin
 		$this->security();
 		//Do a nonce check, prevent malicious link/form problems
 		check_admin_referer('bcn_options-options');
+		//We'll add our custom taxonomy stuff at this time
+		foreach($wp_taxonomies as $taxonomy)
+		{
+			//We only want custom taxonomies
+			if(($taxonomy->object_type == 'post' || is_array($taxonomy->object_type) && in_array('post', $taxonomy->object_type)) && ($taxonomy->name != 'post_tag' && $taxonomy->name != 'category'))
+			{
+				//If the taxonomy does not have settings in the options array yet, we need to load some defaults
+				if(!array_key_exists($taxonomy->name . '_anchor', $this->opt))
+				{
+					$this->opt[$taxonomy->name . '_prefix'] = '';
+					$this->opt[$taxonomy->name . '_suffix'] = '';
+					$this->opt[$taxonomy->name . '_anchor'] = __(sprintf('<a title="Go to the %%title%% %s archives." href="%%link%%">',  ucwords(__($taxonomy->label))), 'breadcrumb_navxt');
+					$this->opt['archive_' . $taxonomy->name . '_prefix'] = '';
+					$this->opt['archive_' . $taxonomy->name . '_suffix'] = '';
+				}
+			}
+		}
 		//Grab our incomming array (the data is dirty)
 		$input = $_POST['bcn_options'];
 		//Loop through all of the existing options (avoids random setting injection)
@@ -562,7 +579,6 @@ class bcn_admin extends mtekk_admin
 					<?php
 						$this->input_text(__('Author Prefix', 'breadcrumb_navxt'), 'author_prefix', '32');
 						$this->input_text(__('Author Suffix', 'breadcrumb_navxt'), 'author_suffix', '32');
-						$this->input_text(__('Archive by Date Suffix', 'breadcrumb_navxt'), 'archive_date_suffix', '32', false, __('Applied after the anchor on all date breadcrumbs.', 'breadcrumb_navxt'));
 						$this->input_select(__('Author Display Format', 'breadcrumb_navxt'), 'author_name', array("display_name", "nickname", "first_name", "last_name"), false, __('display_name uses the name specified in "Display name publicly as" under the user profile the others correspond to options in the user profile.', 'breadcrumb_navxt'));
 						$this->input_text(__('Search Prefix', 'breadcrumb_navxt'), 'search_prefix', '32');
 						$this->input_text(__('Search Suffix', 'breadcrumb_navxt'), 'search_suffix', '32');

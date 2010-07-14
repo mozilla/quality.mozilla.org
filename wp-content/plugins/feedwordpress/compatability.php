@@ -60,32 +60,15 @@ class FeedWordPressCompatibility {
 
 		$cat_id = NULL;
 
-		// WordPress 2.3 introduces a new taxonomy/term API
-		if (function_exists('is_term')) :
-			$the_term = is_term($value, 'link_category');
+		$the_term = term_exists($value, 'link_category');
 
-			// Sometimes, in some versions, we get a row
-			if (is_array($the_term)) :
-				$cat_id = $the_term['term_id'];
+		// Sometimes, in some versions, we get a row
+		if (is_array($the_term)) :
+			$cat_id = $the_term['term_id'];
 
-			// other times we get an integer result
-			else :
-				$cat_id = $the_term;
-			endif;
-
-		// WordPress 2.1 and 2.2 use a common table for both link and post categories
-		elseif (fwp_test_wp_version(FWP_SCHEMA_21, FWP_SCHEMA_23)) :
-			$value = $wpdb->escape($value);
-			$cat_id = $wpdb->get_var("SELECT cat_id FROM {$wpdb->categories} WHERE {$key}='$value'");
-		
-		// WordPress 1.5 and 2.0.x have a separate table for link categories
-		elseif (fwp_test_wp_version(0, FWP_SCHEMA_21)):
-			$value = $wpdb->escape($value);
-			$cat_id = $wpdb->get_var("SELECT cat_id FROM {$wpdb->linkcategories} WHERE {$key}='$value'");
-		
-		// This should never happen.
+		// other times we get an integer result
 		else :
-			FeedWordPress::critical_bug(__CLASS__.'::'.__METHOD__.'::wp_db_version', $wp_db_version, __LINE__);
+			$cat_id = $the_term;
 		endif;
 		
 		return $cat_id;
@@ -237,9 +220,43 @@ if (!function_exists('add_post_meta')) {
 	} /* add_post_meta() */
 } /* if */
 
-function fwp_category_checklist ($post_id = 0, $descendents_and_self = 0, $selected_cats = false) {
+if (!function_exists('disabled')) {
+	/**
+	 * Outputs the html disabled attribute.
+	 *
+	 * Compares the first two arguments and if identical marks as disabled
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param mixed $disabled One of the values to compare
+	 * @param mixed $current (true) The other value to compare if not just true
+	 * @param bool $echo Whether to echo or just return the string
+	 * @return string html attribute or empty string
+	 */
+	function disabled( $disabled, $current = true, $echo = true ) {
+		return __checked_selected_helper( $disabled, $current, $echo, 'disabled' );
+	}
+} /* if */
+
+if (!function_exists('term_exists')) {
+	// Fucking WordPress 3.0 wordsmithing.
+	function term_exists ( $term, $taxonomy = '', $parent = 0 ) {
+		return is_term($term, $taxonomy, $parent);
+	}
+} /* if */
+require_once(dirname(__FILE__).'/feedwordpress-walker-category-checklist.class.php');
+
+function fwp_category_checklist ($post_id = 0, $descendents_and_self = 0, $selected_cats = false, $prefix = '') {
 	if (function_exists('wp_category_checklist')) :
-		wp_category_checklist($post_id, $descendents_and_self, $selected_cats);
+		$walker = new FeedWordPress_Walker_Category_Checklist;
+		$walker->set_prefix($prefix);
+		wp_category_checklist(
+			/*post_id=*/ $post_id,
+			/*descendents_and_self=*/ $descendents_and_self,
+			/*selected_cats=*/ $selected_cats,
+			/*popular_cats=*/ false,
+			/*walker=*/ $walker
+		);
 	else :
 		// selected_cats is an array of integer cat_IDs / term_ids for
 		// the categories that should be checked

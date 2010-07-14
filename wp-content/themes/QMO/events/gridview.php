@@ -4,7 +4,7 @@
 
   get_header();
 ?>
-<div id="content-main" class="hfeed vcalendar full" role="main">
+<div id="content-main" class="full" role="main">
   <div id="events-calendar-header">
     <h1 class="section-title"><?php _e('Events Calendar', $spEvents->pluginDomain) ?></h1>
     <div class="calendar-control nav-paging">

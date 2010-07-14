@@ -342,10 +342,14 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 		else :
 			$cat_id = FeedWordPress::link_category_id();
 
-			$results = get_categories(array(
-				"taxonomy" => 'link_category',
-				"hide_empty" => false,	
-			));
+			$params = array();
+			if (FeedWordPressCompatibility::test_version(FWP_SCHEMA_USES_ARGS_TAXONOMY)) :
+				$params['taxonomy'] = 'link_category';
+			else :
+				$params['type'] = 'link';
+			endif;
+			$params['hide_empty'] = false;
+			$results = get_categories($params);
 				
 			// Guarantee that the Contributors category will be in the drop-down chooser, even if it is empty.
 			$found_link_category_id = false;
@@ -532,45 +536,69 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 	
 		$lookup = (isset($_REQUEST['lookup']) ? $_REQUEST['lookup'] : NULL);
 
+		$feeds = array(); $feedSwitch = false; $current = null;
 		if ($this->for_feed_settings()) : // Existing feed?
-			if (is_null($lookup)) : $lookup = $this->link->link->link_url; endif;
+			$feedSwitch = true;
+			if (is_null($lookup)) :
+				// Switch Feed without a specific feed yet suggested
+				// Go to the human-readable homepage to look for
+				// auto-detection links
+				$lookup = $this->link->link->link_url;
+				
+				// Guarantee that you at least have the option to
+				// stick with what works.
+				$current = $this->link->link->link_rss;
+				$feeds[] = $current;
+			endif;
 			$name = esc_html($this->link->link->link_name);
 		else: // Or a new subscription to add?
 			$name = "Subscribe to <code>".esc_html(feedwordpress_display_url($lookup))."</code>";
 		endif;
 		?>
-		<style type="text/css">
-		form.fieldset {
-			clear: both;
-		}
-		.feed-sample { 
-			float: right;
-			background-color: #D0D0D0;
-			color: black;
-			width: 45%;
-			font-size: 70%;
-			border-left: 1px dotted #A0A0A0;
-			margin-left: 1.0em;
-		}
-		.feed-sample p, .feed-sample h3 {
-			padding-left: 0.5em;
-			padding-right: 0.5em;
-		}
-		.feed-sample .feed-problem {
-			background-color: #ffd0d0;
-			border-bottom: 1px dotted black;
-			padding-bottom: 0.5em;
-			margin-bottom: 0.5em;
-		}
-		</style>
-
-		<div class="wrap">
+		<div class="wrap" id="feed-finder">
 		<h2>Feed Finder: <?php echo $name; ?></h2>
 
 		<?php
-		$f = new FeedFinder($lookup);
-		$feeds = $f->find();
+		if ($feedSwitch) :
+			$this->display_alt_feed_box($lookup);
+		endif;
+
+		$finder = array();
+		if (!is_null($current)) :
+			$finder[$current] = new FeedFinder($current);
+		endif;
+		$finder[$lookup] = new FeedFinder($lookup);
+		
+		foreach ($finder as $url => $ff) :
+			$feeds = array_merge($feeds, $ff->find());
+		endforeach;
+		
+		$feeds = array_values( // Renumber from 0..(N-1)
+				array_unique( // Eliminate duplicates
+					$feeds
+				)
+		);
+
 		if (count($feeds) > 0):
+			if ($feedSwitch) :
+				?>
+				<h3>Feeds Found</h3>
+				<?php
+			endif;
+
+			if (count($feeds) > 1) :
+				$option_template = 'Option %d: ';
+				$form_class = ' class="multi"';
+				?>
+				<p><strong>This web page provides at least <?php print count($feeds); ?> different feeds.</strong> These feeds may provide the same information
+				in different formats, or may track different items. (You can check the Feed Information and the
+				Sample Item for each feed to get an idea of what the feed provides.) Please select the feed that you'd like to subscribe to.</p>
+				<?php
+			else :
+				$option_template = '';
+				$form_class = '';
+			endif;
+
 			foreach ($feeds as $key => $f):
 				$pie = FeedWordPress::fetch($f);
 				$rss = (is_wp_error($pie) ? $pie : new MagpieFromSimplePie($pie));
@@ -579,19 +607,32 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 					$feed_title = isset($rss->channel['title'])?$rss->channel['title']:$rss->channel['link'];
 					$feed_link = isset($rss->channel['link'])?$rss->channel['link']:'';
 					$feed_type = ($rss->feed_type ? $rss->feed_type : 'Unknown');
+					$feed_version_template = '%.1f';
 					$feed_version = $rss->feed_version;
 				else :
 					// Give us some sucky defaults
 					$feed_title = feedwordpress_display_url($lookup);
 					$feed_link = $lookup;
 					$feed_type = 'Unknown';
+					$feed_version_template = '';
 					$feed_version = '';
 				endif;
 				?>
-					<form action="admin.php?page=<?php print $GLOBALS['fwp_path'] ?>/syndication.php" method="post">
-					<div><?php FeedWordPressCompatibility::stamp_nonce('feedwordpress_switchfeed'); ?></div>
-					<fieldset>
-					<legend><?php echo $feed_type; ?> <?php echo $feed_version; ?> feed</legend>
+					<form<?php print $form_class; ?> action="admin.php?page=<?php print $GLOBALS['fwp_path'] ?>/syndication.php" method="post">
+					<div class="inside"><?php FeedWordPressCompatibility::stamp_nonce('feedwordpress_switchfeed'); ?>
+
+					<?php
+					$classes = array('feed-found'); $currentFeed = '';
+					if (!is_null($current) and $current==$f) :
+						$classes[] = 'current';
+						$currentFeed = ' (currently subscribed)';
+					endif;
+					if ($key%2) :
+						$classes[] = 'alt';
+					endif;
+					?>
+					<fieldset class="<?php print implode(" ", $classes); ?>">
+					<legend><?php printf($option_template, ($key+1)); print $feed_type." "; printf($feed_version_template, $feed_version); ?> feed<?php print $currentFeed; ?></legend>
 
 					<?php
 					$this->stamp_link_id();
@@ -652,70 +693,98 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 					<h3>Feed Information</h3>
 					<ul>
 					<li><strong>Homepage:</strong> <a href="<?php echo $feed_link; ?>"><?php echo is_null($feed_title)?'<em>Unknown</em>':$feed_title; ?></a></li>
-					<li><strong>Feed URL:</strong> <a href="<?php echo esc_html($f); ?>"><?php echo esc_html($f); ?></a> (<a title="Check feed &lt;<?php echo esc_html($f); ?>&gt; for validity" href="http://feedvalidator.org/check.cgi?url=<?php echo urlencode($f); ?>">validate</a>)</li>
+					<li><strong>Feed URL:</strong> <a title="<?php echo esc_html($f); ?>" href="<?php echo esc_html($f); ?>"><?php echo esc_html(feedwordpress_display_url($f, 40, 10)); ?></a> (<a title="Check feed &lt;<?php echo esc_html($f); ?>&gt; for validity" href="http://feedvalidator.org/check.cgi?url=<?php echo urlencode($f); ?>">validate</a>)</li>
 					<li><strong>Encoding:</strong> <?php echo isset($rss->encoding)?esc_html($rss->encoding):"<em>Unknown</em>"; ?></li>
 					<li><strong>Description:</strong> <?php echo isset($rss->channel['description'])?esc_html($rss->channel['description']):"<em>Unknown</em>"; ?></li>
 					</ul>
 					<?php do_action('feedwordpress_feedfinder_form', $f, $post, $link, $this->for_feed_settings()); ?>
-					<div class="submit"><input type="submit" name="Use" value="&laquo; Use this feed" /></div>
-					<div class="submit"><input type="submit" name="Cancel" value="&laquo; Cancel" /></div>
+					<div class="submit"><input type="submit" class="button-primary" name="Use" value="&laquo; Use this feed" />
+					<input type="submit" class="button" name="Cancel" value="× Cancel" /></div>
 					</div>
 					</div>
 					</fieldset>
+					</div> <!-- class="inside" -->
 					</form>
 					<?php
 				unset($link);
 				unset($post);
 			endforeach;
 		else:
-			print "<p><strong>".__('Error').":</strong> ".__("FeedWordPress couldn't find any feeds at").' <code><a href="'.htmlspecialchars($lookup).'">'.htmlspecialchars($lookup).'</a></code>';
-			print ". ".__('Try another URL').".</p>";
+			foreach ($finder as $url => $ff) :
+				$url = esc_html($url);
+				print "<h3>Searched for feeds at ${url}</h3>\n";
+				print "<p><strong>".__('Error').":</strong> ".__("FeedWordPress couldn't find any feeds at").' <code><a href="'.htmlspecialchars($lookup).'">'.htmlspecialchars($lookup).'</a></code>';
+				print ". ".__('Try another URL').".</p>";
 			
-			// Diagnostics
-			print "<div class=\"updated\" style=\"margin-left: 3.0em; margin-right: 3.0em;\">\n";
-			print "<h3>".__('Diagnostic information')."</h3>\n";
-			if (!is_null($f->error()) and strlen($f->error()) > 0) :
-				print "<h4>".__('HTTP request failure')."</h4>\n";
-				print "<p>".$f->error()."</p>\n";
-			else :
-				print "<h4>".__('HTTP request completed')."</h4>\n";
-				print "<p><strong>Status ".$f->status().":</strong> ".$this->HTTPStatusMessages[(int) $f->status()]."</p>\n";
-			endif;
+				// Diagnostics
+				print "<div class=\"updated\" style=\"margin-left: 3.0em; margin-right: 3.0em;\">\n";
+				print "<h3>".__('Diagnostic information')."</h3>\n";
+				if (!is_null($ff->error()) and strlen($ff->error()) > 0) :
+					print "<h4>".__('HTTP request failure')."</h4>\n";
+					print "<p>".$ff->error()."</p>\n";
+				else :
+					print "<h4>".__('HTTP request completed')."</h4>\n";
+					print "<p><strong>Status ".$ff->status().":</strong> ".$this->HTTPStatusMessages[(int) $ff->status()]."</p>\n";
+				endif;
 
-			// Do some more diagnostics if the API for it is available.
-			if (function_exists('_wp_http_get_object')) :
-				$httpObject = _wp_http_get_object();
-				$transports = $httpObject->_getTransport();
-
-				print "<h4>".__('HTTP Transports available').":</h4>\n";
-				print "<ol>\n";
-				print "<li>".implode("</li>\n<li>", array_map('get_class', $transports))."</li>\n";
-				print "</ol>\n";
-				print "</div>\n";
-			endif;
-
-		endif;
-	?>
-		</div>
+				// Do some more diagnostics if the API for it is available.
+				if (function_exists('_wp_http_get_object')) :
+					$httpObject = _wp_http_get_object();
+					$transports = $httpObject->_getTransport();
 	
-		<form action="admin.php?page=<?php print $GLOBALS['fwp_path'] ?>/<?php echo basename(__FILE__); ?>" method="post">
-		<div><?php
-			FeedWordPressCompatibility::stamp_nonce(get_class($this));
-		?></div>
-		<div class="wrap">
-		<h2>Use another feed</h2>
-		<div><label>Feed:</label>
-		<input type="text" name="lookup" id="use-another-feed" value="URI" />
-		<?php FeedWordPressSettingsUI::magic_input_tip_js('use-another-feed'); ?>
-		<?php $this->stamp_link_id('link_id'); ?>
-		<input type="hidden" name="action" value="feedfinder" /></div>
-		<div class="submit"><input type="submit" value="Use this feed &raquo;" /></div>
-		</div>
-		</form>
+					print "<h4>".__('HTTP Transports available').":</h4>\n";
+					print "<ol>\n";
+					print "<li>".implode("</li>\n<li>", array_map('get_class', $transports))."</li>\n";
+					print "</ol>\n";
+					print "</div>\n";
+				endif;
+			endforeach;
+		endif;
+		
+		if (!$feedSwitch) :
+			$this->display_alt_feed_box($lookup, /*alt=*/ true);
+		endif;
+		?>
+	</div> <!-- class="wrap" -->
 		<?php
 		return false; // Don't continue
 	} /* WordPressFeedsPage::display_feedfinder() */
 
+	function display_alt_feed_box ($lookup, $alt = false) {
+		global $fwp_post;
+		?>
+		<form action="admin.php?page=<?php print $GLOBALS['fwp_path'] ?>/<?php echo basename(__FILE__); ?>" method="post">
+		<div class="inside"><?php
+			FeedWordPressCompatibility::stamp_nonce(get_class($this));
+		?>
+		<fieldset class="alt"
+		<?php if (!$alt): ?>style="margin: 1.0em 3.0em; font-size: smaller;"<?php endif; ?>>
+		<legend><?php if ($alt) : ?>Alternative feeds<?php else: ?>Find feeds<?php endif; ?></legend>
+		<?php if ($alt) : ?><h3>Use a different feed</h3><?php endif; ?>
+		<div><label>Address:
+		<input type="text" name="lookup" id="use-another-feed"
+		placeholder="URL"
+ 		<?php if (is_null($lookup)) : ?>
+			value="URL"
+		<?php else : ?>
+			value="<?php print esc_html($lookup); ?>"
+		<?php endif; ?>
+		size="64" style="max-width: 80%" /></label>
+		<?php if (is_null($lookup)) : ?>
+		<?php FeedWordPressSettingsUI::magic_input_tip_js('use-another-feed'); ?>
+		<?php endif; ?>
+		<?php $this->stamp_link_id('link_id'); ?>
+		<input type="hidden" name="action" value="feedfinder" />
+		<input type="submit" class="button<?php if ($alt): ?>-primary<?php endif; ?>" value="Check &raquo;" /></div>
+		<p>This can be the address of a feed, or of a website. FeedWordPress
+		will try to automatically detect any feeds associated with a
+		website.</p>
+		</div> <!-- class="inside" -->
+		</fieldset></form>
+		
+		<?php
+	} /* WordPressFeedsPage::display_alt_feed_box() */
+	
 	function accept_POST ($post) {
 		global $wpdb;
 			

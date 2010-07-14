@@ -121,7 +121,7 @@ class SyndicatedPost {
 			);
 			
 			$excerpt = apply_filters('syndicated_item_excerpt', $this->excerpt(), $this);
-			if (!is_null($excerpt)):
+			if (!empty($excerpt)):
 				$this->post['post_excerpt'] = $excerpt;
 			endif;
 			
@@ -131,10 +131,10 @@ class SyndicatedPost {
 
 			// Dealing with timestamps in WordPress is so fucking fucked.
 			$offset = (int) get_option('gmt_offset') * 60 * 60;
-			$this->post['post_date'] = gmdate('Y-m-d H:i:s', $this->published(/*fallback=*/ true, /*default=*/ -1) + $offset);
-			$this->post['post_modified'] = gmdate('Y-m-d H:i:s', $this->updated(/*fallback=*/ true, /*default=*/ -1) + $offset);
-			$this->post['post_date_gmt'] = gmdate('Y-m-d H:i:s', $this->published(/*fallback=*/ true, /*default=*/ -1));
-			$this->post['post_modified_gmt'] = gmdate('Y-m-d H:i:s', $this->updated(/*fallback=*/ true, /*default=*/ -1));
+			$this->post['post_date'] = gmdate('Y-m-d H:i:s', apply_filters('syndicated_item_published', $this->published(/*fallback=*/ true, /*default=*/ -1), $this) + $offset);
+			$this->post['post_modified'] = gmdate('Y-m-d H:i:s', apply_filters('syndicated_item_updated', $this->updated(/*fallback=*/ true, /*default=*/ -1), $this) + $offset);
+			$this->post['post_date_gmt'] = gmdate('Y-m-d H:i:s', apply_filters('syndicated_item_published', $this->published(/*fallback=*/ true, /*default=*/ -1), $this));
+			$this->post['post_modified_gmt'] = gmdate('Y-m-d H:i:s', apply_filters('syndicated_item_updated', $this->updated(/*fallback=*/ true, /*default=*/ -1), $this));
 
 			// Use feed-level preferences or the global default.
 			$this->post['post_status'] = $this->link->syndicated_status('post', 'publish');
@@ -497,7 +497,12 @@ class SyndicatedPost {
 		# If that's what happened, we don't want the full
 		# content for the excerpt.
 		$content = $this->content();
-		if ( is_null($excerpt) or $excerpt == $content ) :
+		
+		// Ignore whitespace, case, and tag cruft.
+		$theExcerpt = preg_replace('/\s+/', '', strtolower(strip_tags($excerpt)));
+		$theContent = preg_replace('/\s+/', '', strtolower(strip_Tags($content)));
+
+		if ( empty($excerpt) or $theExcerpt == $theContent ) :
 			# If content is available, generate an excerpt.
 			if ( strlen(trim($content)) > 0 ) :
 				$excerpt = strip_tags($content);
@@ -689,7 +694,7 @@ class SyndicatedPost {
 			$author['uri'] = $this->item['author_url'];
 		elseif (isset($this->feed->channel['author_url'])) :
 			$author['uri'] = $this->item['author_url'];
-		else:
+		elseif (isset($this->feed->channel['link'])) :
 			$author['uri'] = $this->feed->channel['link'];
 		endif;
 
@@ -888,7 +893,7 @@ class SyndicatedPost {
 
 	function resolve_single_relative_uri ($refs) {
 		$tag = FeedWordPressHTML::attributeMatch($refs);
-		$url = Relative_URI::resolve($tag['value'], $this->_base);
+		$url = SimplePie_Misc::absolutize_url($tag['value'], $this->_base);
 		return $tag['prefix'] . $url . $tag['suffix'];
 	} /* function SyndicatedPost::resolve_single_relative_uri() */
 
@@ -1476,7 +1481,7 @@ class SyndicatedPost {
 		$a = $this->author();
 		$author = $a['name'];
 		$email = (isset($a['email']) ? $a['email'] : NULL);
-		$url = (isset($a['uri']) ? $a['uri'] : NULL);
+		$authorUrl = (isset($a['uri']) ? $a['uri'] : NULL);
 
 		$match_author_by_email = !('yes' == get_option("feedwordpress_do_not_match_author_by_email"));
 		if ($match_author_by_email and !FeedWordPress::is_null_email($email)) :
@@ -1496,7 +1501,7 @@ class SyndicatedPost {
 		$author = $wpdb->escape($author);
 		$email = $wpdb->escape($email);
 		$test_email = $wpdb->escape($test_email);
-		$url = $wpdb->escape($url);
+		$authorUrl = $wpdb->escape($authorUrl);
 
 		// Check for an existing author rule....
 		if (isset($this->link->settings['map authors']['name'][strtolower(trim($author))])) :
@@ -1555,7 +1560,11 @@ class SyndicatedPost {
 					// more than one user account with an empty e-mail address, so we
 					// need *something* here. Ugh.
 					if (strlen($email) == 0 or FeedWordPress::is_null_email($email)) :
-						$url = parse_url($this->feed->channel['link']);
+						$hostUrl = $this->link->homepage();
+						if (is_null($hostUrl) or (strlen($hostUrl) < 0)) :
+							$hostUrl = $this->link->uri();
+						endif;
+						$url = parse_url($hostUrl);
 						$email = $nice_author.'@'.$url['host'];
 					endif;
 
@@ -1565,7 +1574,7 @@ class SyndicatedPost {
 					$userdata['user_nicename'] = $nice_author;
 					$userdata['user_pass'] = substr(md5(uniqid(microtime())), 0, 6); // just something random to lock it up
 					$userdata['user_email'] = $email;
-					$userdata['user_url'] = $url;
+					$userdata['user_url'] = $authorUrl;
 					$userdata['display_name'] = $author;
 
 					$id = wp_insert_user($userdata);
@@ -1601,7 +1610,7 @@ class SyndicatedPost {
 		foreach ($cats as $cat_name) :
 			if (preg_match('/^{#([0-9]+)}$/', $cat_name, $backref)) :
 				$cat_id = (int) $backref[1];
-				if (function_exists('is_term') and is_term($cat_id, 'category')) :
+				if (term_exists($cat_id, 'category')) :
 					$cat_ids[] = $cat_id;
 				elseif (get_category($cat_id)) :
 					$cat_ids[] = $cat_id;
@@ -1610,63 +1619,28 @@ class SyndicatedPost {
 				$esc = $wpdb->escape($cat_name);
 				$resc = $wpdb->escape(preg_quote($cat_name));
 				
-				// WordPress 2.3+
-				if (function_exists('is_term')) :
-					$cat_id = is_term($cat_name, 'category');
-					if ($cat_id) :
-						$cat_ids[] = $cat_id['term_id'];
-					// There must be a better way to do this...
-					elseif ($results = $wpdb->get_results(
-						"SELECT	term_id
-						FROM $wpdb->term_taxonomy
-						WHERE
-							LOWER(description) RLIKE
-							CONCAT('(^|\\n)a\\.?k\\.?a\\.?( |\\t)*:?( |\\t)*', LOWER('{$resc}'), '( |\\t|\\r)*(\\n|\$)')"
-					)) :
-						foreach ($results AS $term) :
-							$cat_ids[] = (int) $term->term_id;
-						endforeach;
-					elseif ('tag'==$unfamiliar_category) :
-						$tags[] = $cat_name;
-					elseif ('create'===$unfamiliar_category) :
-						$term = wp_insert_term($cat_name, 'category');
-						if (is_wp_error($term)) :
-							FeedWordPress::noncritical_bug('term insertion problem', array('cat_name' => $cat_name, 'term' => $term, 'this' => $this), __LINE__);
-						else :
-							$cat_ids[] = $term['term_id'];
-						endif;
-					endif;
-				
-				// WordPress 1.5.x - 2.2.x
-				else :
-					$results = $wpdb->get_results(
-					"SELECT cat_ID
-					FROM $wpdb->categories
+				$cat_id = term_exists($cat_name, 'category');
+				if ($cat_id) :
+					$cat_ids[] = $cat_id['term_id'];
+				// There must be a better way to do this...
+				elseif ($results = $wpdb->get_results(
+					"SELECT	term_id
+					FROM $wpdb->term_taxonomy
 					WHERE
-					  (LOWER(cat_name) = LOWER('$esc'))
-					  OR (LOWER(category_description)
-					  RLIKE CONCAT('(^|\\n)a\\.?k\\.?a\\.?( |\\t)*:?( |\\t)*', LOWER('{$resc}'), '( |\\t|\\r)*(\\n|\$)'))
-					");
-					if ($results) :
-						foreach  ($results as $term) :
-							$cat_ids[] = (int) $term->cat_ID;
-						endforeach;
-					elseif ('create'===$unfamiliar_category) :
-						if (function_exists('wp_insert_category')) :
-							$cat_id = wp_insert_category(array('cat_name' => $esc));
-						// And into the database we go.
-						else :
-							$nice_kitty = sanitize_title($cat_name);
-							$wpdb->query(sprintf("
-								INSERT INTO $wpdb->categories
-								SET
-								  cat_name='%s',
-								  category_nicename='%s'
-								", $esc, $nice_kitty
-							));
-							$cat_id = $wpdb->insert_id;
-						endif;
-						$cat_ids[] = $cat_id;
+						LOWER(description) RLIKE
+						CONCAT('(^|\\n)a\\.?k\\.?a\\.?( |\\t)*:?( |\\t)*', LOWER('{$resc}'), '( |\\t|\\r)*(\\n|\$)')"
+				)) :
+					foreach ($results as $term) :
+						$cat_ids[] = (int) $term->term_id;
+					endforeach;
+				elseif ('tag'==$unfamiliar_category) :
+					$tags[] = $cat_name;
+				elseif ('create'===$unfamiliar_category) :
+					$term = wp_insert_term($cat_name, 'category');
+					if (is_wp_error($term)) :
+						FeedWordPress::noncritical_bug('term insertion problem', array('cat_name' => $cat_name, 'term' => $term, 'this' => $this), __LINE__);
+					else :
+						$cat_ids[] = $term['term_id'];
 					endif;
 				endif;
 			endif;

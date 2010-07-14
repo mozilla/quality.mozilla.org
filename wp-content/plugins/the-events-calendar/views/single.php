@@ -8,6 +8,7 @@
 			<div id="post-<?php the_ID() ?>" <?php post_class() ?>>
 				<span class="back"><a href="<?php echo events_get_events_link(); ?>"><?php _e('&laquo; Back to Events', $spEvents->pluginDomain); ?></a></span>
 				<h2 class="entry-title"><?php the_title() ?></h2>
+				<a class="ical" href="<?php bloginfo('home'); ?>/?ical=<?php echo $post->ID; ?>"><?php _e('iCal Import', $spEvents->pluginDomain) ?></a>
 				<?php if (the_event_end_date() > time()  ) { ?><small><?php  _e('This event has passed.', $spEvents->pluginDomain) ?></small> <?php } ?>
 				<div id="tec-event-meta">
 					<dl class="column">
@@ -35,7 +36,8 @@
 						<dt>
 							<?php _e('Address:', $spEvents->pluginDomain) ?><br />
 							<?php if( get_post_meta( $post->ID, '_EventShowMapLink', true ) == 'true' ) : ?>
-								<a class="gmap" href="<?php event_google_map_link() ?>" title="<?php _e('Click to view a Google Map', $spEvents->pluginDomain); ?>" target="_blank"><?php _e('Google Map', $spEvents->pluginDomain ); ?></a>
+								<?php $mapArgs = array("f"=>"q","source"=>"s_q","geocode"=>""); ?>
+								<a class="gmap" href="<?php event_google_map_link( null, $mapArgs ) ?>" title="<?php _e('Click to view a Google Map', $spEvents->pluginDomain); ?>" target="_blank"><?php _e('Google Map', $spEvents->pluginDomain ); ?></a>
 							<?php endif; ?>
 						</dt>
 							<dd>
@@ -48,7 +50,7 @@
 					<?php if( tec_address_exists( $post->ID ) ) event_google_map_embed(); ?>
 				<?php endif; ?>
 				<div class="entry">
-					<?php the_content() ?>	
+					<?php the_content(); ?>	
 					<?php if (function_exists('the_event_ticket_form')) { the_event_ticket_form(); } ?>		
 				</div>
 				<?php edit_post_link('Edit', '<span class="edit-link">', '</span>'); ?>

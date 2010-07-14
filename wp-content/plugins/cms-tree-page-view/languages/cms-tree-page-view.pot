@@ -1,130 +1,163 @@
 # Translation of the WordPress plugin   by .
-# Copyright (C) 2010
+# Copyright (C) 2010 
 # This file is distributed under the same license as the  package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/cms-tree-page-view\n"
-"POT-Creation-Date: 2010-04-14 15:28+0000\n"
-"PO-Revision-Date: 2010-04-14 17:41+0100\n"
-"Last-Translator: Pär Thernström <par.thernstrom@gmail.com>\n"
+"POT-Creation-Date: 2010-06-30 19:00+0000\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: functions.php:84
-msgid "settings"
-msgstr ""
-
-#: functions.php:91
-msgid "Show tree"
-msgstr ""
-
-#: functions.php:95
-msgid "on the dashboard"
-msgstr ""
-
-#: functions.php:98
-msgid "under the pages menu"
-msgstr ""
-
-#: functions.php:105
-msgid "Save Changes"
-msgstr ""
-
-#: functions.php:127
-msgid "All"
-msgstr ""
-
-#: functions.php:128
-msgid "Public"
-msgstr ""
-
-#: functions.php:130
-msgid "Expand"
-msgstr ""
-
-#: functions.php:131
-msgid "Collapse"
-msgstr ""
-
-#: functions.php:136
-msgid "Search"
-msgstr ""
-
-#: functions.php:137
-msgid "Searching..."
-msgstr ""
-
-#: functions.php:142
-msgid "Loading..."
-msgstr ""
-
-#: functions.php:144
-msgid "Search: no pages found"
-msgstr ""
-
-#: functions.php:146
-msgid "Loading tree"
-msgstr ""
-
-#: functions.php:248
-msgid "<Untitled page>"
-msgstr ""
-
-#: functions.php:264
-msgid "Click to edit. Drag to move."
-msgstr ""
-
-#: functions.php:380
-msgid "New page"
-msgstr ""
-
-#: scripts/cms_tree_page_view.php:85
-#: scripts/cms_tree_page_view.php:102
+#: functions.php:45
 msgid "Enter title of new page"
 msgstr ""
 
-#: scripts/cms_tree_page_view.php:283
+#: functions.php:46
 msgid "child pages"
 msgstr ""
 
-#: scripts/cms_tree_page_view.php:293
+#: functions.php:47
 msgid "Edit page"
 msgstr ""
 
-#: scripts/cms_tree_page_view.php:293
-msgid "Edit"
-msgstr ""
-
-#: scripts/cms_tree_page_view.php:294
+#: functions.php:48
 msgid "View page"
 msgstr ""
 
-#: scripts/cms_tree_page_view.php:294
+#: functions.php:49
+msgid "Edit"
+msgstr ""
+
+#: functions.php:50
 msgid "View"
 msgstr ""
 
-#: scripts/cms_tree_page_view.php:296
+#: functions.php:51
 msgid "Add page"
 msgstr ""
 
-#: scripts/cms_tree_page_view.php:297
+#: functions.php:52
 msgid "Add new page after"
 msgstr ""
 
-#: scripts/cms_tree_page_view.php:297
+#: functions.php:53
 msgid "after"
 msgstr ""
 
-#: scripts/cms_tree_page_view.php:298
-msgid "Add new page inside"
-msgstr ""
-
-#: scripts/cms_tree_page_view.php:298
+#: functions.php:54
 msgid "inside"
 msgstr ""
 
+#: functions.php:55
+msgid "Add new page inside"
+msgstr ""
+
+#: functions.php:56
+msgid "draft"
+msgstr ""
+
+#: functions.php:57
+msgid "future"
+msgstr ""
+
+#: functions.php:58
+msgid "protected"
+msgstr ""
+
+#: functions.php:59
+msgid "pending"
+msgstr ""
+
+#: functions.php:60
+msgid "private"
+msgstr ""
+
+#: functions.php:61
+msgid "Password protected page"
+msgstr ""
+
+#: functions.php:113
+msgid "settings"
+msgstr ""
+
+#: functions.php:120
+msgid "Show tree"
+msgstr ""
+
+#: functions.php:124
+msgid "on the dashboard"
+msgstr ""
+
+#: functions.php:128
+msgid "under the pages menu"
+msgstr ""
+
+#: functions.php:135
+msgid "Save Changes"
+msgstr ""
+
+#: functions.php:150
+msgid ""
+"No pages found. Maybe you want to <a href='post-new.php?post_type=page'>add "
+"a new page</a>?"
+msgstr ""
+
+#: functions.php:157
+msgid "All"
+msgstr ""
+
+#: functions.php:158
+msgid "Public"
+msgstr ""
+
+#: functions.php:160
+msgid "Expand"
+msgstr ""
+
+#: functions.php:161
+msgid "Collapse"
+msgstr ""
+
+#: functions.php:166
+msgid "Clear search"
+msgstr ""
+
+#: functions.php:167
+msgid "Search"
+msgstr ""
+
+#: functions.php:168
+msgid "Searching..."
+msgstr ""
+
+#: functions.php:173
+msgid "Loading..."
+msgstr ""
+
+#: functions.php:175
+msgid "Search: no pages found"
+msgstr ""
+
+#: functions.php:177
+msgid "Loading tree"
+msgstr ""
+
+#: functions.php:277
+msgid "<Untitled page>"
+msgstr ""
+
+#: functions.php:295
+msgid "Click to edit. Drag to move."
+msgstr ""
+
+#: functions.php:432
+msgid "New page"
+msgstr ""
