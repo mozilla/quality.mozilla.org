@@ -32,16 +32,11 @@
 	clear: both;
 }
 
-.tree li {
-	margin-top: 2px !important;
-	margin-bottom: 2px !important;
-}
-
-
-.tree li span.cms_tpv_action_edit,
-.tree li span.cms_tpv_action_view,
-.tree li span.cms_tpv_action_add_page_after,
-.tree li span.cms_tpv_action_add_page_inside
+/*
+span.cms_tpv_action_edit,
+li span.cms_tpv_action_view,
+li span.cms_tpv_action_add_page_after,
+li span.cms_tpv_action_add_page_inside
 {
 	display: none;
 	text-decoration: underline;
@@ -52,14 +47,14 @@
 	padding: 0 0 0 .5ex;
 
 }
-.tree li span.cms_tpv_action_add_page {
+li span.cms_tpv_action_add_page {
 	display: none;
 	border: 0;
 	padding: 0 0 0 .5em;
 	color: #666;
 }
+*/
 
-.tree li a.search,
 .cms-tree-view-search
 {
 	background-color: #ffefba;
@@ -69,23 +64,7 @@
 }
 
 
-.cms_tpv_action_edit,
-.cms_tpv_action_view,
-.cms_tpv_action_add_page_after,
-.cms_tpv_action_add_page_inside
-{
-	color: #21759B !important;
-}
-
-.cms_tpv_action_edit:hover,
-.cms_tpv_action_view:hover,
-.cms_tpv_action_add_page_after:hover,
-.cms_tpv_action_add_page_inside:hover
-{
-	color: #d54e21 !important;
-}
-
-.tree ins {
+.jstree a ins {
 	cursor: move;
 }
 
@@ -102,16 +81,23 @@
 	color: #999;
 	border: none;
 	font-size: .8em;
+	margin-left: .5em;
 }
 
-.tree li:nth-child(odd) {
+.tree-default span.post_protected {
+	display:inline-block;
+	margin:0 3px 0 0; padding:0;
+	width:16px; height:16px;
+	/* icon source => http://www.famfamfam.com/lab/icons/silk/  */
+	background:transparent url(images/lock.png) center no-repeat;
 }
+
 
 .tree-default span.post_type {
 	background-color: #f85b11;
-	-moz-border-radius: 2px;
-	-webkit-border-radius: 2px;
-	border-radius: 2px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
 	padding: 1px 4px 1px 4px;
 	color: white;
 	border: none;
@@ -140,8 +126,7 @@
 	opacity: .9;
 }
 
-#cms_tpv_open_all
-{
+#cms_tpv_open_all {
 	margin-left: 1em;
 }
 
@@ -181,4 +166,102 @@
 	position: absolute;
 	line-height: 1;
 	display: none;
+}
+
+#cms_tree_view_search_form_reset {
+	display: none;
+	position: absolute;
+	top: 2px;
+	left: 112px;
+	width: 16px;
+	height: 16px;
+	background: transparent url(http://jquery-ui.googlecode.com/svn/trunk/themes/base/images/ui-icons_888888_256x240.png) no-repeat -32px -194px;
+	text-indent: -9999px;
+}
+#cms_tpv_dashboard_widget #cms_tree_view_search_form_reset {
+	top: 8px;
+}
+#cms_tree_view_search_form_reset:hover {
+	background: transparent url(http://jquery-ui.googlecode.com/svn/trunk/themes/base/images/ui-icons_454545_256x240.png) no-repeat -32px -194px;
+}
+
+#cms_tpv_annoying_little_box {
+	padding: 1em;
+	background-color: #FFFFE0;
+	border: 1px solid #E6DB55;
+	margin: 1em 0 1em 0;
+}
+#cms_tpv_annoying_little_box p {
+	margin: 0 0 .5em 0;
+}
+p#cms_tpv_annoying_little_box_close {
+	float: right;
+	margin-left: 2em;
+	font-size: .8em;
+	margin-top: -1em;
+	margin-right: -.5em;
+}
+
+#cms_tpv_page_actions {
+	width: auto;
+	height: auto;
+	background-color: white;
+	position: absolute;
+	top: 0;
+	white-space: normal;
+	z-index: 100;
+	padding: 7px;
+	display: none;
+	-moz-box-shadow: 2px 2px 8px #ddd; /* FF3.5+ */
+	border: 1px solid #bbb;
+}
+#cms_tpv_page_actions p {
+	margin: 0 0 .5em 0;
+}
+#cms_tpv_page_actions a {
+	display: inline;
+	background: transparent;
+	text-decoration: underline;
+	padding: 0;
+	color: #21759B;
+}
+
+#cms_tpv_page_actions a:hover
+ {
+	color: #d54e21;
+}
+
+#cms_tpv_page_actions ul {
+	display: block;
+	overflow: auto;
+	margin: 0 0 1em 0;
+}
+#cms_tpv_page_actions li {
+	padding: 0;
+	margin: 0;
+	background: none;
+	display: inline;
+}
+.cms_tpv_action_add_page {
+	display: block;
+}
+#cms_tpv_page_actions dl {
+	margin-top: 1em;
+	color: #333;
+	font-size: 11px;
+}
+#cms_tpv_page_actions dl dd {
+}
+#cms_tpv_page_actions dl dt {
+	color: #999;
+}
+
+#cms_tpv_page_actions_arrow {
+	width: 8px;
+	height: 15px;
+	background: url(images/arrow-left.gif) no-repeat top left;
+	position: absolute;
+	display: block;
+	top: 7px;
+	left: -8px;
 }
