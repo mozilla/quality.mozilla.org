@@ -185,7 +185,7 @@ function cms_tpv_print_common_tree_stuff() {
 				<span class='cms_tpv_action_add_page'><?php _e("Add page", "cms-tree-page-view")?></span>
 				<a href="#" title='<?php _e("Add new page after", "cms-tree-page-view")?>' class='cms_tpv_action_add_page_after'><?php _e("after", "cms-tree-page-view")?></a> | 
 				<a href="#" title='<?php _e("Add new page inside", "cms-tree-page-view")?>' class='cms_tpv_action_add_page_inside'><?php _e("inside", "cms-tree-page-view")?></a>
-			</ul>
+			</p>
 			<dl>
 				<dt><?php  _e("Last modified", "cms-tree-page-view") ?></dt>
 				<dd><span id="cms_tpv_page_actions_modified_time"></span> <?php _e("by", "cms-tree-page-view") ?> <span id="cms_tpv_page_actions_modified_by"></span></dd>
@@ -210,7 +210,6 @@ function cms_tpv_pages_page() {
 
 		<?php
 		cms_tpv_show_annoying_box();
-
 		cms_tpv_print_common_tree_stuff();
 		?>
 	</div>
@@ -289,9 +288,10 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null) {
 			}
 			
 			// modified time
-			$post_modified_time = get_post_modified_time('U', false, $onePage, false);
+			#$post_modified_time = get_post_modified_time('U', false, $onePage, false);
+			$post_modified_time = strtotime($onePage->post_modified);
 			$post_modified_time =  date_i18n(get_option('date_format'), $post_modified_time, false);
-			
+
 			// last edited by
 			global $post;
 			$tmpPost = $post;
@@ -561,11 +561,22 @@ function cms_tpv_move_page() {
 		
 			// post_node is placed before ref_post_node
 
-			// update menu_order of all pages with a meny order more than or equal ref_node_post and with the same parent as ref_node_post
+			// update menu_order of all pages with a menu order more than or equal ref_node_post and with the same parent as ref_node_post
+			// we do this so there will be room for our page if it's the first page
 			$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET menu_order = menu_order+1 WHERE post_parent = %d", $post_ref_node->post_parent ) );
 
+			// update menu order with +1 for all pages below ref_node, this should fix the problem with "unmovable" pages because of
+			// multiple pages with the same menu order (...which is not the fault of this plugin!)
+			$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET menu_order = menu_order+1 WHERE menu_order => %d", $post_ref_node->menu_order) );
+			
 			// update menu_order of $post_node to the menu_order that ref_post_node had, and update post_parent to the same as ref_post
-			$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET menu_order = %d, post_parent = %d WHERE ID = %d", $post_ref_node->menu_order, $post_ref_node->post_parent, $post_node->ID ) );
+			$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET menu_order = %d, post_parent = %d WHERE ID = %d", $post_ref_node->menu_order+1, $post_ref_node->post_parent, $post_node->ID ) );
+
+#2 moved..
+
+#2 home
+#2 our products
+#3 contact us <- ref
 
 			echo "did before";
 
@@ -608,7 +619,7 @@ function cms_tpv_show_annoying_box() {
 		?>
 		<div id="cms_tpv_annoying_little_box">
 			<p id="cms_tpv_annoying_little_box_close"><a href="<?php echo CMS_TPV_PAGE_FILE ?>&action=cms_tpv_remove_annoying_box">Close</a></p>
-			<p><strong>Thank you for using my plugin!</strong> If you need help please check out the <a href="http://eskapism.se/code-playground/cms-tree-page-view/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox">plugin homepage</a> or the <a href="http://wordpress.org/tags/cms-tree-page-view?forum_id=10">support forum</a>.</p>
+			<p><strong>Thank you for using this plugin!</strong> If you need help please check out the <a href="http://eskapism.se/code-playground/cms-tree-page-view/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox">plugin homepage</a> or the <a href="http://wordpress.org/tags/cms-tree-page-view?forum_id=10">support forum</a>.</p>
 			<p>If you like this plugin, please <a href="http://eskapism.se/sida/donate/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox">support my work by donating</a> - or at least say something nice about this plugin in a blog post or tweet.</p>
 			<!-- <p>Thank you</p>
 			<p><img src="<?php echo CMS_TPV_URL ?>/images/signature.gif" alt="Pär Thernström's signature" /></p>
@@ -628,6 +639,12 @@ function bonny_d($var) {
 	print_r($var);
 	echo "</pre>";
 }
+}
+
+
+function cms_tpv_install() {
+	// after upgrading/re-enabling the plugin, also re-enable the little please-donate-box
+	update_option('cms_tpv_show_annoying_little_box', 1);
 }
 
 ?>
