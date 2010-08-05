@@ -2,22 +2,12 @@
 var cms_tpv_tree, treeOptions, div_actions;
 jQuery(function($) {
 	
-	cms_tpv_tree = $("#cms_tpv_container");
-	div_actions = $("#cms_tpv_page_actions");
-
-	/**
-	 * show div with options
-	 */
-	$("#cms_tpv_container li").live("mouseenter", function() {
-		$(this).find(".cms_tpv_tree_actions:first").show();
-	});
-	$("#cms_tpv_container li").live("mouseleave", function() {
-		$(this).find(".cms_tpv_tree_actions:first").hide();
-	});
+	cms_tpv_tree = $(".cms_tpv_container");
+	div_actions = $(".cms_tpv_page_actions");
 
 	treeOptions = {
 		xplugins: ["cookie","ui","crrm","themes","json_data","search","types","dnd"],
-		plugins: ["themes","json_data","cookies","search","dnd"],
+		plugins: ["themes","json_data","cookies","search","dnd", "types"],
 		core: {
 			"html_titles": true
 		},
@@ -51,47 +41,79 @@ jQuery(function($) {
 		}
 	}
 
-	if ($("#cms_tpv_container").length == 1) {
-		cms_tpv_bind_clean_node();
-		cms_tpv_tree.jstree(treeOptions);
+	if (cms_tpv_tree.length > 0) {
+		cms_tpv_bind_clean_node(); // don't remember why I run this here.. :/
 	}
+	cms_tpv_tree.each(function(i, elm) {
+
+		var $elm = $(elm);
+
+		// init tree, with settings specific for each post type
+		var treeOptionsTmp = jQuery.extend(true, {}, treeOptions);
+		treeOptionsTmp.json_data.ajax.url = treeOptionsTmp.json_data.ajax.url + "&post_type=" + cms_tpv_get_post_type(elm) + "&lang=" + cms_tpv_get_wpml_selected_lang(elm);
+		
+		var isHierarchical = $(elm).closest(".cms_tpv_wrapper").find("[name=cms_tpv_meta_post_type_hierarchical]").val();
+		if (isHierarchical == 0) {
+			// no move to children if not hierarchical
+			treeOptionsTmp.types = {
+				"types": {
+					"default" : {
+						"valid_children" : [ "none" ]
+					}
+				}
+			}
+		}
+		
+		$elm.bind("search.jstree", function (event, data) {
+			if (data.rslt.nodes.length == 0) {
+				// no hits. doh.
+				$(this).closest(".cms_tpv_wrapper").find(".cms_tree_view_search_form_no_hits").fadeIn("fast");
+			}
+		});
+		
+		$elm.jstree(treeOptionsTmp);
+
+	});
+	
+
 
 }); // end ondomready
 
 
-// view page on click
-/*
-jQuery(".cms_tpv_action_view").live("click", function() {
-	var $li = jQuery(this).closest("li");
-	var permalink = $li.data("jstree").permalink;
-	if (permalink) {
-		document.location = permalink;
-	}
-	return false;
-});
+// get post type
+// elm must be within .cms_tpv_wrapper to work
+function cms_tpv_get_post_type(elm) {
+	return jQuery(elm).closest(".cms_tpv_wrapper").find("[name=cms_tpv_meta_post_type]").val();
+}
+// get selected lang
+function cms_tpv_get_wpml_selected_lang(elm) {
+	return jQuery(elm).closest(".cms_tpv_wrapper").find("[name=cms_tpv_meta_wpml_language]").val();
+}
 
-// edit page on click
-jQuery(".cms_tpv_action_edit").live("click", function() {
-	var $li = jQuery(this).closest("li");
-	var editlink = $li.data("jstree").editlink;
-	if (editlink) {
-		document.location = editlink;
-	}
-	return false;
-});
-*/
+function cms_tpv_get_page_actions_div(elm) {
+	return jQuery(elm).closest(".cms_tpv_wrapper").find(".cms_tpv_page_actions");
+}
+function cms_tpv_get_wrapper(elm) {
+	var $wrapper = jQuery(elm).closest(".cms_tpv_wrapper");
+	return $wrapper;
+}
+
 
 // add page after
 jQuery(".cms_tpv_action_add_page_after").live("click", function() {
 	var $this = jQuery(this);
+	var post_type = cms_tpv_get_post_type(this);
+	var selected_lang = cms_tpv_get_wpml_selected_lang(this);
 	jPrompt(cmstpv_l10n.Enter_title_of_new_page, "", "CMS Tree Page View", function(new_page_title) {
 		if (new_page_title) {
 			var pageID = $this.parents("li:first").attr("id");
 			jQuery.post(ajaxurl, {
-				action: "cms_tpv_add_page",
-				pageID: pageID,
-				type: "after",
-				page_title: new_page_title
+				"action": "cms_tpv_add_page",
+				"pageID": pageID,
+				"type": "after",
+				"page_title": new_page_title,
+				"post_type": post_type,
+				"wpml_lang": selected_lang
 			}, function(data, textStatus) {
 				document.location = data;
 			});
@@ -104,14 +126,18 @@ jQuery(".cms_tpv_action_add_page_after").live("click", function() {
 // add page inside
 jQuery(".cms_tpv_action_add_page_inside").live("click", function() {
 	var $this = jQuery(this);
+	var post_type = cms_tpv_get_post_type(this);
+	var selected_lang = cms_tpv_get_wpml_selected_lang(this);
 	jPrompt(cmstpv_l10n.Enter_title_of_new_page, "", "CMS Tree Page View", function(new_page_title) {
 		if (new_page_title) {
 			var pageID = $this.parents("li:first").attr("id");
 			jQuery.post(ajaxurl, {
-				action: "cms_tpv_add_page",
-				pageID: pageID,
-				type: "inside",
-				page_title: new_page_title
+				"action": "cms_tpv_add_page",
+				"pageID": pageID,
+				"type": "inside",
+				"page_title": new_page_title,
+				"post_type": post_type,
+				"wpml_lang": selected_lang
 			}, function(data, textStatus) {
 				document.location = data;
 			});
@@ -119,8 +145,6 @@ jQuery(".cms_tpv_action_add_page_inside").live("click", function() {
 	});
 	return false;
 });
-
-
 
 
 
@@ -132,44 +156,43 @@ function cms_tpv_is_dragging() {
 
 // mouse over, show actions
 jQuery(".jstree li").live("mouseover", function(e) {
+
 	$li = jQuery(this);
-	//$actions = $t.find(".cms_tpv_action_view, .cms_tpv_action_edit, .cms_tpv_action_add_page, .cms_tpv_action_add_page_after, .cms_tpv_action_add_page_inside");
+	
+	var div_actions_for_post_type = cms_tpv_get_page_actions_div(this);
+
 	if (cms_tpv_is_dragging() == false) {
 	
-		if (div_actions.is(":visible")) {
+		if (div_actions_for_post_type.is(":visible")) {
 			// do nada
-			//console.log("it's visible");
 		} else {
-			//console.log("it's not visible");
 
 			$li.find("a:first").addClass("hover");
 			
-			// setup links
-
-			// view page
-			$view = div_actions.find(".cms_tpv_action_view");
+			// setup link for view page
+			$view = div_actions_for_post_type.find(".cms_tpv_action_view");
 			var permalink = $li.data("jstree").permalink;
 			$view.attr("href", permalink);
 
-			// edit page
-			$edit = div_actions.find(".cms_tpv_action_edit");
+			// setup link for edit page
+			$edit = div_actions_for_post_type.find(".cms_tpv_action_edit");
 			var editlink = $li.data("jstree").editlink;
 			$edit.attr("href", editlink);
 			
 			// ..and some extras
-			jQuery("#cms_tpv_page_actions_modified_time").text($li.data("jstree").modified_time);
-			jQuery("#cms_tpv_page_actions_modified_by").text($li.data("jstree").modified_author);
-			jQuery("#cms_tpv_page_actions_page_id").text($li.data("jstree").post_id);		
+			div_actions_for_post_type.find(".cms_tpv_page_actions_modified_time").text($li.data("jstree").modified_time);
+			div_actions_for_post_type.find(".cms_tpv_page_actions_modified_by").text($li.data("jstree").modified_author);
+			div_actions_for_post_type.find(".cms_tpv_page_actions_page_id").text($li.data("jstree").post_id);		
 			
 			// position and show action div
 			var $a = $li.find("a");
 			var width = $a.outerWidth(true);
-			$li.append(div_actions);
-			left = width+28;
-			top = -3;
-			div_actions.css("left", left);
-			div_actions.css("top", top);
-			div_actions.show();
+			$li.append(div_actions_for_post_type);
+			left_pos = width+28;
+			top_pos = -3;
+			div_actions_for_post_type.css("left", left_pos);
+			div_actions_for_post_type.css("top", top_pos);
+			div_actions_for_post_type.show();
 		}
 	}
 });
@@ -284,68 +307,111 @@ function cms_tpv_bind_clean_node() {
 }
 
 // search: perform
-jQuery("#cms_tree_view_search_form").live("submit", function() {
-	jQuery("#cms_tpv_search_no_hits").hide();
-	var s = jQuery("#cms_tree_view_search").attr("value");
+jQuery(".cms_tree_view_search_form").live("submit", function() {
+	var $wrapper = jQuery(this).closest(".cms_tpv_wrapper");
+	$wrapper.find(".cms_tpv_search_no_hits").hide();
+	var s = $wrapper.find(".cms_tree_view_search").attr("value");
 	s = jQuery.trim( s );
 	// search, oh the mighty search!
 	if (s) {
-		jQuery("#cms_tree_view_search_form_working").fadeIn("fast");
-		jQuery("#cms_tree_view_search_form_reset")
-		cms_tpv_tree.jstree("search", s);
-		jQuery("#cms_tree_view_search_form_reset").fadeIn("fast");
+		$wrapper.find(".cms_tree_view_search_form_no_hits").fadeOut("fast");
+		$wrapper.find(".cms_tree_view_search_form_working").fadeIn("fast");
+		$wrapper.find(".cms_tree_view_search_form_reset")
+		$wrapper.find(".cms_tpv_container").jstree("search", s);
+		$wrapper.find(".cms_tree_view_search_form_reset").fadeIn("fast");
 	} else {
-		cms_tpv_tree.jstree("clear_search");
-		jQuery("#cms_tree_view_search_form_reset").fadeOut("fast");
+		$wrapper.find(".cms_tree_view_search_form_no_hits").fadeOut("fast");
+		$wrapper.find(".cms_tpv_container").jstree("clear_search");
+		$wrapper.find(".cms_tree_view_search_form_reset").fadeOut("fast");
 	}
-	jQuery("#cms_tree_view_search_form_working").fadeOut("fast");
+	$wrapper.find(".cms_tree_view_search_form_working").fadeOut("fast");
 	return false;
 });
 
 // search: reset
-jQuery("#cms_tree_view_search_form_reset").live("click", function() {
-	jQuery("#cms_tree_view_search").val("")
-	cms_tpv_tree.jstree("clear_search");
-	jQuery("#cms_tree_view_search_form_reset").fadeOut("fast");
+jQuery(".cms_tree_view_search_form_reset").live("click", function() {
+	var $wrapper = jQuery(this).closest(".cms_tpv_wrapper");
+	$wrapper.find(".cms_tree_view_search").val("")
+	$wrapper.find(".cms_tpv_container").jstree("clear_search");
+	$wrapper.find(".cms_tree_view_search_form_reset").fadeOut("fast");
+	$wrapper.find(".cms_tree_view_search_form_no_hits").fadeOut("fast");
 	return false;
 });
 
 // open/close links
-jQuery("#cms_tpv_open_all").live("click", function() {
-	cms_tpv_tree.jstree("open_all");
+jQuery(".cms_tpv_open_all").live("click", function() {
+	var $wrapper = jQuery(this).closest(".cms_tpv_wrapper");
+	$wrapper.find(".cms_tpv_container").jstree("open_all");
 	return false;
 });
-jQuery("#cms_tpv_close_all").live("click", function() {
-	cms_tpv_tree.jstree("close_all");
+jQuery(".cms_tpv_close_all").live("click", function() {
+	var $wrapper = jQuery(this).closest(".cms_tpv_wrapper");
+	$wrapper.find(".cms_tpv_container").jstree("close_all");
 	return false;
 });
 
 // view all or public
-jQuery("#cms_tvp_view_all").live("click", function() {
-	cms_tvp_set_view("all");
+jQuery(".cms_tvp_view_all").live("click", function() {
+	cms_tvp_set_view("all", this);
+	//jQuery(this).addClass("current");
+	return false;
+});
+jQuery(".cms_tvp_view_public").live("click", function() {
+	cms_tvp_set_view("public", this);
+	//jQuery(this).addClass("current");
+	return false;
+});
+
+// change lang
+jQuery("a.cms_tvp_switch_lang").live("click", function(e) {
+	$wrapper = cms_tpv_get_wrapper(this);
+	$wrapper.find("ul.cms_tvp_switch_langs a").removeClass("current");
 	jQuery(this).addClass("current");
+
+	var re = /cms_tpv_switch_language_code_([\w]+)/;
+	var matches = re.exec( jQuery(this).attr("class") );
+	var lang_code = matches[1];
+	$wrapper.find("[name=cms_tpv_meta_wpml_language]").val(lang_code);
+
+	var current_view = cms_tpv_get_current_view(this);
+	cms_tvp_set_view(current_view, this);
+	
 	return false;
-});
-jQuery("#cms_tvp_view_public").live("click", function() {
-	cms_tvp_set_view("public");
-	jQuery(this).addClass("current");
-	return false;
+
 });
 
-// premium-link
-/*
-jQuery("#cms_tpv_upgrade_box_link").live("click", function() {
-	jQuery("#cms_tpv_upgrade_box").toggle();
-	return false;
-});
-*/
+function cms_tpv_get_current_view(elm) {
+	$wrapper = cms_tpv_get_wrapper(elm);
+	if ($wrapper.find(".cms_tvp_view_all").hasClass("current")) {
+		return "all";
+	} else if ($wrapper.find(".cms_tvp_view_public").hasClass("current")) {
+		return "public";
+	} else {
+		return false; // like unknown 
+	}
 
-
-function cms_tvp_set_view(view) {
-	jQuery("#cms_tvp_view_all,#cms_tvp_view_public").removeClass("current");
-	jQuery("#cms_tpv_container").jstree("destroy").html("");
-	cms_tpv_bind_clean_node();
-	treeOptions.json_data.ajax.url = ajaxurl + CMS_TPV_AJAXURL + view;
-	cms_tpv_tree.jstree(treeOptions);
 }
 
+function cms_tvp_set_view(view, elm) {
+
+	var $wrapper = jQuery(elm).closest(".cms_tpv_wrapper");
+
+	var div_actions_for_post_type = cms_tpv_get_page_actions_div(elm);
+	$wrapper.append(div_actions_for_post_type);
+
+	$wrapper.find(".cms_tvp_view_all,.cms_tvp_view_public").removeClass("current");
+	$wrapper.find(".cms_tpv_container").jstree("destroy").html("");
+	cms_tpv_bind_clean_node();
+
+	if (view == "all") {
+		$wrapper.find(".cms_tvp_view_all").addClass("current");
+	} else if (view == "public") {
+		$wrapper.find(".cms_tvp_view_public").addClass("current");
+	} else {
+		
+	}
+	
+	var treeOptionsTmp = jQuery.extend(true, {}, treeOptions);
+	treeOptionsTmp.json_data.ajax.url = ajaxurl + CMS_TPV_AJAXURL + view + "&post_type=" + cms_tpv_get_post_type(elm) + "&lang=" + cms_tpv_get_wpml_selected_lang(elm);
+	$wrapper.find(".cms_tpv_container").jstree(treeOptionsTmp);
+}

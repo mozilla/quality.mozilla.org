@@ -897,7 +897,9 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 					$htmlElement = ltrim( $tag, '_' );
 					if ( $tag != self::EVENTSERROROPT ) {
 						if ( isset( $_POST[$htmlElement] ) ) {
-							if( is_string($_POST[$htmlElement]) ) $_POST[$htmlElement] = filter_var($_POST[$htmlElement], FILTER_SANITIZE_STRING);
+/* This line may be triggering a catastrophic bug. Commenting out to test.
+//							if( is_string($_POST[$htmlElement]) ) $_POST[$htmlElement] = filter_var($_POST[$htmlElement], FILTER_SANITIZE_STRING);
+*/
 							update_post_meta( $postId, $tag, $_POST[$htmlElement] );
 						}
 					}

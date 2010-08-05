@@ -1,10 +1,15 @@
 
+/*
 #cms_tpv_dashboard_widget {
 	z-index: 10;
 }
+*/
 
 
-#cms_tpv_container {
+.cms_tpv_wrapper {
+	z-index: 10;
+}
+.cms_tpv_container {
 	clear: both;
 	overflow: visible;
 	margin-top: 1.5em;
@@ -28,7 +33,7 @@
 	zoom: 1; /* weird ie-problems otherwise, like li-items that disappear on search. */
 }
 
-#cms_tpv_search_no_hits {
+.cms_tpv_search_no_hits {
 	clear: both;
 }
 
@@ -126,18 +131,19 @@ li span.cms_tpv_action_add_page {
 	opacity: .9;
 }
 
-#cms_tpv_open_all {
+.cms_tpv_open_all {
 	margin-left: 1em;
 }
 
-#cms_tree_view_search_form {
+.cms_tree_view_search_form {
 	display: inline;
 	position: relative;
 	margin-left: 1em;
+	white-space: nowrap;
 }
 
 
-#cms_tpv_dashboard_widget #cms_tree_view_search_form {
+#cms_tpv_dashboard_widget .cms_tree_view_search_form {
 	display: block;
 	margin-left: 0;
 	margin-top: .5em;
@@ -152,23 +158,28 @@ li span.cms_tpv_action_add_page {
 	bottom: auto;
 }
 
-#cms_tree_view_search {
+.cms_tree_view_search {
 	width: 130px;
 }
-#cms_tree_view_search_form_working {
+.cms_tree_view_search_form_working,
+.cms_tree_view_search_form_no_hits
+ {
 	position: absolute;
-	left: 0;
+	left: .5em;
 	top: 2em;
 	display: none;
 }
+.cms_tree_view_search_form_no_hits {
+	font-weight: bold;
+}
 
-#cms_tpv_working {
+.cms_tpv_working {
 	position: absolute;
 	line-height: 1;
 	display: none;
 }
 
-#cms_tree_view_search_form_reset {
+.cms_tree_view_search_form_reset {
 	display: none;
 	position: absolute;
 	top: 2px;
@@ -178,23 +189,23 @@ li span.cms_tpv_action_add_page {
 	background: transparent url(http://jquery-ui.googlecode.com/svn/trunk/themes/base/images/ui-icons_888888_256x240.png) no-repeat -32px -194px;
 	text-indent: -9999px;
 }
-#cms_tpv_dashboard_widget #cms_tree_view_search_form_reset {
+#cms_tpv_dashboard_widget .cms_tree_view_search_form_reset {
 	top: 8px;
 }
-#cms_tree_view_search_form_reset:hover {
+.cms_tree_view_search_form_reset:hover {
 	background: transparent url(http://jquery-ui.googlecode.com/svn/trunk/themes/base/images/ui-icons_454545_256x240.png) no-repeat -32px -194px;
 }
 
-#cms_tpv_annoying_little_box {
+.cms_tpv_annoying_little_box {
 	padding: 1em;
 	background-color: #FFFFE0;
 	border: 1px solid #E6DB55;
 	margin: 1em 0 1em 0;
 }
-#cms_tpv_annoying_little_box p {
+.cms_tpv_annoying_little_box p {
 	margin: 0 0 .5em 0;
 }
-p#cms_tpv_annoying_little_box_close {
+p.cms_tpv_annoying_little_box_close {
 	float: right;
 	margin-left: 2em;
 	font-size: .8em;
@@ -202,8 +213,9 @@ p#cms_tpv_annoying_little_box_close {
 	margin-right: -.5em;
 }
 
-#cms_tpv_page_actions {
+.cms_tpv_page_actions {
 	width: auto;
+	min-width: 125px;
 	height: auto;
 	background-color: white;
 	position: absolute;
@@ -215,10 +227,10 @@ p#cms_tpv_annoying_little_box_close {
 	-moz-box-shadow: 2px 2px 8px #ddd; /* FF3.5+ */
 	border: 1px solid #bbb;
 }
-#cms_tpv_page_actions p {
+.cms_tpv_page_actions p {
 	margin: 0 0 .5em 0;
 }
-#cms_tpv_page_actions a {
+.cms_tpv_wrapper .cms_tpv_page_actions a {
 	display: inline;
 	background: transparent;
 	text-decoration: underline;
@@ -226,17 +238,17 @@ p#cms_tpv_annoying_little_box_close {
 	color: #21759B;
 }
 
-#cms_tpv_page_actions a:hover
+.cms_tpv_wrapper .cms_tpv_page_actions a:hover
  {
 	color: #d54e21;
 }
 
-#cms_tpv_page_actions ul {
+.cms_tpv_page_actions ul {
 	display: block;
 	overflow: auto;
 	margin: 0 0 1em 0;
 }
-#cms_tpv_page_actions li {
+.cms_tpv_page_actions li {
 	padding: 0;
 	margin: 0;
 	background: none;
@@ -245,18 +257,18 @@ p#cms_tpv_annoying_little_box_close {
 .cms_tpv_action_add_page {
 	display: block;
 }
-#cms_tpv_page_actions dl {
+.cms_tpv_page_actions dl {
 	margin-top: 1em;
 	color: #333;
 	font-size: 11px;
 }
-#cms_tpv_page_actions dl dd {
+.cms_tpv_page_actions dl dd {
 }
-#cms_tpv_page_actions dl dt {
+.cms_tpv_page_actions dl dt {
 	color: #999;
 }
 
-#cms_tpv_page_actions_arrow {
+.cms_tpv_page_actions_arrow {
 	width: 8px;
 	height: 15px;
 	background: url(images/arrow-left.gif) no-repeat top left;
