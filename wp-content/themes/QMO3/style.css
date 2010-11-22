@@ -43,7 +43,7 @@ input, select, textarea { font-family: inherit; font-size: 100%; }
 .dtstart, .dtend, .published, .updated { border: 0; }
 
 /* @General elements *********/
-html { padding-top: 30px; background: #fff url("img/bg-canvas.png") 0 0 repeat-x; }
+html { background: #fff url("img/bg-canvas.png") 0 -28px repeat-x; }
 body { min-width: 800px; font: .812em/1.538 Georgia, Times, serif; color: #333; padding-top: 0 !important; }
 
 /*** @Links *********/
@@ -153,7 +153,6 @@ legend { color: #390; font-size: 1.2em; }
 #tagline strong { color: #369; }
 #home-head ul.teams-list { list-style: none; margin: 1em -3% 1em 0; font-size: 1.231em; line-height: 1.2; overflow: hidden; }
 #home-head ul.teams-list li { width: 17.25%; margin-right: 2.75%; float: left; text-align: center; }
-/* #home-head ul.teams-list li:last-child { margin-right: 0; } */
 #home-head ul.teams-list a img { width: 100%; height: auto; text-decoration: none; display: block; margin: 0 auto .5em; }
 #home-head ul.teams-list a:hover img, #home-head ul.teams-list a:focus img, #home-head ul.teams-list a:active img { opacity: .85; }
 
@@ -355,7 +354,7 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 #nav-access a:focus, #nav-access a:active { display: block; position: absolute; top: 14.5em; left: 5%; outline: 0; border: 1px solid #c0dae9; padding: 2px 10px; background: #fff; background: rgba(255,255,255,.25); text-decoration: none; }
 
 /* @Main @Navigation *********/
-#site-nav { position: absolute; top: 32px; left: 0; width: 100%; min-width: 800px; height: 40px; padding-top: 15px; }
+#site-nav { position: absolute; top: 4px; left: 0; width: 100%; min-width: 800px; height: 40px; padding-top: 15px; }
 #site-nav .section { position: relative; height: 3em; }
 #nav-main { float: left; margin: 10px 0 0 155px; list-style: none; overflow: hidden; }
 #nav-main li { float: left; margin-right: 1px; font: bold .923em/1.5 Verdana, Tahoma, sans-serif; text-transform: uppercase; letter-spacing: .1em; }
@@ -408,7 +407,7 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 
 /*** @Branding *********/
 #branding { height: 56px; width: 155px; }
-#logo { position: relative; z-index: 999; top: 3px; }
+#logo { position: relative; z-index: 999; top: 6px; }
 
 /*** @User status *********/
 #user-state { margin: 0 0 1em; overflow: hidden; font: .923em Verdana, Tahoma, sans-serif; padding-bottom: 30px; background: url("img/hatches.png") left bottom repeat-x; }

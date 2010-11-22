@@ -14,7 +14,7 @@
 				<select>
 					<option value="new_blog_post,new_forum_topic,new_forum_post"><?php _e( 'No Filter', 'buddypress' ); ?></option>
 					<?php if ( bp_is_active( 'blogs' ) ) : ?>
-						<option value="new_blog_post"><?php _e( 'Show Blog Posts', 'buddypress' ); ?></option>
+						<option value="new_blog_post"><?php _e( 'Show Blog Posts and Tweets', 'buddypress' ); ?></option>
 					<?php endif; ?>
 					<?php if ( bp_is_active( 'forums' ) ) : ?>
 						<option value="new_forum_topic"><?php _e( 'Show New Forum Topics', 'buddypress' ); ?></option>

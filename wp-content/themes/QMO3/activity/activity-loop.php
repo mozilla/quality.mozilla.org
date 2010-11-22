@@ -1,7 +1,5 @@
 <?php do_action( 'bp_before_activity_loop' ); ?>
 
-<?php // if ( bp_has_activities( 'action=new_blog_post,new_forum_topic,new_forum_post' ) ) : ?>
-
 <?php if ( bp_has_activities( bp_ajax_querystring( 'activity' ) ) ) : ?>
 
 	<div class="list-pagination">
@@ -32,9 +30,11 @@
 	<?php endif; ?>
 	
 <?php else : ?>
+
 	<div id="message" class="info">
 		<p><?php _e( 'Sorry, there was no activity found. Please try a different filter.', 'buddypress' ); ?></p>
 	</div>
+
 <?php endif; ?>
 
 <?php do_action( 'bp_after_activity_loop' ); ?>

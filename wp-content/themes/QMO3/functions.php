@@ -532,6 +532,13 @@ endif;
 
 
 /*********
+ * Kill the admin bar
+ */
+remove_action( 'wp_head', 'bp_core_admin_bar_css', 1 );
+remove_action( 'wp_footer', 'bp_core_admin_bar', 8 );
+
+
+/*********
  * Load the AJAX functions for the theme
  */
 require_once( TEMPLATEPATH . '/_inc/ajax.php' );
@@ -1009,8 +1016,6 @@ remove_filter( 'bp_get_the_profile_field_value', 'xprofile_filter_link_profile_d
  */
 function qmo_show_user_meta() {
   global $bp;
-	$karma = get_usermeta( $bp->displayed_user->id, 'rfp_post_karma' );
-	$relative_karma = rfp_calculate_relative_karma( $karma, $bp->displayed_user->id );
 	
   // If BuddyPress Member Profile Stats is turned on
   if ( function_exists('bp_member_profile_stats_header_meta') )
@@ -1018,7 +1023,9 @@ function qmo_show_user_meta() {
   
   // If BuddyPress Rate Forum Posts is turned on
   if ( function_exists('rfp_show_poster_karma') ) :
-    // and the member has karma to display
+    $karma = get_usermeta( $bp->displayed_user->id, 'rfp_post_karma' );
+    $relative_karma = rfp_calculate_relative_karma( $karma, $bp->displayed_user->id );
+    // If the member has karma to display
   	if ( get_option( 'rfp_karma_hide' ) || $relative_karma == 0 || get_option( 'rfp_karma_never_minus' ) && $karma < 0 ) :
   		return false;
     else :
@@ -1049,6 +1056,7 @@ function qmo_group_list_admins( $group = false ) {
 <?php
 }
 
+
 /*********
  * Customize group mod list include the display name in a title
  */
@@ -1068,5 +1076,44 @@ function qmo_group_list_mods( $group = false ) {
 	<?php endif; ?>
 <?php
 }
+
+
+/*********
+ * Exclude certain types of activitiy from showing up in streams
+ */
+function qmo_activity_filter( $a, $activities ) {
+	global $bp; 
+
+	/* Only run the filter on activity streams where you want blog comments filtered out. 
+	 * For example, the following will only filter them on the main activity page.
+	 * Member activity streams have their own loop where we're already excluding unwanted actions.
+   */
+	if ( $bp->current_component != $bp->activity->slug )
+		return $activities;
+
+	/* Filter out unwanted actions */
+	foreach( $activities->activities as $key => $activity ) {
+	/* HACK: Checking types might be better as an array. So many ORs seems sloppy. */
+		if ( 
+		      $activity->type == 'joined_group' 
+		      || $activity->type == 'created_group'
+		      || $activity->type == 'new_blog_comment'
+		      || $activity->type == 'new_status'
+		      || $activity->type == 'new_wire_post'
+		      || $activity->type == 'friendship_created'
+		    ) {
+			unset( $activities->activities[$key] );
+			$activities->total_activity_count = $activities->total_activity_count - 1;
+			$activities->activity_count = $activities->activity_count - 1;
+		}
+	}
+
+	/* Renumber the array keys to account for missing items */
+	$activities_new = array_values( $activities->activities );
+	$activities->activities = $activities_new;
+	return $activities;
+}
+add_action( 'bp_has_activities', 'qmo_activity_filter', 10, 2 );
+
 
 /** END BUDDYPRESS FUNCTIONS **/
