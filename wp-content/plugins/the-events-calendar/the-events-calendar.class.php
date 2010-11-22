@@ -4,6 +4,7 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 	 * Main plugin
 	 */
 	class The_Events_Calendar {
+		const VERSION 				= '1.6.4';
 		const EVENTSERROROPT		= '_tec_events_errors';
 		const CATEGORYNAME	 		= 'Events';
 		const OPTIONNAME 			= 'sp_events_calendar_options';
@@ -426,6 +427,7 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 			if( is_feed() ) {
 				return;
 			}
+			global $wp_query;
 			$this->constructDaysOfWeek();
 			// list view
 			if ( $this->in_event_category() && ( events_displaying_upcoming() || events_displaying_past() ) ) {
@@ -466,35 +468,16 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 			}
 			return $text;
 		}
-		
 		public function loadDomainStylesScripts() {
 			load_plugin_textdomain( $this->pluginDomain, false, basename(dirname(__FILE__)) . '/lang/');
 			$eventsURL = trailingslashit( WP_PLUGIN_URL ) . trailingslashit( plugin_basename( dirname( __FILE__ ) ) ) . 'resources/';
 			wp_enqueue_script('sp-events-calendar-script', $eventsURL.'events.js', array('jquery') );
-			if( file_exists( TEMPLATEPATH.'/events/events.css' ) ) {
+			if( locate_template( array('events/events.css') ) ) {
 				$templateArray = explode( '/', TEMPLATEPATH );
 				$themeName = $templateArray[count($templateArray)-1];
-				wp_enqueue_style('sp-events-calendar-style', WP_CONTENT_URL.'/themes/'.$themeName.'/events/events.css' );
-			} else wp_enqueue_style('sp-events-calendar-style', $eventsURL.'events.css' );
+				wp_enqueue_style('sp-events-calendar-style', WP_CONTENT_URL.'/themes/'.$themeName.'/events/events.css', array(), The_Events_Calendar::VERSION, 'screen' );
+			} else wp_enqueue_style('sp-events-calendar-style', $eventsURL.'events.css', array(), The_Events_Calendar::VERSION, 'screen' );
 		}
-		
-		/* possible new check for events.css in child themes */
-		/*
-		public function loadDomainStylesScripts() {
-			load_plugin_textdomain( $this->pluginDomain, false, basename(dirname(__FILE__)) . '/lang/');
-			$eventsURL = trailingslashit( WP_PLUGIN_URL ) . trailingslashit( plugin_basename( dirname( __FILE__ ) ) ) . 'resources/';
-			wp_enqueue_script('sp-events-calendar-script', $eventsURL.'events.js', array('jquery') );
-			if( file_exists( TEMPLATEPATH.'/events/events.css' ) ) {
-				$templateArray = explode( '/', TEMPLATEPATH );
-				$themeName = $templateArray[count($templateArray)-1];
-				wp_enqueue_style('sp-events-calendar-style', WP_CONTENT_URL.'/themes/'.$themeName.'/events/events.css' );
-			} else if( file_exists( STYLESHEETPATH.'/events/events.css' ) ) {
-				$templateArray = explode( '/', STYLESHEETPATH );
-				$themeName = $templateArray[count($templateArray)-1];
-				wp_enqueue_style('sp-events-calendar-style', WP_CONTENT_URL.'/themes/'.$themeName.'/events/events.css' );
-			} else wp_enqueue_style('sp-events-calendar-style', $eventsURL.'events.css' );
-		}
-		*/
 	
 		/**
 		 * Helper method to return an array of 1-12 for months
@@ -897,9 +880,7 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 					$htmlElement = ltrim( $tag, '_' );
 					if ( $tag != self::EVENTSERROROPT ) {
 						if ( isset( $_POST[$htmlElement] ) ) {
-/* This line may be triggering a catastrophic bug. Commenting out to test.
-//							if( is_string($_POST[$htmlElement]) ) $_POST[$htmlElement] = filter_var($_POST[$htmlElement], FILTER_SANITIZE_STRING);
-*/
+							if( is_string($_POST[$htmlElement]) ) $_POST[$htmlElement] = filter_var($_POST[$htmlElement], FILTER_SANITIZE_STRING);
 							update_post_meta( $postId, $tag, $_POST[$htmlElement] );
 						}
 					}

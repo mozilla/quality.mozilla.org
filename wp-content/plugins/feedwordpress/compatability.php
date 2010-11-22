@@ -3,21 +3,17 @@
 ## LEGACY API: Replicate or mock up functions for legacy support purposes ######
 ################################################################################
 
-// version testing
-function fwp_test_wp_version ($floor, $ceiling = NULL) {
-	global $wp_db_version;
-	
-	$ver = (isset($wp_db_version) ? $wp_db_version : 0);
-	$good = ($ver >= $floor);
-	if (!is_null($ceiling)) :
-		$good = ($good and ($ver < $ceiling));
-	endif;
-	return $good;
-} /* function fwp_test_wp_version () */
-
 class FeedWordPressCompatibility {
+	// version testing based on database schema version
 	/*static*/ function test_version ($floor, $ceiling = null) {
-		return fwp_test_wp_version($floor, $ceiling);
+		global $wp_db_version;
+		
+		$ver = (isset($wp_db_version) ? $wp_db_version : 0);
+		$good = ($ver >= $floor);
+		if (!is_null($ceiling)) :
+			$good = ($good and ($ver < $ceiling));
+		endif;
+		return $good;
 	} /* FeedWordPressCompatibility::test_version() */
 
 	/*static*/ function insert_link_category ($name) {
@@ -26,30 +22,8 @@ class FeedWordPressCompatibility {
 		$name = $wpdb->escape($name);
 
 		// WordPress 2.3+ term/taxonomy API
-		if (function_exists('wp_insert_term')) :
-			$term = wp_insert_term($name, 'link_category');
-			$cat_id = $term['term_id'];
-		// WordPress 2.1, 2.2 category API. By the way, why the fuck is this API function only available in a wp-admin module?
-		elseif (function_exists('wp_insert_category') and !fwp_test_wp_version(FWP_SCHEMA_20, FWP_SCHEMA_21)) : 
-			$cat_id = wp_insert_category(array('cat_name' => $name));
-		// WordPress 1.5 and 2.0.x
-		elseif (fwp_test_wp_version(0, FWP_SCHEMA_21)) :
-			$result = $wpdb->query("
-			INSERT INTO $wpdb->linkcategories
-			SET
-				cat_id = 0,
-				cat_name='$name',
-				show_images='N',
-				show_description='N',
-				show_rating='N',
-				show_updated='N',
-				sort_order='name'
-			");
-			$cat_id = $wpdb->insert_id;
-		// This should never happen.
-		else :
-			FeedWordPress::critical_bug('FeedWordPress::link_category_id::wp_db_version', $wp_db_version, __LINE__);
-		endif;
+		$term = wp_insert_term($name, 'link_category');
+		$cat_id = $term['term_id'];
 		
 		// Return newly-created category ID
 		return $cat_id;
@@ -124,101 +98,11 @@ if (!function_exists('stripslashes_deep')) {
 	}
 }
 
-if (!function_exists('get_option')) {
-	function get_option ($option) {
-		return get_settings($option);
-	}
-}
-if (!function_exists('current_user_can')) {
-	$fwp_capability['manage_options'] = 6;
-	$fwp_capability['manage_links'] = 5;
-	function current_user_can ($task) {
-		global $user_level;
-
-		$can = false;
-
-		// This is **not** a full replacement for current_user_can. It
-		// is only for checking the capabilities we care about via the
-		// WordPress 1.5 user levels.
-		switch ($task) :
-		case 'manage_options':
-			$can = ($user_level >= 6);
-			break;
-		case 'manage_links':
-			$can = ($user_level >= 5);
-			break;
-		case 'edit_files':
-			$can = ($user_level >= 9);
-			break;
-		endswitch;
-		return $can;
-	}
-} else {
-	$fwp_capability['manage_options'] = 'manage_options';
-	$fwp_capability['manage_links'] = 'manage_links';
-}
 if (!function_exists('sanitize_user')) {
 	function sanitize_user ($text, $strict = false) {
 		return $text; // Don't munge it if it wasn't munged going in...
 	}
 }
-if (!function_exists('wp_insert_user')) {
-	function wp_insert_user ($userdata) {
-		global $wpdb;
-
-		#-- Help WordPress 1.5.x quack like a duck
-		$login = $userdata['user_login'];
-		$author = $userdata['display_name'];
-		$nice_author = $userdata['user_nicename'];
-		$email = $userdata['user_email'];
-		$url = $userdata['user_url'];
-
-		$wpdb->query (
-			"INSERT INTO $wpdb->users
-			 SET
-				ID='0',
-				user_login='$login',
-				user_firstname='$author',
-				user_nickname='$author',
-				user_nicename='$nice_author',
-				user_description='$author',
-				user_email='$email',
-				user_url='$url'");
-		$id = $wpdb->insert_id;
-		
-		return $id;
-	}
-} /* if (!function_exists('wp_insert_user')) */
-
-if (!function_exists('wp_die')) {
-	function wp_die ( $message, $title = '', $args = array() ) {
-		die($message);
-	} /* wp_die() */
-} /* if */
-
-if (!function_exists('add_post_meta')) {
-	function add_post_meta ($postId, $key, $value, $unique) {
-		global $wpdb;
-
-		$postId = (int) $postId;
-		$key = $wpdb->escape($key);
-		$value = $wpdb->escape($value);
-		
-		$result = $wpdb->query("
-		INSERT INTO $wpdb->postmeta
-		SET
-			post_id='$postId',
-			meta_key='$key',
-			meta_value='$value'
-		");
-		if (!$result) :
-			$err = mysql_error();
-			if (FEEDWORDPRESS_DEBUG) :
-				echo "[DEBUG:".date('Y-m-d H:i:S')."][feedwordpress]: post metadata insertion FAILED for field '$key' := '$value': [$err]";
-			endif;
-		endif;
-	} /* add_post_meta() */
-} /* if */
 
 if (!function_exists('disabled')) {
 	/**
@@ -244,36 +128,29 @@ if (!function_exists('term_exists')) {
 		return is_term($term, $taxonomy, $parent);
 	}
 } /* if */
+
 require_once(dirname(__FILE__).'/feedwordpress-walker-category-checklist.class.php');
 
-function fwp_category_checklist ($post_id = 0, $descendents_and_self = 0, $selected_cats = false, $prefix = '') {
-	if (function_exists('wp_category_checklist')) :
-		$walker = new FeedWordPress_Walker_Category_Checklist;
-		$walker->set_prefix($prefix);
-		wp_category_checklist(
-			/*post_id=*/ $post_id,
-			/*descendents_and_self=*/ $descendents_and_self,
-			/*selected_cats=*/ $selected_cats,
-			/*popular_cats=*/ false,
-			/*walker=*/ $walker
-		);
-	else :
-		// selected_cats is an array of integer cat_IDs / term_ids for
-		// the categories that should be checked
-		global $post_ID;
-
-		$cats = get_nested_categories();
-		
-		// Undo damage from usort() in WP 2.0
-		$dogs = array();
-		foreach ($cats as $cat) :
-			$dogs[$cat['cat_ID']] = $cat;
-		endforeach;
-		foreach ($selected_cats as $cat_id) :
-			$dogs[$cat_id]['checked'] = true;
-		endforeach;
-		write_nested_categories($dogs);
+function fwp_category_checklist ($post_id = 0, $descendents_and_self = 0, $selected_cats = false, $params = array()) {
+	if (is_string($params)) :
+		$prefix = $params;
+		$taxonomy = 'category';
+	elseif (is_array($params)) :
+		$prefix = (isset($params['prefix']) ? $params['prefix'] : '');
+		$taxonomy = (isset($params['taxonomy']) ? $params['taxonomy'] : 'category');
 	endif;
+	
+	$walker = new FeedWordPress_Walker_Category_Checklist;
+	$walker->set_prefix($prefix);
+	$walker->set_taxonomy($taxonomy); 
+	wp_terms_checklist(/*post_id=*/ $post_id, array(
+		'taxonomy' => $taxonomy,
+		'descendents_and_self' => $descendents_and_self,
+		'selected_cats' => $selected_cats,
+		'popular_cats' => false,
+		'walker' => $walker,
+		'checked_ontop' => true,
+	));
 }
 
 function fwp_time_elapsed ($ts) {
@@ -338,4 +215,8 @@ like me you may want to back up your database before you proceed.</p>
 </div>
 <?php
 } // function fwp_upgrade_page ()
+
+function remove_dummy_zero ($var) {
+	return !(is_numeric($var) and ((int) $var == 0));
+}
 

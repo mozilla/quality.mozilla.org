@@ -210,7 +210,7 @@ if( class_exists( 'The_Events_Calendar' ) && !function_exists( 'eventsGetOptionV
 		if (!$width) $width = eventsGetOptionValue('embedGoogleMapsWidth','100%');
 		if( $toUrlEncode ) $googleaddress = urlencode( trim( $toUrlEncode ) );
 		if ($googleaddress) {
-			$google_iframe = '<div id="googlemaps"><iframe width="'.$width.'" height="'.$height.'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://www.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q='.$googleaddress.'?>&amp;output=embed"></iframe><br /><small><a href="http://www.google.com/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q='.$googleaddress.'" style="color:#0000FF;text-align:left">View Larger Map</a></small></div>';
+			$google_iframe = '<div id="googlemaps"><iframe width="'.$width.'" height="'.$height.'" src="http://www.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q='.$googleaddress.'?>&amp;output=embed"></iframe><br /><small><a href="http://www.google.com/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q='.$googleaddress.'" style="color:#0000FF;text-align:left">View Larger Map</a></small></div>';
 			return $google_iframe;
 		}
 		else return '';
@@ -530,7 +530,7 @@ if( class_exists( 'The_Events_Calendar' ) && !function_exists( 'eventsGetOptionV
 			$whereClause = " AND d1.meta_key = '_EventStartDate' AND d2.meta_key = '_EventEndDate' ";
 			// Is the start date in the future?
 			$whereClause .= ' AND ( d1.meta_value > "'.$spEvents->date.'" ';
-			// Or is the start date in the past but the end date in the future? (meaning the event is currently ongoing)
+			// Or is the start date in the past but the end date in the future? (the event is currently ongoing)
 			$whereClause .= ' OR ( d1.meta_value < "'.$spEvents->date.'" AND d2.meta_value > "'.$spEvents->date.'" ) ) ';
 		}
 		$eventsQuery = "

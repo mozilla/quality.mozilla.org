@@ -1,10 +1,10 @@
 <?php 
 global $spEvents; 
 $eventPosts = get_events();
-$daysInMonth = date("t", $date);
 $startOfWeek = get_option( 'start_of_week', 0 );
 list( $year, $month ) = split( '-', $spEvents->date );
 $date = mktime(12, 0, 0, $month, 1, $year); // 1st day of month as unix stamp
+$daysInMonth = date("t", $date);
 $monthView = events_by_month( $eventPosts, $spEvents->date );
 $rawOffset = date("w", $date) - $startOfWeek;
 $offset = ( $rawOffset < 0 ) ? $rawOffset + 7 : $rawOffset; // month begins on day x
@@ -17,7 +17,7 @@ $monthView = events_by_month( $eventPosts, $spEvents->date );
 				<?php
 				for( $n = $startOfWeek; $n < count($spEvents->daysOfWeek) + $startOfWeek; $n++ ) {
 					$dayOfWeek = ( $n >= 7 ) ? $n - 7 : $n;
-					echo '<th id="tec-' . strtolower($spEvents->daysOfWeek[$dayOfWeek]) . '" abbr="' . $spEvents->daysOfWeek[$dayOfWeek] . '">' . $spEvents->daysOfWeekShort[$dayOfWeek] . '</th>';
+					echo '<th id="tec-' . strtolower($spEvents->daysOfWeek[$dayOfWeek]) . '">' . $spEvents->daysOfWeekShort[$dayOfWeek] . '</th>';
 				}
 				?>
 			</tr>

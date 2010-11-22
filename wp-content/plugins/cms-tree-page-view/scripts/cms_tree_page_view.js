@@ -1,5 +1,6 @@
 
-var cms_tpv_tree, treeOptions, div_actions;
+// @todo: add prefix to treeOptions, div_actions
+var cms_tpv_tree, treeOptions, div_actions, cms_tpv_current_li_id = null;
 jQuery(function($) {
 	
 	cms_tpv_tree = $(".cms_tpv_container");
@@ -27,6 +28,41 @@ jQuery(function($) {
 				}
 
 			}
+			/*
+			// data can be initially set like this
+			// but it has to be set by type...
+			"data": [{
+				"data": {
+					"title": "I am a new page",
+					"attr": {
+						"href": "http://localhost/wp-admin/post.php?post=1060&action=edit",
+						"xid": "cms-tpv-1060"
+					},
+					"xicon": "http://localhost/wp-content/plugins/cms-tree-page-view/images/page_white_text.png"
+				},
+				"attr": {
+					"xhref": "http://localhost/wp-admin/post.php?post=1060&action=edit",
+					"id": "cms-tpv-1060",
+					"xtitle": "Click to edit. Drag to move.",
+					"class": "cms_tpv_user_can_edit_page_yes"
+				},
+								"metadata": {
+					"id": "cms-tpv-1060",
+					"post_id": "1060",
+					"post_type": "page",
+					"post_status": "publish",
+					"rel": "publish",
+					"childCount": 0,
+					"permalink": "http://localhost/i-am-a-new-page/",
+					"editlink": "http://localhost/wp-admin/post.php?post=1060&action=edit",
+					"modified_time": "August 15, 2010",
+					"modified_author": "admin",
+					"columns": "%3Cdl%3E%3Cdt%3EComments%3C%2Fdt%3E%3Cdd%3E%3Cdiv%20class%3D%22post-com-count-wrapper%22%3E%3Ca%20href%3D%27edit-comments.php%3Fp%3D1060%27%20title%3D%270%20pending%27%3E%3Cspan%3E0%3C%2Fspan%3E%3C%2Fa%3E%3C%2Fdiv%3E%3C%2Fdd%3E%3C%2Fdl%3E",
+					"user_can_edit_page": "1"
+				}
+				
+			}
+		]*/
 		},
 		"themes": {
 			"theme": "wordpress"
@@ -49,8 +85,10 @@ jQuery(function($) {
 		var $elm = $(elm);
 
 		// init tree, with settings specific for each post type
-		var treeOptionsTmp = jQuery.extend(true, {}, treeOptions);
-		treeOptionsTmp.json_data.ajax.url = treeOptionsTmp.json_data.ajax.url + "&post_type=" + cms_tpv_get_post_type(elm) + "&lang=" + cms_tpv_get_wpml_selected_lang(elm);
+		var treeOptionsTmp = jQuery.extend(true, {}, treeOptions); // make copy of object
+		var post_type = cms_tpv_get_post_type(elm);
+		treeOptionsTmp.json_data.ajax.url = treeOptionsTmp.json_data.ajax.url + "&post_type=" + post_type + "&lang=" + cms_tpv_get_wpml_selected_lang(elm);
+		treeOptionsTmp.json_data.data = cms_tpv_jsondata[post_type]; // get from js
 		
 		var isHierarchical = $(elm).closest(".cms_tpv_wrapper").find("[name=cms_tpv_meta_post_type_hierarchical]").val();
 		if (isHierarchical == 0) {
@@ -75,7 +113,6 @@ jQuery(function($) {
 
 	});
 	
-
 
 }); // end ondomready
 
@@ -104,9 +141,19 @@ jQuery(".cms_tpv_action_add_page_after").live("click", function() {
 	var $this = jQuery(this);
 	var post_type = cms_tpv_get_post_type(this);
 	var selected_lang = cms_tpv_get_wpml_selected_lang(this);
+
+	var post_status = $this.closest("li").data("jstree").post_status;
+
+	// not allowed when status is trash
+	if (post_status == "trash") {
+		jAlert(cmstpv_l10n.Can_not_add_page_after_when_status_is_trash);
+		return false;
+	}
+
 	jPrompt(cmstpv_l10n.Enter_title_of_new_page, "", "CMS Tree Page View", function(new_page_title) {
 		if (new_page_title) {
 			var pageID = $this.parents("li:first").attr("id");
+			$this.closest(".cms_tpv_container").html(cmstpv_l10n.Adding_page);
 			jQuery.post(ajaxurl, {
 				"action": "cms_tpv_add_page",
 				"pageID": pageID,
@@ -128,9 +175,28 @@ jQuery(".cms_tpv_action_add_page_inside").live("click", function() {
 	var $this = jQuery(this);
 	var post_type = cms_tpv_get_post_type(this);
 	var selected_lang = cms_tpv_get_wpml_selected_lang(this);
+	
+	var post_status = $this.closest("li").data("jstree").post_status;
+
+	// check page status, because we cant add a page inside a page with status draft or status trash
+	// if we edit the page wordpress will forget the parent
+	//$li.data("jstree").permalink;
+	//var post_status = li.data("jstree").post_status;
+	if (post_status == "draft") {
+		jAlert(cmstpv_l10n.Can_not_add_sub_page_when_status_is_draft);
+		return false;
+	}
+
+	// not allowed when status is trash
+	if (post_status == "trash") {
+		jAlert(cmstpv_l10n.Can_not_add_sub_page_when_status_is_trash);
+		return false;
+	}
+	
 	jPrompt(cmstpv_l10n.Enter_title_of_new_page, "", "CMS Tree Page View", function(new_page_title) {
 		if (new_page_title) {
 			var pageID = $this.parents("li:first").attr("id");
+			$this.closest(".cms_tpv_container").html(cmstpv_l10n.Adding_page);
 			jQuery.post(ajaxurl, {
 				"action": "cms_tpv_add_page",
 				"pageID": pageID,
@@ -154,12 +220,13 @@ function cms_tpv_is_dragging() {
 	return eDrag.is(":visible");
 }
 
-// mouse over, show actions
-jQuery(".jstree li").live("mouseover", function(e) {
+// fired when mouse is over li
+function cms_tpv_mouseover_li(li) {
 
-	$li = jQuery(this);
-	
-	var div_actions_for_post_type = cms_tpv_get_page_actions_div(this);
+	//console.log("show actions div");
+	$li = jQuery(li);
+
+	var div_actions_for_post_type = cms_tpv_get_page_actions_div(li);
 
 	if (cms_tpv_is_dragging() == false) {
 	
@@ -179,10 +246,23 @@ jQuery(".jstree li").live("mouseover", function(e) {
 			var editlink = $li.data("jstree").editlink;
 			$edit.attr("href", editlink);
 			
+			// check if user is allowed to edit page
+			var $cms_tpv_action_add_and_edit_page = div_actions_for_post_type.find(".cms_tpv_action_add_and_edit_page");
+			if ($li.data("jstree").user_can_edit_page == 0) {
+				// nooope
+				$edit.hide();
+				$cms_tpv_action_add_and_edit_page.hide();
+			} else {
+				$edit.show();
+				$cms_tpv_action_add_and_edit_page.show();
+			}
+			
 			// ..and some extras
 			div_actions_for_post_type.find(".cms_tpv_page_actions_modified_time").text($li.data("jstree").modified_time);
 			div_actions_for_post_type.find(".cms_tpv_page_actions_modified_by").text($li.data("jstree").modified_author);
 			div_actions_for_post_type.find(".cms_tpv_page_actions_page_id").text($li.data("jstree").post_id);		
+			
+			div_actions_for_post_type.find(".cms_tpv_page_actions_columns").html( unescape($li.data("jstree").columns) );
 			
 			// position and show action div
 			var $a = $li.find("a");
@@ -195,12 +275,55 @@ jQuery(".jstree li").live("mouseover", function(e) {
 			div_actions_for_post_type.show();
 		}
 	}
+
+}
+
+// fired when mouse leaves li
+function cms_tpv_mouseout_li(li) {
+	$li = jQuery(li);
+	$li.find("a:first").removeClass("hover");
+	div_actions.hide();
+}
+
+// mouse over, show actions
+// but only if the mouse not already is over the li (don't know why it fires multiple times, but it does)
+// 29 August, 2010 this worked nice but it had problems with child-lis...
+/*
+jQuery(".jstree li").live("mouseenter", function(e) {
+
+	//console.log("mouseenter");
+	var $li = jQuery(this);
+	var li_id = $li.attr("id");
+	
+	// add hoverIntent, if not prev. attached
+	if ($li.data("hasHoverIntent")) {
+		// already got it
+	} else {
+		$li.data("hasHoverIntent", true);
+		$li.hoverIntent(function() {
+			// console.log("over");
+			cms_tpv_mouseover_li(this);
+		}, function() {
+			console.log("out");
+			//cms_tpv_mouseout_li(this);
+		});
+		// lastlt trigger mouseenter again so the popup will show
+		$li.trigger("mouseover");
+	}
+
+});
+*/
+
+jQuery(".jstree li").live("mouseover", function(e) {
+	var $li = jQuery(this);
+	var li_id = $li.attr("id");
+	cms_tpv_mouseover_li(this);
 });
 // ..and hide them again
 jQuery(".jstree li").live("mouseout", function() {
-	$li = jQuery(this);
-	$li.find("a:first").removeClass("hover");
-	div_actions.hide();
+	//cms_tpv_current_li_id = null;
+	//console.log("out");
+	cms_tpv_mouseout_li(this);
 });
 
 
@@ -350,17 +473,20 @@ jQuery(".cms_tpv_close_all").live("click", function() {
 	return false;
 });
 
-// view all or public
+// view all or public or trash
 jQuery(".cms_tvp_view_all").live("click", function() {
 	cms_tvp_set_view("all", this);
-	//jQuery(this).addClass("current");
 	return false;
 });
 jQuery(".cms_tvp_view_public").live("click", function() {
 	cms_tvp_set_view("public", this);
-	//jQuery(this).addClass("current");
 	return false;
 });
+jQuery(".cms_tvp_view_trash").live("click", function() {
+	cms_tvp_set_view("trash", this);
+	return false;
+});
+
 
 // change lang
 jQuery("a.cms_tvp_switch_lang").live("click", function(e) {
@@ -399,7 +525,7 @@ function cms_tvp_set_view(view, elm) {
 	var div_actions_for_post_type = cms_tpv_get_page_actions_div(elm);
 	$wrapper.append(div_actions_for_post_type);
 
-	$wrapper.find(".cms_tvp_view_all,.cms_tvp_view_public").removeClass("current");
+	$wrapper.find(".cms_tvp_view_all, .cms_tvp_view_public, .cms_tvp_view_trash").removeClass("current");
 	$wrapper.find(".cms_tpv_container").jstree("destroy").html("");
 	cms_tpv_bind_clean_node();
 
@@ -407,6 +533,8 @@ function cms_tvp_set_view(view, elm) {
 		$wrapper.find(".cms_tvp_view_all").addClass("current");
 	} else if (view == "public") {
 		$wrapper.find(".cms_tvp_view_public").addClass("current");
+	} else if (view == "trash") {
+		$wrapper.find(".cms_tvp_view_trash").addClass("current");
 	} else {
 		
 	}

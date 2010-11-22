@@ -1,9 +1,8 @@
 <?php
-	global $spEvents;
-	$spEvents->loadDomainStylesScripts();
-	
-	get_header();
-?>	
+global $spEvents;
+$spEvents->loadDomainStylesScripts();
+get_header();
+?>
 	<div id="tec-content" class="grid">
 		<div id='tec-events-calendar-header' class="clearfix">
 			<h2 class="tec-cal-title"><?php _e('Calendar of Events', $spEvents->pluginDomain) ?></h2>
@@ -33,8 +32,10 @@
 		$tecCatObject = get_category( $wp_query->query_vars['cat'])
 		?>
 		<a class="ical" href="<?php bloginfo('home'); ?>/?ical=<?php echo $tecCatObject->slug; ?>"><?php _e('iCal Import', $spEvents->pluginDomain) ?></a>
-		<?php event_grid_view( ); // See the plugins/the-events-calendar/views/table.php template for customization ?>	
+		<?php event_grid_view(); // See the plugins/the-events-calendar/views/table.php template for customization ?>	
 	</div>
-
-<?php
-	get_footer();
+<?php /* For custom template builders...
+	   * The following init method should be called before any other loop happens.
+	   */
+$wp_query->init(); ?>
+<?php get_footer(); ?>

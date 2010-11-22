@@ -63,14 +63,12 @@ if( !class_exists( 'Events_List_Widget' ) ) {
 					/* Display list of events. */
 						if( function_exists( 'get_events' ) ) {
 							echo '<ul class="upcoming">';
-							foreach( $posts as $post ) : 
+							$templateOverride = locate_template( array( 'events/events-list-load-widget-display.php' ) );
+							$templateLoc = $templateOverride ? $templateOverride : dirname( __FILE__ ) . '/views/events-list-load-widget-display.php';
+							foreach( $posts as $post ) {
 								setup_postdata($post);
-								if (file_exists(TEMPLATEPATH.'/events/events-list-load-widget-display.php') ) {
-									include (TEMPLATEPATH.'/events/events-list-load-widget-display.php');
-								} else {
-									include( dirname( __FILE__ ) . '/views/events-list-load-widget-display.php' );						
-								}
-							endforeach;
+								include( $templateLoc );
+							}
 							echo "</ul>";
 
 							$wp_query->set('eventDisplay', $old_display);

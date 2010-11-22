@@ -67,6 +67,11 @@ class bcn_breadcrumb
 	 */
 	function set_anchor($template, $url)
 	{
+		//Set a safe tempalte if none was specified
+		if($template == '')
+		{
+			$template = '<a title="Go to %title%." href="%link%">';
+		}
 		//Set the anchor, we strip tangs from the title to prevent html validation problems
 		$this->anchor = str_replace('%title%', strip_tags($this->title), str_replace('%link%', $url, $template));
 		//Set linked to true since we called this function
@@ -130,7 +135,7 @@ class bcn_breadcrumb
 class bcn_breadcrumb_trail
 {
 	//Our member variables
-	public $version = '3.5.1';
+	public $version = '3.6.0';
 	//An array of breadcrumbs
 	public $trail = array();
 	//The options
@@ -172,11 +177,11 @@ class bcn_breadcrumb_trail
 			'current_item_suffix' => '',
 			//Static page options
 			//The prefix for page breadcrumbs, place on all page elements and inside of current_item prefix
-			'page_prefix' => '',
+			'post_page_prefix' => '',
 			//The suffix for page breadcrumbs, place on all page elements and inside of current_item suffix
-			'page_suffix' => '',
+			'post_page_suffix' => '',
 			//The anchor template for page breadcrumbs, two keywords are available %link% and %title%
-			'page_anchor' => __('<a title="Go to %title%." href="%link%">', 'breadcrumb_navxt'),
+			'post_page_anchor' => __('<a title="Go to %title%." href="%link%">', 'breadcrumb_navxt'),
 			//Paged options
 			//The prefix for paged breadcrumbs, place on all page elements and inside of current_item prefix
 			'paged_prefix' => '',
@@ -186,15 +191,15 @@ class bcn_breadcrumb_trail
 			'paged_display' => false,
 			//The post options previously singleblogpost
 			//The prefix for post breadcrumbs, place on all page elements and inside of current_item prefix
-			'post_prefix' => '',
+			'post_post_prefix' => '',
 			//The suffix for post breadcrumbs, place on all page elements and inside of current_item suffix
-			'post_suffix' => '',
+			'post_post_suffix' => '',
 			//The anchor template for post breadcrumbs, two keywords are available %link% and %title%
-			'post_anchor' => __('<a title="Go to %title%." href="%link%">', 'breadcrumb_navxt'),
+			'post_post_anchor' => __('<a title="Go to %title%." href="%link%">', 'breadcrumb_navxt'),
 			//Should the trail include the taxonomy of the post
-			'post_taxonomy_display' => true,
+			'post_post_taxonomy_display' => true,
 			//What taxonomy should be shown leading to the post, tag or category
-			'post_taxonomy_type' => 'category',
+			'post_post_taxonomy_type' => 'category',
 			//Attachment settings
 			//The prefix for attachment breadcrumbs, place on all page elements and inside of current_item prefix
 			'attachment_prefix' => '',
@@ -288,39 +293,6 @@ class bcn_breadcrumb_trail
 		}
 	}
 	/**
-	 * do_attachment
-	 * 
-	 * A Breadcrumb Trail Filling Function
-	 * 
-	 * This functions fills a breadcrumb for an attachment page.
-	 */
-	function do_attachment()
-	{
-		global $post;
-		//Place the breadcrumb in the trail, uses the constructor to set the title, prefix, and suffix, get a pointer to it in return
-		$this->trail[] = new bcn_breadcrumb(get_the_title(), $this->opt['attachment_prefix'], $this->opt['attachment_suffix']);
-		//Get the parent's information
-		$parent = get_post($post->post_parent);
-		//We need to treat post and page attachment hierachy differently
-		if($parent->post_type == 'page')
-		{
-			//Grab the page on front ID for page_parents
-			$frontpage = get_option('page_on_front');
-			//Place the rest of the page hierachy
-			$this->page_parents($post->post_parent, $frontpage);
-		}
-		else
-		{
-			//Place the breadcrumb in the trail, uses the constructor to set the title, prefix, and suffix, get a pointer to it in return
-			$breadcrumb = $this->add(new bcn_breadcrumb(apply_filters('the_title', $parent->post_title),
-				$this->opt['post_prefix'], $this->opt['post_suffix']));
-			//Assign the anchor properties
-			$breadcrumb->set_anchor($this->opt['post_anchor'], get_permalink($post->post_parent));
-			//Handle the post's taxonomy
-			$this->post_taxonomy($post->post_parent);
-		}
-	}
-	/**
 	 * do_author
 	 * 
 	 * A Breadcrumb Trail Filling Function
@@ -349,51 +321,6 @@ class bcn_breadcrumb_trail
 		}
 	}
 	/**
-	 * page_parents
-	 * 
-	 * A Breadcrumb Trail Filling Function
-	 * 
-	 * This recursive functions fills the trail with breadcrumbs for parent pages.
-	 * @param int $id The id of the parent page.
-	 * @param int $frontpage The id of the front page.
-	 */
-	function page_parents($id, $frontpage)
-	{
-		//Use WordPress API, though a bit heavier than the old method, this will ensure compatibility with other plug-ins
-		$parent = get_post($id);
-		//Place the breadcrumb in the trail, uses the constructor to set the title, prefix, and suffix, get a pointer to it in return
-		$breadcrumb = $this->add(new bcn_breadcrumb(apply_filters('the_title', $parent->post_title), $this->opt['page_prefix'], 
-			$this->opt['page_suffix']));
-		//Assign the anchor properties
-		$breadcrumb->set_anchor($this->opt['page_anchor'], get_permalink($id));
-		//Make sure the id is valid, and that we won't end up spinning in a loop
-		if($parent->post_parent >= 0 && $parent->post_parent != false && $id != $parent->post_parent && $frontpage != $parent->post_parent)
-		{
-			//If valid, recursively call this function
-			$this->page_parents($parent->post_parent, $frontpage);
-		}
-	}
-	/**
-	 * do_page
-	 * 
-	 * A Breadcrumb Trail Filling Function
-	 * 
-	 * This functions fills a breadcrumb for a atatic page.
-	 */
-	function do_page()
-	{
-		global $post;
-		//Place the breadcrumb in the trail, uses the bcn_breadcrumb constructor to set the title, prefix, and suffix
-		$this->trail[] = new bcn_breadcrumb(get_the_title(), $this->opt['page_prefix'], $this->opt['page_suffix']);
-		//Done with the current item, now on to the parents
-		$bcn_frontpage = get_option('page_on_front');
-		//If there is a parent page let's find it
-		if($post->post_parent && $post->ID != $post->post_parent && $bcn_frontpage != $post->post_parent)
-		{
-			$this->page_parents($post->post_parent, $bcn_frontpage);
-		}
-	}
-	/**
 	 * post_taxonomy
 	 * 
 	 * A Breadcrumb Trail Filling Function
@@ -405,18 +332,18 @@ class bcn_breadcrumb_trail
 	{
 		global $post;
 		//Check to see if breadcrumbs for the taxonomy of the post needs to be generated
-		if($this->opt['post_taxonomy_display'])
+		if($this->opt['post_' . $post->post_type . '_taxonomy_display'])
 		{
 			//Check if we have a date 'taxonomy' request
-			if($this->opt['post_taxonomy_type'] == 'date')
+			if($this->opt['post_' . $post->post_type . '_taxonomy_type'] == 'date')
 			{
 				$this->do_archive_by_date();
 			}
 			//Handle all hierarchical taxonomies, including categories
-			else if(is_taxonomy_hierarchical($this->opt['post_taxonomy_type']))
+			else if(is_taxonomy_hierarchical($this->opt['post_' . $post->post_type . '_taxonomy_type']))
 			{
 				//Fill a temporary object with the terms
-				$bcn_object = get_the_terms($id, $this->opt['post_taxonomy_type']);
+				$bcn_object = get_the_terms($id, $this->opt['post_' . $post->post_type . '_taxonomy_type']);
 				if(is_array($bcn_object))
 				{
 					//Now find which one has a parent, pick the first one that does
@@ -432,11 +359,11 @@ class bcn_breadcrumb_trail
 						}
 					}
 					//Fill out the term hiearchy
-					$this->term_parents($bcn_object[$bcn_use_term]->term_id, $this->opt['post_taxonomy_type']);
+					$this->term_parents($bcn_object[$bcn_use_term]->term_id, $this->opt['post_' . $post->post_type . '_taxonomy_type']);
 				}
 			}
 			//Handle the use of pages as the 'taxonomy'
-			else if($this->opt['post_taxonomy_type'] == 'page')
+			else if($this->opt['post_' . $post->post_type . '_taxonomy_type'] == 'page')
 			{
 				//Done with the current item, now on to the parents
 				$bcn_frontpage = get_option('page_on_front');
@@ -449,7 +376,7 @@ class bcn_breadcrumb_trail
 			//Handle the rest of the taxonomies, including tags
 			else
 			{
-				$this->post_terms($id, $this->opt['post_taxonomy_type']);
+				$this->post_terms($id, $this->opt['post_' . $post->post_type . '_taxonomy_type']);
 			}
 		}
 	}
@@ -521,6 +448,99 @@ class bcn_breadcrumb_trail
 		{
 			//Figure out the rest of the term hiearchy via recursion
 			$this->term_parents($term->parent, $taxonomy);
+		}
+	}
+	/**
+	 * post_parents
+	 * 
+	 * A Breadcrumb Trail Filling Function
+	 * 
+	 * This recursive functions fills the trail with breadcrumbs for parent posts/pages.
+	 * @param int $id The id of the parent page.
+	 * @param int $frontpage The id of the front page.
+	 */
+	function post_parents($id, $frontpage)
+	{
+		//Use WordPress API, though a bit heavier than the old method, this will ensure compatibility with other plug-ins
+		$parent = get_post($id);
+		//Place the breadcrumb in the trail, uses the constructor to set the title, prefix, and suffix, get a pointer to it in return
+		$breadcrumb = $this->add(new bcn_breadcrumb(apply_filters('the_title', $parent->post_title), $this->opt['post_' . $parent->post_type . '_prefix'], 
+			$this->opt['post_' . $parent->post_type . '_suffix']));
+		//Assign the anchor properties
+		$breadcrumb->set_anchor($this->opt['post_' . $parent->post_type . '_anchor'], get_permalink($id));
+		//Make sure the id is valid, and that we won't end up spinning in a loop
+		if($parent->post_parent >= 0 && $parent->post_parent != false && $id != $parent->post_parent && $frontpage != $parent->post_parent)
+		{
+			//If valid, recursively call this function
+			$this->post_parents($parent->post_parent, $frontpage);
+		}
+	}
+	/**
+	 * do_post_hierarchical
+	 * 
+	 * A Breadcrumb Trail Filling Function
+	 * 
+	 * This functions fills a breadcrumb for a hierarchical post/page.
+	 */
+	function do_post_hierarchical()
+	{
+		global $post;
+		//Place the breadcrumb in the trail, uses the bcn_breadcrumb constructor to set the title, prefix, and suffix
+		$this->trail[] = new bcn_breadcrumb(get_the_title(), $this->opt['post_' . $post->post_type . '_prefix'], $this->opt['post_' . $post->post_type . '_suffix']);
+		//Done with the current item, now on to the parents
+		$bcn_frontpage = get_option('page_on_front');
+		//If there is a parent page let's find it
+		if($post->post_parent && $post->ID != $post->post_parent && $bcn_frontpage != $post->post_parent)
+		{
+			$this->post_parents($post->post_parent, $bcn_frontpage);
+		}
+	}
+	/**
+	 * do_post_flat
+	 * 
+	 * A Breadcrumb Trail Filling Function
+	 * 
+	 * This functions fills a breadcrumb for a post.
+	 */
+	function do_post_flat()
+	{
+		global $post;
+		//Place the breadcrumb in the trail, uses the bcn_breadcrumb constructor to set the title, prefix, and suffix
+		$this->trail[] = new bcn_breadcrumb(get_the_title(), $this->opt['post_' . $post->post_type . '_prefix'], $this->opt['post_' . $post->post_type . '_suffix']);
+		//Handle the post's taxonomy
+		$this->post_taxonomy($post->ID);
+	}
+	/**
+	 * do_attachment
+	 * 
+	 * A Breadcrumb Trail Filling Function
+	 * 
+	 * This functions fills a breadcrumb for an attachment page.
+	 */
+	function do_attachment()
+	{
+		global $post;
+		//Place the breadcrumb in the trail, uses the constructor to set the title, prefix, and suffix, get a pointer to it in return
+		$this->trail[] = new bcn_breadcrumb(get_the_title(), $this->opt['attachment_prefix'], $this->opt['attachment_suffix']);
+		//Get the parent's information
+		$parent = get_post($post->post_parent);
+		//We need to treat post and page attachment hierachy differently
+		if($parent->post_type == 'page')
+		{
+			//Grab the page on front ID for page_parents
+			$frontpage = get_option('page_on_front');
+			//Place the rest of the page hierachy
+			$this->post_parents($post->post_parent, $frontpage);
+		}
+		else
+		{
+			//Place the breadcrumb in the trail, uses the constructor to set the title, prefix, and suffix, get a pointer to it in return
+			$breadcrumb = $this->add(new bcn_breadcrumb(apply_filters('the_title', $parent->post_title),
+				$this->opt['post_post_prefix'], $this->opt['post_post_suffix']));
+			//Assign the anchor properties
+			$breadcrumb->set_anchor($this->opt['post_post_anchor'], get_permalink($post->post_parent));
+			//Handle the post's taxonomy
+			$this->post_taxonomy($post->post_parent);
 		}
 	}
 	/**
@@ -620,21 +640,6 @@ class bcn_breadcrumb_trail
 		}
 	}
 	/**
-	 * do_post
-	 * 
-	 * A Breadcrumb Trail Filling Function
-	 * 
-	 * This functions fills a breadcrumb for a post.
-	 */
-	function do_post()
-	{
-		global $post;
-		//Place the breadcrumb in the trail, uses the bcn_breadcrumb constructor to set the title, prefix, and suffix
-		$this->trail[] = new bcn_breadcrumb(get_the_title(), $this->opt['post_prefix'], $this->opt['post_suffix']);
-		//Handle the post's taxonomy
-		$this->post_taxonomy($post->ID);
-	}
-	/**
 	 * do_front_page
 	 * 
 	 * A Breadcrumb Trail Filling Function
@@ -686,7 +691,7 @@ class bcn_breadcrumb_trail
 				//If there is a parent page let's find it
 				if($bcn_post->post_parent && $bcn_post->ID != $bcn_post->post_parent && $frontpage_id != $bcn_post->post_parent)
 				{
-					$this->page_parents($bcn_post->post_parent, $frontpage_id);
+					$this->post_parents($bcn_post->post_parent, $frontpage_id);
 				}
 			}
 		}
@@ -742,13 +747,15 @@ class bcn_breadcrumb_trail
 		}
 		//Do any actions if necessary, we past through the current object instance to keep life simple
 		do_action('bcn_before_fill', $this);
+		//Need to grab the queried object here as multiple branches need it
+		$queried_object = $wp_query->get_queried_object();
 		//Do specific opperations for the various page types
 		//Check if this isn't the first of a multi paged item
 		if(is_paged() && $this->opt['paged_display'])
 		{
 			$this->do_paged();
 		}
-		//For the front page, as it may also validate as a page
+		//For the front page, as it may also validate as a page, do it first
 		if(is_front_page())
 		{
 			//Must have two seperate branches so that we don't evaluate it as a page
@@ -757,25 +764,29 @@ class bcn_breadcrumb_trail
 				$this->do_front_page();
 			}
 		}
+		//For posts
+		else if(is_singular())
+		{
+			//For hierarchical posts
+			if(is_page() || (is_post_type_hierarchical($queried_object->post_type) && !is_home()))
+			{
+				$this->do_post_hierarchical();
+			}
+			//For attachments
+			else if(is_attachment())
+			{
+				$this->do_attachment();
+			}
+			//For flat posts
+			else
+			{
+				$this->do_post_flat();
+			}
+		}
 		//For searches
 		else if(is_search())
 		{
 			$this->do_search();
-		}
-		//For pages
-		else if(is_page())
-		{
-			$this->do_page();
-		}
-		//For post/page attachments
-		else if(is_attachment())
-		{
-			$this->do_attachment();
-		}
-		//For blog posts
-		else if(is_single())
-		{
-			$this->do_post();
 		}
 		//For author pages
 		else if(is_author())
@@ -788,9 +799,8 @@ class bcn_breadcrumb_trail
 			//For taxonomy based archives, had to add the two specifics in to overcome WordPress bug
 			if(is_tax() || is_category() || is_tag())
 			{
-				$term = $wp_query->get_queried_object();
 				//For hierarchical taxonomy based archives
-				if(is_taxonomy_hierarchical($term->taxonomy))
+				if(is_taxonomy_hierarchical($queried_object->taxonomy))
 				{
 					$this->do_archive_by_term_hierarchical();
 				}
@@ -901,16 +911,16 @@ class bcn_breadcrumb_trail
 					$trail_str .= $this->opt['separator'];
 				}
 			}
+			//If we are on the current item there are some things that must be done
+			if($key === 0)
+			{
+				$this->current_item($breadcrumb);
+			}
 			//Trim titles, if needed
 			if($this->opt['max_title_length'] > 0)
 			{
 				//Trim the breadcrumb's title
 				$breadcrumb->title_trim($this->opt['max_title_length']);
-			}
-			//If we are on the current item there are some things that must be done
-			if($key === 0)
-			{
-				$this->current_item($breadcrumb);
 			}
 			//Place in the breadcrumb's assembled elements
 			$trail_str .= $breadcrumb->assemble($linked);
@@ -950,12 +960,6 @@ class bcn_breadcrumb_trail
 		foreach($this->trail as $key=>$breadcrumb)
 		{
 			$trail_str .= '<li';
-			//Trim titles, if needed
-			if($this->opt['max_title_length'] > 0)
-			{
-				//Trim the breadcrumb's title
-				$breadcrumb->title_trim($this->opt['max_title_length']);
-			}
 			//On the first run we need to add in a class for the home breadcrumb
 			if($trail_str === '<li')
 			{
@@ -972,6 +976,12 @@ class bcn_breadcrumb_trail
 				$this->current_item($breadcrumb);
 				//Add in a class for current_item
 				$trail_str .= ' class="current_item"';
+			}
+			//Trim titles, if needed
+			if($this->opt['max_title_length'] > 0)
+			{
+				//Trim the breadcrumb's title
+				$breadcrumb->title_trim($this->opt['max_title_length']);
 			}
 			//Place in the breadcrumb's assembled elements
 			$trail_str .= '>' . $breadcrumb->assemble($linked);

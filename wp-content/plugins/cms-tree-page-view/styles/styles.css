@@ -186,21 +186,24 @@ li span.cms_tpv_action_add_page {
 	left: 112px;
 	width: 16px;
 	height: 16px;
-	background: transparent url(http://jquery-ui.googlecode.com/svn/trunk/themes/base/images/ui-icons_888888_256x240.png) no-repeat -32px -194px;
+	background: transparent url(https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/ui-darkness/images/ui-icons_cccccc_256x240.png) no-repeat -32px -194px;
 	text-indent: -9999px;
 }
 #cms_tpv_dashboard_widget .cms_tree_view_search_form_reset {
 	top: 8px;
 }
 .cms_tree_view_search_form_reset:hover {
-	background: transparent url(http://jquery-ui.googlecode.com/svn/trunk/themes/base/images/ui-icons_454545_256x240.png) no-repeat -32px -194px;
+	background: transparent url(https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/ui-lightness/images/ui-icons_222222_256x240.png) no-repeat -32px -194px;
 }
 
 .cms_tpv_annoying_little_box {
 	padding: 1em;
-	background-color: #FFFFE0;
+	background-color: #FFFBCC;
 	border: 1px solid #E6DB55;
 	margin: 1em 0 1em 0;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
 }
 .cms_tpv_annoying_little_box p {
 	margin: 0 0 .5em 0;
@@ -276,4 +279,23 @@ p.cms_tpv_annoying_little_box_close {
 	display: block;
 	top: 7px;
 	left: -8px;
+}
+
+.cms_tpv_page_actions_columns table td {
+	font-size: 11px;
+}
+
+.cms_tpv_page_actions_columns .vers {
+	display: inline;
+	padding-right: 2px;
+	vertical-align: middle;
+}
+.cms_tpv_page_actions_columns .post-com-count-wrapper {
+}
+.cms_tpv_wrapper .cms_tpv_page_actions_columns a.post-com-count {
+}
+
+li.cms_tpv_user_can_edit_page_no a {
+	opacity: .6; /* Standard: FF gt 1.5, Opera, Safari */
+	-ms-filter: "alpha(opacity=60)"; /* IE 8 */
 }

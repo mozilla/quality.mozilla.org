@@ -1,8 +1,7 @@
 <?php
-	global $spEvents;
-	$spEvents->loadDomainStylesScripts();
-	
-	get_header();
+global $spEvents;
+$spEvents->loadDomainStylesScripts();
+get_header();
 ?>
 	<div id="tec-content" class="upcoming">
 		<div id='tec-events-calendar-header' class="clearfix">
@@ -28,11 +27,11 @@
 							        <?php endif; ?>
 						<?php the_title('<h2 class="entry-title"><a href="' . get_permalink() . '" title="' . the_title_attribute('echo=0') . '" rel="bookmark">', '</a></h2>'); ?>
 					<div class="entry-content tec-event-entry">
-						<?php the_excerpt() ?>
+						<?php the_content(); ?>
 					</div> <!-- End tec-event-entry -->
 
 					<div class="tec-event-list-meta">
-		              <table cellspacing="0">
+		              <table>
 		                  <tr>
 		                    <td class="tec-event-meta-desc"><?php _e('Start:', $spEvents->pluginDomain) ?></td>
 		                    <td class="tec-event-meta-value"><?php echo the_event_start_date(); ?></td>
@@ -86,8 +85,6 @@
 	<?php $alt = ( empty( $alt ) ) ? ' alt' : '';?> 
 		<?php endwhile; // posts ?>
 
-
-
 		</div><!-- #tec-events-loop -->
 		<div class="tec-nav" id="tec-nav-below">
 
@@ -116,7 +113,8 @@
 		</div>
 
 	</div>
-
-
-<?php
-get_footer();
+<?php /* For custom template builders...
+	   * The following init method should be called before any other loop happens.
+	   */
+$wp_query->init(); ?>
+<?php get_footer(); ?>

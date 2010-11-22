@@ -46,7 +46,14 @@ abstract class mtekk_admin
 	}
 	function admin_url()
 	{
-		return admin_url('options-general.php?page=' .$this->identifier);
+		return admin_url('options-general.php?page=' . $this->identifier);
+	}
+	function undo_anchor($title = '')
+	{
+		//Assemble our url, nonce and all
+		$url = wp_nonce_url($this->admin_url() . '&' . $this->unique_prefix . '_admin_undo=true', $this->unique_prefix . '_admin_undo');
+		//Return a valid Undo anchor
+		return ' <a title="' . $title . '" href="' . $url . '">' . __('Undo', $this->identifier) . '</a>';
 	}
 	function init()
 	{
@@ -73,6 +80,12 @@ abstract class mtekk_admin
 		{
 			//Run the import function on init if import form has been submitted
 			$this->opts_import();
+		}
+		//Admin Options rollback hook
+		else if(isset($_GET[$this->unique_prefix . '_admin_undo']))
+		{
+			//Run the rollback function on init if undo button has been pressed
+			$this->opts_undo();
 		}
 		//Add in the nice "settings" link to the plugins page
 		add_filter('plugin_action_links', array($this, 'filter_plugin_actions'), 10, 2);
@@ -146,9 +159,38 @@ abstract class mtekk_admin
 	function uninstall()
 	{
 		//Remove the option array setting
-		$this->delete_option($this->unique_prefix . '_options');
+		delete_option($this->unique_prefix . '_options');
 		//Remove the version setting
-		$this->delete_option($this->unique_prefix . '_version');
+		delete_option($this->unique_prefix . '_version');
+	}
+	/**
+	 * import_hook
+	 * 
+	 * Overidable, allows plugin authors to specify what to do for version migration
+	 * 
+	 * @param  array $opts
+	 * @param  string $version
+	 */
+	function import_hook($opts, $version)
+	{
+		//Do a quick version check
+		list($plug_major, $plug_minor, $plug_release) = explode('.', $this->version);
+		list($major, $minor, $release) = explode('.', $version);
+		//We don't support using newer versioned option files in older releases
+		if($plug_major == $major && $plug_minor >= $minor)
+		{
+			$this->opt = $opts;
+		}
+	}
+	/**
+	 * opts_backup
+	 * 
+	 * Synchronizes the backup options entry with the current options entry
+	 */
+	function opts_backup()
+	{
+		//Set the backup options in the DB to the current options
+		update_option($this->unique_prefix . '_options_bk', get_option($this->unique_prefix . '_options'));
 	}
 	/**
 	 * opts_update
@@ -222,6 +264,8 @@ abstract class mtekk_admin
 		}
 		//Do a nonce check, prevent malicious link/form problems
 		check_admin_referer($this->unique_prefix . '_admin_import_export');
+		//Set the backup options in the DB to the current options
+		$this->opts_backup();
 		//Create a DOM document
 		$dom = new DOMDocument('1.0', 'UTF-8');
 		//We want to catch errors ourselves
@@ -229,6 +273,8 @@ abstract class mtekk_admin
 		//Load the user uploaded file, handle failure gracefully
 		if($dom->load($_FILES[$this->unique_prefix . '_admin_import_file']['tmp_name']))
 		{
+			$opts_temp = array();
+			$version = '';
 			//Have to use an xpath query otherwise we run into problems
 			$xpath = new DOMXPath($dom);  
 			$option_sets = $xpath->query('plugin');
@@ -238,25 +284,21 @@ abstract class mtekk_admin
 				//We only want to import options for only this plugin
 				if($options->getAttribute('name') === $this->short_name)
 				{
-					//Do a quick version check
-					list($plug_major, $plug_minor, $plug_release) = explode('.', $this->version);
-					list($major, $minor, $release) = explode('.', $options->getAttribute('version'));
-					//We don't support using newer versioned option files in older releases
-					if($plug_major == $major && $plug_minor >= $minor)
+					//Grab the file version
+					$version = explode('.', $options->getAttribute('version'));
+					//Loop around all of the options
+					foreach($options->getelementsByTagName('option') as $child)
 					{
-						//Loop around all of the options
-						foreach($options->getelementsByTagName('option') as $child)
-						{
-							//Place the option into the option array, DOMDocument decodes html entities for us
-							$this->opt[$child->getAttribute('name')] = $child->nodeValue;
-						}
+						//Place the option into the option array, DOMDocument decodes html entities for us
+						$opts_temp[$child->getAttribute('name')] = $child->nodeValue;
 					}
 				}
 			}
+			$this->import_hook($opts_temp, $version);
 			//Commit the loaded options to the database
-			$this->update_option($this->unique_prefix . '_options', $this->opt);
+			update_option($this->unique_prefix . '_options', $this->opt);
 			//Everything was successful, let the user know
-			$this->message['updated fade'][] = __('Settings successfully imported from the uploaded file.', $this->identifier);
+			$this->message['updated fade'][] = __('Settings successfully imported from the uploaded file.', $this->identifier) . $this->undo_anchor(__('Undo the options import.', $this->identifier));
 		}
 		else
 		{
@@ -277,10 +319,26 @@ abstract class mtekk_admin
 	{
 		//Do a nonce check, prevent malicious link/form problems
 		check_admin_referer($this->unique_prefix . '_admin_import_export');
-		//Only needs this one line, will load in the hard coded default option values
-		$this->update_option($this->unique_prefix . '_options', $this->opt);
+		//Set the backup options in the DB to the current options
+		$this->opts_backup();
+		//Load in the hard coded default option values
+		update_option($this->unique_prefix . '_options', $this->opt);
 		//Reset successful, let the user know
-		$this->message['updated fade'][] = __('Settings successfully reset to the default values.', $this->identifier);
+		$this->message['updated fade'][] = __('Settings successfully reset to the default values.', $this->identifier) . $this->undo_anchor(__('Undo the options reset.', $this->identifier));
+		add_action('admin_notices', array($this, 'message'));
+	}
+	function opts_undo()
+	{
+		//Do a nonce check, prevent malicious link/form problems
+		check_admin_referer($this->unique_prefix . '_admin_undo');
+		//Set the options array to the current options
+		$opt = get_option($this->unique_prefix . '_options');
+		//Set the options in the DB to the backup options
+		update_option($this->unique_prefix . '_options', get_option($this->unique_prefix . '_options_bk'));
+		//Set the backup options to the undid options
+		update_option($this->unique_prefix . '_options_bk', $opt);
+		//Send the success/undo message
+		$this->message['updated fade'][] = __('Settings successfully undid the last operation.', $this->identifier) . $this->undo_anchor(__('Undo the last undo operation.', $this->identifier));
 		add_action('admin_notices', array($this, 'message'));
 	}
 	/**
@@ -400,9 +458,9 @@ abstract class mtekk_admin
 		printf('<input type="file" name="%s_admin_import_file" id="%s_admin_import_file" size="32" /><br /><span class="setting-description">', $this->unique_prefix, $this->unique_prefix);
 		_e('Select a XML settings file to upload and import settings from.', 'breadcrumb_navxt');
 		echo '</span></td></tr></table><p class="submit">';
-		printf('<input type="submit" class="button" name="%s_admin_import" value="' . __('Import', $this->identifier) . '" onclick="return %s_confirm(\'import\')" />', $this->unique_prefix, $this->unique_prefix);
-		printf('<input type="submit" class="button" name="%s_admin_export" value="' . __('Export', $this->identifier) . '" />', $this->unique_prefix);
-		printf('<input type="submit" class="button" name="%s_admin_reset" value="' . __('Reset', $this->identifier) . '" onclick="return %s_confirm(\'reset\')" />', $this->unique_prefix, $this->unique_prefix);
+		printf('<input type="submit" class="button" name="%s_admin_import" value="' . __('Import', $this->identifier) . '"/>', $this->unique_prefix, $this->unique_prefix);
+		printf('<input type="submit" class="button" name="%s_admin_export" value="' . __('Export', $this->identifier) . '"/>', $this->unique_prefix);
+		printf('<input type="submit" class="button" name="%s_admin_reset" value="' . __('Reset', $this->identifier) . '"/>', $this->unique_prefix, $this->unique_prefix);
 		echo '</p></fieldset></form></div>';
 	}
 	/**
@@ -430,6 +488,26 @@ abstract class mtekk_admin
 			</td>
 		</tr>
 	<?php
+	}
+	/**
+	 * textbox
+	 * 
+	 * This will output a well formed textbox
+	 * 
+	 * @param string $label
+	 * @param string $option
+	 * @param string $rows [optional]
+	 * @param bool $disable [optional]
+	 * @param string $description [optional]
+	 */
+	function textbox($label, $option, $rows = '3', $disable = false, $description = '')
+	{
+		$optid = $this->get_valid_id($option);?>
+		<p>
+			<label for="<?php echo $optid;?>"><?php echo $label;?></label>
+		</p>
+		<textarea rows="<?php echo $height;?>" class="large-text code" id="<?php echo $optid;?>" name="<?php echo $this->unique_prefix . '_options[' . $option;?>]"><?php echo htmlentities($this->opt[$option], ENT_COMPAT, 'UTF-8');?></textarea><br />
+		<?php if($description !== ''){?><span class="setting-description"><?php echo $description;?></span><?php }
 	}
 	/**
 	 * input_check

@@ -171,6 +171,7 @@ function fwp_authors_page () {
 	$authorsPage = new FeedWordPressAuthorsPage($link);
 
 	$mesg = null;
+	$updated_link = false;
 
 	if (isset($GLOBALS['fwp_post']['fix_mismatch'])) :
 		if ('newuser'==$GLOBALS['fwp_post']['fix_mismatch_to']) :
@@ -197,11 +198,7 @@ function fwp_authors_page () {
 					$post_set = "(".implode(",", $post_ids).")";
 					
 					// Getting the revisions too, if there are any
-					if (fwp_test_wp_version(FWP_SCHEMA_26)) :
-						$parent_in_clause = "OR {$wpdb->posts}.post_parent IN $post_set";
-					else :
-						$parent_in_clause = '';
-					endif;
+					$parent_in_clause = "OR {$wpdb->posts}.post_parent IN $post_set";
 					
 					$wpdb->query("
 					UPDATE {$wpdb->posts}
@@ -356,7 +353,7 @@ function fwp_authors_page () {
 			$title = $row;
 		endif;
 
-		fwp_add_meta_box(
+		add_meta_box(
 			/*id=*/ $id,
 			/*title=*/ $title,
 			/*callback=*/ array('FeedWordPressAuthorsPage', $method),

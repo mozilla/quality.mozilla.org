@@ -11,107 +11,115 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 	 *
 	 * @param mixed $link An object of class {@link SyndicatedLink} if created for one feed's settings, NULL if created for global default settings
 	 */
-	function FeedWordPressPostsPage ($link = NULL) {
+	function FeedWordPressPostsPage ($link = -1) {
+		if (is_numeric($link) and -1 == $link) :
+			$link = FeedWordPressAdminPage::submitted_link();
+		endif;
+
 		FeedWordPressAdminPage::FeedWordPressAdminPage('feedwordpresspostspage', $link);
-		$this->dispatch = 'feedwordpress_posts_settings';
+		$this->dispatch = 'feedwordpress_admin_page_posts';
 		$this->filename = __FILE__;
 		$this->updatedPosts = new UpdatedPostsControl($this);
+		
+		$this->pagenames = array(
+			'default' => 'Posts',
+			'settings-update' => 'Syndicated posts',
+			'open-sheet' => 'Syndicated Posts & Links',
+		);
 	} /* FeedWordPressPostsPage constructor */
 
-	function accept_POST ($post) {
-		global $wpdb;
+	function save_settings ($post) {
+		// custom post settings
+		$custom_settings = $this->custom_post_settings();
 
-		// User mashed a Save Changes button
-		if (isset($post['save']) or isset($post['submit'])) :
-			// custom post settings
-			$custom_settings = $this->custom_post_settings();
-
-			foreach ($post['notes'] as $mn) :
+		foreach ($post['notes'] as $mn) :
+			if (isset($mn['key0'])) :
 				$mn['key0'] = trim($mn['key0']);
-				$mn['key1'] = trim($mn['key1']);
-	
 				if (strlen($mn['key0']) > 0) :
 					unset($custom_settings[$mn['key0']]); // out with the old
 				endif;
+			endif;
 				
+			if (isset($mn['key1'])) :
+				$mn['key1'] = trim($mn['key1']);
+
 				if (($mn['action']=='update') and (strlen($mn['key1']) > 0)) :
 					$custom_settings[$mn['key1']] = $mn['value']; // in with the new
 				endif;
-			endforeach;
-	
-			$this->updatedPosts->accept_POST($post);
-			if ($this->for_feed_settings()) :
-				$alter = array ();
-	
-				$this->link->settings['postmeta'] = serialize($custom_settings);
-	
-				if (isset($post['resolve_relative'])) :
-					$this->link->settings['resolve relative'] = $post['resolve_relative'];
-				endif;
-				if (isset($post['munge_permalink'])) :
-					$this->link->settings['munge permalink'] = $post['munge_permalink'];
-				endif;
-				if (isset($post['munge_comments_feed_links'])) :
-					$this->link->settings['munge comments feed links'] = $post['munge_comments_feed_links'];
-				endif;
+			endif;
+		endforeach;
 
-				// Post status, comment status, ping status
-				foreach (array('post', 'comment', 'ping') as $what) :
-					$sfield = "feed_{$what}_status";
-					if (isset($post[$sfield])) :
-						if ($post[$sfield]=='site-default') :
-							unset($this->link->settings["{$what} status"]);
-						else :
-							$this->link->settings["{$what} status"] = $post[$sfield];
-						endif;
-					endif;
-				endforeach;
+		$this->updatedPosts->accept_POST($post);
+		if ($this->for_feed_settings()) :
+			$alter = array ();
 
-				// Save settings
-				$this->link->save_settings(/*reload=*/ true);
-				$this->updated = true;
+			$this->link->settings['postmeta'] = serialize($custom_settings);
 
-				// Reset, reload
-				$link_id = $this->link->id;
-				unset($this->link);
-				$this->link = new SyndicatedLink($link_id);
-			else :
-				// update_option ...
-				if (isset($post['feed_post_status'])) :
-					update_option('feedwordpress_syndicated_post_status', $post['feed_post_status']);
-				endif;
-
-				update_option('feedwordpress_custom_settings', serialize($custom_settings));
-	
-				update_option('feedwordpress_munge_permalink', $_REQUEST['munge_permalink']);
-				update_option('feedwordpress_use_aggregator_source_data', $_REQUEST['use_aggregator_source_data']);
-				update_option('feedwordpress_formatting_filters', $_REQUEST['formatting_filters']);
-	
-				if (isset($post['resolve_relative'])) :
-					update_option('feedwordpress_resolve_relative', $post['resolve_relative']);
-				endif;
-				if (isset($post['munge_comments_feed_links'])) :
-					update_option('feedwordpress_munge_comments_feed_links', $post['munge_comments_feed_links']);
-				endif;
-				if (isset($_REQUEST['feed_comment_status']) and ($_REQUEST['feed_comment_status'] == 'open')) :
-					update_option('feedwordpress_syndicated_comment_status', 'open');
-				else :
-					update_option('feedwordpress_syndicated_comment_status', 'closed');
-				endif;
-
-				if (isset($_REQUEST['feed_ping_status']) and ($_REQUEST['feed_ping_status'] == 'open')) :
-					update_option('feedwordpress_syndicated_ping_status', 'open');
-				else :
-					update_option('feedwordpress_syndicated_ping_status', 'closed');
-				endif;
-		
-				$this->updated = true;
+			if (isset($post['resolve_relative'])) :
+				$this->link->settings['resolve relative'] = $post['resolve_relative'];
+			endif;
+			if (isset($post['munge_permalink'])) :
+				$this->link->settings['munge permalink'] = $post['munge_permalink'];
+			endif;
+			if (isset($post['munge_comments_feed_links'])) :
+				$this->link->settings['munge comments feed links'] = $post['munge_comments_feed_links'];
 			endif;
 
-		// Probably a "Go" button for the drop-down
+			// Post status, comment status, ping status
+			foreach (array('post', 'comment', 'ping') as $what) :
+				$sfield = "feed_{$what}_status";
+				if (isset($post[$sfield])) :
+					if ($post[$sfield]=='site-default') :
+						unset($this->link->settings["{$what} status"]);
+					else :
+						$this->link->settings["{$what} status"] = $post[$sfield];
+					endif;
+				endif;
+			endforeach;
+			
+			if (isset($post['syndicated_post_type'])) :
+				if ($post['syndicated_post_type']=='default') :
+					unset($this->link->settings['syndicated post type']);
+				else :
+					$this->link->settings['syndicated post type'] = $post['syndicated_post_type'];
+				endif;
+			endif;
+
 		else :
-			$this->updated = false;
-		endif;		
+			// update_option ...
+			if (isset($post['feed_post_status'])) :
+				update_option('feedwordpress_syndicated_post_status', $post['feed_post_status']);
+			endif;
+
+			update_option('feedwordpress_custom_settings', serialize($custom_settings));
+
+			update_option('feedwordpress_munge_permalink', $_REQUEST['munge_permalink']);
+			update_option('feedwordpress_use_aggregator_source_data', $_REQUEST['use_aggregator_source_data']);
+			update_option('feedwordpress_formatting_filters', $_REQUEST['formatting_filters']);
+
+			if (isset($post['resolve_relative'])) :
+				update_option('feedwordpress_resolve_relative', $post['resolve_relative']);
+			endif;
+			if (isset($post['munge_comments_feed_links'])) :
+				update_option('feedwordpress_munge_comments_feed_links', $post['munge_comments_feed_links']);
+			endif;
+			if (isset($_REQUEST['feed_comment_status']) and ($_REQUEST['feed_comment_status'] == 'open')) :
+				update_option('feedwordpress_syndicated_comment_status', 'open');
+			else :
+				update_option('feedwordpress_syndicated_comment_status', 'closed');
+			endif;
+
+			if (isset($_REQUEST['feed_ping_status']) and ($_REQUEST['feed_ping_status'] == 'open')) :
+				update_option('feedwordpress_syndicated_ping_status', 'open');
+			else :
+				update_option('feedwordpress_syndicated_ping_status', 'closed');
+			endif;
+			
+			if (isset($post['syndicated_post_type'])) :
+				update_option('feedwordpress_syndicated_post_type', $post['syndicated_post_type']);
+			endif;
+		endif;
+		parent::save_settings($post);
 	}
 
 	/**
@@ -128,66 +136,37 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 	 * @uses SyndicatedPost::use_api()
 	 */ 
 	/*static*/ function publication_box ($page, $box = NULL) {
-		global $fwp_path;
-	
-		$post_status_global = FeedWordPress::syndicated_status('post', /*default=*/ 'publish');
 		$thesePosts = $page->these_posts_phrase();
-	
-		// Set up array for selector
-		$setting = array(
-			'publish' => array ('label' => "Publish %s immediately", 'checked' => ''),
-			'draft' => array('label' => "Save %s as drafts", 'checked' => ''),
-			'private' => array('label' => "Save %s as private posts", 'checked' => ''),
+		$postSelector = array(
+		'publish' => "Publish %s immediately",
+		'pending' => "Hold %s for review; mark as Pending",
+		'draft' => "Save %s as drafts",
+		'private' => "Save %s as private posts",
 		);
-		if (SyndicatedPost::use_api('post_status_pending')) :
-			$setting['pending'] = array('label' => "Hold %s for review; mark as Pending", 'checked' => '');
-		endif;
-
-
-		if ($page->for_feed_settings()) :
-			$href = $fwp_path.'/'.basename(__FILE__);
-			$currently = str_replace('%s', '', strtolower(strtok($setting[$post_status_global]['label'], ';')));
-			$setting['site-default'] = array('label' => "Use <a href=\"admin.php?page=${href}\">site-wide setting</a>", 'checked' => '');
-			$setting['site-default']['label'] .= " (currently: <strong>${currently}</strong>)";
-	
-			$checked = $page->link->syndicated_status('post', 'site-default', /*fallback=*/ false);
-		else :
-			$checked = $post_status_global;
-		endif;
-	
-		// Re-order appropriately
-		$selector = array();
-		$order = array(
-			'site-default',
-			'publish',
-			'pending',
-			'draft',
-			'private',
-		);
-		foreach ($order as $line) :
-			if (isset($setting[$line])) :
-				$selector[$line] = $setting[$line];
-			endif;
+		$labels = array();
+		foreach ($postSelector as $index => $value) :
+			$postSelector[$index] = sprintf(__($value), $thesePosts);
+			$labels[$index] = __(str_replace(' %s', '', strtolower(strtok($value, ';'))));
 		endforeach;
-		$selector[$checked]['checked'] = ' checked="checked"';
-	
+		
+		$params = array(
+		'input-name' => 'feed_post_status',
+		'setting-default' => NULL,
+		'global-setting-default' => 'publish',
+		'labels' => $labels,
+		);
+
 		// Hey ho, let's go...
 		?>
-		<style type="text/css">
-		#syndicated-publication-form th { width: 27%; vertical-align: top; }
-		#syndicated-publication-form td { width: 73%; vertical-align: top; }
-		</style>
-	
-		<table id="syndicated-publication-form" class="form-table" cellspacing="2" cellpadding="5">
+		<table id="syndicated-publication-form" class="edit-form narrow">
 		<tr><th scope="row"><?php _e('New posts:'); ?></th>
-		<td><ul class="options">
-		<?php foreach ($selector as $code => $li) : ?>
-			<li><label><input type="radio" name="feed_post_status"
-			value="<?php print $code; ?>"<?php print $li['checked']; ?> />
-			<?php print str_replace('%s', $thesePosts, $li['label']); ?></label></li>
-		<?php endforeach; ?>
-		</ul></td>
-		</tr>
+		<td><?php
+			$this->setting_radio_control(
+				'post status', 'syndicated_post_status',
+				$postSelector, $params
+			);
+		?>
+		</td></tr>
 
 		<?php $page->updatedPosts->display(); ?>
 		</table>
@@ -205,25 +184,17 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 	 *
 	 */ 
 	function formatting_box ($page, $box = NULL) {
-		global $fwp_path;
 		$thesePosts = $page->these_posts_phrase();
-		$global_resolve_relative = get_option('feedwordpress_resolve_relative', 'yes');
+
 		if ($page->for_feed_settings()) :
 			$formatting_filters = null;
-			$resolve_relative = $page->link->setting('resolve relative', NULL, 'default');
 			$url = preg_replace('|/+$|', '', $page->link->homepage());
-			$setting = array(
-				'yes' => __('resolve relative URIs'),
-				'no' => __('leave relative URIs unresolved'),
-			);
-			$href = $fwp_path.'/'.basename(__FILE__);
 		else :
 			$formatting_filters = get_option('feedwordpress_formatting_filters', 'no');
-			$resolve_relative = $global_resolve_relative;
 			$url = 'http://example.com';
 		endif;
 		?>
-		<table class="form-table" cellspacing="2" cellpadding="5">
+		<table class="edit-form narrow">
 		<?php if (!is_null($formatting_filters)) : ?>
 
 		  <tr><th scope="row">Formatting filters:</th>
@@ -240,20 +211,30 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 		<?php endif; ?>
 		
 		<tr><th scope="row">Relative URIs:</th>
-		<td>If link or image in a syndicated post from <code><?php print $url; ?></code>
+		<td><p>If link or image in a syndicated post from <code><?php print $url; ?></code>
 		refers to a partial URI like <code>/about</code>, where should
 		the syndicated copy point to?</p>
 
-		<ul>
-		<?php if ($page->for_feed_settings()) : ?>
-		<li><p><label><input type="radio" name="resolve_relative" value='default' <?php echo ($resolve_relative=='default')?' checked="checked"':''; ?>/> Use <a href="admin.php?page=<?php print $href; ?>">site-wide setting</a><br/>
-		<small style="margin-left: 2.0em;">Currently: <strong><?php print $setting[$global_resolve_relative]; ?></strong></small></label></p></li>
-		<?php endif; ?>
-		<li><p><label><input type="radio" name="resolve_relative" value="yes"<?php echo ($resolve_relative!='no' and $resolve_relative!='default')?' checked="checked"':''; ?>/> Resolve the URI so it points to <code><?php print $url; ?></code><br/>
-		<small style="margin-left: 2.0em;"><code>/contact</code> is rewritten as <code><?php print $url; ?>/contact</code></label></small></p></li>
-		<li><p><label><input type="radio" name="resolve_relative" value="no"<?php echo ($resolve_relative=='no')?' checked="checked"':''; ?>/> Leave relative URIs unchanged, so they point to this site<br/>
-		<small style="margin-left: 2.0em;"><code>/contact</code> is left as <code>/contact</code></small></label></li>
-		</ul>
+		<?php
+		$options = array(
+			'yes' => 'Resolve the URI so it points to <code>'.$url.'</code><br/><small style="margin-left: 2.0em;"><code>/contact</code> is rewritten as <code>'.$url.'/contact</code></small>',
+			'no' => 'Leave relative URIs unchanged, so they point to this site<br/><small style="margin-left: 2.0em;"><code>/contact</code> is left as <code>/contact</code></small>',
+		);
+		$params = array(
+			'setting-default' => 'default',
+			'global-setting-default' => 'yes',
+			'labels' => array(
+				'yes' => __('resolve relative URIs'),
+				'no' => __('leave relative URIs unresolved'),
+			),
+			'default-input-value' => 'default',
+		);
+
+		$this->setting_radio_control(
+			'resolve relative', 'resolve_relative',
+			$options, $params
+		);
+		?>		
 		</td></tr>
 
 		</table>
@@ -272,30 +253,31 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 	/*static*/ function links_box ($page, $box = NULL) {
 		$setting = array(
 			'munge_permalink' => array(
-				'yes' => 'the copy on the original website',
-				'no' => 'the local copy on this website',
+				'yes' => __('The copy on the original website'),
+				'no' => __('The local copy on this website'),
 			),
 		);
 
-		$global_munge_permalink = get_option('feedwordpress_munge_permalink');
-		if ($page->for_feed_settings()) :
-			$munge_permalink = $page->link->setting('munge permalink', NULL);
-		else :
-			$munge_permalink = $global_munge_permalink;
+		if (!$page->for_feed_settings()) :
 			$use_aggregator_source_data = get_option('feedwordpress_use_aggregator_source_data');
 		endif;
-
 		?>
-		<table class="form-table" cellspacing="2" cellpadding="5">
+		<table class="edit-form narrow">
 		<tr><th  scope="row">Permalinks point to:</th>
-		<td><ul class="options">	
-		<?php if ($page->for_feed_settings()) : ?>
-		<li><label><input type="radio" name="munge_permalink" value="default"<?php echo ($munge_permalink!='yes' and $munge_permalink != 'no')?' checked="checked"':''; ?>/> use site-wide setting (currently <?php print $setting['munge_permalink'][$global_munge_permalink]; ?>)</label></li>
-		<?php endif; ?>
-		<li><label><input type="radio" name="munge_permalink" value="yes"<?php echo ($munge_permalink=='yes')?' checked="checked"':''; ?>><?php print $setting['munge_permalink']['yes']; ?></label></li>
-		<li><label><input type="radio" name="munge_permalink" value="no"<?php echo ($munge_permalink=='no')?' checked="checked"':''; ?>><?php print $setting['munge_permalink']['no']; ?></label></li>
-		</ul></td>
-		</tr>
+		<td><?php
+		
+		$params = array(
+			'setting-default' => 'default',
+			'global-setting-default' => 'yes',
+			'default-input-value' => 'default',
+		);
+		$this->setting_radio_control(
+			'munge permalink', 'munge_permalink',
+			$setting['munge_permalink'], $params
+		);
+		?>
+
+		</td></tr>
 		
 		<?php if (!$page->for_feed_settings()) : ?>
 		<tr><th scope="row">Posts from aggregator feeds:</th>
@@ -323,93 +305,71 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 	 *
 	 */
 	/*static*/ function comments_and_pings_box ($page, $box = NULL) {
-		global $fwp_path;
-
-		$setting = array();
-		$selector = array();
-
 		$whatsits = array(
 			'comment' => array('label' => __('Comments'), 'accept' => 'Allow comments'),
 			'ping' => array('label' => __('Pings'), 'accept' => 'Accept pings'),
 		);
 		$onThesePosts = 'on '.$page->these_posts_phrase();
-
-		$selected = array(
-			'munge_comments_feed_links' => array('yes' => '', 'no' => '')
+		
+		$mcflSettings = array(
+			"yes" => __('Point to comment feeds from the original website (when provided by the syndicated feed)'),
+			"no" => __('Point to local comment feeds on this website'),
 		);
-		
-		$globalMungeCommentsFeedLinks = get_option('feedwordpress_munge_comments_feed_links', 'yes');
-		if ($page->for_feed_settings()) :
-			$selected['munge_comments_feed_links']['default'] = '';
-			
-			$sel =  $page->link->setting('munge comments feed links', NULL, 'default');
-		else :
-			$sel = $globalMungeCommentsFeedLinks;
-		endif;
-		$selected['munge_comments_feed_links'][$sel] = ' checked="checked"';
-		
-		if ($globalMungeCommentsFeedLinks != 'no') : $siteWide = __('comment feeds from the original website');
-		else : $siteWide = __('local comment feeds on this website');
-		endif;
+		$mcflParams = array(
+			'setting-default' => 'default',
+			'global-setting-default' => 'yes',
+			'labels' => array(
+				'yes' => __('comment feeds from the original website'),
+				'no' => __('local comment feeds on this website')
+			),
+			'default-input-value' => 'default',
+		);
 
+		$settings = array(); $params = array();
 		foreach ($whatsits as $what => $how) :
 			$whatsits[$what]['default'] = FeedWordPress::syndicated_status($what, /*default=*/ 'closed');
 
 			// Set up array for selector
-			$setting = array(
-				'open' => array ('label' => "{$how['accept']} %s", 'checked' => ''),
-				'closed' => array('label' => "Don't ".strtolower($how['accept'])." %s", 'checked' => ''),
+			$settings[$what] = array(
+				'open' => sprintf(__("{$how['accept']} %s"), __($onThesePosts)),
+				'closed' => sprintf(__("Don't ".strtolower($how['accept'])." %s"), __($onThesePosts)),
 			);
-			if ($page->for_feed_settings()) :
-				$href = $fwp_path.'/'.basename(__FILE__);
-				$currently = trim(str_replace('%s', '', strtolower(strtok($setting[$whatsits[$what]['default']]['label'], ';'))));
-				$setting['site-default'] = array('label' => "Use <a href=\"admin.php?page=${href}\">site-wide setting</a>", 'checked' => '');
-				$setting['site-default']['label'] .= " (currently: <strong>${currently}</strong>)";
-		
-				$checked = $page->link->syndicated_status($what, 'site-default', /*fallback=*/ false);
-			else :
-				$checked = $whatsits[$what]['default'];
-			endif;
-
-			// Re-order appropriately
-			$selector[$what] = array();
-			$order = array(
-				'site-default',
-				'open',
-				'closed',
+			$params[$what] = array(
+			'input-name' => "feed_${what}_status",
+			'setting-default' => NULL,
+			'global-setting-default' => FeedWordPress::syndicated_status($what, /*default=*/ 'closed'),
+			'labels' => array(
+				'open' => strtolower(__($how['accept'])),
+				'closed' => strtolower(__("Don't ".$how['accept'])),
+				),
 			);
-			foreach ($order as $line) :
-				if (isset($setting[$line])) :
-					$selector[$what][$line] = $setting[$line];
-				endif;
-			endforeach;
-			$selector[$what][$checked]['checked'] = ' checked="checked"';
 		endforeach;
 
 		// Hey ho, let's go...
 		?>
-		<table class="form-table" cellspacing="2" cellpadding="5">
+		<table class="edit-form narrow">
 		<?php foreach ($whatsits as $what => $how) : ?>
+		  
 		  <tr><th scope="row"><?php print $how['label']; ?>:</th>
-		  <td><ul class="options">
-		  <?php foreach ($selector[$what] as $code => $li) : ?>
-		    <li><label><input type="radio" name="feed_<?php print $what; ?>_status"
-		    value="<?php print $code; ?>"<?php print $li['checked']; ?> />
-		    <?php print trim(str_replace('%s', $onThesePosts, $li['label'])); ?></label></li>
-		  <?php endforeach; ?>
-		  </ul></td></tr>
+		  <td><?php
+		  	$this->setting_radio_control(
+		  		"$what status", "syndicated_${what}_status",
+		  		$settings[$what], $params[$what]
+		  	);
+		  ?></td></tr>
+		  
 		<?php endforeach; ?>
+		
 		  <tr><th scope="row"><?php _e('Comment feeds'); ?></th>
 		  <td><p>When WordPress feeds and templates link to comments
 		  feeds for <?php print $page->these_posts_phrase(); ?>, the
 		  URLs for the feeds should...</p>
-		  <ul class="options">
-		  <?php if ($page->for_feed_settings()) : ?>
-		  <li><label><input type="radio" name="munge_comments_feed_links" value="default"<?php print $selected['munge_comments_feed_links']['default']; ?> /> Use <a href="admin.php?page=<?php print $href; ?>">site-wide setting</a> (currently: <strong><?php _e($siteWide); ?></strong>)</label></li>
-		  <?php endif; ?>
-		  <li><label><input type="radio" name="munge_comments_feed_links" value="yes"<?php print $selected['munge_comments_feed_links']['yes']; ?> /> <?php _e('Point to comment feeds from the original website (when provided by the syndicated feed)'); ?></label></li>
-		  <li><label><input type="radio" name="munge_comments_feed_links" value="no"<?php print $selected['munge_comments_feed_links']['no']; ?> /> <?php _e('Point to local comment feeds on this website'); ?></label></li>
-		  </ul></td></tr>
+		  <?php
+		  	$this->setting_radio_control(
+		  		"munge comments feed links", "munge_comments_feed_links",
+		  		$mcflSettings, $mcflParams
+		  	);
+		  ?></td></tr>
 		</table>
 
 		<?php
@@ -421,7 +381,7 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 		endif;
 
 		if ($page->for_feed_settings()) :
-			$custom_settings = $page->link->settings["postmeta"];
+			$custom_settings = $page->link->setting("postmeta", NULL, array());
 		else :
 			$custom_settings = get_option('feedwordpress_custom_settings');
 		endif;
@@ -491,82 +451,64 @@ class FeedWordPressPostsPage extends FeedWordPressAdminPage {
 		</div> <!-- id="postcustomstuff" -->
 
 		<?php
-	 } /* FeedWordPressPostsPage::custom_post_settings_box() */
+	} /* FeedWordPressPostsPage::custom_post_settings_box() */
+
+	function custom_post_types_box ($page, $box = NULL) {
+		global $fwp_path;
+		
+		// local: syndicated post type // default NULL
+		// global: syndicated_post_type // default 'post'
+		// default-input-value => 'default'
+		
+		// Get all custom post types
+		$post_types = get_post_types(array(
+		'_builtin' => false,
+		), 'objects');
+
+		$ul = array();
+		$ul['post'] = __('Normal WordPress posts');
+		foreach ($post_types as $post_type) :
+			$ul[$post_type->name] = __($post_type->labels->name);
+		endforeach;
+		
+		$params = array(
+			'global-setting-default' => 'post',
+			'default-input-value' => 'default',
+		);
+		
+		// Hey, ho, let's go...
+		?>
+		<table class="edit-form narrow">
+		<tbody>
+		<tr><th><?php _e('Custom Post Types:'); ?></th>
+		<td><p>Incoming syndicated posts should be stored in the
+		posts database as...</p>
+		<?php
+			$this->setting_radio_control(
+				'syndicated post type', 'syndicated_post_type',
+				$ul, $params
+			);
+		?>
+		</td></tr>
+		</tbody>
+		</table>
+		<?php
+	} /* FeedWordPressPostsPage::custom_post_types_box() */
+	
+	function display () {
+		$this->boxes_by_methods = array(
+		'publication_box' => __('Syndicated Posts'),
+		'links_box' => __('Links'),
+		'formatting_box' => __('Formatting'),
+		'comments_and_pings_box' => __('Comments & Pings'),
+		'custom_post_settings_box' => __('Custom Post Settings (to apply to each syndicated post)'),
+		'custom_post_types_box' => ('Custom Post Types (advanced database settings)'),
+		);
+		
+		parent::display();
+	 } /* FeedWordPressPostsPage::display () */
 }
 
-function fwp_posts_page () {
-	global $wpdb, $wp_db_version;
-	global $fwp_post;
-
-	if (FeedWordPress::needs_upgrade()) :
-		fwp_upgrade_page();
-		return;
-	endif;
-
-	// If this is a POST, validate source and user credentials
-	FeedWordPressCompatibility::validate_http_request(/*action=*/ 'feedwordpress_posts_settings', /*capability=*/ 'manage_links');
-
-	$link = FeedWordPressAdminPage::submitted_link();
-
-	$postsPage = new FeedWordPressPostsPage($link);
-
-	$mesg = null;
-
-	////////////////////////////////////////////////
-	// Process POST request, if any ////////////////
-	////////////////////////////////////////////////
-	if (strtoupper($_SERVER['REQUEST_METHOD'])=='POST') :
-		$postsPage->accept_POST($fwp_post);
-		do_action('feedwordpress_admin_page_posts_save', $fwp_post, $postsPage);
-	endif;
-	
-	$postsPage->ajax_interface_js();
-
-	if ($postsPage->updated) : ?>
-<div class="updated"><p>Syndicated posts settings updated.</p></div>
-<?php elseif (!is_null($mesg)) : ?>
-<div class="updated"><p><?php print esc_html($mesg); ?></p></div>
-<?php endif; ?>
-
-<?php
-	$links = FeedWordPress::syndicated_links();
-	$postsPage->open_sheet('Syndicated Posts & Links');
-?>
-<style type="text/css">
-	table.edit-form th, table.form-table th { width: 27%; vertical-align: top; }
-	table.edit-form td, table.form-table td { width: 73%; vertical-align: top; }
-	ul.options { margin: 0; padding: 0; list-style: none; }
-</style>
-<div id="post-body">
-<?php
-$boxes_by_methods = array(
-	'publication_box' => __('Syndicated Posts'),
-	'links_box' => __('Links'),
-	'formatting_box' => __('Formatting'),
-	'comments_and_pings_box' => __('Comments & Pings'),
-	'custom_post_settings_box' => __('Custom Post Settings (to apply to each syndicated post)'),
-);
-
-	foreach ($boxes_by_methods as $method => $title) :
-		fwp_add_meta_box(
-			/*id=*/ 'feedwordpress_'.$method,
-			/*title=*/ $title,
-			/*callback=*/ array('FeedWordPressPostsPage', $method),
-			/*page=*/ $postsPage->meta_box_context(),
-			/*context=*/ $postsPage->meta_box_context()
-		);
-	endforeach;
-	do_action('feedwordpress_admin_page_posts_meta_boxes', $postsPage);
-?>
-	<div class="metabox-holder">
-<?php
-	fwp_do_meta_boxes($postsPage->meta_box_context(), $postsPage->meta_box_context(), $postsPage);
-?>
-	</div> <!-- class="metabox-holder" -->
-</div> <!-- id="post-body" -->
-<?php
-	$postsPage->close_sheet();
-} /* function fwp_posts_page () */
-
-	fwp_posts_page();
+	$postsPage = new FeedWordPressPostsPage;
+	$postsPage->display();
 

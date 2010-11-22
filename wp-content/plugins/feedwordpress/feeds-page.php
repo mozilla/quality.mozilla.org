@@ -59,7 +59,12 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 
 		FeedWordPressAdminPage::FeedWordPressAdminPage('feedwordpressfeeds', $link);
 
-		$this->dispatch = get_class($this);
+		$this->dispatch = 'feedwordpress_admin_page_feeds';
+		$this->pagenames = array(
+			'default' => 'Feeds',
+			'settings-update' => 'Syndicated feed',
+			'open-sheet' => 'Feed and Update',
+		);
 		$this->filename = __FILE__;
 		$this->updatedPosts = new UpdatedPostsControl($this);
 	} /* FeedWordPressFeedsPage constructor */
@@ -67,130 +72,94 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 	var $special_settings = array ( /* Regular expression syntax is OK here */
 		'cats',
 		'cat_split',
+		'freeze updates',
 		'hardcode name',
 		'hardcode url',
 		'hardcode description',
 		'hardcode categories', /* Deprecated */
-		'post status',
 		'comment status',
+		'terms',
+		'map authors',
+		'munge permalink',
 		'ping status',
+		'post status',
+		'postmeta',
+		'resolve relative',
+		'syndicated post type',
+		'tags',
 		'unfamiliar author',
 		'unfamliar categories', /* Deprecated */
 		'unfamiliar category',
-		'map authors',
-		'tags',
-		'postmeta',
-		'resolve relative',
-		'freeze updates',
-		'munge permalink',
+		'unfamiliar post_tag',
 		'update/.*',
 		'feed/.*',
 		'link/.*',
+		'match/.*',
 	);
 
 	function display () {
-		global $wpdb;
 		global $fwp_post;
 		global $post_source;
-	
-		if (FeedWordPress::needs_upgrade()) :
-			fwp_upgrade_page();
-			return;
-		endif;
 
+		$this->boxes_by_methods = array(
+			'feed_information_box' => __('Feed Information'),
+			'global_feeds_box' => __('Update Scheduling'),
+			'updated_posts_box' => __('Updated Posts'),
+			'custom_settings_box' => __('Custom Feed Settings (for use in templates)'),
+		);
+		if ($this->for_default_settings()) :
+			unset($this->boxes_by_methods['custom_settings_box']);
+		endif;	
+			
 		// Allow overriding of normal source for FeedFinder, which may
 		// be called from multiple points.
 		if (isset($post_source) and !is_null($post_source)) :
 			$source = $post_source;
 		else :
-			$source = get_class($this);
+			$source = $this->dispatch;
 		endif;
-
-		// If this is a POST, validate source and user credentials
-		FeedWordPressCompatibility::validate_http_request(/*action=*/ $source, /*capability=*/ 'manage_links');
 
 		if (isset($_REQUEST['feedfinder'])
 		or (isset($_REQUEST['action']) and $_REQUEST['action']=='feedfinder')
 		or (isset($_REQUEST['action']) and $_REQUEST['action']==FWP_SYNDICATE_NEW)) :
-			return $this->display_feedfinder(); // re-route to Feed Finder page
-		else :
-			if (strtoupper($_SERVER['REQUEST_METHOD'])=='POST') :
-				$this->accept_POST($fwp_post);
-				do_action('feedwordpress_admin_page_feeds_save', $GLOBALS['fwp_post'], $this);
-			endif;
-			
-			////////////////////////////////////////////////
-			// Prepare settings page ///////////////////////
-			////////////////////////////////////////////////
-			
-			$this->ajax_interface_js();
-			$this->display_update_notice_if_updated('Syndicated feed');
-			$this->open_sheet('Feed and Update');
-			?>
-			<div id="post-body">
-			<?php
-			////////////////////////////////////////////////
-			// Display settings boxes //////////////////////
-			////////////////////////////////////////////////
-		
-			$boxes_by_methods = array(
-				'feed_information_box' => __('Feed Information'),
-				'global_feeds_box' => __('Update Scheduling'),
-				'updated_posts_box' => __('Updated Posts'),
-				'posts_box' => __('Syndicated Posts, Links, Comments & Pings'),
-				'authors_box' => __('Syndicated Authors'),
-				'categories_box' => __('Categories'.FEEDWORDPRESS_AND_TAGS),
-				'custom_settings_box' => __('Custom Feed Settings (for use in templates)'),
-			);
-			if ($this->for_default_settings()) :
-				unset($boxes_by_methods['custom_settings_box']);
-			endif;
-		
-			foreach ($boxes_by_methods as $method => $row) :
-				if (is_array($row)) :
-					$id = $row['id'];
-					$title = $row['title'];
-				else :
-					$id = 'feedwordpress_'.$method;
-					$title = $row;
-				endif;
-		
-				fwp_add_meta_box(
-					/*id=*/ $id,
-					/*title=*/ $title,
-					/*callback=*/ array(get_class($this), $method),
-					/*page=*/ $this->meta_box_context(),
-					/*context=*/ $this->meta_box_context()
-				);
-			endforeach;
-			do_action('feedwordpress_admin_page_feeds_meta_boxes', $this);
-			?>
-			<div class="metabox-holder">
-			<?php
-				fwp_do_meta_boxes($this->meta_box_context(), $this->meta_box_context(), $this);
-			?>
-			</div> <!-- class="metabox-holder" -->
-			</div> <!-- id="post-body" -->
-			<?php $this->close_sheet(); ?>
+			// If this is a POST, validate source and user credentials
+			FeedWordPressCompatibility::validate_http_request(/*action=*/ $source, /*capability=*/ 'manage_links');
 
-			<script type="text/javascript">
-				var els = ['name', 'description', 'url'];
-				for (var i = 0; i < els.length; i++) {
-					contextual_appearance(
-						/*item=*/ 'basics-hardcode-'+els[i],
-						/*appear=*/ 'basics-'+els[i]+'-view',
-						/*disappear=*/ 'basics-'+els[i]+'-edit',
-						/*value=*/ 'no',
-						/*visibleStyle=*/ 'block',
-						/*checkbox=*/ true
-					);
-				} /* for */
-			</script>
-			<?php
+			return $this->display_feedfinder(); // re-route to Feed Finder page
 		endif;
+
+		parent::display();
 		return false; // Don't continue
 	} /* FeedWordPressFeedsPage::display() */
 
+	function ajax_interface_js () {
+		FeedWordPressAdminPage::ajax_interface_js();
+		?>
+
+		jQuery(document).ready( function () {
+			contextual_appearance('automatic-updates-selector', 'cron-job-explanation', null, 'no');
+			contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
+			contextual_appearance('use-default-update-window-no', 'update-scheduling-note', null, null, 'block', true);
+			jQuery('#use-default-update-window-yes, #use-default-update-window-no').click( function () {
+				contextual_appearance('use-default-update-window-no', 'update-scheduling-note', null, null, 'block', true);
+			} );
+
+			var els = ['name', 'description', 'url'];
+			for (var i = 0; i < els.length; i++) {
+				contextual_appearance(
+					/*item=*/ 'basics-hardcode-'+els[i],
+					/*appear=*/ 'basics-'+els[i]+'-view',
+					/*disappear=*/ 'basics-'+els[i]+'-edit',
+					/*value=*/ 'no',
+					/*visibleStyle=*/ 'block',
+					/*checkbox=*/ true
+				);
+			} /* for */
+		} );
+
+		<?php
+	}
+	
 	/*static*/ function updated_posts_box ($page, $box = NULL) {
 		?>
 		<table class="edit-form">
@@ -200,22 +169,14 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 	} /* FeedWordPressFeedsPage::updated_posts_box() */
 
 	/*static*/ function global_feeds_box ($page, $box = NULL) {
-		global $wpdb;
+		$automatic_updates = get_option('feedwordpress_automatic_updates');
+		$update_time_limit = (int) get_option('feedwordpress_update_time_limit');
 
-		$defaultUpdateWindow = get_option('feedwordpress_update_window');
-		if (!is_numeric($defaultUpdateWindow)) :
-			$defaultUpdateWindow = DEFAULT_UPDATE_PERIOD;
-		else :
-			$defaultUpdateWindow = (int) $defaultUpdateWindow;
-		endif;
+		// Hey, ho, let's go...
 		?>
-		
+
 		<table class="edit-form">
-		<?php
-		if ($page->for_default_settings()) :
-			$automatic_updates = get_option('feedwordpress_automatic_updates');
-			$update_time_limit = (int) get_option('feedwordpress_update_time_limit');
-		?>
+		<?php if ($page->for_default_settings()) : ?>
 
 		<tr>
 		<th scope="row">Updates:</th>
@@ -236,36 +197,7 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 		</td>
 		</tr>
 		
-		<tr>
-		<th scope="row"><?php print __('Update scheduling:') ?></th>
-		<td><p style="margin-top:0px">How long should FeedWordPress wait between updates before it considers a feed ready to be polled for updates again?</p>
-		<p style="font-style: italic; margin-left: 2.0em"><label>Wait <input type="text" name="update_window" value="<?php print $defaultUpdateWindow; ?>" size="4" /> minutes between polling.</label></p>
-		<div class="setting-description">
-		<p<?php if ($defaultUpdateWindow<50) : ?> style="color: white; background-color: #703030; padding: 1.0em;"<?php endif; ?>><strong>Recommendation.</strong> Unless you are positive that you have the webmaster's permission, you generally should not set FeedWordPress to poll feeds more frequently than once every 60 minutes. Many webmasters consider more frequent automated polling to be abusive, and may complain to your web host, or ban your IP address, as retaliation for hammering their servers too hard.</p>
-		<p><strong>Note.</strong> This is a default setting that FeedWordPress uses to schedule updates when the feed does not provide any scheduling requests. If a feed does provide update scheduling information (through elements such as <code>&lt;rss:ttl&gt;</code> or <code>&lt;sy:updateFrequency&gt;</code>), FeedWordPress will respect the feed's request.</p>
-		</div></td>
-		</tr>
-		
-		<tr>
-		<th scope="row"><?php print __('Time limit on updates'); ?>:</th>
-		<td><select id="time-limit" name="update_time_limit" size="1" onchange="contextual_appearance('time-limit', 'time-limit-box', null, 'yes');">
-		<option value="no"<?php echo ($update_time_limit>0)?'':' selected="selected"'; ?>>no time limit on updates</option>
-		<option value="yes"<?php echo ($update_time_limit>0)?' selected="selected"':''; ?>>limit updates to no more than...</option>
-		</select>
-		<span id="time-limit-box"><label><input type="text" name="time_limit_seconds" value="<?php print $update_time_limit; ?>" size="5" /> seconds</label></span>
-		</tr>
-
-		<?php else :
-			$useDefaultUpdateWindow = !(isset($page->link->settings['update/window']));
-
-			$updateWindow = (isset($page->link->settings['update/window']) ? $page->link->settings['update/window'] : null);
-			if (!is_numeric($updateWindow)) :
-				$updateWindow = 60;
-			else :
-				$updateWindow = (int) $updateWindow;
-			endif;
-
-		?>
+		<?php else : /* Feed-specific settings */ ?>
 
 		<tr>
 		<th scope="row"><?php _e('Last update') ?>:</th>
@@ -303,31 +235,69 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 		<option value="next"<?php echo ($holdem=='next')?' selected="selected"':''; ?>>update ASAP</option>
 		<option value="ping"<?php echo ($holdem=='ping')?' selected="selected"':''; ?>>update only when pinged</option>
 		</select></td></tr>
-
+		
+		<?php endif; ?>
+		
 		<tr>
 		<th scope="row"><?php print __('Update scheduling:') ?></th>
 		<td><p style="margin-top:0px">How long should FeedWordPress wait between updates before it considers this feed ready to be polled for updates again?</p>
-		<ul>
-		<li><label><input type="radio" name="use_default_update_window" value="Yes" <?php if ($useDefaultUpdateWindow) : ?>checked="checked"<?php endif; ?> /> Use site-wide setting (currently <?php print $defaultUpdateWindow; ?> minutes)</li>
-		<li><label><input type="radio" name="use_default_update_window" value="No" <?php if (!$useDefaultUpdateWindow) : ?>checked="checked"<?php endif; ?> /> Wait <input type="text" name="update_window" value="<?php print $updateWindow; ?>" size="4" /> minutes between polling.</label></li>
-		</ul>
-		
-		<div class="setting-description">
-		<p<?php if ($updateWindow<50) : ?> style="color: white; background-color: #703030; padding: 1.0em;"<?php endif; ?>><strong>Recommendation.</strong> Unless you are positive that you have the webmaster's permission, you generally should not set FeedWordPress to poll feeds more frequently than once every 60 minutes. Many webmasters consider more frequent automated polling to be abusive, and may complain to your web host, or ban your IP address, as retaliation for hammering their servers too hard.</p>
-		<p><strong>Note.</strong> This is a default setting that FeedWordPress uses to schedule updates when the feed does not provide any scheduling requests. If this feed does provide update scheduling information (through elements such as <code>&lt;rss:ttl&gt;</code> or <code>&lt;sy:updateFrequency&gt;</code>), FeedWordPress will respect the feed's request.</p>
-		</div></td>
+		<?php
+			
+			$this->setting_radio_control(
+				'update/window', 'update_window',
+				array(&$this, 'update_window_edit_box'),
+				array(
+					'global-setting-default' => DEFAULT_UPDATE_PERIOD,
+					'default-input-name' => 'use_default_update_window',
+					'default-input-id' => 'use-default-update-window-yes',
+					'default-input-id-no' => 'use-default-update-window-no',
+					'labels' => array(&$this, 'update_window_currently'),
+				)
+			);
+			?></td>
 		</tr>
+
+		<?php if ($this->for_default_settings()) : ?>
+		
+		<tr>
+		<th scope="row"><?php print __('Time limit on updates'); ?>:</th>
+		<td><select id="time-limit" name="update_time_limit" size="1" onchange="contextual_appearance('time-limit', 'time-limit-box', null, 'yes');">
+		<option value="no"<?php echo ($update_time_limit>0)?'':' selected="selected"'; ?>>no time limit on updates</option>
+		<option value="yes"<?php echo ($update_time_limit>0)?' selected="selected"':''; ?>>limit updates to no more than...</option>
+		</select>
+		<span id="time-limit-box"><label><input type="text" name="time_limit_seconds" value="<?php print $update_time_limit; ?>" size="5" /> seconds</label></span>
+		</tr>
+
 		<?php endif; ?>
-
-
-</table>
-<script type="text/javascript">
-contextual_appearance('automatic-updates-selector', 'cron-job-explanation', null, 'no');
-contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
-</script>
-<?php
+		
+		</table>
+		
+		<?php
 	} /* FeedWordPressFeedsPage::global_feeds_box() */
 
+	function update_window_edit_box ($updateWindow, $defaulted, $params) {
+			if (!is_numeric($updateWindow)) :
+				$updateWindow = DEFAULT_UPDATE_PERIOD;
+			endif;
+		?>
+		<p>Wait <input type="text" name="update_window" value="<?php print $updateWindow; ?>" size="4" /> minutes between polling.</p>
+		<div class="setting-description" id="update-scheduling-note">
+		<p<?php if ($updateWindow<50) : ?> style="color: white; background-color: #703030; padding: 1.0em;"<?php endif; ?>><strong>Recommendation.</strong> Unless you are positive that you have the webmaster's permission, you generally should not set FeedWordPress to poll feeds more frequently than once every 60 minutes. Many webmasters consider more frequent automated polling to be abusive, and may complain to your web host, or ban your IP address, as retaliation for hammering their servers too hard.</p>
+		<p><strong>Note.</strong> This is a default setting that FeedWordPress uses to schedule updates when the feed does not provide any scheduling requests. If this feed does provide update scheduling information (through elements such as <code>&lt;rss:ttl&gt;</code> or <code>&lt;sy:updateFrequency&gt;</code>), FeedWordPress will respect the feed's request.</p>
+		</div>
+		<?php
+	} /* FeedWordPressFeedsPage::update_window_edit_box () */
+	
+	function update_window_currently ($updateWindow, $defaulted, $params) {
+		$updateWindow = (int) $updateWindow;
+		if (1==$updateWindow) :
+			$caption = 'wait %d minute between polling';
+		else :
+			$caption = 'wait %d minutes between polling';
+		endif;
+		return sprintf(__($caption), $updateWindow);
+	} /* FeedWordPressFeedsPage::update_window_currently () */
+	
 	function feed_information_box ($page, $box = NULL) {
 		global $wpdb;
 		if ($page->for_feed_settings()) :
@@ -374,13 +344,6 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 
 		// Hey ho, let's go
 		?>
-		<style type="text/css">
-		table.edit-form { width: 100%; }
-		table.edit-form th { width: 25%; vertical-align: top; text-align: right; padding: 0.5em; }
-		table.edit-form td { width: 75%; vertical-align: top; padding: 0.5em; }
-		table.edit-form td ul.options { margin: 0; padding: 0; list-style: none; }
-		</style>
-	
 		<table class="edit-form">
 
 		<?php if ($page->for_feed_settings()) : ?>
@@ -471,21 +434,6 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 		</table>
 		<?php
 	} /* FeedWordPressFeedsPage::feed_information_box() */
-
-	function posts_box ($page, $box = NULL) {
-		$id = (isset($page->link) ? $page->link->id : NULL); 
-		FeedWordPressSettingsUI::instead_of_posts_box($id);
-	} /* FeedWordPressFeedsPage::posts_box() */
-
-	function authors_box ($page, $box = NULL) {
-		$id = (isset($page->link) ? $page->link->id : NULL); 
-		FeedWordPressSettingsUI::instead_of_authors_box($id);
-	} /* FeedWordPressFeedsPage::authors_box() */
-	
-	function categories_box ($page, $box = NULL) {
-		$id = (isset($page->link) ? $page->link->id : NULL); 
-		FeedWordPressSettingsUI::instead_of_categories_box($id);
-	} /* FeedWordPressFeedsPage::categories_box() */
 
 	function custom_settings_box ($page, $box = NULL) {
 		?>
@@ -604,8 +552,8 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 				$rss = (is_wp_error($pie) ? $pie : new MagpieFromSimplePie($pie));
 
 				if ($rss and !is_wp_error($rss)):
-					$feed_title = isset($rss->channel['title'])?$rss->channel['title']:$rss->channel['link'];
-					$feed_link = isset($rss->channel['link'])?$rss->channel['link']:'';
+					$feed_link = (isset($rss->channel['link'])?$rss->channel['link']:'');
+					$feed_title = (isset($rss->channel['title'])?$rss->channel['title']:$feed_link);
 					$feed_type = ($rss->feed_type ? $rss->feed_type : 'Unknown');
 					$feed_version_template = '%.1f';
 					$feed_version = $rss->feed_version;
@@ -748,14 +696,14 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 	</div> <!-- class="wrap" -->
 		<?php
 		return false; // Don't continue
-	} /* WordPressFeedsPage::display_feedfinder() */
+	} /* FeedWordPressFeedsPage::display_feedfinder() */
 
 	function display_alt_feed_box ($lookup, $alt = false) {
 		global $fwp_post;
 		?>
 		<form action="admin.php?page=<?php print $GLOBALS['fwp_path'] ?>/<?php echo basename(__FILE__); ?>" method="post">
 		<div class="inside"><?php
-			FeedWordPressCompatibility::stamp_nonce(get_class($this));
+			FeedWordPressCompatibility::stamp_nonce($this->dispatch);
 		?>
 		<fieldset class="alt"
 		<?php if (!$alt): ?>style="margin: 1.0em 3.0em; font-size: smaller;"<?php endif; ?>>
@@ -783,116 +731,83 @@ contextual_appearance('time-limit', 'time-limit-box', null, 'yes');
 		</fieldset></form>
 		
 		<?php
-	} /* WordPressFeedsPage::display_alt_feed_box() */
+	} /* FeedWordPressFeedsPage::display_alt_feed_box() */
 	
-	function accept_POST ($post) {
-		global $wpdb;
+	function save_settings ($post) {
+		if ($this->for_feed_settings()) :
+			// custom feed settings first
+			foreach ($post['notes'] as $mn) :
+				$mn['key0'] = (isset($mn['key0']) ? trim($mn['key0']) : NULL);
+				$mn['key1'] = trim($mn['key1']);
+				if (preg_match("\007^(("
+						.implode(')|(',$this->special_settings)
+						."))$\007i",
+						$mn['key1'])) :
+					$mn['key1'] = 'user/'.$mn['key1'];
+				endif;
+
+				if (strlen($mn['key0']) > 0) :
+					unset($this->link->settings[$mn['key0']]); // out with the old
+				endif;
+				
+				if (($mn['action']=='update') and (strlen($mn['key1']) > 0)) :
+					$this->link->settings[$mn['key1']] = $mn['value']; // in with the new
+				endif;
+			endforeach;
 			
-		// User mashed a Save Changes button
-		if (isset($post['save']) or isset($post['submit'])) :
+			// now stuff through the web form
+			// hardcoded feed info
 			
-			if ($this->for_feed_settings()) :
-				$alter = array ();
-					
-				// custom feed settings first
-				foreach ($post['notes'] as $mn) :
-					$mn['key0'] = trim($mn['key0']);
-					$mn['key1'] = trim($mn['key1']);
-					if (preg_match("\007^(("
-							.implode(')|(',$this->special_settings)
-							."))$\007i",
-							$mn['key1'])) :
-						$mn['key1'] = 'user/'.$mn['key1'];
-					endif;
-
-					if (strlen($mn['key0']) > 0) :
-						unset($this->link->settings[$mn['key0']]); // out with the old
-					endif;
-					
-					if (($mn['action']=='update') and (strlen($mn['key1']) > 0)) :
-						$this->link->settings[$mn['key1']] = $mn['value']; // in with the new
-					endif;
-				endforeach;
-				
-				// now stuff through the web form
-				// hardcoded feed info
-				
-				foreach (array('name', 'description', 'url') as $what) :
-					// We have a checkbox for "No," so if it's unchecked, mark as "Yes."
-					$this->link->settings["hardcode {$what}"] = (isset($post["hardcode_{$what}"]) ? $post["hardcode_{$what}"] : 'yes');
-					if (FeedWordPress::affirmative($this->link->settings, "hardcode {$what}")) :
-						$this->link->link->{'link_'.$what} = $post['link'.$what];
-					endif;
-				endforeach;
-				
-				// Update scheduling
-				if (isset($post['update_schedule'])) :
-					$this->link->settings['update/hold'] = $post['update_schedule'];
+			foreach (array('name', 'description', 'url') as $what) :
+				// We have a checkbox for "No," so if it's unchecked, mark as "Yes."
+				$this->link->settings["hardcode {$what}"] = (isset($post["hardcode_{$what}"]) ? $post["hardcode_{$what}"] : 'yes');
+				if (FeedWordPress::affirmative($this->link->settings, "hardcode {$what}")) :
+					$this->link->link->{'link_'.$what} = $post['link'.$what];
 				endif;
-
-				if (isset($post['use_default_update_window']) and strtolower($post['use_default_update_window'])=='yes') :
-					unset($this->link->settings['update/window']);
-				elseif (isset($post['update_window'])):
-					if ((int) $post['update_window'] > 0) :
-						$this->link->settings['update/window'] = (int) $post['update_window'];
-					endif;
-				endif;
-				
-			else :
-				// Global
-				update_option('feedwordpress_cat_id', $post['syndication_category']);
-				
-				if (!isset($post['automatic_updates']) or !in_array($post['automatic_updates'], array('init', 'shutdown'))) :
-					$automatic_updates = false;
-				else :
-					$automatic_updates = $post['automatic_updates'];
-				endif;
-				update_option('feedwordpress_automatic_updates', $automatic_updates);
-
-				if (isset($post['update_window'])):
-					if ((int) $post['update_window'] > 0) :
-						update_option('feedwordpress_update_window', (int) $post['update_window']);
-					endif;
-				endif;
-
-				update_option('feedwordpress_update_time_limit', ($post['update_time_limit']=='yes')?(int) $post['time_limit_seconds']:0);
-
-				foreach (array('name', 'description', 'url') as $what) :
-					// We have a checkbox for "No," so if it's unchecked, mark as "Yes."
-					$hardcode = (isset($post["hardcode_{$what}"]) ? $post["hardcode_{$what}"] : 'yes');
-					update_option("feedwordpress_hardcode_{$what}", $hardcode);
-				endforeach;
-				
-				$this->updated = true;
-			endif;
-			$this->updatedPosts->accept_POST($post);
-
-			if ($this->for_feed_settings()) :
-				// Save changes to channel-level meta-data
-				//$alter_set = implode(", ", $alter);
-
-				// issue update query
-				//$result = $wpdb->query("
-				//UPDATE $wpdb->links
-				//SET $alter_set
-				//WHERE link_id='{$this->link->id}'
-				//");
-				
-				// Save settings
-				$this->link->save_settings(/*reload=*/ true);
-
-				$this->updated = true;
-
-				// Reset, reload
-				$link_id = $this->link->id; unset($this->link);
-				$this->link = new SyndicatedLink($link_id);
+			endforeach;
+			
+			// Update scheduling
+			if (isset($post['update_schedule'])) :
+				$this->link->settings['update/hold'] = $post['update_schedule'];
 			endif;
 
-		// Probably a "Go" button for the drop-down
+			if (isset($post['use_default_update_window']) and strtolower($post['use_default_update_window'])=='yes') :
+				unset($this->link->settings['update/window']);
+			elseif (isset($post['update_window'])):
+				if ((int) $post['update_window'] > 0) :
+					$this->link->settings['update/window'] = (int) $post['update_window'];
+				endif;
+			endif;
+			
 		else :
-			$this->updated = false;
+			// Global
+			update_option('feedwordpress_cat_id', $post['syndication_category']);
+			
+			if (!isset($post['automatic_updates']) or !in_array($post['automatic_updates'], array('init', 'shutdown'))) :
+				$automatic_updates = false;
+			else :
+				$automatic_updates = $post['automatic_updates'];
+			endif;
+			update_option('feedwordpress_automatic_updates', $automatic_updates);
+
+			if (isset($post['update_window'])):
+				if ((int) $post['update_window'] > 0) :
+					update_option('feedwordpress_update_window', (int) $post['update_window']);
+				endif;
+			endif;
+
+			update_option('feedwordpress_update_time_limit', ($post['update_time_limit']=='yes')?(int) $post['time_limit_seconds']:0);
+
+			foreach (array('name', 'description', 'url') as $what) :
+				// We have a checkbox for "No," so if it's unchecked, mark as "Yes."
+				$hardcode = (isset($post["hardcode_{$what}"]) ? $post["hardcode_{$what}"] : 'yes');
+				update_option("feedwordpress_hardcode_{$what}", $hardcode);
+			endforeach;
 		endif;
-	} /* WordPressFeedsPage::accept_POST() */
+		
+		$this->updatedPosts->accept_POST($post);
+		parent::save_settings($post);
+	} /* FeedWordPressFeedsPage::save_settings() */
 
 } /* class FeedWordPressFeedsPage */
 

@@ -1,8 +1,8 @@
 <?php
-	global $spEvents;
-	$spEvents->loadDomainStylesScripts();
-	get_header();
-?>	
+global $spEvents;
+$spEvents->loadDomainStylesScripts();
+get_header();
+?>
 	<div id="tec-content" class="tec-event widecolumn">
 	<?php the_post(); global $post; ?>
 			<div id="post-<?php the_ID() ?>" <?php post_class() ?>>

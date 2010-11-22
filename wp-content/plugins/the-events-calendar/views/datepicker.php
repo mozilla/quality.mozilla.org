@@ -8,7 +8,7 @@ if( '' == get_option('permalink_structure') || 'off' == eventsGetOptionValue('us
 	$link .= '&eventDisplay=month&eventDate=';
 }
 ?>
-<script type="text/javascript" charset="utf-8">
+<script type="text/javascript">
 	jQuery(document).ready(function() {
 		jQuery('.<?php echo $prefix; ?>events-dropdown').change(function() {
 			location.href = '<?php echo $link; ?>' + jQuery('#<?php echo $prefix; ?>events-year').val() + '-' + jQuery('#<?php echo $prefix; ?>events-month').val();

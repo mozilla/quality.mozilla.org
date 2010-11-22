@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/cms-tree-page-view\n"
-"POT-Creation-Date: 2010-06-30 19:00+0000\n"
+"POT-Creation-Date: 2010-08-28 21:55+0000\n"
 "PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,148 +16,210 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: functions.php:45
+#: functions.php:53
 msgid "Enter title of new page"
 msgstr ""
 
-#: functions.php:46
+#: functions.php:54
 msgid "child pages"
 msgstr ""
 
-#: functions.php:47
+#: functions.php:55 functions.php:376
 msgid "Edit page"
 msgstr ""
 
-#: functions.php:48
+#: functions.php:56 functions.php:377
 msgid "View page"
 msgstr ""
 
-#: functions.php:49
+#: functions.php:57 functions.php:376
 msgid "Edit"
 msgstr ""
 
-#: functions.php:50
+#: functions.php:58 functions.php:377
 msgid "View"
 msgstr ""
 
-#: functions.php:51
+#: functions.php:59
 msgid "Add page"
 msgstr ""
 
-#: functions.php:52
+#: functions.php:60 functions.php:381
 msgid "Add new page after"
 msgstr ""
 
-#: functions.php:53
+#: functions.php:61
 msgid "after"
 msgstr ""
 
-#: functions.php:54
+#: functions.php:62
 msgid "inside"
 msgstr ""
 
-#: functions.php:55
+#: functions.php:63
+msgid "Sorry, can't create a sub page to a page with status \"draft\"."
+msgstr ""
+
+#: functions.php:64 functions.php:385
 msgid "Add new page inside"
 msgstr ""
 
-#: functions.php:56
+#: functions.php:65
 msgid "draft"
 msgstr ""
 
-#: functions.php:57
+#: functions.php:66
 msgid "future"
 msgstr ""
 
-#: functions.php:58
+#: functions.php:67
 msgid "protected"
 msgstr ""
 
-#: functions.php:59
+#: functions.php:68 functions.php:586
 msgid "pending"
 msgstr ""
 
-#: functions.php:60
+#: functions.php:69
 msgid "private"
 msgstr ""
 
-#: functions.php:61
+#: functions.php:70
 msgid "Password protected page"
 msgstr ""
 
-#: functions.php:113
+#: functions.php:71
+msgid "Adding page..."
+msgstr ""
+
+#: functions.php:172
 msgid "settings"
 msgstr ""
 
-#: functions.php:120
-msgid "Show tree"
+#: functions.php:177
+msgid "Select where to show a tree for pages and custom post types"
 msgstr ""
 
-#: functions.php:124
-msgid "on the dashboard"
+#: functions.php:201
+msgid "On dashboard"
 msgstr ""
 
-#: functions.php:128
-msgid "under the pages menu"
+#: functions.php:205
+msgid "In menu"
 msgstr ""
 
-#: functions.php:135
+#: functions.php:216
 msgid "Save Changes"
 msgstr ""
 
-#: functions.php:150
-msgid ""
-"No pages found. Maybe you want to <a href='post-new.php?post_type=page'>add "
-"a new page</a>?"
+#: functions.php:333
+msgid "No posts found."
 msgstr ""
 
-#: functions.php:157
+#: functions.php:339
 msgid "All"
 msgstr ""
 
-#: functions.php:158
+#: functions.php:340
 msgid "Public"
 msgstr ""
 
-#: functions.php:160
+#: functions.php:345
 msgid "Expand"
 msgstr ""
 
-#: functions.php:161
+#: functions.php:346
 msgid "Collapse"
 msgstr ""
 
-#: functions.php:166
+#: functions.php:354
 msgid "Clear search"
 msgstr ""
 
-#: functions.php:167
+#: functions.php:355
 msgid "Search"
 msgstr ""
 
-#: functions.php:168
+#: functions.php:356
 msgid "Searching..."
 msgstr ""
 
-#: functions.php:173
+#: functions.php:357
+msgid "Nothing found."
+msgstr ""
+
+#: functions.php:363
 msgid "Loading..."
 msgstr ""
 
-#: functions.php:175
+#: functions.php:366
 msgid "Search: no pages found"
 msgstr ""
 
-#: functions.php:177
+#: functions.php:369
 msgid "Loading tree"
 msgstr ""
 
-#: functions.php:277
+#: functions.php:381
+msgid "After"
+msgstr ""
+
+#: functions.php:385
+msgid "Inside"
+msgstr ""
+
+#: functions.php:389
+msgid "Can not create page inside of a page with draft status"
+msgstr ""
+
+#: functions.php:392
+msgid "Last modified"
+msgstr ""
+
+#: functions.php:394
+msgid "by"
+msgstr ""
+
+#: functions.php:397
+msgid "Page ID"
+msgstr ""
+
+#: functions.php:551
+msgid "Unknown user"
+msgstr ""
+
+#: functions.php:556
 msgid "<Untitled page>"
 msgstr ""
 
-#: functions.php:295
+#: functions.php:576
+msgid "Comments"
+msgstr ""
+
+#: functions.php:583
+#, php-format
+msgid "%s pending"
+msgstr ""
+
+#: functions.php:593
+msgctxt "comment count"
+msgid "0"
+msgstr ""
+
+#: functions.php:593
+msgctxt "comment count"
+msgid "1"
+msgstr ""
+
+#: functions.php:593
+msgctxt "comment count"
+msgid "%"
+msgstr ""
+
+#: functions.php:624
 msgid "Click to edit. Drag to move."
 msgstr ""
 
-#: functions.php:432
+#: functions.php:775
 msgid "New page"
 msgstr ""

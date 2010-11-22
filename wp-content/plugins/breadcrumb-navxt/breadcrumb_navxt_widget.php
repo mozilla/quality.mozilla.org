@@ -28,6 +28,11 @@ class bcn_widget extends WP_Widget
 	function widget($args, $instance)
 	{
 		extract($args);
+		//If we are on the front page and don't display on the front, return early
+		if($instance['front'] && is_front_page())
+		{
+			return;
+		}
 		//Manditory before widget junk
 		echo $before_widget;
 		if(!empty($instance['title']))
@@ -57,6 +62,7 @@ class bcn_widget extends WP_Widget
 		$old_instance['list'] = isset($new_instance['list']);
 		$old_instance['linked'] = isset($new_instance['linked']);
 		$old_instance['reverse'] = isset($new_instance['reverse']);
+		$old_instance['front'] = isset($new_instance['front']);
 		return $old_instance;
 	}
 	function form($instance)
@@ -73,6 +79,8 @@ class bcn_widget extends WP_Widget
 			<label for="<?php echo $this->get_field_id('linked'); ?>"> <?php _e('Link the breadcrumbs'); ?></label><br />
 			<input class="checkbox" type="checkbox" name="<?php echo $this->get_field_name('reverse'); ?>" id="<?php echo $this->get_field_id('reverse'); ?>" value="true" <?php checked(true, $instance['reverse']);?> />
 			<label for="<?php echo $this->get_field_id('reverse'); ?>"> <?php _e('Reverse the order of the trail'); ?></label><br />
+			<input class="checkbox" type="checkbox" name="<?php echo $this->get_field_name('front'); ?>" id="<?php echo $this->get_field_id('front'); ?>" value="true" <?php checked(true, $instance['front']);?> />
+			<label for="<?php echo $this->get_field_id('front'); ?>"> <?php _e('Hide the trail on the front page'); ?></label><br />
 		</p>
 		<?php
 	}

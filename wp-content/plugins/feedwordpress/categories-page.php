@@ -2,55 +2,351 @@
 require_once(dirname(__FILE__) . '/admin-ui.php');
 
 class FeedWordPressCategoriesPage extends FeedWordPressAdminPage {
-	function FeedWordPressCategoriesPage ($link) {
+	function FeedWordPressCategoriesPage ($link = -1) {
+		if (is_numeric($link) and -1 == $link) :
+			$link = $this->submitted_link();
+		endif;
+		
 		FeedWordPressAdminPage::FeedWordPressAdminPage('feedwordpresscategories', $link);
-		$this->dispatch = 'feedwordpress_categories_settings';
+		$this->dispatch = 'feedwordpress_admin_page_categories';
+		$this->pagenames = array(
+			'default' => 'Categories'.FEEDWORDPRESS_AND_TAGS,
+			'settings-update' => 'Syndicated Categories'.FEEDWORDPRESS_AND_TAGS,
+			'open-sheet' => 'Categories'.FEEDWORDPRESS_AND_TAGS,
+		);
 		$this->filename = __FILE__;
 	}
 	
-	/*static*/ function feed_categories_box ($page, $box = NULL) {
-
-		$link = $page->link;
-
-		$unfamiliar = array ('create'=>'','tag' => '', 'default'=>'','filter'=>'');
-		if ($page->for_feed_settings()) :
-			$unfamiliar['site-default'] = '';
-			$ucKey = $link->settings["unfamiliar category"];
-			$ucDefault = 'site-default';
-		else :
-			$ucKey = FeedWordPress::on_unfamiliar('category');
-			$ucDefault = 'create';
+	function unfamiliar_category_label ($name) {
+		if (preg_match('/^create:(.*)$/', $name, $refs)) :
+			$tax = get_taxonomy($refs[1]);
+			$name = sprintf(__('Create new %s to match them'), $tax->labels->name);
 		endif;
+		return $name;
+	}
 	
-		if (!is_string($ucKey) or !array_key_exists($ucKey, $unfamiliar)) :
-			$ucKey = $ucDefault;
-		endif;
-		$unfamiliar[$ucKey] = ' checked="checked"';
+	
+	function feed_categories_box ($page, $box = NULL) {
+		$link = $page->link;
 		
+		$globalPostType = get_option('feedwordpress_syndicated_post_type', 'post');
+		if ($this->for_feed_settings()) :
+			$post_type = $link->setting('syndicated post type', 'syndicated_post_type', 'post');
+		else :
+			$post_type = $globalPostType;
+		endif;
+		$taxonomies = get_object_taxonomies(array('object_type' => $post_type), 'names');
+
+		$unmatched = array('category' => array(), 'post_tag' => array());
+		$matchUl = array('cats' => array(), 'tags' => array(), 'filter' => array());
+		$tagLikeTaxonomies = array();
+		foreach ($taxonomies as $tax) :
+			$taxonomy = get_taxonomy($tax);
+			
+			if (!$taxonomy->hierarchical) :
+				$tagLikeTaxonomies[] = $tax;
+			endif;
+
+			$name = 'create:'.$tax;
+			foreach (array('category', 'post_tag') as $what) :
+				$unmatched[$what][$name] = array(
+					'label' => $this->unfamiliar_category_label($name),
+				);
+				$unmatchedRadio[$what][$name] = '';
+			endforeach;
+
+			foreach (array('cats', 'tags', 'filter') as $what) :
+				$matchUl[$what][$tax] = array(
+				'checked' => '',
+				'labels' => $taxonomy->labels,
+				);
+			endforeach;
+		endforeach;
+		
+		foreach ($unmatched as $what => $um) :
+			$unmatched[$what]['null'] = array('label' => __('Don\'t create any matching terms'));
+			$unmatchedRadio[$what]['null'] = '';
+		endforeach;
+		
+		$globalUnmatched = array(
+			'category' => FeedWordPress::on_unfamiliar('category'),
+			'post_tag' => FeedWordPress::on_unfamiliar('post_tag'),
+		);
+		foreach ($globalUnmatched as $what => $value) :
+			if ($value=='create') : $value = 'create:category'; endif;
+			if ($value=='tag') : $value = 'create:post_tag'; endif;
+			$globalUnmatched[$what] = $value;
+		endforeach;
+		
+		$globalMatch['cats'] = get_option('feedwordpress_match_cats', $taxonomies);
+		$globalMatch['tags'] = get_option('feedwordpress_match_tags', $tagLikeTaxonomies);
+		$globalMatch['filter'] = get_option('feedwordpress_match_filter', array());
+		
+		$globalMatchLabels = array();
+		$nothingDoing = array('cats' => "won't try to match", 'tags' => "won't try to match", "filter" => "won't filter");
+		
+		foreach ($globalMatch as $what => $domain) :
+			$labels = array(); $domain = array_filter($domain, 'remove_dummy_zero');
+			foreach ($domain as $tax) :
+				$tax = get_taxonomy($tax);
+				$labels[] = $tax->labels->name;
+			endforeach;
+			
+			if (count($labels) > 0) :
+				$globalMatchLabels[$what] = implode(", ", $labels);
+			else :
+				$globalMatchLabels[$what] = $nothingDoing[$what];
+			endif;
+		endforeach;
+
+		if ($this->for_feed_settings()) :
+			$href = "admin.php?page={$GLOBALS['fwp_path']}/".basename(__FILE__);
+
+			foreach ($unmatched as $what => $um) :
+				// Is the global default setting appropriate to this post type?
+				$GUC = $globalUnmatched[$what];
+				if (isset($um[$GUC])) :
+					// Yup. Let's add a site-default option
+					$currently = $um[$GUC]['label'];
+					$defaultLi = array(
+					'site-default' => array(
+						'label' => sprintf(
+							__('Use the <a href="%s">site-wide setting</a> <span class="current-setting">Currently: <strong>%s</strong></span>'),
+							$href,
+							$currently
+						),
+					), );
+					$unmatchedColumns[$what] = array(
+						$defaultLi,
+					);
+					$unmatchedDefault[$what] = 'site-default';
+					$unmatchedRadio[$what]['site-default'] = '';
+				else :
+					$opts = array_keys($unmatched[$what]);
+					$unmatchedDefault[$what] = $opts[0];
+					$unmatchedColumns[$what] = array();
+				endif;
+				
+				$ucKey[$what] = $link->setting("unfamiliar $what", NULL, NULL);
+			endforeach;
+			
+			$match['cats'] = $this->link->setting('match/cats', NULL, NULL);
+			$match['tags'] = $this->link->setting('match/tags', NULL, NULL);
+			$match['filter'] = $this->link->setting('match/filter', NULL, NULL);
+		else :
+			foreach ($unmatched as $what => $um) :
+				$ucKey[$what] = FeedWordPress::on_unfamiliar($what); 
+			endforeach;
+
+			$match = $globalMatch;
+		endif;
+		
+		foreach ($ucKey as $what => $uck) :
+			if ($uck == 'tag') : $uck = 'create:post_tag'; endif;
+			if ($uck == 'create') : $uck = 'create:category'; endif;
+			
+			if (!is_string($uck)) :
+				$uck = $unmatchedDefault[$what];
+			endif;
+			$ucKey[$what] = $uck;
+			
+			if (!array_key_exists($uck, $unmatchedRadio[$what])) :
+				$obsoleteLi = array(
+					$uck => array(
+					'label' => ' <span style="font-style: italic; color: #777;">'.$this->unfamiliar_category_label($uck).'</span> <span style="background-color: #ffff90; color: black;">(This setting is no longer applicable to the type of post syndicated from this feed!)</span><p>Please change this one of the following settings:</p>',
+					),
+				);
+				$unmatched[$what] = array_merge($obsoleteLi, $unmatched[$what]);
+				$unmatchedRadio[$what][$uck] = ' disabled="disabled"';
+			endif;
+			
+			$unmatchedRadio[$what][$uck] .= ' checked="checked"';
+			
+			$unmatchedColumns[$what][] = $unmatched[$what];
+		endforeach;
+		
+		$defaulted = array();
+		foreach ($match as $what => $set) :
+			$defaulted[$what] = false;
+			if (is_null($set) or (count($set) < 1)) :
+				$defaulted[$what] = true;
+				if ($this->for_feed_settings()) :
+					$set = $globalMatch[$what];
+					$match[$what] = $globalMatch[$what];
+				endif;
+			endif;
+			
+			if (!$defaulted[$what] or $this->for_feed_settings()) :
+				foreach ($set as $against) :
+					if (array_key_exists($against, $matchUl[$what])) :
+						$matchUl[$what][$against]['checked'] = ' checked="checked"';
+					endif;
+				endforeach;
+			endif;
+		endforeach;
+
 		// Hey ho, let's go...
+		$offerSiteWideSettings = ($page->for_feed_settings() and ($post_type==$globalPostType));
 		?>
-<table class="edit-form">
+<table class="edit-form narrow">
 <tr>
-<th scope="row">Unfamiliar categories:</th>
-<td><p>When one of the categories on a syndicated post is a category that FeedWordPress has not encountered before ...</p>
-
-<ul class="options">
-<?php if ($page->for_feed_settings()) : ?>
-<li><label><input type="radio" name="unfamiliar_category" value="site-default"<?php echo $unfamiliar['site-default']; ?> /> use the <a href="admin.php?page=<?php print $GLOBALS['fwp_path'] ?>/<?php print basename(__FILE__); ?>">site-wide setting</a>
-(currently <strong><?php echo FeedWordPress::on_unfamiliar('category'); ?></strong>)</label></li>
+<th scope="row">Match feed categories:</th>
+<td><input type="hidden" name="match_categories[cats][]" value="0" />
+<?php if ($offerSiteWideSettings) : ?>
+	<table class="twofer">
+	<tbody>
+	<tr><td class="equals first <?php if ($defaulted['cats']) : ?>active<?php else: ?>inactive<?php endif; ?>"><p><label><input type="radio" name="match_default[cats]"
+value="yes" <?php if ($defaulted['cats']) : ?> checked="checked"<?php endif; ?> />
+Use the <a href="<?php print $href; ?>">site-wide setting</a>
+<span class="current-setting">Currently: <strong><?php print $globalMatchLabels['cats']; ?></strong></span></label></p></td>
+	<td class="equals second <?php if ($defaulted['cats']) : ?>inactive<?php else: ?>active<?php endif; ?>"><p><label><input type="radio" name="match_default[cats]"
+value="no" <?php if (!$defaulted['cats']) : ?> checked="checked"<?php endif; ?> />
+Do something different with this feed.</label>
+<?php else : ?>
+	<p>
 <?php endif; ?>
-
-<li><label><input type="radio" name="unfamiliar_category" value="create"<?php echo $unfamiliar['create']; ?> /> create a new category</label></li>
-
-<?php if (FeedWordPressCompatibility::post_tags()) : ?>
-<li><label><input type="radio" name="unfamiliar_category" value="tag"<?php echo $unfamiliar['tag']; ?>/> create a new tag</label></li>
+When a feed provides categories for a post, try to match those categories
+locally with:</p>
+<ul class="options compact">
+<?php foreach ($matchUl['cats'] as $name => $li) : ?>
+	<li><label><input type="checkbox"
+	name="match_categories[cats][]" value="<?php print $name; ?>"
+	<?php print $li['checked']; ?> /> <?php $l = $li['labels']; print $l->name; ?></label></li>
+<?php endforeach; ?>
+</ul>
+<?php if ($offerSiteWideSettings) : ?>
+	</td></tr>
+	</tbody>
+	</table>
 <?php endif; ?>
-
-<li><label><input type="radio" name="unfamiliar_category" value="default"<?php echo $unfamiliar['default']; ?> /> don't create new categories<?php if (fwp_test_wp_version(FWP_SCHEMA_23)) : ?> or tags<?php endif; ?></label></li>
-<li><label><input type="radio" name="unfamiliar_category" value="filter"<?php echo $unfamiliar['filter']; ?> /> don't create new categories<?php if (fwp_test_wp_version(FWP_SCHEMA_23)) : ?> or tags<?php endif; ?> and don't syndicate posts unless they match at least one familiar category</label></li>
-</ul></td>
+</td>
 </tr>
 
+<tr>
+<th scope="row">Unmatched categories:</th>
+<td><p>When <?php print $this->these_posts_phrase(); ?> have categories on
+the feed that don't have any local matches yet...</p>
+
+<?php	if (count($unmatchedColumns['category']) > 1) : ?>
+	<table class="twofer">
+<?php	else : ?>
+	<table style="width: 100%">
+<?php	endif; ?>
+	<tbody>
+	<tr>
+	<?php foreach ($unmatchedColumns['category'] as $index => $column) : ?>
+		<td class="equals <?php print (($index == 0) ? 'first' : 'second'); ?> inactive"><ul class="options">
+		<?php foreach ($column as $name => $li) : ?>
+			<li><label><input type="radio" name="unfamiliar_category" value="<?php print $name; ?>"<?php print $unmatchedRadio['category'][$name]; ?> /> <?php print $li['label']; ?></label></li>
+		<?php endforeach; ?>
+		</ul></td>
+	<?php endforeach; ?>
+	</tr>
+	</tbody>
+	</table>
+</td></tr>
+
+<tr>
+<th scope="row">Match inline tags:
+<p class="setting-description">Applies only to inline tags marked
+as links in the text of syndicated posts, using the
+<code>&lt;a rel="tag"&gt;...&lt;/a&gt;</code> microformat.
+Most feeds with "tags" just treat them as normal feed categories,
+like those handled above.</p>
+</th>
+<td><input type="hidden" name="match_categories[tags][]" value="0" />
+<?php if ($offerSiteWideSettings) : ?>
+	<table class="twofer">
+	<tbody>
+	<tr><td class="equals first <?php if ($defaulted['tags']) : ?>active<?php else: ?>inactive<?php endif; ?>"><p><label><input type="radio" name="match_default[tags]"
+value="yes" <?php if ($defaulted['tags']) : ?> checked="checked"<?php endif; ?> />
+Use the <a href="<?php print $href; ?>">site-wide setting</a>
+<span class="current-setting">Currently: <strong><?php print $globalMatchLabels['tags']; ?></strong></span></label></p>
+</td>
+	<td class="equals second <?php if ($defaulted['tags']) : ?>inactive<?php else: ?>active<?php endif; ?>"><p><label><input type="radio" name="match_default[tags]"
+value="no" <?php if (!$defaulted['tags']) : ?> checked="checked"<?php endif; ?> />
+Do something different with this feed.</label>
+<?php else : ?>
+	<p>
+<?php endif; ?>
+When a feed provides tags inline in a post, try to match those tags
+locally with:</p>
+<ul class="options compact">
+<?php foreach ($matchUl['tags'] as $name => $li) : ?>
+	<li><label><input type="checkbox"
+	name="match_categories[tags][]" value="<?php print $name; ?>"
+	<?php print $li['checked']; ?> /> <?php $l = $li['labels']; print $l->name; ?></label></li>
+<?php endforeach; ?>
+</ul>
+<?php if ($offerSiteWideSettings) : ?>
+	</td></tr>
+	</tbody>
+	</table>
+<?php endif; ?>
+</td>
+</tr>
+
+<tr>
+<th scope="row">Unmatched inline tags:</th>
+<td><p>When the text of <?php print $this->these_posts_phrase(); ?> contains
+inline tags that don't have any local matches yet...</p>
+
+<?php	if (count($unmatchedColumns['post_tag']) > 1) : ?>
+	<table class="twofer">
+<?php	else : ?>
+	<table style="width: 100%">
+<?php	endif; ?>
+	<tbody>
+	<tr>
+	<?php foreach ($unmatchedColumns['post_tag'] as $index => $column) : ?>
+		<td class="equals <?php print (($index == 0) ? 'first' : 'second'); ?> inactive"><ul class="options">
+		<?php foreach ($column as $name => $li) : ?>
+			<li><label><input type="radio" name="unfamiliar_post_tag" value="<?php print $name; ?>"<?php print $unmatchedRadio['post_tag'][$name]; ?> /> <?php print $li['label']; ?></label></li>
+		<?php endforeach; ?>
+		</ul></td>
+	<?php endforeach; ?>
+	</tr>
+	</tbody>
+	</table>
+
+</td></tr>
+
+<tr>
+<th scope="row">Filter:</th>
+<td><input type="hidden" name="match_categories[filter][]" value="0" />
+<?php if ($offerSiteWideSettings) : ?>
+	<table class="twofer">
+	<tbody>
+	<tr>
+	<td class="equals first <?php if ($defaulted['filter']) : ?>active<?php else: ?>inactive<?php endif; ?>">
+	<p><label><input type="radio" name="match_default[filter]"
+value="yes" <?php if ($defaulted['filter']) : ?> checked="checked"<?php endif; ?> />
+Use the <a href="<?php print $href; ?>">site-wide setting</a>
+<span class="current-setting">Currently: <strong><?php print $globalMatchLabels['filter']; ?></strong></span></label></p>
+	</td>
+	<td class="equals second <?php if ($defaulted['filter']) : ?>inactive<?php else: ?>active<?php endif; ?>">
+	<p><label><input type="radio" name="match_default[filter]"
+value="no" <?php if (!$defaulted['filter']) : ?> checked="checked"<?php endif; ?> />
+Do something different with this feed:</label></p>
+<div style="margin-left: 3.0em;">
+<?php endif; ?>
+
+<ul class="options">
+<?php foreach ($matchUl['filter'] as $tax => $li) : ?>
+<li><label><input type="checkbox" name="match_categories[filter][]" value="<?php print $tax; ?>"
+<?php print $li['checked']; ?> /> Don't syndicate posts unless they match at
+least one local <strong><?php $l = $li['labels']; print $l->singular_name; ?></strong></label></li>
+<?php endforeach; ?>
+</ul>
+
+<?php if ($offerSiteWideSettings) : ?>
+	</div>
+	</td></tr>
+	</tbody>
+	</table>
+<?php endif; ?>
+</td>
+</tr>
 <?php if ($page->for_feed_settings()) : ?>
 <tr>
 <th scope="row">Multiple categories:</th>
@@ -68,190 +364,254 @@ blank.</p></td>
 		<?php
 	} /* FeedWordPressCategoriesPage::feed_categories_box() */
 
+	function term_option_map () {
+		return array(
+			'category' => 'feedwordpress_syndication_cats',
+			'post_tag' => 'feedwordpress_syndication_tags',
+		);
+	}
+	function term_setting_map () {
+		return array(
+			'category' => 'cats',
+			'post_tag' => 'tags',
+		);
+	}
+	
 	function categories_box ($page, $box = NULL) {
 		$link = $page->link;
-		if ($page->for_feed_settings()) :
-			if (is_array($link->settings['cats'])) : $cats = $link->settings['cats'];
-			else : $cats = array();
-			endif;
-		else :
-			$cats = array_map('trim',
-				preg_split(FEEDWORDPRESS_CAT_SEPARATOR_PATTERN, get_option('feedwordpress_syndication_cats'))
-			);
-		endif;
-		$dogs = SyndicatedPost::category_ids($cats, /*unfamiliar=*/ NULL);
 
-		fwp_category_box($dogs, 'all '.$page->these_posts_phrase());
+		if ($this->for_feed_settings()) :
+			$post_type = $link->setting('syndicated post type', 'syndicated_post_type', 'post');
+		else :
+			$post_type = get_option('feedwordpress_syndicated_post_type', 'post');
+		endif;
+		$taxonomies = get_object_taxonomies(array('object_type' => $post_type), 'names');
+
+		$option_map = $this->term_option_map();
+		$setting_map = $this->term_setting_map();
+		$globalTax = get_option('feedwordpress_syndication_terms', array());
+		if ($page->for_feed_settings()) :
+			$terms = $link->setting('terms', NULL, array());
+		endif;
+
+		?>
+		<table class="edit-form narrow">
+		<tbody>
+		<?php
+		foreach ($taxonomies as $tax) :
+			$taxonomy = get_taxonomy($tax);
+			?>
+			<tr><th><?php print $taxonomy->labels->name; ?></th>
+			<td><?php
+			if (isset($option_map[$tax])) :
+				$option = $option_map[$tax];
+				$globalCats = preg_split(FEEDWORDPRESS_CAT_SEPARATOR_PATTERN, get_option($option));
+			elseif (isset($globalTax[$tax])) :
+				$globalCats = $globalTax[$tax];
+			else :
+				$globalCats = array();
+			endif;
+			$globalCats = array_map('trim', $globalCats);
+
+			if ($page->for_feed_settings()) :
+				$add_global_categories = $link->setting("add/$tax", NULL, 'yes');
+				$checked = array('yes' => '', 'no' => '');
+				$checked[$add_global_categories] = ' checked="checked"';
+				
+				if (isset($setting_map[$tax])) :
+					$setting = $setting_map[$tax];
+					$cats = $link->setting($setting, NULL, NULL);
+					if (is_null($cats)) : $cats = array(); endif;
+				elseif (isset($terms[$tax])) :
+					$cats = $terms[$tax];
+				else :
+					$cats = array();
+				endif;
+			else :
+				$cats = $globalCats;
+			endif;
+			
+			if ($page->for_feed_settings()) :
+			?>
+			<table class="twofer">
+			<tbody>
+			<tr>
+			<td class="primary">
+			<?php
+			endif;
+			
+			$dogs = SyndicatedPost::category_ids($cats, /*unfamiliar=*/ NULL, /*taxonomies=*/ array($tax));
+			
+			if ($taxonomy->hierarchical) : // Use a category-style checkbox
+				fwp_category_box($dogs, 'all '.$page->these_posts_phrase(), /*tags=*/ array(), /*params=*/ array('taxonomy' => $tax));
+			else : // Use a tag-style edit box
+				fwp_tags_box($cats, 'all '.$page->these_posts_phrase(), /*params=*/ array('taxonomy' => $tax));
+			endif;
+			
+			$globalDogs = SyndicatedPost::category_ids($globalCats, /*unfamiliar=*/ 'create:'.$tax, /*taxonomies=*/ array($tax));
+	
+			$siteWideHref = 'admin.php?page='.$GLOBALS['fwp_path'].'/'.basename(__FILE__);
+			if ($page->for_feed_settings()) :
+			?>
+			</td>
+			<td class="secondary">
+			<h4>Site-wide <?php print $taxonomy->labels->name; ?></h4>
+			<?php if (count($globalCats) > 0) : ?>
+			<ul class="current-setting">
+			<?php
+			foreach ($globalDogs as $dog) :
+			?>
+			<li><?php $cat = get_term($dog, $tax); print $cat->name; ?></li>
+			<?php endforeach; ?>
+			</ul>
+			</div>
+			<p>
+			<?php else : ?>
+			<p>Site-wide settings may also assign categories to syndicated
+			posts.
+			<?php endif; ?>
+			Should <?php print $page->these_posts_phrase(); ?> be assigned
+			these <?php print $taxonomy->labels->name; ?> from the <a href="<?php print esc_html($siteWideHref); ?>">site-wide settings</a>, in
+			addition to the feed-specific <?php print $taxonomy->labels->name; ?> you set up here?</p>
+			
+			<ul class="settings">
+			<li><p><label><input type="radio" name="add_global[<?php print $tax; ?>]" value="yes" <?php print $checked['yes']; ?> /> Yes. Place <?php print $page->these_posts_phrase(); ?> under all these categories.</label></p></li>
+			<li><p><label><input type="radio" name="add_global[<?php print $tax; ?>]" value="no" <?php print $checked['no']; ?> /> No. Only use the categories I set up on the left. Do not ise the global defaults for <?php print $page->these_posts_phrase(); ?></label></p></li>
+			</ul>
+			</td>
+			</tr>
+			</tbody>
+			</table>
+			<?php
+			endif;
+			?>
+			</td>
+			</tr>
+			<?php
+		endforeach;
+		?>
+		</tbody>
+		</table>
+		<?php
 	} /* FeedWordPressCategoriesPage::categories_box () */
 	
-	function tags_box ($page, $box = NULL) {
-		$link = $page->link;
-		if ($page->for_feed_settings()) :
-			$tags = $link->settings['tags'];
-		else :
-			$tags = array_map('trim',
-				preg_split(FEEDWORDPRESS_CAT_SEPARATOR_PATTERN, get_option('feedwordpress_syndication_tags'))
+	function save_settings ($post) {
+		if (isset($post['match_categories'])) :
+			foreach ($post['match_categories'] as $what => $set) :
+				// Defaulting is controlled by a separate radio button
+				if ($this->for_feed_settings()
+				and isset($post['match_default'])
+				and isset($post['match_default'][$what])
+				and $post['match_default'][$what]=='yes') :
+					$set = NULL; // Defaulted!
+				endif;
+				
+				$this->update_setting("match/$what", $set, NULL);
+			endforeach;
+		endif;
+		$optionMap = $this->term_option_map();
+		$settingMap = $this->term_setting_map();
+
+		$saveTerms = array(); $separateSaveTerms = array('category' => array(), 'post_tag' => array());
+		
+		if (!isset($post['tax_input'])) : $post['tax_input'] = array(); endif;
+		
+		// Merge in data from older-notation category check boxes
+		if (isset($post['post_category'])) :
+			// Just merging in for processing below.
+			$post['tax_input']['category'] = array_merge(
+				(isset($post['tax_input']['category']) ? $post['tax_input']['category'] : array()),
+				$post['post_category']
 			);
 		endif;
 
-		fwp_tags_box($tags, 'all '.$page->these_posts_phrase());
-	} /* FeedWordPressCategoriesPage::tags_box () */
-}
+		// Process data from term tag boxes and check boxes
+		foreach ($post['tax_input'] as $tax => $terms) :
+			$saveTerms[$tax] = array();
+			if (is_array($terms)) : // Numeric IDs from checklist
+				foreach ($terms as $term) :
+					if ($term) :
+						$saveTerms[$tax][] = '{'.$tax.'#'.$term.'}';
+					endif;
+				endforeach;
+			else : // String from tag input
+				$saveTerms[$tax] = explode(",", $terms);
+			endif;
+			$saveTerms[$tax] = array_map('trim', $saveTerms[$tax]);
+			
+			if (isset($optionMap[$tax])) :
+				$separateSaveTerms[$tax] = $saveTerms[$tax];
+				unset($saveTerms[$tax]);
+			endif;
+		endforeach;
 
-function fwp_categories_page () {
-	global $wpdb, $wp_db_version;
-	
-	if (FeedWordPress::needs_upgrade()) :
-		fwp_upgrade_page();
-		return;
-	endif;
-
-	FeedWordPressCompatibility::validate_http_request(/*action=*/ 'feedwordpress_categories_settings', /*capability=*/ 'manage_links');
-
-	$link = FeedWordPressAdminPage::submitted_link();
-
-	$catsPage = new FeedWordPressCategoriesPage($link);
-
-	$mesg = null;
-
-	////////////////////////////////////////////////
-	// Process POST request, if any /////////////////
-	////////////////////////////////////////////////
-	if (isset($GLOBALS['fwp_post']['save']) or isset($GLOBALS['fwp_post']['submit'])) :
-		$saveCats = array();
-		if (isset($GLOBALS['fwp_post']['post_category'])) :
-			foreach ($GLOBALS['fwp_post']['post_category'] as $cat_id) :
-				$saveCats[] = '{#'.$cat_id.'}';
+		if (isset($post['post_category'])) :
+			foreach ($post['post_category'] as $cat) :
+				$separateSaveTerms['category'][] = '{category#'.$cat.'}'; 
 			endforeach;
 		endif;
-
-		// Different variable names to cope with different WordPress AJAX UIs
-		$syndicatedTags = array();
-		if (isset($GLOBALS['fwp_post']['tax_input']['post_tag'])) :
-			$syndicatedTags = explode(",", $GLOBALS['fwp_post']['tax_input']['post_tag']);
-		elseif (isset($GLOBALS['fwp_post']['tags_input'])) :
-			$syndicatedTags = explode(",", $GLOBALS['fwp_post']['tags_input']);
-		endif;
-		$syndicatedTags = array_map('trim', $syndicatedTags);
-
-		if (is_object($link) and $link->found()) :
-			$alter = array ();
-
-			// Categories
-			if (!empty($saveCats)) : $link->settings['cats'] = $saveCats;
-			else : unset($link->settings['cats']);
-			endif;
-
-			// Tags
-			$link->settings['tags'] = $syndicatedTags;
-
-			// Unfamiliar categories
-			if (isset($GLOBALS['fwp_post']["unfamiliar_category"])) :
-				if ('site-default'==$GLOBALS['fwp_post']["unfamiliar_category"]) :
-					unset($link->settings["unfamiliar category"]);
-				else :
-					$link->settings["unfamiliar category"] = $GLOBALS['fwp_post']["unfamiliar_category"];
-				endif;
-			endif;
-
-			// Category spitting regex
-			if (isset($GLOBALS['fwp_post']['cat_split'])) :
-				if (strlen(trim($GLOBALS['fwp_post']['cat_split'])) > 0) :
-					$link->settings['cat_split'] = trim($GLOBALS['fwp_post']['cat_split']);
-				else :
-					unset($link->settings['cat_split']);
-				endif;
-			endif;
-
-			// Save settings
-			$link->save_settings(/*reload=*/ true);
-			$catsPage->updated = true;
-			
-			// Reset, reload
-			$link_id = $link->id;
-			unset($link);
-			$link = new SyndicatedLink($link_id);
-		else :
-			// Categories
-			if (!empty($saveCats)) :
-				update_option('feedwordpress_syndication_cats', implode(FEEDWORDPRESS_CAT_SEPARATOR, $saveCats));
-			else :
-				delete_option('feedwordpress_syndication_cats');
-			endif;
-	
-			// Tags
-			if (!empty($syndicatedTags)) :
-				update_option('feedwordpress_syndication_tags', implode(FEEDWORDPRESS_CAT_SEPARATOR, $syndicatedTags));
-			else :
-				delete_option('feedwordpress_syndication_tags');
-			endif;
-
-			update_option('feedwordpress_unfamiliar_category', $_REQUEST['unfamiliar_category']);
-
-			$catsPage->updated = true;
-		endif;
 		
-		do_action('feedwordpress_admin_page_categories_save', $GLOBALS['fwp_post'], $catsPage);
-	else :
-		$catsPage->updated = false;
-	endif;
+		// Unmatched categories and tags
+		foreach (array('category', 'post_tag') as $what) :
+			if (isset($post["unfamiliar_{$what}"])) :
+				$this->update_setting(
+					"unfamiliar {$what}",
+					$post["unfamiliar_{$what}"],
+					'site-default'
+				);
+			endif;
+		endforeach;
+		
+		// Categories and Tags
+		foreach ($separateSaveTerms as $tax => $terms) :
+			if ($this->for_feed_settings()) :
+				$this->link->update_setting($settingMap[$tax], $terms, array());
+			else :
+				if (!empty($terms)) :
+					update_option($optionMap[$tax], implode(FEEDWORDPRESS_CAT_SEPARATOR, $terms));
+				else :
+					delete_option($optionMap[$tax]);
+				endif;
+			endif;
+		endforeach;
+		
+		// Other terms
+		$this->update_setting(array('feed'=>'terms', 'global'=>'syndication_terms'), $saveTerms, array());
 
-	////////////////////////////////////////////////
-	// Prepare settings page ///////////////////////
-	////////////////////////////////////////////////
+		if ($this->for_feed_settings()) :
+			// Category splitting regex
+			if (isset($post['cat_split'])) :
+				$this->link->update_setting('cat_split', trim($post['cat_split']), '');
+			endif;
+			
+			// Treat global terms (cats, tags, etc.) as additional,
+			// or as defaults to be overridden and replaced?
+			if (isset($post['add_global'])) :
+				foreach ($post['add_global'] as $what => $value) :
+					$this->link->update_setting("add/$what", $value);
+				endforeach;
+			endif;
+		endif;
+		parent::save_settings($post);
+	} /* FeedWordPressCategoriesPage::save_settings() */
 	
-	$catsPage->display_update_notice_if_updated('Syndicated categories'.FEEDWORDPRESS_AND_TAGS, $mesg);
-	$catsPage->open_sheet('Categories'.FEEDWORDPRESS_AND_TAGS);
-	?>
-	<style type="text/css">
-		table.edit-form th { width: 27%; vertical-align: top; }
-		table.edit-form td { width: 73%; vertical-align: top; }
-		table.edit-form td ul.options { margin: 0; padding: 0; list-style: none; }
-	</style>
-
-	<div id="post-body">
-	<?php
-	////////////////////////////////////////////////
-	// Display settings boxes //////////////////////
-	////////////////////////////////////////////////
-
-	$boxes_by_methods = array(
-		'feed_categories_box' => __('Feed Categories'.FEEDWORDPRESS_AND_TAGS),
-		'categories_box' => array('title' => __('Categories'), 'id' => 'categorydiv'),
-		'tags_box' => __('Tags'),
-	);
-	if (!FeedWordPressCompatibility::post_tags()) :
-		unset($boxes_by_methods['tags_box']);
-	endif;
-
-	foreach ($boxes_by_methods as $method => $row) :
-		if (is_array($row)) :
-			$id = $row['id'];
-			$title = $row['title'];
-		else :
-			$id = 'feedwordpress_'.$method;
-			$title = $row;
+	function display () {
+		////////////////////////////////////////////////
+		// Display settings boxes //////////////////////
+		////////////////////////////////////////////////
+	
+		$this->boxes_by_methods = array(
+			'feed_categories_box' => __('Feed Categories'.FEEDWORDPRESS_AND_TAGS),
+			'categories_box' => array('title' => __('Categories'), 'id' => 'categorydiv'),
+		);
+		if (!FeedWordPressCompatibility::post_tags()) :
+			unset($this->boxes_by_methods['tags_box']);
 		endif;
 
-		fwp_add_meta_box(
-			/*id=*/ $id,
-			/*title=*/ $title,
-			/*callback=*/ array('FeedWordPressCategoriesPage', $method),
-			/*page=*/ $catsPage->meta_box_context(),
-			/*context=*/ $catsPage->meta_box_context()
-		);
-	endforeach;
-	do_action('feedwordpress_admin_page_categories_meta_boxes', $catsPage);
-?>
-	<div class="metabox-holder">
-<?php
-	fwp_do_meta_boxes($catsPage->meta_box_context(), $catsPage->meta_box_context(), $catsPage);
-?>
-	</div> <!-- class="metabox-holder" -->
-	</div> <!-- id="post-body" -->
-	<?php $catsPage->close_sheet(); ?>
-<?php
-} /* function fwp_categories_page () */
+		parent::display();	
+	}
+}
 
-	fwp_categories_page();
+	$categoriesPage = new FeedWordPressCategoriesPage;
+	$categoriesPage->display();
 
