@@ -34,12 +34,16 @@
 					<div class="entry-content">
 						<?php bp_the_topic_post_content(); ?>
 					</div>
-					
+				
+		  <?php /* No admin links on the first post */
+		    global $topic_template; 
+		    if ( $topic_template->current_post != 0 && $topic_template->pag_page == 1 ) : ?>	
 				<?php if ( bp_group_is_admin() || bp_group_is_mod() || bp_get_the_topic_post_is_mine() ) : ?>
 					<p class="admin-links">
 						<?php bp_the_topic_post_admin_links(); ?>
 					</p>
 				<?php endif; ?>
+		  <?php endif; ?>
 				</li>
 
 			<?php endwhile; ?>

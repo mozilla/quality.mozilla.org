@@ -4,7 +4,7 @@
  * You can comment out the following if you accept time zone as UTC.
  * The following default setting is for Japanese.
 **/
-date_default_timezone_set('Asia/Tokyo');
+//date_default_timezone_set('Asia/Tokyo');
 
 /* This function was used for debugging the digest scheduling features */
 function ass_digest_schedule_print() {	
