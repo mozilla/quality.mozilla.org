@@ -3,10 +3,17 @@
 /* Trigger hasLayout */
 div.post, 
 div.page, 
-div.attachment, 
+div.attachment,
+.section,
+#site-nav, 
 #home-head ul.teams-list, 
 #teams-list .team, 
-#event-meta {
+.groups .team,
+#event-meta, 
+#user-state, 
+#team-head, 
+.item-list .item,
+#topic-post-list .hentry {
   zoom: 1;
 }
 
@@ -25,3 +32,12 @@ div.attachment,
 
 /* No support for max-height */
 table.tec-calendar .tec-tooltip .tec-event-body { height: 7.5em; }
+
+#user-state .login input { width: 55%; }
+#site-nav { top: 4px; left: 0;}
+#nav-main { margin-left: 60px; }
+
+.list-pagination { border: 0; zoom: 1; margin: 1em 0; }
+.list-pagination .pages { zoom: 1; }
+
+

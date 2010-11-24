@@ -355,7 +355,7 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 
 /* @Main @Navigation *********/
 #site-nav { position: absolute; top: 4px; left: 0; width: 100%; min-width: 800px; height: 40px; padding-top: 15px; }
-#site-nav .section { position: relative; height: 3em; }
+/* #site-nav .section { position: relative; height: 3em; } */
 #nav-main { float: left; margin: 10px 0 0 155px; list-style: none; overflow: hidden; }
 #nav-main li { float: left; margin-right: 1px; font: bold .923em/1.5 Verdana, Tahoma, sans-serif; text-transform: uppercase; letter-spacing: .1em; }
 #nav-main a:link, #nav-main a:visited { display: block; padding: .35em 14px .5em; color: #fff; text-decoration: none;
@@ -425,7 +425,6 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 #user-state .login .submit, #user-state .login .check, #user-state .login .signup { padding-left: 35%; }
 #user-state .login .check label { font-weight: normal; text-align: left; float: none; display: block; width: auto; }
 #user-state .login .check input { width: auto; }
-#user-state .login .signup {  }
 
 /*** @Search @Form *********/
 .fm-search { width: 100%; min-width: 700px; }
@@ -500,7 +499,7 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 .upcoming .vevent .location { font-size: .923em; }
 
 /*** @Tag @Cloud *********/
-.widget_tag_cloud div, .wp-tag-cloud { text-align: center; margin-bottom: 1em; }
+.widget_tag_cloud div, .wp-tag-cloud { text-align: center; margin-bottom: 1em; width: 100%; overflow: hidden; }
 ul.wp-tag-cloud li { display: inline; }
 .widget_tag_cloud a, .wp-tag-cloud a { vertical-align: middle; line-height: 1.2; }
 
@@ -740,7 +739,7 @@ ul.wp-tag-cloud li { display: inline; }
 #activity-stream li.item { position: relative; padding: 0 0 2em 50px; margin: 0 0 2em; min-height: 60px; background: url("img/pencil-line.png") right bottom repeat-x; }
 #activity-stream li.item:nth-child(even) { background-position: -23% bottom; }
 #activity-stream li.item:last-child { background-image: none; }
-#activity-stream .activity-avatar { position: absolute; left: 0; top: 0; }
+#activity-stream .activity-avatar .avatar { position: absolute; left: 0; top: 0; }
 .activity-header p { margin: .75em 0; }
 .activity-header a { font-weight: bold; }
 .activity-header .avatar { display: none; }
@@ -914,18 +913,20 @@ table.notification-settings .yes, .settings table.notification-settings .no { wi
 #post-topic-reply .avatar { position: absolute; left: 0; }
 #post-topic-reply .submit { padding: 0; font-size: 1em; }
 
-#forums-directory-form { clear: both; position: relative; }
-#forums-directory-form #pag-count-head { position: absolute; top: .15em; right: 0; }
-#forums-search-form { overflow: hidden; margin: .5em 0; }
-#forums-search-form #new-button { width: 30%; float: left; }
-#forums-search-form #forums-dir-search { width: 60%; float: right; text-align: right; font-size: .857em; }
+.dir-form { clear: both; position: relative; }
+.dir-form #pag-count-head { position: relative; top: -1.65em; right: 0; }
+#forums-search-form #new-button { width: 30%; float: left; clear: left; }
+.dir-form #subnav { width: 60%; float: left; margin: 0; }
+.dir-form .section-title { width: 60%; float: left; }
+.dir-form .dir-search { width: 35%; float: right; margin: .75em 0; text-align: right; font-size: .857em; overflow: hidden; }
 
 #new-topic-post { width: 100%; clear: both; }
-.forum-head { clear: both; margin: 0 0 1em; }
-.forum-head .new-topic { float: left; }
-.forum-head .pages { margin: .5em 0; }
-.forum-head .pag-count { width: 48%; float: right; margin: .15em 0; }
-.forum-head .forum-buttons { width: 50%; float: left; margin: 0; }
+.list-head { clear: both; margin: 0 0 1em; }
+.list-head:after { content: "."; display: block; clear: both; height: 0; visibility: hidden; }
+.list-head .new-topic { float: left; }
+.list-head .pages { margin: 0;  }
+.list-head .pag-count { width: 48%; float: right; margin: 0; }
+.list-head .forum-buttons { width: 50%; float: left; margin: 0; }
 
 table.topiclist { width: 100%; margin: 0 0 1.4em; border-bottom: 1px solid #ececec; }
 table.topiclist thead th { font: .857em Verdana, Tahoma, sans-serif; text-align: left; color: #888; padding: .5em 4px; background: #fafafa; }

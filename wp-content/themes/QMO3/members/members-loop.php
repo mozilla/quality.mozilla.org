@@ -4,11 +4,11 @@
 <?php do_action( 'bp_before_members_loop' ); ?>
 
 <?php if ( bp_has_members( bp_ajax_querystring( 'members' ) ) ) : ?>
-  
-  <div class="member-pagination">
-		<p class="pag-count" id="member-dir-count"><?php bp_members_pagination_count(); ?></p>
-  <?php if ( bp_members_pagination_links() ) : ?>
-		<p class="pages" id="member-dir-pag"><?php bp_members_pagination_links(); ?></p>
+
+  <div class="list-head">
+		<p id="pag-count-head" class="pag-count"><?php bp_members_pagination_count(); ?></p>
+  <?php if ( bp_get_members_pagination_links() ) : ?>
+		<p id="pages-head" class="pages"><?php bp_members_pagination_links(); ?></p>
   <?php endif; ?>
   </div>
 

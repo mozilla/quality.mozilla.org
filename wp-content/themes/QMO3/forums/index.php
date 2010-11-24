@@ -1,6 +1,6 @@
 <?php get_header(); ?>
 
-	<?php do_action( 'bp_before_directory_forums_content' ); ?>
+<?php do_action( 'bp_before_directory_forums_content' ); ?>
 
 <section id="content-main" class="hfeed" role="main">
 
@@ -9,6 +9,7 @@
 			<?php if ( is_user_logged_in() ) : ?> 
 			 <p id="new-button"><a class="button" href="#new-topic" id="new-topic-button"><?php _e( 'New Topic', 'buddypress' ) ?></a></p>
 		  <?php endif; ?>
+
 			<div id="forums-dir-search" class="dir-search">
 				<?php bp_directory_forums_search_form(); ?>
 			</div>

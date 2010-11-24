@@ -1,6 +1,6 @@
 <?php if ( bp_has_forum_topics( bp_ajax_querystring( 'forums' ) ) ) : ?>
 
-	<div class="forum-head">
+	<div class="list-head">
 	<?php if ( bp_is_group_forum() && is_user_logged_in() ) : ?>
 		<p class="new-topic"><a href="#new-topic" class="button"><?php _e( 'New Topic', 'qmo' ) ?></a></p>
 	<?php endif; ?>

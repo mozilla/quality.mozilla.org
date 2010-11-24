@@ -2,7 +2,7 @@
 
 	<form action="<?php bp_forum_topic_action() ?>" method="post" id="forum-topic-form" class="standard-form full">
 
-		<div id="subnav" class="forum-head item-list-tabs no-ajax">
+		<div id="subnav" class="list-head item-list-tabs no-ajax">
   		<p class="forum-buttons">
         <a href="<?php bp_forum_permalink(); ?>"><?php printf(__( '%s Forum', 'qmo' ),bp_group_name()); ?></a> 
         <?php if ( !get_option('bp-disable-forum-directory') ) : ?>
