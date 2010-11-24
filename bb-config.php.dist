@@ -13,13 +13,13 @@
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('DB_NAME', 'dbname');
+define('BBDB_NAME', 'dbname');
 
 /** MySQL database username */
-define('DB_USER', 'username');
+define('BBDB_USER', 'username');
 
 /** MySQL database password */
-define('DB_PASSWORD', 'password');
+define('BBDB_PASSWORD', 'password');
 
 /** MySQL hostname */
 define('DB_HOST', 'localhost');
@@ -29,6 +29,26 @@ define('DB_CHARSET', 'utf8');
 
 /** The Database Collate type. Don't change this if in doubt. */
 define('DB_COLLATE', '');
+
+
+// ** MySQL settings - You can get this info from your web host ** //
+/** The name of the database for bbPress */
+define( 'BBDB_NAME', 'qualitynew_stage_mozilla_com' );
+
+/** MySQL database username */
+define( 'BBDB_USER', 'qualitynew_user' );
+
+/** MySQL database password */
+define( 'BBDB_PASSWORD', 'am6ooph2eekahTh2' );
+
+/** MySQL hostname */
+define( 'BBDB_HOST', 'tm-stage01-master01' );
+
+/** Database Charset to use in creating database tables. */
+define( 'BBDB_CHARSET', 'utf8' );
+
+/** The Database Collate type. Don't change this if in doubt. */
+define( 'BBDB_COLLATE', '' );
 
 /**#@+
  * Authentication Unique Keys.
