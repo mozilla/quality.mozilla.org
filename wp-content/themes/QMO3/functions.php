@@ -1101,6 +1101,7 @@ function qmo_activity_filter( $a, $activities ) {
           || $activity->type == 'new_status'
           || $activity->type == 'new_wire_post'
           || $activity->type == 'friendship_created'
+          || $activity->type == 'new_member'
         ) {
       unset( $activities->activities[$key] );
       $activities->total_activity_count = $activities->total_activity_count - 1;

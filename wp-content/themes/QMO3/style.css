@@ -186,6 +186,7 @@ body.page .page { padding: 0; background-image: none; }
 .entry-content:after, .entry-summary:after { content: "."; clear: both; display: block; height: 0; visibility: hidden; }
 
 /*** @Basics *********/
+.entry-content { word-wrap: break-word; }
 .entry-content ul { list-style: disc; margin-left: 1.6em; }
 .entry-content ul ul { list-style: circle; }
 .entry-content ul ul ul { list-style: square; }

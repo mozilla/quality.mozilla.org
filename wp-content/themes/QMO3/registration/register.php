@@ -249,9 +249,11 @@
 <?php include (TEMPLATEPATH . '/user-state.php'); ?>
 </section>
 
-  <?php do_action( 'bp_after_directory_activity_content' ) ?>
+<?php do_action( 'bp_after_directory_activity_content' ) ?>
 
+<?php if ( bp_get_blog_signup_allowed() ) : ?>
   <script type="text/javascript">
+  // <![CDATA[  
     jQuery(document).ready( function() {
       if ( jQuery('div#blog-details').length )
         jQuery('div#blog-details').toggle();
@@ -260,6 +262,8 @@
         jQuery('div#blog-details').fadeOut().toggle();
       });
     });
+  // ]]>
   </script>
+<?php endif; ?>
 
 <?php get_footer(); ?>
