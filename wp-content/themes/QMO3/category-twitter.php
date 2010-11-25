@@ -12,7 +12,7 @@ get_header(); ?>
 <section id="content-main" class="hfeed vcalendar" role="main">
 <?php if (!is_front_page()) : ?>
 <ul id="stream-filter">
-  <li><a class="<?php if (is_home()) : echo 'button on'; else : echo 'button'; endif; ?>" href="<?php echo get_permalink(get_page_by_path('community')->ID); ?>">All</a></li>
+  <li><a class="<?php if (is_home()) : echo 'button on'; else : echo 'button'; endif; ?>" href="<?php echo get_permalink(get_page_by_path('blog')->ID); ?>">All</a></li>
   <li><a class="<?php if (is_category($synd_cat)) : echo 'button on'; else : echo 'button'; endif; ?>" href="<?php echo get_category_link($synd_cat); ?>">Blogs</a></li>
   <li><a class="<?php if (is_category($twitter_cat)) : echo 'button on'; else : echo 'button'; endif; ?>" href="<?php echo get_category_link($twitter_cat); ?>">Tweets</a></li>
 </ul>

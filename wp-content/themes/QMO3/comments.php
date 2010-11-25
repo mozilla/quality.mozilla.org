@@ -46,7 +46,8 @@
         <p id="cancel-comment-reply"><?php cancel_comment_reply_link('Cancel Reply'); ?></p>
         <ol>
         <?php if ( $user_ID ) : ?>
-          <li class="self">Logged in as <a href="<?php echo bp_loggedin_user_domain(); ?>"><?php echo $user_identity; ?></a> <a class="logout" href="<?php echo wp_logout_url($_SERVER['REQUEST_URI']); ?>" title="Log out of this account">Log out</a></li>
+        <?php global $current_user; get_currentuserinfo(); ?>
+          <li class="self">Logged in as <a href="<?php echo bp_loggedin_user_domain(); ?>"><?php echo $current_user->display_name; ?> <?php echo bp_core_fetch_avatar( 'item_id='.$current_user->ID ); ?></a> <a class="logout" href="<?php echo wp_logout_url($_SERVER['REQUEST_URI']); ?>" title="Log out of this account">Log out</a></li>
         <?php else : ?>
           <li id="cmt-name"><label for="author">Your name <?php if ($req) echo "<abbr title='required'>*</abbr>"; ?></label> <input type="text" name="author" id="author" value="<?php echo $comment_author; ?>" size="25" /></li>
           <li id="cmt-email"><label for="email">Your e-mail <?php if ($req) echo "<abbr title='required'>*</abbr>"; ?> <span class="note">(not published)</span> </label> <input type="text" name="email" id="email" value="<?php echo $comment_author_email; ?>" size="25" /></li>

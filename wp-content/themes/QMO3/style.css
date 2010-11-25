@@ -1,5 +1,5 @@
 /*
-Theme Name: QMO 3.0
+Theme Name: QMO 3 - Buddypress
 Theme URI: http://quality.mozilla.org/
 Description: Theme for QMO (quality.mozilla.org) version 3 with Buddypress. Copyright Mozilla Corporation, all rights reserved.
 Author: Craig Cook
@@ -53,7 +53,7 @@ body { min-width: 800px; font: .812em/1.538 Georgia, Times, serif; color: #333; 
 :link:active, :visited:active, 
 :link:focus, :visited:focus { text-decoration: underline; }
 
-.entry-title :visited { color: #369; }
+.page-title :visited, .section-title :visited { color: #369; }
 .entry-content :link, .entry-content :visited, 
 .entry-summary :link, .entry-summary :visited { color: #ef8a1d; font-weight: bold; }
 .entry-content :link:focus, .entry-content :visited:focus, 
@@ -135,7 +135,7 @@ h3 { font-size: 1.385em; }
 h4 { font-size: 1.2em; }
 h5, h6 { font-size: 1em; }
 legend { color: #390; font-size: 1.2em; }
-.page-title, .section-title, .single .entry-title { font-size: 2.32em; line-height: 1.2; margin-bottom: .75em; overflow: hidden; }
+.page-title, .section-title, .single .entry-title { font-size: 2.32em; line-height: 1.2; margin-bottom: .75em; }
 
 /* @Layout *********/
 .section { width: 90%; padding: 0 15px; margin: 0 auto; }
@@ -164,9 +164,9 @@ legend { color: #390; font-size: 1.2em; }
 #stream-filter li { display: inline; margin: 0 10px 0 0; }
 
 /* @Posts *********/
-section.post, div.post, li.post, 
-section.page, div.page, li.page, 
-section.attachment, div.attachment, li.attachment { padding: 0 0 1em 80px; min-height: 6em; overflow: hidden; margin-bottom: 2em; position: relative; background: url("img/pencil-line.png") right bottom repeat-x; }
+section.post, article.post, div.post, li.post, 
+section.page, article.page, div.page, li.page, 
+section.attachment, article.attachment, div.attachment, li.attachment { padding: 0 0 1em 80px; min-height: 6em; overflow: hidden; margin-bottom: 2em; position: relative; background: url("img/pencil-line.png") right bottom repeat-x; }
 .post:nth-child(even), .page:nth-child(even) { background-position: left bottom; }
 .post:last-child, .page:last-child { padding-bottom: 0; background-image: none; }
 
@@ -445,7 +445,7 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 .pagination .current strong { border-color: #ef8f30; background: #f93; color: #fff; }
 .pagination .gap { border: 0; padding: 0; }
 .pagination .page-status { border: 0; padding-right: 1em; }
-.pagination a, .pagination strong, .pages a { padding: .15em .5em; border: 1px solid #d6e4e5; text-decoration: none; color: #369; }
+.pagination a, .pagination strong, .pages a { padding: .15em .5em; border: 1px solid #d6e4e5; text-decoration: none; color: #369; background: #fff; }
 .pagination a:hover, .pagination a:focus, .pagination a:active, 
 .pages a:hover, .pages a:focus, .pages a:active { background: #dfe9f2; text-decoration: none; color: #333; }
 .pagination .prev { margin-right: 4px; }
@@ -517,9 +517,9 @@ ul.wp-tag-cloud li { display: inline; }
 .comments-head .cmt-post { width: 20%; float: right; font-weight: bold; background: url("img/feedback-arrow.png") 0 50% no-repeat; padding: .25em 0 .25em 60px; }
 .comments-head .cmt-post:visited { color: #369; }
 
-#comments .entry-title { font: .923em/1 Verdana, Tahoma, sans-serif; color: #390; margin-bottom: 0; }
+#comments .entry-title { font: .923em/1 Verdana, Tahoma, sans-serif; color: #390; }
 #comments .entry-title cite { font-style: normal; }
-#comment-list { list-style: none; margin: 0 0 2em; padding-bottom: 10px; background: url("img/pencil-line-stack.gif") right bottom repeat-x; }
+#comment-list { list-style: none; margin: 0 0 2em; padding-bottom: 10px; background: url("img/pencil-line.png") 123% bottom repeat-x; }
 #comment-list .comment, #comment-list .pingback, #comment-list .trackback { position: relative; padding: 2em 0 0 80px; margin-bottom: 2em; background: url("img/pencil-line.png") center top repeat-x; }
 #comment-list.av .comment { min-height: 70px; }
 #comment-list .odd { background-image: url(img/pencil-line-stack.gif); }
@@ -530,12 +530,8 @@ ul.wp-tag-cloud li { display: inline; }
 #comment-list .entry-title a:focus, 
 #comment-list .entry-title a:active { text-decoration: none; }
 #comment-list .entry-title a:hover .author, 
-#comment-list .entry-title a:focus .author,
-#comment-list .entry-title a:active .author, 
-#comment-list .entry-title .comment-meta a:hover, 
-#comment-list .entry-title .comment-meta a:focus, 
-#comment-list .entry-title .comment-meta a:active { text-decoration: underline; }
-
+#comment-list .entry-title a:focus .author, 
+#comment-list .entry-title a:active .author { text-decoration: underline; }
 #comment-list .avatar { position: absolute; left: 0; top: 2em; }
 
 #comment-list .entry-content p, 
@@ -555,6 +551,7 @@ ul.wp-tag-cloud li { display: inline; }
 #comment-form legend span { position: absolute; top: -.2em; color: #390; font-size: 1.231em; }
 #comment-form .self { margin-bottom: 1em; }
 #comment-form .self .logout { font: .923em Verdana, Tahoma, sans-serif; margin-left: 1em; }
+#comment-form .self .avatar { position: absolute; left: 0; top: 2em; }
 #comment-form fieldset { padding-left: 80px; }
 #comment-form li { width: 100%; float: left; clear: both; margin-bottom: .5em; }
 #comment-form label { width: 110px; padding-right: 50px; padding-top: .3em; float: left; background: url("img/label-arrow.png") 96% .5em no-repeat; }

@@ -18,7 +18,7 @@ $parent = $ancestors[$root]; // Top parent is the last in the array
 <?php endif; ?>
 
 <?php // Teams 
-  if ( bp_is_active( 'groups' ) ) :
+  if ( function_exists('bp_is_active') && bp_is_active( 'groups' ) ) :
     if ( bp_is_page(BP_GROUPS_SLUG) && bp_is_directory() ) : ?>
   <li class="current" title="This is the current page"><em>Teams</em></li>
 <?php elseif ( bp_is_groups_component() && bp_is_single_item() ) : ?>

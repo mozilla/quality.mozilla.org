@@ -38,10 +38,8 @@
 	<?php do_action( 'bp_after_directory_members_list' ); ?>
 	<?php bp_member_hidden_fields(); ?>
 
-  <?php if ( bp_members_pagination_links() ) : ?>
-    <div class="member-pagination">  
-  		<p class="pages"><?php bp_members_pagination_links(); ?></p>  
-    </div>
+  <?php if ( bp_get_members_pagination_links() ) : ?>
+  <p id="pages-foot" class="pages"><?php bp_members_pagination_links(); ?></p>
   <?php endif; ?>
 
 <?php else: ?>
