@@ -8,7 +8,6 @@
   <?php endif; ?>
   </footer>
 
-<script type="text/javascript" src="<?php bloginfo('stylesheet_directory'); ?>/js/superfish.js"></script>
 <script type="text/javascript">
 // <![CDATA[
   jQuery(document).ready(function(){
@@ -16,17 +15,8 @@
     jQuery("#nav-extra").addClass("js"); // style hook for graceful degradation
     jQuery("#nav-extra a").hover(
       function() { jQuery(this).animate({ marginTop: '-8px' },{ queue:false, duration:150}); }, // stand up fast
-      function() { jQuery(this).animate({ marginTop: '0' },{ queue:false, duration:500 }); } // sit down slow
+      function() { jQuery(this).animate({ marginTop: '0' },{ queue:false, duration:400 }); } // sit down slow
     );
-    
-    // Set up the superfish menus	
-  	jQuery("#wp-admin-bar .main-nav").superfish({
-      animation:   {height:'show'}, 
-      speed:       100,
-      delay:       400,
-      autoArrows:  false, 
-      dropShadows: false
-  	});
   });
 // ]]>
 </script>

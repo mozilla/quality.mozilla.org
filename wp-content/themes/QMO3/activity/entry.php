@@ -21,7 +21,7 @@ global $authordata;
     $post_id = bp_get_activity_secondary_item_id();
     $post = get_post($post_id); 
     setup_postdata($post); ?>
-      
+
     <div id="post-<?php the_ID(); ?>" 
       <?php if ( function_exists('is_event') && is_event() ) : post_class('vevent'); 
         elseif (in_category('twitter')) : post_class('tweet');
@@ -68,7 +68,7 @@ global $authordata;
         </p>
       </div>
     <?php endif; ?>
-  
+
       <div class="entry-content <?php if ( function_exists('is_event') && is_event() ) : echo 'description'; endif; ?>">
       <?php if ( function_exists('is_event') && is_event($post->ID) ) :
         include (TEMPLATEPATH . '/event-card.php');
@@ -82,11 +82,11 @@ global $authordata;
         <?php wp_link_pages(array('before' => '<p class="pages"><strong>Pages:</strong> ', 'after' => '</p>', 'next_or_number' => 'next', 'link_before' => '<b>', 'link_after' => '</b>')); ?>
       <?php endif; ?>
       </div>
-  
+
       <?php if (get_the_tags()) : ?>
         <?php the_tags('<p class="entry-tags"><strong>'.__('Tags:','qmo').'</strong> ',', ',''); ?>
       <?php endif; ?>
-  
+
     <?php $comment_count = get_comment_count($post->ID);
     if ( comments_open() || $comment_count['approved'] > 0 ) : ?>
       <ul class="discuss">
@@ -102,25 +102,25 @@ global $authordata;
 
 <?php else : // if it's not a blog post, it's regular activity ?>
 
-  	<div class="activity-avatar">
-  		<a href="<?php bp_activity_user_link(); ?>">
-  			<?php bp_activity_avatar( 'width=48&height=48' ); ?>
-  		</a>
-  	</div>
-  
-  	<div class="activity-content">
-  		<div class="activity-header entry-title">
-  			<?php bp_activity_action(); ?>
-  		</div>
-  
-  		<?php if ( bp_get_activity_content_body() ) : ?>
-  			<div class="activity-inner entry-content">
-  				<?php bp_activity_content_body(); ?>
-  			</div>
-  		<?php endif; ?>
-  
-  		<?php do_action( 'bp_activity_entry_content' ); ?>
-  	</div>
+    <div class="activity-avatar">
+      <a href="<?php bp_activity_user_link(); ?>">
+        <?php bp_activity_avatar( 'width=48&height=48' ); ?>
+      </a>
+    </div>
+
+    <div class="activity-content">
+      <div class="activity-header entry-title">
+        <?php bp_activity_action(); ?>
+      </div>
+
+      <?php if ( bp_get_activity_content_body() ) : ?>
+        <div class="activity-inner entry-content">
+          <?php bp_activity_content_body(); ?>
+        </div>
+      <?php endif; ?>
+
+      <?php do_action( 'bp_activity_entry_content' ); ?>
+    </div>
 
 <?php endif; ?>
 

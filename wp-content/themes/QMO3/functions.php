@@ -513,9 +513,9 @@ function qmo_feed_content( $content ) {
       $content = $content . '<p><strong>When:</strong><br /> Starts: '.$event_start.'<br /> Ends: '.$event_end.'</p>';
     }
   }
-	else {
+  else {
     $content = $content;
-	}		    
+  }       
   return $content;
 } // End function
 add_filter('the_content', 'qmo_feed_content');
@@ -527,7 +527,7 @@ add_filter('the_content', 'qmo_feed_content');
  * Stop the theme from killing WordPress if BuddyPress is not enabled.
  */
 if ( !class_exists( 'BP_Core_User' ) ) :
-	return false;
+  return false;
 endif;
 
 
@@ -554,9 +554,9 @@ wp_enqueue_script( 'dtheme-ajax-js', get_template_directory_uri() . '/_inc/globa
  * Rearrange and rename group tabs
  */
 function qmo_bp_tabs() {
-	global $bp;
-	$bp->bp_options_nav['teams']['admin']['position'] = '100'; // Move admin to last
-	$bp->bp_options_nav['teams']['home']['name'] = 'General'; // Rename 'Home' to 'General'
+  global $bp;
+  $bp->bp_options_nav['teams']['admin']['position'] = '100'; // Move admin to last
+  $bp->bp_options_nav['teams']['home']['name'] = 'General'; // Rename 'Home' to 'General'
 }
 add_action('wp', 'qmo_bp_tabs');
 
@@ -565,14 +565,14 @@ add_action('wp', 'qmo_bp_tabs');
  * Add words that we need to use in JS to the end of the page so they can be translated and still used.
  */
 $params = array(
-	'my_favs'           => __( 'My Favorites', 'buddypress' ),
-	'accepted'          => __( 'Accepted', 'buddypress' ),
-	'rejected'          => __( 'Rejected', 'buddypress' ),
-	'show_all_comments' => __( 'Show all comments for this thread', 'buddypress' ),
-	'show_all'          => __( 'Show all', 'buddypress' ),
-	'comments'          => __( 'comments', 'buddypress' ),
-	'close'             => __( 'Close', 'buddypress' ),
-	'mention_explain'   => sprintf( __( "%s is a unique identifier for %s that you can type into any message on this site. %s will be sent a notification and a link to your message any time you use it.", 'buddypress' ), '@' . bp_get_displayed_user_username(), bp_get_user_firstname( bp_get_displayed_user_fullname() ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) )
+  'my_favs'           => __( 'My Favorites', 'buddypress' ),
+  'accepted'          => __( 'Accepted', 'buddypress' ),
+  'rejected'          => __( 'Rejected', 'buddypress' ),
+  'show_all_comments' => __( 'Show all comments for this thread', 'buddypress' ),
+  'show_all'          => __( 'Show all', 'buddypress' ),
+  'comments'          => __( 'comments', 'buddypress' ),
+  'close'             => __( 'Close', 'buddypress' ),
+  'mention_explain'   => sprintf( __( "%s is a unique identifier for %s that you can type into any message on this site. %s will be sent a notification and a link to your message any time you use it.", 'buddypress' ), '@' . bp_get_displayed_user_username(), bp_get_user_firstname( bp_get_displayed_user_fullname() ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) )
 );
 wp_localize_script( 'dtheme-ajax-js', 'BP_DTheme', $params );
 
@@ -584,7 +584,7 @@ wp_localize_script( 'dtheme-ajax-js', 'BP_DTheme', $params );
  * @since 1.2
  */
 function bp_dtheme_add_blog_comments_js() {
-	if ( is_singular() ) wp_enqueue_script( 'comment-reply' );
+  if ( is_singular() ) wp_enqueue_script( 'comment-reply' );
 }
 add_action( 'template_redirect', 'bp_dtheme_add_blog_comments_js' );
 
@@ -599,20 +599,20 @@ add_action( 'template_redirect', 'bp_dtheme_add_blog_comments_js' );
  * @since 1.2
  */
 function bp_dtheme_wp_pages_filter( $page_html ) {
-	if ( !bp_is_active( 'activity' ) )
-		return $page_html;
+  if ( !bp_is_active( 'activity' ) )
+    return $page_html;
 
-	if ( 'page_on_front' != substr( $page_html, 14, 13 ) )
-		return $page_html;
+  if ( 'page_on_front' != substr( $page_html, 14, 13 ) )
+    return $page_html;
 
-	$selected = false;
-	$page_html = str_replace( '</select>', '', $page_html );
+  $selected = false;
+  $page_html = str_replace( '</select>', '', $page_html );
 
-	if ( bp_dtheme_page_on_front() == 'activity' )
-		$selected = ' selected="selected"';
+  if ( bp_dtheme_page_on_front() == 'activity' )
+    $selected = ' selected="selected"';
 
-	$page_html .= '<option class="level-0" value="activity"' . $selected . '>' . __( 'Activity Stream', 'buddypress' ) . '</option></select>';
-	return $page_html;
+  $page_html .= '<option class="level-0" value="activity"' . $selected . '>' . __( 'Activity Stream', 'buddypress' ) . '</option></select>';
+  return $page_html;
 }
 add_filter( 'wp_dropdown_pages', 'bp_dtheme_wp_pages_filter' );
 
@@ -627,13 +627,13 @@ add_filter( 'wp_dropdown_pages', 'bp_dtheme_wp_pages_filter' );
  * @since 1.2
  */
 function bp_dtheme_page_on_front_update( $oldvalue, $newvalue ) {
-	if ( !is_admin() || !is_super_admin() )
-		return false;
+  if ( !is_admin() || !is_super_admin() )
+    return false;
 
-	if ( 'activity' == $_POST['page_on_front'] )
-		return 'activity';
-	else
-		return $oldvalue;
+  if ( 'activity' == $_POST['page_on_front'] )
+    return 'activity';
+  else
+    return $oldvalue;
 }
 add_action( 'pre_update_option_page_on_front', 'bp_dtheme_page_on_front_update', 10, 2 );
 
@@ -648,12 +648,12 @@ add_action( 'pre_update_option_page_on_front', 'bp_dtheme_page_on_front_update',
  * @since 1.2
  */
 function bp_dtheme_page_on_front_template( $template ) {
-	global $wp_query;
+  global $wp_query;
 
-	if ( empty( $wp_query->post->ID ) )
-		return locate_template( array( 'activity/index.php' ), false );
-	else
-		return $template;
+  if ( empty( $wp_query->post->ID ) )
+    return locate_template( array( 'activity/index.php' ), false );
+  else
+    return $template;
 }
 add_filter( 'page_template', 'bp_dtheme_page_on_front_template' );
 
@@ -666,10 +666,10 @@ add_filter( 'page_template', 'bp_dtheme_page_on_front_template' );
  * @since 1.2
  */
 function bp_dtheme_page_on_front() {
-	if ( 'page' != get_option( 'show_on_front' ) )
-		return false;
+  if ( 'page' != get_option( 'show_on_front' ) )
+    return false;
 
-	return apply_filters( 'bp_dtheme_page_on_front', get_option( 'page_on_front' ) );
+  return apply_filters( 'bp_dtheme_page_on_front', get_option( 'page_on_front' ) );
 }
 
 
@@ -681,10 +681,10 @@ function bp_dtheme_page_on_front() {
  * @since 1.2
  */
 function bp_dtheme_fix_get_posts_on_activity_front() {
-	global $wp_query;
+  global $wp_query;
 
-	if ( !empty($wp_query->query_vars['page_id']) && 'activity' == $wp_query->query_vars['page_id'] )
-		$wp_query->query_vars['page_id'] = '"activity"';
+  if ( !empty($wp_query->query_vars['page_id']) && 'activity' == $wp_query->query_vars['page_id'] )
+    $wp_query->query_vars['page_id'] = '"activity"';
 }
 add_action( 'pre_get_posts', 'bp_dtheme_fix_get_posts_on_activity_front' );
 
@@ -699,13 +699,13 @@ add_action( 'pre_get_posts', 'bp_dtheme_fix_get_posts_on_activity_front' );
  * @since 1.2.5
  */
 function bp_dtheme_fix_the_posts_on_activity_front( $posts ) {
-	global $wp_query;
+  global $wp_query;
 
-	// NOTE: the double quotes around '"activity"' are thanks to our previous function bp_dtheme_fix_get_posts_on_activity_front()
-	if ( empty( $posts ) && !empty( $wp_query->query_vars['page_id'] ) && '"activity"' == $wp_query->query_vars['page_id'] )
-		$posts = array( (object) array( 'ID' => 'activity' ) );
+  // NOTE: the double quotes around '"activity"' are thanks to our previous function bp_dtheme_fix_get_posts_on_activity_front()
+  if ( empty( $posts ) && !empty( $wp_query->query_vars['page_id'] ) && '"activity"' == $wp_query->query_vars['page_id'] )
+    $posts = array( (object) array( 'ID' => 'activity' ) );
 
-	return $posts;
+  return $posts;
 }
 add_filter( 'the_posts', 'bp_dtheme_fix_the_posts_on_activity_front' );
 
@@ -720,20 +720,20 @@ add_filter( 'the_posts', 'bp_dtheme_fix_the_posts_on_activity_front' );
  * @since 1.2.6
  */
 function bp_dtheme_activity_secondary_avatars( $action, $activity ) {
-	switch ( $activity->component ) {
-		case 'groups' :
-		case 'blogs' :
-		case 'friends' :
-			// Only insert avatar if one exists
-			if ( $secondary_avatar = bp_get_activity_secondary_avatar() ) {
-				$reverse_content = strrev( $action );
-				$position        = strpos( $reverse_content, 'a<' );
-				$action          = substr_replace( $action, $secondary_avatar, -$position - 2, 0 );
-			}
-			break;
-	}
+  switch ( $activity->component ) {
+    case 'groups' :
+    case 'blogs' :
+    case 'friends' :
+      // Only insert avatar if one exists
+      if ( $secondary_avatar = bp_get_activity_secondary_avatar() ) {
+        $reverse_content = strrev( $action );
+        $position        = strpos( $reverse_content, 'a<' );
+        $action          = substr_replace( $action, $secondary_avatar, -$position - 2, 0 );
+      }
+      break;
+  }
 
-	return $action;
+  return $action;
 }
 add_filter( 'bp_get_activity_action_pre_meta', 'bp_dtheme_activity_secondary_avatars', 10, 2 );
 
@@ -745,15 +745,15 @@ add_filter( 'bp_get_activity_action_pre_meta', 'bp_dtheme_activity_secondary_ava
  * @since 1.2
  */
 function bp_dtheme_show_notice() { ?>
-	<div id="message" class="updated fade">
-		<p><?php printf( __( 'Theme activated! This theme supports <a href="%s">sidebar widgets</a>.', 'qmo' ), admin_url( 'widgets.php' ) ) ?></p>
-	</div>
+  <div id="message" class="updated fade">
+    <p><?php printf( __( 'Theme activated! This theme supports <a href="%s">sidebar widgets</a>.', 'qmo' ), admin_url( 'widgets.php' ) ) ?></p>
+  </div>
 
-	<style type="text/css">#message2, #message0 { display: none; }</style>
-	<?php
+  <style type="text/css">#message2, #message0 { display: none; }</style>
+  <?php
 }
 if ( is_admin() && isset($_GET['activated'] ) && $pagenow == "themes.php" ) :
-	add_action( 'admin_notices', 'bp_dtheme_show_notice' );
+  add_action( 'admin_notices', 'bp_dtheme_show_notice' );
 endif;
 
 
@@ -761,13 +761,13 @@ endif;
  * Member Buttons
  */
 if ( bp_is_active( 'friends' ) ) :
-	add_action( 'bp_member_header_actions',    'bp_add_friend_button' );
+  add_action( 'bp_member_header_actions',    'bp_add_friend_button' );
 endif;
 if ( bp_is_active( 'activity' ) ) :
-	add_action( 'bp_member_header_actions',    'bp_send_public_message_button' );
+  add_action( 'bp_member_header_actions',    'bp_send_public_message_button' );
 endif;
 if ( bp_is_active( 'messages' ) ) :
-	add_action( 'bp_member_header_actions',    'bp_send_private_message_button' );
+  add_action( 'bp_member_header_actions',    'bp_send_private_message_button' );
 endif;
 
 
@@ -775,9 +775,9 @@ endif;
  * Group Buttons
  */
 if ( bp_is_active( 'groups' ) ) {
-	add_action( 'bp_group_header_actions',     'bp_group_join_button' );
-	add_action( 'bp_group_header_actions',     'bp_group_new_topic_button' );
-	add_action( 'bp_directory_groups_actions', 'bp_group_join_button' );
+  add_action( 'bp_group_header_actions',     'bp_group_join_button' );
+  add_action( 'bp_group_header_actions',     'bp_group_new_topic_button' );
+  add_action( 'bp_directory_groups_actions', 'bp_group_join_button' );
 }
 
 
@@ -785,9 +785,9 @@ if ( bp_is_active( 'groups' ) ) {
  * Blog Buttons
  */
 if ( bp_is_active( 'blogs' ) ) :
-	add_action( 'bp_directory_blogs_actions',  'bp_blogs_visit_blog_button' );
+  add_action( 'bp_directory_blogs_actions',  'bp_blogs_visit_blog_button' );
 endif;
-	
+  
 
 /*********
  * Remove "Visit" menu
@@ -799,14 +799,14 @@ remove_action( 'bp_adminbar_menus', 'bp_adminbar_random_menu', 100 );
  * Customize "My Account" menu
  */
 function qmo_adminbar_account_menu() {
-	global $bp;
+  global $bp;
 
-	if ( !$bp->bp_nav || !is_user_logged_in() )
-		return false;
+  if ( !$bp->bp_nav || !is_user_logged_in() )
+    return false;
 
-	echo '<li id="bp-adminbar-account-menu"><a href="' . bp_loggedin_user_domain() . '">';
-	echo __( 'My Account', 'qmo' ) . '</a>';
-	echo '<ul>';
+  echo '<li id="bp-adminbar-account-menu"><a href="' . bp_loggedin_user_domain() . '">';
+  echo __( 'My Account', 'qmo' ) . '</a>';
+  echo '<ul>';
 ?>
  
     <li><a id="bp-admin-profile" href="<?php echo bp_loggedin_user_domain() . BP_XPROFILE_SLUG ?>/"><?php _e('Profile', 'qmo'); ?></a>
@@ -826,9 +826,9 @@ function qmo_adminbar_account_menu() {
     </li>
 
 <?php
-	echo '<li><a id="bp-admin-logout" class="logout" href="' . wp_logout_url( site_url() ) . '">' . __( 'Log Out', 'qmo' ) . '</a></li>';
-	echo '</ul>';
-	echo '</li>';
+  echo '<li><a id="bp-admin-logout" class="logout" href="' . wp_logout_url( site_url() ) . '">' . __( 'Log Out', 'qmo' ) . '</a></li>';
+  echo '</ul>';
+  echo '</li>';
 }
 
 remove_action( 'bp_adminbar_menus', 'bp_adminbar_account_menu', 4 );
@@ -846,161 +846,161 @@ remove_action( 'bp_adminbar_logo', 'bp_adminbar_logo' );
 * This function just duplicates wp_title and adds some of the extra bits from BP.
 */
 function qmo_page_title($sep = '&#124;', $display = true, $seplocation = '') {
-	global $wpdb, $wp_locale, $wp_query, $current_blog, $bp, $post;
+  global $wpdb, $wp_locale, $wp_query, $current_blog, $bp, $post;
 
-	$cat = get_query_var('cat');
-	$tag = get_query_var('tag_id');
-	$category_name = get_query_var('category_name');
-	$author = get_query_var('author');
-	$author_name = get_query_var('author_name');
-	$m = get_query_var('m');
-	$year = get_query_var('year');
-	$monthnum = get_query_var('monthnum');
-	$day = get_query_var('day');
-	$search = get_query_var('s');
-	$title = '';
+  $cat = get_query_var('cat');
+  $tag = get_query_var('tag_id');
+  $category_name = get_query_var('category_name');
+  $author = get_query_var('author');
+  $author_name = get_query_var('author_name');
+  $m = get_query_var('m');
+  $year = get_query_var('year');
+  $monthnum = get_query_var('monthnum');
+  $day = get_query_var('day');
+  $search = get_query_var('s');
+  $title = '';
 
-	$t_sep = '%WP_TITILE_SEP%'; // Temporary separator, for accurate flipping, if necessary
-	
-	if ( defined( 'BP_ENABLE_MULTIBLOG' ) ) {
-		$blog_title = get_blog_option( $current_blog->blog_id, 'blogname' );
-	} else {
-		$blog_title = get_blog_option( BP_ROOT_BLOG, 'blogname' );
-	}
+  $t_sep = '%WP_TITILE_SEP%'; // Temporary separator, for accurate flipping, if necessary
+  
+  if ( defined( 'BP_ENABLE_MULTIBLOG' ) ) {
+    $blog_title = get_blog_option( $current_blog->blog_id, 'blogname' );
+  } else {
+    $blog_title = get_blog_option( BP_ROOT_BLOG, 'blogname' );
+  }
 
-	// If there's a category
-	if ( !empty($cat) ) {
-			// category exclusion
-			if ( !stristr($cat,'-') )
-				$title = apply_filters('single_cat_title', get_the_category_by_ID($cat)) . " $sep ";
-	} elseif ( !empty($category_name) ) {
-		if ( stristr($category_name,'/') ) {
-				$category_name = explode('/',$category_name);
-				if ( $category_name[count($category_name)-1] )
-					$category_name = $category_name[count($category_name)-1]; // no trailing slash
-				else
-					$category_name = $category_name[count($category_name)-2]; // there was a trailling slash
-		}
-		$cat = get_term_by('slug', $category_name, 'category', OBJECT, 'display');
-		if ( $cat )
-			$title = apply_filters('single_cat_title', $cat->name);
-	}
+  // If there's a category
+  if ( !empty($cat) ) {
+      // category exclusion
+      if ( !stristr($cat,'-') )
+        $title = apply_filters('single_cat_title', get_the_category_by_ID($cat)) . " $sep ";
+  } elseif ( !empty($category_name) ) {
+    if ( stristr($category_name,'/') ) {
+        $category_name = explode('/',$category_name);
+        if ( $category_name[count($category_name)-1] )
+          $category_name = $category_name[count($category_name)-1]; // no trailing slash
+        else
+          $category_name = $category_name[count($category_name)-2]; // there was a trailling slash
+    }
+    $cat = get_term_by('slug', $category_name, 'category', OBJECT, 'display');
+    if ( $cat )
+      $title = apply_filters('single_cat_title', $cat->name);
+  }
 
-	if ( !empty($tag) ) {
-		$tag = get_term($tag, 'post_tag', OBJECT, 'display');
-		if ( is_wp_error( $tag ) )
-			return $tag;
-		if ( ! empty($tag->name) )
-			$title = sprintf( __( 'Posts tagged &ldquo;%s&rdquo;', 'qmo' ), apply_filters('single_tag_title', $tag->name)) . " $sep ";
-	}
+  if ( !empty($tag) ) {
+    $tag = get_term($tag, 'post_tag', OBJECT, 'display');
+    if ( is_wp_error( $tag ) )
+      return $tag;
+    if ( ! empty($tag->name) )
+      $title = sprintf( __( 'Posts tagged &ldquo;%s&rdquo;', 'qmo' ), apply_filters('single_tag_title', $tag->name)) . " $sep ";
+  }
 
-	// If there's an author
-	if ( !empty($author) ) {
-		$title = get_userdata($author);
-		$title = $title->display_name;
-	}
-	if ( !empty($author_name) ) {
-		// We do a direct query here because we don't cache by nicename.
-		$title = sprintf( __( 'Posts by %s', 'qmo' ), $wpdb->get_var($wpdb->prepare("SELECT display_name FROM $wpdb->users WHERE user_nicename = %s", $author_name)) ) . " $sep ";
-	}
+  // If there's an author
+  if ( !empty($author) ) {
+    $title = get_userdata($author);
+    $title = $title->display_name;
+  }
+  if ( !empty($author_name) ) {
+    // We do a direct query here because we don't cache by nicename.
+    $title = sprintf( __( 'Posts by %s', 'qmo' ), $wpdb->get_var($wpdb->prepare("SELECT display_name FROM $wpdb->users WHERE user_nicename = %s", $author_name)) ) . " $sep ";
+  }
 
-	// If there's a month
-	if ( !empty($m) ) {
-		$my_year = substr($m, 0, 4);
-		$my_month = $wp_locale->get_month(substr($m, 4, 2));
-		$my_day = intval(substr($m, 6, 2));
-		$title = $my_year . ($my_month ? $t_sep . $my_month : "") . ($my_day ? $t_sep . $my_day : "");
-	}
+  // If there's a month
+  if ( !empty($m) ) {
+    $my_year = substr($m, 0, 4);
+    $my_month = $wp_locale->get_month(substr($m, 4, 2));
+    $my_day = intval(substr($m, 6, 2));
+    $title = $my_year . ($my_month ? $t_sep . $my_month : "") . ($my_day ? $t_sep . $my_day : "");
+  }
 
-	if ( !empty($year) ) {
-		$title = $year;
-		if ( !empty($monthnum) )
-			$title .= $t_sep . $wp_locale->get_month($monthnum);
-		if ( !empty($day) )
-			$title .= $t_sep . zeroise($day, 2);
-	}
+  if ( !empty($year) ) {
+    $title = $year;
+    if ( !empty($monthnum) )
+      $title .= $t_sep . $wp_locale->get_month($monthnum);
+    if ( !empty($day) )
+      $title .= $t_sep . zeroise($day, 2);
+  }
 
-	// If there is a post
-	if ( is_single() || ( is_home() && !is_front_page() ) || ( is_page() && !is_front_page() ) ) {
-		$post = $wp_query->get_queried_object();
-		$title = apply_filters( 'single_post_title', $post->post_title ) . " $sep ";
-	}
+  // If there is a post
+  if ( is_single() || ( is_home() && !is_front_page() ) || ( is_page() && !is_front_page() ) ) {
+    $post = $wp_query->get_queried_object();
+    $title = apply_filters( 'single_post_title', $post->post_title ) . " $sep ";
+  }
 
-	// If there's a taxonomy
-	if ( is_tax() ) {
-		$taxonomy = get_query_var( 'taxonomy' );
-		$tax = get_taxonomy( $taxonomy );
-		$term = $wp_query->get_queried_object();
-		$term = $term->name;
-		$title = $tax->labels->name . $t_sep . $term;
-	}
+  // If there's a taxonomy
+  if ( is_tax() ) {
+    $taxonomy = get_query_var( 'taxonomy' );
+    $tax = get_taxonomy( $taxonomy );
+    $term = $wp_query->get_queried_object();
+    $term = $term->name;
+    $title = $tax->labels->name . $t_sep . $term;
+  }
 
-	//If it's a search
-	if ( is_search() ) {
-		/* translators: 1: search phrase */
-		$title = sprintf(__('Search results for &ldquo;%1$s&rdquo;'), strip_tags($search));
-	}
+  //If it's a search
+  if ( is_search() ) {
+    /* translators: 1: search phrase */
+    $title = sprintf(__('Search results for &ldquo;%1$s&rdquo;'), strip_tags($search));
+  }
   
   //If it's a 404
-	if ( is_404() ) {
-		$title = __('Not Found') . " $sep ";
-	}
-	
-	$prefix = '';
-	if ( !empty($title) )
-		$prefix = " $sep ";
+  if ( is_404() ) {
+    $title = __('Not Found') . " $sep ";
+  }
+  
+  $prefix = '';
+  if ( !empty($title) )
+    $prefix = " $sep ";
 
- 	// Determines position of the separator and direction of the breadcrumb
-	if ( 'right' == $seplocation ) { // sep on right, so reverse the order
-		$title_array = explode( $t_sep, $title );
-		$title_array = array_reverse( $title_array );
-		$title = implode( " $sep ", $title_array );
-	} 
-	else {
-		$title_array = explode( $t_sep, $title );
-		$title = $prefix . implode( " $sep ", $title_array );
-	}
-	
+  // Determines position of the separator and direction of the breadcrumb
+  if ( 'right' == $seplocation ) { // sep on right, so reverse the order
+    $title_array = explode( $t_sep, $title );
+    $title_array = array_reverse( $title_array );
+    $title = implode( " $sep ", $title_array );
+  } 
+  else {
+    $title_array = explode( $t_sep, $title );
+    $title = $prefix . implode( " $sep ", $title_array );
+  }
+  
   if ( !empty( $bp->displayed_user->fullname ) ) {
- 		$title = strip_tags( $bp->displayed_user->fullname . " $sep " . ucwords( $bp->current_component ) . " $sep " );
-	} 
-	else if ( $bp->is_single_item ) {
-		$title = $bp->bp_options_title . " $sep " . ucwords( $bp->current_component ) . " $sep ";
-	} 
-	else if ( $bp->is_directory ) {
-		if ( !$bp->current_component )
-			$title = ucwords( BP_MEMBERS_SLUG ) . " $sep ";
-		else
-			$title = ucwords( $bp->current_component ) . " $sep ";
+    $title = strip_tags( $bp->displayed_user->fullname . " $sep " . ucwords( $bp->current_component ) . " $sep " );
+  } 
+  else if ( $bp->is_single_item ) {
+    $title = $bp->bp_options_title . " $sep " . ucwords( $bp->current_component ) . " $sep ";
+  } 
+  else if ( $bp->is_directory ) {
+    if ( !$bp->current_component )
+      $title = ucwords( BP_MEMBERS_SLUG ) . " $sep ";
+    else
+      $title = ucwords( $bp->current_component ) . " $sep ";
   } 
   else if ( bp_is_register_page() ) {
-		$title = __( 'Create an Account', 'qmo' ) . " $sep ";
-	} 
-	else if ( bp_is_activation_page() ) {
-		$title = __( 'Activate Your Account', 'qmo' ) . " $sep ";
-	} 
-	else if ( bp_is_group_create() ) {
-		$title = __( 'Create a Team', 'qmo' ) . " $sep ";
-	} 
-	else if ( bp_is_create_blog() ) {
-		$title = __( 'Create a Blog', 'qmo' ) . " $sep ";
-	}
-	
-	// Forum pages
-	if ( $bp->current_action == 'forum' && $bp->action_variables[0] == 'topic' ) {
-		if ( bp_has_forum_topic_posts() ) {
-			$topic_title = bp_get_the_topic_title();
-			$title = $topic_title . " $sep ";
-		}
-	}
+    $title = __( 'Create an Account', 'qmo' ) . " $sep ";
+  } 
+  else if ( bp_is_activation_page() ) {
+    $title = __( 'Activate Your Account', 'qmo' ) . " $sep ";
+  } 
+  else if ( bp_is_group_create() ) {
+    $title = __( 'Create a Team', 'qmo' ) . " $sep ";
+  } 
+  else if ( bp_is_create_blog() ) {
+    $title = __( 'Create a Blog', 'qmo' ) . " $sep ";
+  }
+  
+  // Forum pages
+  if ( $bp->current_action == 'forum' && $bp->action_variables[0] == 'topic' ) {
+    if ( bp_has_forum_topic_posts() ) {
+      $topic_title = bp_get_the_topic_title();
+      $title = $topic_title . " $sep ";
+    }
+  }
 
-	$title = apply_filters('qmo_page_title', $title, $sep, $seplocation);
+  $title = apply_filters('qmo_page_title', $title, $sep, $seplocation);
 
-	// Send it out
-	if ( $display )
-		echo $title;
-	else
-		return $title;
+  // Send it out
+  if ( $display )
+    echo $title;
+  else
+    return $title;
 }
 
 
@@ -1016,7 +1016,7 @@ remove_filter( 'bp_get_the_profile_field_value', 'xprofile_filter_link_profile_d
  */
 function qmo_show_user_meta() {
   global $bp;
-	
+  
   // If BuddyPress Member Profile Stats is turned on
   if ( function_exists('bp_member_profile_stats_header_meta') )
     return true;
@@ -1026,8 +1026,8 @@ function qmo_show_user_meta() {
     $karma = get_usermeta( $bp->displayed_user->id, 'rfp_post_karma' );
     $relative_karma = rfp_calculate_relative_karma( $karma, $bp->displayed_user->id );
     // If the member has karma to display
-  	if ( get_option( 'rfp_karma_hide' ) || $relative_karma == 0 || get_option( 'rfp_karma_never_minus' ) && $karma < 0 ) :
-  		return false;
+    if ( get_option( 'rfp_karma_hide' ) || $relative_karma == 0 || get_option( 'rfp_karma_never_minus' ) && $karma < 0 ) :
+      return false;
     else :
       return true;
     endif;
@@ -1040,19 +1040,19 @@ function qmo_show_user_meta() {
  */
 function qmo_group_list_admins( $group = false ) {
   global $bp;
-	global $groups_template;
-	if ( !$group ) :
-		$group =& $groups_template->group;
+  global $groups_template;
+  if ( !$group ) :
+    $group =& $groups_template->group;
   endif;
-	if ( $group->admins ) : ?>
-		<ul id="group-admins">
-			<?php foreach( (array)$group->admins as $admin ) { ?>
-				<li>
-					<a title="<?php echo bp_core_get_user_displayname( $admin->user_id ); ?>" href="<?php echo bp_core_get_user_domain( $admin->user_id, $admin->user_nicename, $admin->user_login ) ?>"><?php echo bp_core_fetch_avatar( array( 'item_id' => $admin->user_id, 'email' => $admin->user_email ) ); ?></a>
-				</li>
-			<?php } ?>
-		</ul>
-	<?php endif; ?>
+  if ( $group->admins ) : ?>
+    <ul id="group-admins">
+      <?php foreach( (array)$group->admins as $admin ) { ?>
+        <li>
+          <a title="<?php echo bp_core_get_user_displayname( $admin->user_id ); ?>" href="<?php echo bp_core_get_user_domain( $admin->user_id, $admin->user_nicename, $admin->user_login ) ?>"><?php echo bp_core_fetch_avatar( array( 'item_id' => $admin->user_id, 'email' => $admin->user_email ) ); ?></a>
+        </li>
+      <?php } ?>
+    </ul>
+  <?php endif; ?>
 <?php
 }
 
@@ -1061,19 +1061,19 @@ function qmo_group_list_admins( $group = false ) {
  * Customize group mod list include the display name in a title
  */
 function qmo_group_list_mods( $group = false ) {
-	global $groups_template;
-	if ( !$group ) :
-		$group =& $groups_template->group;
+  global $groups_template;
+  if ( !$group ) :
+    $group =& $groups_template->group;
   endif;
-	if ( $group->mods ) : ?>
-		<ul id="group-mods">
-			<?php foreach( (array)$group->mods as $mod ) { ?>
-				<li>
-					<a title="<?php echo bp_core_get_user_displayname( $mod->user_id ); ?>" href="<?php echo bp_core_get_user_domain( $mod->user_id, $mod->user_nicename, $mod->user_login ) ?>"><?php echo bp_core_fetch_avatar( array( 'item_id' => $mod->user_id, 'email' => $mod->user_email ) ); ?></a>
-				</li>
-			<?php } ?>
-		</ul>
-	<?php endif; ?>
+  if ( $group->mods ) : ?>
+    <ul id="group-mods">
+      <?php foreach( (array)$group->mods as $mod ) { ?>
+        <li>
+          <a title="<?php echo bp_core_get_user_displayname( $mod->user_id ); ?>" href="<?php echo bp_core_get_user_domain( $mod->user_id, $mod->user_nicename, $mod->user_login ) ?>"><?php echo bp_core_fetch_avatar( array( 'item_id' => $mod->user_id, 'email' => $mod->user_email ) ); ?></a>
+        </li>
+      <?php } ?>
+    </ul>
+  <?php endif; ?>
 <?php
 }
 
@@ -1082,36 +1082,36 @@ function qmo_group_list_mods( $group = false ) {
  * Exclude certain types of activitiy from showing up in streams
  */
 function qmo_activity_filter( $a, $activities ) {
-	global $bp; 
+  global $bp; 
 
-	/* Only run the filter on activity streams where you want blog comments filtered out. 
-	 * For example, the following will only filter them on the main activity page.
-	 * Member activity streams have their own loop where we're already excluding unwanted actions.
+  /* Only run the filter on activity streams where you want blog comments filtered out. 
+   * For example, the following will only filter them on the main activity page.
+   * Member activity streams have their own loop where we're already excluding unwanted actions.
    */
-	if ( $bp->current_component != $bp->activity->slug )
-		return $activities;
+  if ( $bp->current_component != $bp->activity->slug )
+    return $activities;
 
-	/* Filter out unwanted actions */
-	foreach( $activities->activities as $key => $activity ) {
-	/* HACK: Checking types might be better as an array. So many ORs seems sloppy. */
-		if ( 
-		      $activity->type == 'joined_group' 
-		      || $activity->type == 'created_group'
-		      || $activity->type == 'new_blog_comment'
-		      || $activity->type == 'new_status'
-		      || $activity->type == 'new_wire_post'
-		      || $activity->type == 'friendship_created'
-		    ) {
-			unset( $activities->activities[$key] );
-			$activities->total_activity_count = $activities->total_activity_count - 1;
-			$activities->activity_count = $activities->activity_count - 1;
-		}
-	}
+  /* Filter out unwanted actions */
+  foreach( $activities->activities as $key => $activity ) {
+  /* HACK: Checking types might be better as an array. So many ORs seems sloppy. */
+    if ( 
+          $activity->type == 'joined_group' 
+          || $activity->type == 'created_group'
+          || $activity->type == 'new_blog_comment'
+          || $activity->type == 'new_status'
+          || $activity->type == 'new_wire_post'
+          || $activity->type == 'friendship_created'
+        ) {
+      unset( $activities->activities[$key] );
+      $activities->total_activity_count = $activities->total_activity_count - 1;
+      $activities->activity_count = $activities->activity_count - 1;
+    }
+  }
 
-	/* Renumber the array keys to account for missing items */
-	$activities_new = array_values( $activities->activities );
-	$activities->activities = $activities_new;
-	return $activities;
+  /* Renumber the array keys to account for missing items */
+  $activities_new = array_values( $activities->activities );
+  $activities->activities = $activities_new;
+  return $activities;
 }
 add_action( 'bp_has_activities', 'qmo_activity_filter', 10, 2 );
 

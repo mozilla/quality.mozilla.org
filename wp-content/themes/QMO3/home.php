@@ -13,15 +13,15 @@ get_header(); ?>
 
     <?php if ( bp_has_groups( bp_ajax_querystring( 'groups' ) ) ) : ?>
       <ul class="teams-list">
-    	<?php while ( bp_groups() ) : bp_the_group(); ?>
-    		<li>
-    		  <a href="<?php bp_group_permalink(); ?>">
-    		    <?php bp_group_avatar( 'width=100&height=100' ); ?>
-    		    <?php bp_group_name(); ?>
-    		  </a>
-    		</li>
-    	<?php endwhile; ?>
-    	</ul>
+      <?php while ( bp_groups() ) : bp_the_group(); ?>
+        <li>
+          <a href="<?php bp_group_permalink(); ?>">
+            <?php bp_group_avatar( 'width=100&height=100' ); ?>
+            <?php bp_group_name(); ?>
+          </a>
+        </li>
+      <?php endwhile; ?>
+      </ul>
     <?php endif; ?>
 
     <?php the_content(); ?>

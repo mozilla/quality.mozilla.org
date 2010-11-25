@@ -6,7 +6,7 @@
       <?php bp_group_description(); ?>
     </div>
   </div>
-  
+
   <div class="data">
     <div class="team-meta">
       <?php do_action( 'bp_before_group_header_meta' ); ?>
