@@ -487,8 +487,15 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 .widget .blogroll a:link, .widget .blogroll a:visited { font-weight: bold; color: #369; }
 
 /*** @Related posts and pages *********/
-.widget_categoryposts ul, .flexipages_widget ul { border-bottom: 1px dashed #999; }
-.widget_categoryposts .cat-post-item, .flexipages_widget .page_item { border-top: 1px dashed #999; padding: .15em 1px; }
+.widget_categoryposts ul { border-bottom: 1px dashed #999; }
+.widget_categoryposts .cat-post-item { border-bottom: 1px dashed #999; }
+
+.flexipages_widget .widgettitle { border-bottom: 1px dashed #999; margin-bottom: 0; padding-bottom: .6em; }
+.flexipages_widget li a { display: block; border-bottom: 1px dashed #999; padding: .15em 1px; }
+.flexipages_widget li ul { margin-bottom: 0; }
+.flexipages_widget li li a { padding-left: 10px; }
+.flexipages_widget li li li a { padding-left: 20px; }
+.flexipages_widget li li li li a { padding-left: 30px; }
 
 /*** @Events widgets *********/
 .dig-in { font-size: .846em; margin: 1em 0; }
@@ -685,6 +692,7 @@ ul.wp-tag-cloud li { display: inline; }
 .groups .team h2 img { position: absolute; left: 0; top: 1.44em; padding: 2px; }
 .groups .team-info { width: 68%; float: left; }
 .groups .team-meta { float: right; width: 25%; }
+.mygroups .team:first-child { background-image: none; }
 
 /* Team @Meta box *********/
 .team-meta { border: 1px solid #f0dfc0; padding: .5em 10px; 

@@ -29,15 +29,19 @@ $parent = $ancestors[$root]; // Top parent is the last in the array
   endif; ?>
 
 <?php // Community
-  if (get_page_by_path('community')) :
-    if ( is_page('community') && $paged < 1 ) : ?>
-  <li class="current" title="This is the current page"><em>Community</em></li>
-<?php elseif (is_page('community') || is_category('syndicated') || is_category('twitter') ) : ?>
-  <li class="current"><a href="<?php echo get_permalink(get_page_by_path('community')->ID); ?>">Community</a></li>
-<?php else : ?>
-  <li><a href="<?php echo get_permalink(get_page_by_path('community')->ID); ?>">Community</a></li>
-<?php endif;
-  endif; ?>
+if ( function_exists('bp_is_active') && bp_is_active( 'activity' ) ) :
+  if ( bp_is_page(BP_ACTIVITY_SLUG) && bp_is_directory() ) : ?>  
+  <li class="current"><a href="<?php echo site_url(); ?>/<?php echo BP_ACTIVITY_SLUG ?>/">Community</a></li>
+  <?php else : ?>
+  <li><a href="<?php echo site_url(); ?>/<?php echo BP_ACTIVITY_SLUG ?>/">Community</a></li>
+  <?php endif; ?>
+<?php else : // If activity is disabled, link to the blog page ?>
+  <?php if ( is_page('blog') || is_category('syndicated') || is_category('twitter') ) : ?>
+  <li class="current"><a href="<?php echo get_permalink(get_page_by_path('blog')->ID); ?>">Community</a></li>
+  <?php else : ?>
+  <li><a href="<?php echo get_permalink(get_page_by_path('blog')->ID); ?>">Community</a></li>
+  <?php endif; ?>
+<?php endif; ?>
 
 <?php // Events
   if ( is_term('events','category') ) :

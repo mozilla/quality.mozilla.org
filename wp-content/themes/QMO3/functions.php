@@ -521,6 +521,13 @@ function qmo_feed_content( $content ) {
 add_filter('the_content', 'qmo_feed_content');
 
 
+/*********
+ * Create a special role for the Twitter Bot
+ */
+remove_role('twitter_bot'); // remove it first to prevent duplicates, then add
+add_role( 'twitter_bot', 'Twitter Bot', array('read' =>  true, 'edit_posts' =>  true, 'publish_posts' => true) );
+
+
 /** BEGIN BUDDYPRESS FUNCTIONS **/
 
 /*********
@@ -1115,6 +1122,12 @@ function qmo_activity_filter( $a, $activities ) {
   return $activities;
 }
 add_action( 'bp_has_activities', 'qmo_activity_filter', 10, 2 );
+
+
+/*********
+ * Limit avatar uploads to 100k (102,400 bytes)
+ */
+define('BP_AVATAR_ORIGINAL_MAX_FILESIZE', 102400);
 
 
 /** END BUDDYPRESS FUNCTIONS **/

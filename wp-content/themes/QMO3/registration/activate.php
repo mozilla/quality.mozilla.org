@@ -8,8 +8,6 @@
 
   <div class="page" id="activate-page">
 
-    <?php do_action( 'template_notices' ); ?>
-
     <?php if ( bp_account_was_activated() ) : ?>
       <h1 class="page-title"><?php _e( 'Account Activated', 'buddypress' ) ?></h1>
 

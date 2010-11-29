@@ -1,10 +1,10 @@
 <?php
-/**
- * Change this to reflect local time as WordPress has changed it to UTC as default.
- * You can comment out the following if you accept time zone as UTC.
- * The following default setting is for Japanese.
-**/
+
+// for testing only
+//if you need to add this at the TOP of your wp-config.php file. (Here are the timezones http://us3.php.net/manual/en/timezones.php)
 //date_default_timezone_set('Asia/Tokyo');
+//date_default_timezone_set('America/New_York');
+
 
 /* This function was used for debugging the digest scheduling features */
 function ass_digest_schedule_print() {	
@@ -116,7 +116,7 @@ function ass_digest_fire( $type ) {
 			
 		$message .= $footer;
 		
-		$message .= "\n\n<br><br>" . sprintf( __( "To disable these notifications please login and go to: %s where you can change your email settings for each group.", 'bp-ass' ), "<a href=\"{$userdomain}groups/\">".__('My Groups', 'bp-ass') ."</a>" );
+		$message .= "\n\n<br><br>" . sprintf( __( "To disable these notifications please login and go to: %s where you can change your email settings for each group.", 'bp-ass' ), "<a href=\"{$userdomain}{$bp->groups->slug}/\">".__('My Groups', 'bp-ass') ."</a>" );
 		$message .= "</div>";
 		
 		$message_plaintext = ass_convert_html_to_plaintext( $message );
@@ -379,11 +379,13 @@ function ass_digest_record_activity( $activity_id, $user_id, $group_id, $type = 
 
 
 function ass_cron_add_weekly( $schedules ) {
-	$schedules['weekly'] = array( 'interval' => 604800, 'display' => __( 'Once Weekly', 'bp-ass' ) );
-	
+	if ( !isset( $schedules[ 'weekly' ] ) ) {
+		$schedules['weekly'] = array( 'interval' => 604800, 'display' => __( 'Once Weekly', 'bp-ass' ) );
+	}
 	return $schedules;
 }
 add_filter( 'cron_schedules', 'ass_cron_add_weekly' );
+
 
 
 function ass_set_daily_digest_time( $hours, $minutes ) {
@@ -417,5 +419,18 @@ function ass_set_weekly_digest_time( $day ) {
 	/* Finally, save the option */
 	update_option( 'ass_weekly_digest', $day );
 }
+
+/*
+// if in the future we want to do flexible schedules. this is how we could add the custom cron. Then we need to change the digest or summary to use this custom schedule. 
+function ass_custom_digest_frequency( $schedules ) {
+    if( ( $freq = get_option(  'ass_digest_frequency' ) ) ) {
+        if( !isset( $schedules[$freq.'_hrs'] ) ) {
+            $schedules[$freq.'_hrs'] = array( 'interval' => $freq * 3600, 'display' => "Every $freq hours" );
+        }
+    }
+    return $schedules;
+}
+add_filter( 'cron_schedules', 'ass_custom_digest_frequency' );
+*/
 
 ?>
