@@ -3,7 +3,7 @@ Contributors: mmuro
 Tags: restrict, admin, administration, cms, categories, category
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 1.3
+Stable tag: 1.4
 
 Restrict the categories that users in defined roles can view, add, and edit in the admin panel.
 
@@ -42,6 +42,12 @@ To fix this, go to <em>Settings > Restrict Categories</em>, uncheck <em>all</em>
 
 == Changelog ==
 
+**Version 1.4**
+
+* Fix for bug assuming database table prefix
+* Improve compatability with PHP 5.2 and empty array checking
+* Added string localization
+
 **Version 1.3**
 
 * Update that removes restricted categories from all terms lists (Category management page, Posts dropdown filter, and New/Edit post category list)
@@ -62,6 +68,12 @@ To fix this, go to <em>Settings > Restrict Categories</em>, uncheck <em>all</em>
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 1.4 =
+This version fixes problems with error messages.
+
+= 1.3 =
+Upgrade for compatibility with WordPress 3.1.
 
 = 1.2 =
 Recommended upgrade to correct bug which would allow restricted users to bypass category restriction.

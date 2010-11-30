@@ -3,7 +3,7 @@
 Plugin Name: Restrict Categories
 Description: Restrict the categories that users in defined roles can view, add, and edit in the admin panel.
 Author: Matthew Muro
-Version: 1.3
+Version: 1.4
 */
 
 /*
@@ -29,10 +29,8 @@ if ( is_admin() ) {
 $rc_name = 'Restrict Categories';
 $rc_shortname = 'RestrictCats';
 
-/* Only restrict the Edit Posts page. */
-global $pagenow;
-//if ( $pagenow == 'edit.php' )
-	add_action( 'admin_head', 'RestrictCats_posts' );
+/* Where the magic happens */
+add_action( 'admin_head', 'RestrictCats_posts' );
 
 /* Build options and settings pages. */
 add_action('admin_init', 'RestrictCats_init');
@@ -101,7 +99,7 @@ function RestrictCats_get_roles(){
  * 
  * @since 1.0
  * @global $rc_shortname string The global plugin abbreviated name
- * @uses register_setting() Register a setting int he database
+ * @uses register_setting() Register a setting in the database
  */
 function RestrictCats_init() {
 	global $rc_shortname;
@@ -113,6 +111,7 @@ function RestrictCats_init() {
  * Sanitize input
  * 
  * @since 1.3
+ * @return $input array Returns array of input if available
  */
 function RestrictCats_options_sanitize($input){
 	if( !is_array( $input ) )
@@ -137,40 +136,49 @@ function RestrictCats_add_admin() {
 
 	$rc_options = RestrictCats_populate_opts();
 	
+	/* Check if the page has been submitted */
 	if ( $_GET['page'] == plugin_basename(__FILE__) ) {
 		$nonce = $_REQUEST['_wpnonce'];
 		
+		/* Check if the Save Changes button has been pressed */
 		if ( 'save' == $_REQUEST['action'] ) {
 			
+			/* Security check to verify the nonce */
 			if (! wp_verify_nonce($nonce, 'rc-save-nonce') )
-				die('Security check');
-					
+				die(__('Security check'));
+			
+			/* Loop through all options and add/remove new values */	
 			foreach ( $rc_options as $value ) {
 				$key = $value['id'];
 
-				$settings[$key] = $_REQUEST[$key];
+				$settings[ $key ] = $_REQUEST[ $key ];
 			}
 			
 			update_option( $rc_shortname.'_options', $settings );
 			
+			/* Set submitted action to display success message */
 			$_POST['saved'] = true;
 		}
+		/* Check if the Reset button has been pressed */
 		elseif ( 'reset' == $_REQUEST['action'] ) {
 			
+			/* Security check to verify the nonce */
 			if ( ! wp_verify_nonce($nonce, 'rc-reset-nonce') )
-				die('Security check');
+				die(__('Security check'));
 			
+			/* Loop through all options and reset values */
 			foreach ( $rc_options as $value ) {
-				$new_options[$value['id']];
+				$new_options[ $value['id'] ];
 			}
 
 			update_option( $rc_shortname.'_options', $new_options );
 			
+			/* Set submitted action to display success message */
 			$_POST['reset'] = true;
 		}
 	}
 	   
-	add_options_page( $rc_name, 'Restrict Categories', 'create_users', plugin_basename(__FILE__), 'RestrictCats_admin' );
+	add_options_page( __($rc_name, 'restrict-categories'), __('Restrict Categories', 'restrict-categories'), 'create_users', plugin_basename(__FILE__), 'RestrictCats_admin' );
 }
 
 /**
@@ -185,15 +193,16 @@ function RestrictCats_add_admin() {
 function RestrictCats_admin() {
 	global $rc_name, $rc_shortname, $rc_options;
 	
+	/* Success messages for completing the form */
 	if ( $_POST['saved'] )
-		echo '<div id="message" class="updated fade"><p><strong>' . $rc_name . ' settings saved.</strong></p></div>';
+		_e('<div id="message" class="updated fade"><p><strong>' . $rc_name . ' settings saved.</strong></p></div>', 'restrict-categories');
 	if ( $_POST['reset'] )
-		echo '<div id="message" class="updated fade"><p><strong>' . $rc_name . ' settings reset.</strong></p></div>';
+		_e('<div id="message" class="updated fade"><p><strong>' . $rc_name . ' settings reset.</strong></p></div>', 'restrict-categories');
 ?>
 
 	<div class="wrap">
         <div class="icon32" id="icon-options-general"><br></div>
-        <h2><?php echo $rc_name; ?></h2>
+        <h2><?php _e($rc_name, 'restrict-categories'); ?></h2>
         
         <form method="post">
         <table class="form-table">
@@ -201,21 +210,22 @@ function RestrictCats_admin() {
         <?php
         $settings = get_option( $rc_shortname.'_options' );
 		
+		/* Loop through each role and build the checkboxes */
         foreach ( $rc_options as $value ) : 
             $id = $value['id'];
         ?>
-            <tr valign="top"> 
+            <tr valign="top">
                 <th scope="row"><?php echo $value['name']; ?></th>
                 <td>
                     <fieldset>
                         <?php
                         foreach ( $value['options'] as $option ) {
-							if ( is_array( $settings[ $id ] ) && !empty( $settings[ $id ] ) ){		//determine if settings is an array and not empty before checking boxes
-								if ( in_array( $option, $settings[ $id ] ) )	//check the box if there is a match from options
-									$checked = 'checked="checked"';
-								else
-									$checked = '';
-							}
+							
+							/* Check the box if there is a match from options */
+							if ( is_array( $settings[ $id ] ) && in_array( $option, $settings[ $id ] ) )
+								$checked = 'checked="checked"';
+							else
+								$checked = '';
                         ?>
                         <div style="overflow:hidden; margin:0 0 5px; float:left; width: 25%;">
                             <label for="<?php echo $id . '-' . $option; ?>">
@@ -226,7 +236,7 @@ function RestrictCats_admin() {
                         <div style="clear:both"></div>
                     </fieldset>
                 </td>
-            </tr>	
+            </tr>
         <?php 
         endforeach;
         
@@ -235,14 +245,15 @@ function RestrictCats_admin() {
         </tbody>
         </table>
         <p class="submit">
-        <input class="button-primary" name="save" type="submit" value="Save Changes" />    
+        <input class="button-primary" name="save" type="submit" value="<?php _e('Save Changes', 'restrict-categories'); ?>" />   
         <input type="hidden" name="action" value="save" />
         </form>
         </p>
-        <h3>Reset to Default Settings</h3>
-        <p>This option will reset all changes you have made to the default configuration.  <strong>You cannot undo this process</strong>.</p>
+        
+        <h3><?php _e('Reset to Default Settings', 'restrict-categories'); ?></h3>
+        <p><?php _e('This option will reset all changes you have made to the default configuration.  <strong>You cannot undo this process</strong>.', 'restrict-categories'); ?></p>
         <form method="post">
-        <input class="button-secondary" name="reset" type="submit" value="Reset" />
+        <input class="button-secondary" name="reset" type="submit" value="<?php _e('Reset', 'restrict-categories'); ?>" />
         <input type="hidden" name="action" value="reset" />
         <?php wp_nonce_field( 'rc-reset-nonce' ); ?>
         </form>
@@ -267,32 +278,38 @@ function RestrictCats_admin() {
 function RestrictCats_posts() {
 	global $wp_query, $current_user, $rc_shortname, $cat_list;
 	
-	get_currentuserinfo();
+	/* Get the current user in the admin */
+	$user = new WP_User( $current_user->ID );
 	
-	$user_id = $current_user->ID;
-	$val = 'wp_capabilities';
-	$single = true;
-	$user_cap = get_user_meta( $current_user->ID, 'wp_capabilities', true );
+	/* Get the user role */
+	$user_cap = $user->roles;
 	
-	foreach ( $user_cap as $key => $value ) {
+	foreach ( $user_cap as $key ) {
 		$settings = get_option( $rc_shortname.'_options' );
 		
+		/* Make sure the settings from the DB isn't empty before building the category list */
 		if ( is_array( $settings ) && !empty( $settings[ $key . '_cats' ] ) ){
+			
+			/* Build the category list */
 			foreach ( $settings[ $key . '_cats' ] as $category ) {
 				$cat_list .= get_cat_ID( $category ) . ',';
 			}
 		}
-	
+
+		/* Clean up the category list */
 		$cat_list = rtrim( $cat_list, ',' );
+		
+		/* Build an array for the categories */
 		$cat_list_array = explode( ',', $cat_list );
 
-		if ( $user_cap[$key] && $cat_list !== '' ) {
+		/* If there are no categories, don't do anything */
+		if ( $cat_list !== '' ) {
 			
 			add_filter('list_terms_exclusions',	'RestrictCats_exclusions');
 			
-			if( in_array( $_REQUEST['cat'], $cat_list_array ) ){
+			/* Restrict the list of posts in the admin */
+			if( in_array( $_REQUEST['cat'], $cat_list_array ) )
 				$wp_query->query( 'cat=' . $_REQUEST['cat'] );
-			}
 			else
 				$wp_query->query( 'cat=' . $cat_list );
 		}
@@ -315,5 +332,5 @@ function RestrictCats_exclusions(){
 	return $excluded;
 }
 
-}//endif is_admin
+}/* endif is_admin */
 ?>

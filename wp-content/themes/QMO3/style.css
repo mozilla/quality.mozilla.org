@@ -685,6 +685,7 @@ ul.wp-tag-cloud li { display: inline; }
 #subnav.item-list-tabs li.feed a { padding-left: 22px; background: url("img/feed-16x16.png") 0 1px no-repeat; }
 
 /* @Team directory page *********/
+.groups { list-style: none; }
 .groups .team { position: relative; min-height: 80px; padding: 2em 0 0 110px; margin-bottom: 2em; background: url("img/pencil-line.png") center top repeat-x; }
 .groups .team:nth-child(even) { background-position: -40% top; }
 .groups .team:after { content: "."; display: block; clear: both; height: 0; visibility: hidden; }
@@ -693,6 +694,7 @@ ul.wp-tag-cloud li { display: inline; }
 .groups .team-info { width: 68%; float: left; }
 .groups .team-meta { float: right; width: 25%; }
 .mygroups .team:first-child { background-image: none; }
+#sub-teams .team { padding: 2em 0 0; margin: 0; }
 
 /* Team @Meta box *********/
 .team-meta { border: 1px solid #f0dfc0; padding: .5em 10px; 
