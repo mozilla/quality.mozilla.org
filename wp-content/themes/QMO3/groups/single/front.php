@@ -5,7 +5,7 @@
   fc_get_post($page_id);
 ?>
 <?php if ($page_id != '') : ?>
-<article class="team-general single hentry">
+<article class="team-general single">
   <h1 class="entry-title"><?php the_title(); ?></h1>
   <div class="entry-content">
   <?php the_content(); ?>
@@ -13,11 +13,13 @@
 
   <?php $children = $wpdb->get_results("SELECT * FROM $wpdb->posts WHERE post_parent = ".$post->ID."   AND post_type = 'page' ORDER BY menu_order", 'OBJECT'); ?>
   <?php if ( $children ) : ?>
-  <ul id="sub-teams" class="groups">
+  <ul id="sub-teams" class="groups hfeed">
     <?php foreach ( $children as $child ) : setup_postdata( $child ); ?>
-    <li class="team">
+    <li class="team hentry">
       <h2 class="entry-title"><a href="<?php echo get_permalink($child->ID); ?>" rel="bookmark" title="<?php echo $child->post_title; ?>"><?php echo $child->post_title; ?></a></h2>
-      <?php the_content(); ?>
+      <div class="entry-content">
+        <?php the_content(); ?>
+      </div>
     </li>
     <?php endforeach; ?>
   </ul>
