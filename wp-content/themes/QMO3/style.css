@@ -694,6 +694,7 @@ ul.wp-tag-cloud li { display: inline; }
 .groups .team-info { width: 68%; float: left; }
 .groups .team-meta { float: right; width: 25%; }
 .mygroups .team:first-child { background-image: none; }
+#sub-teams .team { padding: 2em 0 0; margin: 0; }
 
 /* Team @Meta box *********/
 .team-meta { border: 1px solid #f0dfc0; padding: .5em 10px; 
@@ -728,11 +729,22 @@ ul.wp-tag-cloud li { display: inline; }
 #team-leaders ul { list-style: none; margin: 0 0 .75em; }
 #team-leaders li { display: inline; margin: 0 6px .5em 0; }
 #team-leaders .avatar { border: 1px solid; padding: 1px; width: 25px; }
-.team-general .entry-title, #sub-teams .entry-title { font-size: 1.69em; }
+.team-general .team-title { font-size: 1.69em; }
 .team-general h2 { font-size: 1.385em; }
 .team-general h3 { font-size: 1.2em; }
 .team-general h4 { font-size: 1em; }
-#sub-teams .team { padding: 2em 0 0; margin: 0; }
+
+/* @Tabbed boxes *********/
+.tabbed-on ul.index { list-style: none; clear: both; margin: 0 0 1.6em; font-family: Verdana, Tahoma, sans-serif; }
+.tabbed-on ul.index li { display: inline; padding-right: 10px; margin-right: 10px; border-right: 1px solid #ccc; color: #369; }
+.tabbed-on ul.index li:hover { text-decoration: underline; cursor: pointer; }
+.tabbed-on ul.index li:focus { outline: 0; }
+.tabbed-on ul.index li:last-child { border: 0; }
+.tabbed-on ul.index li.active { font-weight: bold; }
+
+.tabbed-on .folder { position: absolute; left: -999em; height: 0; overflow: hidden; }
+.tabbed-on .folder.visible { position: relative; left: 0; height: auto; overflow: visible; }
+.tabbed-on .folder:focus { outline: 0; }
 
 /* @What's @New *********/
 #whats-new-form { position: relative; padding: 10px 15px 0 95px; margin: 0 0 2em; background: #f7fafb; border: 1px solid #f0f5f8; -moz-border-radius: 8px; -webkit-border-radius: 8px; border-radius: 8px; -moz-box-shadow: 0 1px 3px rgba(0,0,0,.1); -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.1); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
