@@ -1,0 +1,741 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Breadcrumb NavXT\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-11-19 13:19+0900\n"
+"PO-Revision-Date: 2010-11-19 14:10+0900\n"
+"Last-Translator: KAZUHIRO TERADA <info@technolog.jp>\n"
+"Language-Team: Kazuhiro Terada <info@technolog.jp>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Japanese\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Country: JAPAN\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../mtekk_admin_class.php:57
+msgid "Undo"
+msgstr "元に戻す"
+
+#: ../mtekk_admin_class.php:64
+msgid "Migrate now."
+msgstr "すぐに移行"
+
+#: ../mtekk_admin_class.php:158
+msgid "Settings"
+msgstr "設定"
+
+#: ../mtekk_admin_class.php:186
+msgid "Your settings are out of date."
+msgstr "新しい設定に移行してください。"
+
+#: ../mtekk_admin_class.php:186
+msgid "Migrate the settings now."
+msgstr "すぐに設定を移行"
+
+#: ../mtekk_admin_class.php:299
+msgid "Settings successfully imported from the uploaded file."
+msgstr "アップロードしたファイルより設定が正常に反映されました。"
+
+#: ../mtekk_admin_class.php:299
+msgid "Undo the options import."
+msgstr "オプションのインポートを元に戻す。"
+
+#: ../mtekk_admin_class.php:304
+msgid "Importing settings from file failed."
+msgstr "設定ファイルのインポートに失敗しました。"
+
+#: ../mtekk_admin_class.php:323
+msgid "Settings successfully reset to the default values."
+msgstr "設定が初期値に戻されました。"
+
+#: ../mtekk_admin_class.php:323
+msgid "Undo the options reset."
+msgstr "オプションのリセットを元に戻す。"
+
+#: ../mtekk_admin_class.php:340
+msgid "Settings successfully undid the last operation."
+msgstr "設定が正常に最後の操作を元に戻した。"
+
+#: ../mtekk_admin_class.php:340
+msgid "Undo the last undo operation."
+msgstr "最後に戻した操作を元に戻す。"
+
+#: ../mtekk_admin_class.php:373
+msgid "Settings successfully migrated."
+msgstr "正常に設定が移行されました。"
+
+#: ../mtekk_admin_class.php:403
+#, php-format
+msgid "Get help with \"%s\""
+msgstr "\"%s\" のサポートを受ける"
+
+#: ../mtekk_admin_class.php:473
+msgid "Import/Export/Reset Settings"
+msgstr "インポート/エクスポート/リセット設定"
+
+#: ../mtekk_admin_class.php:474
+msgid "Import settings from a XML file, export the current settings to a XML file, or reset to the default settings."
+msgstr "XMLファイルより設定をインポートし、現在の設定をXMLファイルにエクスポート、または初期値に戻す。"
+
+#: ../mtekk_admin_class.php:477
+msgid "Settings File"
+msgstr "設定ファイル"
+
+#: ../mtekk_admin_class.php:480
+msgid "Select a XML settings file to upload and import settings from."
+msgstr "XML設定ファイルを選択の上、アップロードし、設定を読み込んでください。"
+
+#: ../mtekk_admin_class.php:482
+#: ../breadcrumb_navxt_admin.php:398
+msgid "Import"
+msgstr "インポート"
+
+#: ../mtekk_admin_class.php:483
+#: ../breadcrumb_navxt_admin.php:398
+msgid "Export"
+msgstr "エクスポート"
+
+#: ../mtekk_admin_class.php:484
+#: ../breadcrumb_navxt_admin.php:398
+msgid "Reset"
+msgstr "リセット"
+
+#: ../breadcrumb_navxt_admin.php:29
+#, php-format
+msgid "Your PHP version is too old, please upgrade to a newer version. Your version is %s, this plugin requires %s"
+msgstr "お使いのPHPのバージョンが古すぎます。最新バージョンにアップグレードしてください。お使いのバージョンは%sになり、このプラグインを使用するためには%s以上が必要になります。"
+
+#: ../breadcrumb_navxt_admin.php:106
+msgid "Insufficient privileges to proceed."
+msgstr "実行権限がありません。"
+
+#: ../breadcrumb_navxt_admin.php:211
+#: ../breadcrumb_navxt_class.php:203
+msgid "Home"
+msgstr "ホーム"
+
+#: ../breadcrumb_navxt_admin.php:213
+#: ../breadcrumb_navxt_admin.php:554
+#: ../breadcrumb_navxt_admin.php:745
+#: ../breadcrumb_navxt_class.php:126
+#: ../breadcrumb_navxt_class.php:205
+#: ../breadcrumb_navxt_class.php:215
+#: ../breadcrumb_navxt_class.php:219
+#: ../breadcrumb_navxt_class.php:243
+#: ../breadcrumb_navxt_class.php:259
+msgid "<a title=\"Go to %title%.\" href=\"%link%\">"
+msgstr "<a title=\"%title%\" href=\"%link%\">"
+
+#: ../breadcrumb_navxt_admin.php:292
+msgid "Settings successfully saved."
+msgstr "設定は正常に保存されました。"
+
+#: ../breadcrumb_navxt_admin.php:292
+msgid "Undo the options save."
+msgstr "オプション設定を元に戻す。"
+
+#: ../breadcrumb_navxt_admin.php:313
+#, php-format
+msgid "Tips for the settings are located below select options. Please refer to the %sdocumentation%s for more information."
+msgstr "設定に関するTIPSは、選択オプション下に表示されています。詳細情報については%sドキュメント%sをご参照ください。"
+
+#: ../breadcrumb_navxt_admin.php:314
+msgid "Go to the Breadcrumb NavXT online documentation"
+msgstr "オンラインドキュメントへ移動"
+
+#: ../breadcrumb_navxt_admin.php:315
+msgid "Quick Start Information"
+msgstr "クイックスタート情報"
+
+#: ../breadcrumb_navxt_admin.php:315
+msgid "For the settings on this page to take effect, you must either use the included Breadcrumb NavXT widget, or place either of the code sections below into your theme."
+msgstr "このページの設定を反映させるには、Breadcrumb NavXT ウィジェット、または、ご利用中のテーマ内で以下のコードをご使用ください。"
+
+#: ../breadcrumb_navxt_admin.php:316
+msgid "Breadcrumb trail with separators"
+msgstr "パンくずリスト（区切り表示）"
+
+#: ../breadcrumb_navxt_admin.php:317
+msgid "Breadcrumb trail in list form"
+msgstr "パンくずリスト（リスト表示）"
+
+#: ../breadcrumb_navxt_admin.php:419
+msgid "Breadcrumb NavXT Settings"
+msgstr "Breadcrumb NavXT 設定"
+
+#: ../breadcrumb_navxt_admin.php:427
+msgid "General"
+msgstr "一般"
+
+#: ../breadcrumb_navxt_admin.php:430
+msgid "Breadcrumb Separator"
+msgstr "区切り"
+
+#: ../breadcrumb_navxt_admin.php:430
+msgid "Placed in between each breadcrumb."
+msgstr "各項目間に配置"
+
+#: ../breadcrumb_navxt_admin.php:431
+msgid "Breadcrumb Max Title Length"
+msgstr "タイトルの最大文字数"
+
+#: ../breadcrumb_navxt_admin.php:435
+msgid "Home Breadcrumb"
+msgstr "ホーム"
+
+#: ../breadcrumb_navxt_admin.php:440
+msgid "Place the home breadcrumb in the trail."
+msgstr "パンくずリストにホームを配置"
+
+#: ../breadcrumb_navxt_admin.php:445
+msgid "Home Title: "
+msgstr "ホームタイトル："
+
+#: ../breadcrumb_navxt_admin.php:453
+msgid "Home Prefix"
+msgstr "ホーム接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:454
+msgid "Home Suffix"
+msgstr "ホーム接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:455
+msgid "Home Anchor"
+msgstr "ホームリンク"
+
+#: ../breadcrumb_navxt_admin.php:455
+msgid "The anchor template for the home breadcrumb."
+msgstr "ホームのリンク書式"
+
+#: ../breadcrumb_navxt_admin.php:456
+msgid "Blog Breadcrumb"
+msgstr "ブログ"
+
+#: ../breadcrumb_navxt_admin.php:456
+msgid "Place the blog breadcrumb in the trail."
+msgstr "パンくずリストにブログを配置（フロントページの表示に固定ページを使用した場合のみ）"
+
+#: ../breadcrumb_navxt_admin.php:457
+msgid "Blog Anchor"
+msgstr "ブログリンク"
+
+#: ../breadcrumb_navxt_admin.php:457
+msgid "The anchor template for the blog breadcrumb, used only in static front page environments."
+msgstr "ブログのリンク書式"
+
+#: ../breadcrumb_navxt_admin.php:461
+msgid "Main Site Breadcrumb"
+msgstr "メインサイトのパンくずリスト"
+
+#: ../breadcrumb_navxt_admin.php:466
+msgid "Place the main site home breadcrumb in the trail in an multisite setup."
+msgstr "マルチサイトにおけるメインサイトのパンくずリストにホームを配置"
+
+#: ../breadcrumb_navxt_admin.php:471
+msgid "Main Site Home Title: "
+msgstr "メインサイトのホームタイトル："
+
+#: ../breadcrumb_navxt_admin.php:479
+msgid "Main Site Home Prefix"
+msgstr "メインサイトのホーム接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:479
+#: ../breadcrumb_navxt_admin.php:480
+msgid "Used for the main site home breadcrumb in an multisite setup"
+msgstr "マルチサイト環境下におけるメインサイトのパンくずリストのホームに適用"
+
+#: ../breadcrumb_navxt_admin.php:480
+msgid "Main Site Home Suffix"
+msgstr "メインサイトのホーム接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:481
+msgid "Main Site Home Anchor"
+msgstr "メインサイトのホームリンク"
+
+#: ../breadcrumb_navxt_admin.php:481
+msgid "The anchor template for the main site home breadcrumb, used only in multisite environments."
+msgstr "マルチサイト環境下におけるメインサイトのパンくずリストのホームリンク書式"
+
+#: ../breadcrumb_navxt_admin.php:486
+msgid "Current Item"
+msgstr "アクティブページ"
+
+#: ../breadcrumb_navxt_admin.php:489
+msgid "Link Current Item"
+msgstr "アクティブページのリンク"
+
+#: ../breadcrumb_navxt_admin.php:489
+msgid "Yes"
+msgstr "はい"
+
+#: ../breadcrumb_navxt_admin.php:490
+msgid "Current Item Prefix"
+msgstr "アクティブページ接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:490
+msgid "This is always placed in front of the last breadcrumb in the trail, before any other prefixes for that breadcrumb."
+msgstr "常に他の接頭辞よりも前にアクティブページの接頭辞として配置"
+
+#: ../breadcrumb_navxt_admin.php:491
+msgid "Current Item Suffix"
+msgstr "アクティブページ接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:491
+msgid "This is always placed after the last breadcrumb in the trail, and after any other prefixes for that breadcrumb."
+msgstr "常に他の接尾辞よりも後にアクティブページの接尾辞として配置"
+
+#: ../breadcrumb_navxt_admin.php:492
+msgid "Current Item Anchor"
+msgstr "アクティブページリンク"
+
+#: ../breadcrumb_navxt_admin.php:492
+msgid "The anchor template for current item breadcrumbs."
+msgstr "アクティブページのリンク書式"
+
+#: ../breadcrumb_navxt_admin.php:493
+msgid "Paged Breadcrumb"
+msgstr "ページネーション"
+
+#: ../breadcrumb_navxt_admin.php:493
+msgid "Include the paged breadcrumb in the breadcrumb trail."
+msgstr "ページネーションを含む"
+
+#: ../breadcrumb_navxt_admin.php:493
+msgid "Indicates that the user is on a page other than the first on paginated posts/pages."
+msgstr "ページネーションが適用されている場合、表示箇所が何頁目であるかを表示する。"
+
+#: ../breadcrumb_navxt_admin.php:494
+msgid "Paged Prefix"
+msgstr "ページネーション接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:495
+msgid "Paged Suffix"
+msgstr "ページネーション接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:500
+msgid "Posts &amp; Pages"
+msgstr "投稿およびページ"
+
+#: ../breadcrumb_navxt_admin.php:503
+msgid "Post Prefix"
+msgstr "投稿接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:504
+msgid "Post Suffix"
+msgstr "投稿接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:505
+msgid "Post Anchor"
+msgstr "投稿リンク"
+
+#: ../breadcrumb_navxt_admin.php:505
+msgid "The anchor template for post breadcrumbs."
+msgstr "投稿のリンク書式"
+
+#: ../breadcrumb_navxt_admin.php:506
+msgid "Post Taxonomy Display"
+msgstr "投稿タクソノミーの表示"
+
+#: ../breadcrumb_navxt_admin.php:506
+msgid "Show the taxonomy leading to a post in the breadcrumb trail."
+msgstr "パンくずリストに投稿へ誘導するためのタクソノミーを表示"
+
+#: ../breadcrumb_navxt_admin.php:510
+msgid "Post Taxonomy"
+msgstr "投稿タクソノミー"
+
+#: ../breadcrumb_navxt_admin.php:514
+#: ../breadcrumb_navxt_admin.php:631
+msgid "Categories"
+msgstr "カテゴリー"
+
+#: ../breadcrumb_navxt_admin.php:515
+msgid "Dates"
+msgstr "日付"
+
+#: ../breadcrumb_navxt_admin.php:516
+#: ../breadcrumb_navxt_admin.php:643
+msgid "Tags"
+msgstr "タグ"
+
+#: ../breadcrumb_navxt_admin.php:517
+#: ../breadcrumb_navxt_admin.php:610
+msgid "Pages"
+msgstr "ページ"
+
+#: ../breadcrumb_navxt_admin.php:528
+#: ../breadcrumb_navxt_admin.php:621
+msgid "The taxonomy which the breadcrumb trail will show."
+msgstr "パンくずリストに表示するタクソノミー"
+
+#: ../breadcrumb_navxt_admin.php:532
+msgid "Page Prefix"
+msgstr "ページ接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:533
+msgid "Page Suffix"
+msgstr "ページ接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:534
+msgid "Page Anchor"
+msgstr "ページリンク"
+
+#: ../breadcrumb_navxt_admin.php:534
+msgid "The anchor template for page breadcrumbs."
+msgstr "ページのリンク書式"
+
+#: ../breadcrumb_navxt_admin.php:535
+msgid "Attachment Prefix"
+msgstr "添付接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:536
+msgid "Attachment Suffix"
+msgstr "添付接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:585
+#: ../breadcrumb_navxt_admin.php:679
+#, php-format
+msgid "%s Prefix"
+msgstr "%s 接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:586
+#: ../breadcrumb_navxt_admin.php:680
+#, php-format
+msgid "%s Suffix"
+msgstr "%s 接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:587
+#: ../breadcrumb_navxt_admin.php:681
+#, php-format
+msgid "%s Anchor"
+msgstr "%s リンク"
+
+#: ../breadcrumb_navxt_admin.php:587
+#: ../breadcrumb_navxt_admin.php:681
+#, php-format
+msgid "The anchor template for %s breadcrumbs."
+msgstr "%sのリンク書式"
+
+#: ../breadcrumb_navxt_admin.php:592
+#, php-format
+msgid "%s Root Page"
+msgstr "%s ルートページ"
+
+#: ../breadcrumb_navxt_admin.php:595
+msgid "&mdash; Select &mdash;"
+msgstr "&mdash; 選択 &mdash;"
+
+#: ../breadcrumb_navxt_admin.php:602
+#, php-format
+msgid "%s Taxonomy Display"
+msgstr "タクソノミー「%s」の表示"
+
+#: ../breadcrumb_navxt_admin.php:602
+#, php-format
+msgid "Show the taxonomy leading to a %s in the breadcrumb trail."
+msgstr "パンくずリスト上の%sにつながるタクソノミーを表示"
+
+#: ../breadcrumb_navxt_admin.php:606
+#, php-format
+msgid "%s Taxonomy"
+msgstr "タクソノミー「%s 」"
+
+#: ../breadcrumb_navxt_admin.php:634
+msgid "Category Prefix"
+msgstr "カテゴリー接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:634
+msgid "Applied before the anchor on all category breadcrumbs."
+msgstr "すべてのカテゴリーリンクの前に適用"
+
+#: ../breadcrumb_navxt_admin.php:635
+msgid "Category Suffix"
+msgstr "カテゴリー接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:635
+msgid "Applied after the anchor on all category breadcrumbs."
+msgstr "すべてのカテゴリーリンクの後に適用"
+
+#: ../breadcrumb_navxt_admin.php:636
+msgid "Category Anchor"
+msgstr "カテゴリーリンク"
+
+#: ../breadcrumb_navxt_admin.php:636
+msgid "The anchor template for category breadcrumbs."
+msgstr "カテゴリーのリンク書式"
+
+#: ../breadcrumb_navxt_admin.php:637
+msgid "Archive by Category Prefix"
+msgstr "カテゴリーアーカイブの接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:637
+msgid "Applied before the title of the current item breadcrumb on an archive by cateogry page."
+msgstr "カテゴリーアーカイブがアクティブページの場合に接頭辞として配置"
+
+#: ../breadcrumb_navxt_admin.php:638
+msgid "Archive by Category Suffix"
+msgstr "カテゴリーアーカイブの接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:638
+msgid "Applied after the title of the current item breadcrumb on an archive by cateogry page."
+msgstr "カテゴリーアーカイブがアクティブページの場合に接尾辞として配置"
+
+#: ../breadcrumb_navxt_admin.php:646
+msgid "Tag Prefix"
+msgstr "タグ接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:646
+msgid "Applied before the anchor on all tag breadcrumbs."
+msgstr "すべてのタグリンクの前に適用"
+
+#: ../breadcrumb_navxt_admin.php:647
+msgid "Tag Suffix"
+msgstr "タグ接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:647
+msgid "Applied after the anchor on all tag breadcrumbs."
+msgstr "すべてのタグリンクの後に適用"
+
+#: ../breadcrumb_navxt_admin.php:648
+msgid "Tag Anchor"
+msgstr "タグリンク"
+
+#: ../breadcrumb_navxt_admin.php:648
+msgid "The anchor template for tag breadcrumbs."
+msgstr "タグのリンク書式"
+
+#: ../breadcrumb_navxt_admin.php:649
+msgid "Archive by Tag Prefix"
+msgstr "タグアーカイブの接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:649
+msgid "Applied before the title of the current item breadcrumb on an archive by tag page."
+msgstr "タグアーカイブがアクティブページの場合に接頭辞として配置"
+
+#: ../breadcrumb_navxt_admin.php:650
+msgid "Archive by Tag Suffix"
+msgstr "タグアーカイブの接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:650
+msgid "Applied after the title of the current item breadcrumb on an archive by tag page."
+msgstr "タグアーカイブがアクティブページの場合に接尾辞として配置"
+
+#: ../breadcrumb_navxt_admin.php:679
+#, php-format
+msgid "Applied before the anchor on all %s breadcrumbs."
+msgstr "すべての%sリンクの前に適用されます。"
+
+#: ../breadcrumb_navxt_admin.php:680
+#, php-format
+msgid "Applied after the anchor on all %s breadcrumbs."
+msgstr "すべての%sリンクの後に適用されます。"
+
+#: ../breadcrumb_navxt_admin.php:682
+#, php-format
+msgid "Archive by %s Prefix"
+msgstr "%sアーカイブの接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:682
+#, php-format
+msgid "Applied before the title of the current item breadcrumb on an archive by %s page."
+msgstr "%sアーカイブがアクティブページの場合に接頭辞として配置"
+
+#: ../breadcrumb_navxt_admin.php:683
+#, php-format
+msgid "Archive by %s Suffix"
+msgstr "%sアーカイブの接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:683
+#, php-format
+msgid "Applied after the title of the current item breadcrumb on an archive by %s page."
+msgstr "%sアーカイブがアクティブページの場合に接尾辞として配置"
+
+#: ../breadcrumb_navxt_admin.php:692
+msgid "Date Archives"
+msgstr "日付アーカイブ"
+
+#: ../breadcrumb_navxt_admin.php:695
+msgid "Date Anchor"
+msgstr "日付リンク"
+
+#: ../breadcrumb_navxt_admin.php:695
+msgid "The anchor template for date breadcrumbs."
+msgstr "日付のリンク書式"
+
+#: ../breadcrumb_navxt_admin.php:696
+msgid "Archive by Date Prefix"
+msgstr "日付アーカイブの接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:696
+msgid "Applied before the anchor on all date breadcrumbs."
+msgstr "すべての日付リンクの前に適用"
+
+#: ../breadcrumb_navxt_admin.php:697
+msgid "Archive by Date Suffix"
+msgstr "日付アーカイブの接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:697
+msgid "Applied after the anchor on all date breadcrumbs."
+msgstr "すべての日付リンクの後に適用"
+
+#: ../breadcrumb_navxt_admin.php:702
+msgid "Miscellaneous"
+msgstr "その他"
+
+#: ../breadcrumb_navxt_admin.php:705
+msgid "Author Prefix"
+msgstr "投稿者接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:706
+msgid "Author Suffix"
+msgstr "投稿者接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:707
+msgid "Author Display Format"
+msgstr "投稿者表示形式"
+
+#: ../breadcrumb_navxt_admin.php:707
+msgid "display_name uses the name specified in \"Display name publicly as\" under the user profile the others correspond to options in the user profile."
+msgstr "「display_name」はユーザプロフィール内の「ブログ上の表示名」が使用されます。その他もユーザプロフィール内の設定内容が適用されます。"
+
+#: ../breadcrumb_navxt_admin.php:708
+msgid "Search Prefix"
+msgstr "検索結果接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:709
+msgid "Search Suffix"
+msgstr "検索結果接尾辞"
+
+#: ../breadcrumb_navxt_admin.php:710
+msgid "Search Anchor"
+msgstr "検索結果リンク"
+
+#: ../breadcrumb_navxt_admin.php:710
+msgid "The anchor template for search breadcrumbs, used only when the search results span several pages."
+msgstr "検索結果のリンク書式（検索結果が複数ページに及ぶ場合のみに適用）"
+
+#: ../breadcrumb_navxt_admin.php:711
+msgid "404 Title"
+msgstr "404タイトル"
+
+#: ../breadcrumb_navxt_admin.php:712
+msgid "404 Prefix"
+msgstr "404接頭辞"
+
+#: ../breadcrumb_navxt_admin.php:713
+msgid "404 Suffix"
+msgstr "404接尾辞"
+
+#: ../breadcrumb_navxt_widget.php:24
+msgid "Adds a breadcrumb trail to your sidebar"
+msgstr "サイドバーにパンくずリストを追加"
+
+#: ../breadcrumb_navxt_widget.php:72
+msgid "Title:"
+msgstr "タイトル："
+
+#: ../breadcrumb_navxt_widget.php:77
+msgid "Output trail as a list"
+msgstr "リストとして表示"
+
+#: ../breadcrumb_navxt_widget.php:79
+msgid "Link the breadcrumbs"
+msgstr "パンクすリストにリンク"
+
+#: ../breadcrumb_navxt_widget.php:81
+msgid "Reverse the order of the trail"
+msgstr "開始位置を逆にする。"
+
+#: ../breadcrumb_navxt_widget.php:83
+msgid "Hide the trail on the front page"
+msgstr "フロントページ上では非表示"
+
+#: ../breadcrumb_navxt_class.php:213
+msgid "Blog"
+msgstr "ブログ"
+
+#: ../breadcrumb_navxt_class.php:232
+msgid "<a title=\"Reload the current page.\" href=\"%link%\">"
+msgstr "<a title=\"再読み込み\" href=\"%link%\">"
+
+#: ../breadcrumb_navxt_class.php:277
+msgid "404"
+msgstr "404"
+
+#: ../breadcrumb_navxt_class.php:280
+msgid "Search results for &#39;"
+msgstr "&#39;の検索結果"
+
+#: ../breadcrumb_navxt_class.php:284
+msgid "<a title=\"Go to the first page of search results for %title%.\" href=\"%link%\">"
+msgstr "<a title=\"%title%の検索結果の最初のページに戻る\" href=\"%link%\">"
+
+#: ../breadcrumb_navxt_class.php:291
+msgid "<a title=\"Go to the %title% tag archives.\" href=\"%link%\">"
+msgstr "<a title=\"%title%\" href=\"%link%\">"
+
+#: ../breadcrumb_navxt_class.php:294
+msgid "Articles by: "
+msgstr "投稿者："
+
+#: ../breadcrumb_navxt_class.php:298
+msgid "<a title=\"Go to the first page of posts by %title%.\" href=\"%link%\">"
+msgstr "<a title=\"%title%\" href=\"%link%\">"
+
+#: ../breadcrumb_navxt_class.php:307
+msgid "<a title=\"Go to the %title% category archives.\" href=\"%link%\">"
+msgstr "<a title=\"%title%\" href=\"%link%\">"
+
+#: ../breadcrumb_navxt_class.php:310
+msgid "Archive by category &#39;"
+msgstr "カテゴリー &#39;"
+
+#: ../breadcrumb_navxt_class.php:314
+msgid "Archive by tag &#39;"
+msgstr "タグ &#39;"
+
+#: ../breadcrumb_navxt_class.php:317
+msgid "<a title=\"Go to the %title% archives.\" href=\"%link%\">"
+msgstr "<a title=\"%title%\" href=\"%link%\">"
+
+#: ../breadcrumb_navxt_class.php:478
+msgid "Un"
+msgstr "無"
+
+#~ msgid "Untagged"
+#~ msgstr "タグなし"
+
+#~ msgid ""
+#~ "All of your current Breadcrumb NavXT settings will be overwritten with "
+#~ "the default values. Are you sure you want to continue?"
+#~ msgstr ""
+#~ "現在の設定がすべて初期値で上書きされます。実行してもよろしいですか？"
+
+#~ msgid ""
+#~ "All of your current Breadcrumb NavXT settings will be overwritten with "
+#~ "the imported values. Are you sure you want to continue?"
+#~ msgstr ""
+#~ "現在の設定がすべてインポートする値で上書きされます。実行してもよろしいです"
+#~ "か？"
+
+#~ msgid "Save Changes"
+#~ msgstr "Anderungen speichern"
+
+#~ msgid ""
+#~ "Warning, your version of Breadcrumb NavXT does not match the version "
+#~ "supported by this administrative interface. As a result, settings may not "
+#~ "work as expected."
+#~ msgstr ""
+#~ "Warnung: Deine Version von Breadcrumb NavXT stimmt nicht mit den "
+#~ "unterstutzen Versionen von diesem Administrations-Interface uberein. Dies "
+#~ "kann zu Fehlfunktionen fuhren."
+
+#~ msgid "Your Breadcrumb NavXT Administration interface version is "
+#~ msgstr "Die Breadcrumb NavXT Administrations-Interface Version ist "
+
+#~ msgid "Your Breadcrumb NavXT version is "
+#~ msgstr "Die Breadcrumb NavXT Version ist "

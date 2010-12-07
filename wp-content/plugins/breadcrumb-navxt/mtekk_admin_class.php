@@ -28,7 +28,7 @@ abstract class mtekk_admin
 	protected $opt = array();
 	protected $message;
 	/**
-	 * wether or not this administration page has contextual help
+	 * whether or not this administration page has contextual help
 	 * 
 	 * @var bool
 	 */
@@ -40,6 +40,7 @@ abstract class mtekk_admin
 		//WordPress Admin interface hook
 		add_action('admin_menu', array($this, 'add_page'));
 		//Installation Script hook
+		//register_activation_hook($this->plugin_basename, array($this, 'install'));
 		add_action('activate_' . $this->plugin_basename, array($this, 'install'));
 		//Initilizes l10n domain
 		$this->local();
@@ -54,6 +55,13 @@ abstract class mtekk_admin
 		$url = wp_nonce_url($this->admin_url() . '&' . $this->unique_prefix . '_admin_undo=true', $this->unique_prefix . '_admin_undo');
 		//Return a valid Undo anchor
 		return ' <a title="' . $title . '" href="' . $url . '">' . __('Undo', $this->identifier) . '</a>';
+	}
+	function upgrade_anchor($title = '')
+	{
+		//Assemble our url, nonce and all
+		$url = wp_nonce_url($this->admin_url() . '&' . $this->unique_prefix . '_admin_upgrade=true', $this->unique_prefix . '_admin_upgrade');
+		//Return a valid Undo anchor
+		return ' <a title="' . $title . '" href="' . $url . '">' . __('Migrate now.', $this->identifier) . '</a>';
 	}
 	function init()
 	{
@@ -87,14 +95,18 @@ abstract class mtekk_admin
 			//Run the rollback function on init if undo button has been pressed
 			$this->opts_undo();
 		}
+		//Admin Options rollback hook
+		else if(isset($_GET[$this->unique_prefix . '_admin_upgrade']))
+		{
+			//Run the rollback function on init if undo button has been pressed
+			$this->opts_upgrade_wrapper();
+		}
 		//Add in the nice "settings" link to the plugins page
 		add_filter('plugin_action_links', array($this, 'filter_plugin_actions'), 10, 2);
 		//Register options
 		register_setting($this->unique_prefix . '_options', $this->unique_prefix . '_options', '');
 	}
 	/**
-	 * add_page
-	 * 
 	 * Adds the adminpage the menue and the nice little settings link
 	 *
 	 */
@@ -112,8 +124,6 @@ abstract class mtekk_admin
 		}
 	}
 	/**
-	 * local
-	 *
 	 * Initilizes localization textdomain for translations (if applicable)
 	 * 
 	 * Will conditionally load the textdomain for translations. This is here for
@@ -133,8 +143,6 @@ abstract class mtekk_admin
 		}
 	}
 	/**
-	 * filter_plugin_actions
-	 * 
 	 * Places in a link to the settings page in the plugins listing entry
 	 * 
 	 * @param  array  $links An array of links that are output in the listing
@@ -164,27 +172,23 @@ abstract class mtekk_admin
 		delete_option($this->unique_prefix . '_version');
 	}
 	/**
-	 * import_hook
-	 * 
-	 * Overidable, allows plugin authors to specify what to do for version migration
-	 * 
-	 * @param  array $opts
-	 * @param  string $version
+	 * Compairs the supplided version with the internal version, places an upgrade warning if there is a missmatch
 	 */
-	function import_hook($opts, $version)
+	function version_check($version)
 	{
 		//Do a quick version check
 		list($plug_major, $plug_minor, $plug_release) = explode('.', $this->version);
 		list($major, $minor, $release) = explode('.', $version);
-		//We don't support using newer versioned option files in older releases
-		if($plug_major == $major && $plug_minor >= $minor)
+		//Check if we have a newer version than the DB
+		if($major < $plug_major || ($major == $plug_major && $minor < $plug_minor) || ($major == $plug_major && $minor == $plug_minor && $release < $plug_release))
 		{
-			$this->opt = $opts;
+			//Throw an error since we could not load the file for various reasons
+			$this->message['error'][] = __('Your settings are out of date.', $this->identifier) . $this->upgrade_anchor(__('Migrate the settings now.', $this->identifier));
+			//Output any messages that there may be
+			$this->message();
 		}
 	}
 	/**
-	 * opts_backup
-	 * 
 	 * Synchronizes the backup options entry with the current options entry
 	 */
 	function opts_backup()
@@ -193,16 +197,12 @@ abstract class mtekk_admin
 		update_option($this->unique_prefix . '_options_bk', get_option($this->unique_prefix . '_options'));
 	}
 	/**
-	 * opts_update
-	 * 
 	 * Function prototype to prevent errors
 	 */
 	function opts_update()
 	{
 	}
 	/**
-	 * opts_export
-	 * 
 	 * Exports a XML options document
 	 */
 	function opts_export()
@@ -251,8 +251,6 @@ abstract class mtekk_admin
 		die();
 	}
 	/**
-	 * opts_import
-	 * 
 	 * Imports a XML options document
 	 */
 	function opts_import()
@@ -294,7 +292,7 @@ abstract class mtekk_admin
 					}
 				}
 			}
-			$this->import_hook($opts_temp, $version);
+			$this->opts_upgrade($opts_temp, $version);
 			//Commit the loaded options to the database
 			update_option($this->unique_prefix . '_options', $this->opt);
 			//Everything was successful, let the user know
@@ -311,8 +309,6 @@ abstract class mtekk_admin
 		add_action('admin_notices', array($this, 'message'));
 	}
 	/**
-	 * opts_reset
-	 * 
 	 * Resets the database settings array to the default set in opt
 	 */
 	function opts_reset()
@@ -327,6 +323,9 @@ abstract class mtekk_admin
 		$this->message['updated fade'][] = __('Settings successfully reset to the default values.', $this->identifier) . $this->undo_anchor(__('Undo the options reset.', $this->identifier));
 		add_action('admin_notices', array($this, 'message'));
 	}
+	/**
+	 * Undos the last settings save/reset/import
+	 */
 	function opts_undo()
 	{
 		//Do a nonce check, prevent malicious link/form problems
@@ -339,6 +338,39 @@ abstract class mtekk_admin
 		update_option($this->unique_prefix . '_options_bk', $opt);
 		//Send the success/undo message
 		$this->message['updated fade'][] = __('Settings successfully undid the last operation.', $this->identifier) . $this->undo_anchor(__('Undo the last undo operation.', $this->identifier));
+		add_action('admin_notices', array($this, 'message'));
+	}
+	/**
+	 * Upgrades input options array, sets to $this->opt, designed to be overwritten
+	 * 
+	 * @param array $opts
+	 * @param string $version the version of the passed in options
+	 */
+	function opts_upgrade($opts, $version)
+	{
+		//We don't support using newer versioned option files in older releases
+		if(version_compare($this->version, $version, '>='))
+		{
+			$this->opt = $opts;
+		}
+	}
+	/**
+	 * Forces a database settings upgrade
+	 */
+	function opts_upgrade_wrapper()
+	{
+		//Do a nonce check, prevent malicious link/form problems
+		check_admin_referer($this->unique_prefix . '_admin_upgrade');
+		//Grab the database options
+		$opts = get_option($this->unique_prefix . '_options');
+		//Feed the just read options into the upgrade function
+		$this->opts_upgrade($opts, get_option($this->unique_prefix . '_version'));
+		//Always have to update the version
+		update_option($this->unique_prefix . '_version', $this->version);
+		//Store the options
+		update_option($this->unique_prefix . '_options', $this->opt);
+		//Send the success/undo message
+		$this->message['updated fade'][] = __('Settings successfully migrated.', $this->identifier);
 		add_action('admin_notices', array($this, 'message'));
 	}
 	/**
@@ -372,8 +404,6 @@ abstract class mtekk_admin
 		return $t;
 	}
 	/**
-	 * message
-	 * 
 	 * Prints to screen all of the messages stored in the message member variable
 	 */
 	function message()
@@ -387,10 +417,9 @@ abstract class mtekk_admin
 				printf('<div class="%s"><p>%s</p></div>', $key, $message);	
 			}
 		}
+		$this->message = array();
 	}
 	/**
-	 * install
-	 * 
 	 * Function prototype to prevent errors
 	 */
 	function install()
@@ -398,8 +427,6 @@ abstract class mtekk_admin
 		
 	}
 	/**
-	 * admin_head
-	 * 
 	 * Function prototype to prevent errors
 	 */
 	function admin_head()
@@ -407,8 +434,6 @@ abstract class mtekk_admin
 		
 	}
 	/**
-	 * admin_page
-	 * 
 	 * Function prototype to prevent errors
 	 */
 	function admin_page()
@@ -416,8 +441,6 @@ abstract class mtekk_admin
 		
 	}
 	/**
-	 * get help text
-	 * 
 	 * Function prototype to prevent errors
 	 */
 	protected function _get_help_text()
@@ -425,8 +448,6 @@ abstract class mtekk_admin
 		
 	}
 	/**
-	 * get_valid_id
-	 * 
 	 * Returns a valid xHTML element ID
 	 * 
 	 * @param object $option
@@ -464,8 +485,18 @@ abstract class mtekk_admin
 		echo '</p></fieldset></form></div>';
 	}
 	/**
-	 * input_text
+	 * This will output a well formed hidden option
 	 * 
+	 * @param string $option
+	 * @return 
+	 */
+	function input_hidden($option)
+	{
+		$optid = $this->get_valid_id($option);?>
+		<input type="hidden" name="<?php echo $this->unique_prefix . '_options[' . $option;?>]" id="<?php echo $optid;?>" value="<?php echo htmlentities($this->opt[$option], ENT_COMPAT, 'UTF-8');?>"/>
+	<?php
+	}
+	/**
 	 * This will output a well formed table row for a text input
 	 * 
 	 * @param string $label
@@ -490,8 +521,6 @@ abstract class mtekk_admin
 	<?php
 	}
 	/**
-	 * textbox
-	 * 
 	 * This will output a well formed textbox
 	 * 
 	 * @param string $label
@@ -506,12 +535,10 @@ abstract class mtekk_admin
 		<p>
 			<label for="<?php echo $optid;?>"><?php echo $label;?></label>
 		</p>
-		<textarea rows="<?php echo $height;?>" class="large-text code" id="<?php echo $optid;?>" name="<?php echo $this->unique_prefix . '_options[' . $option;?>]"><?php echo htmlentities($this->opt[$option], ENT_COMPAT, 'UTF-8');?></textarea><br />
+		<textarea rows="<?php echo $height;?>" <?php if($disable){echo 'disabled="disabled" class="large-text code disabled"';}else{echo 'class="large-text code"';}?> id="<?php echo $optid;?>" name="<?php echo $this->unique_prefix . '_options[' . $option;?>]"><?php echo htmlentities($this->opt[$option], ENT_COMPAT, 'UTF-8');?></textarea><br />
 		<?php if($description !== ''){?><span class="setting-description"><?php echo $description;?></span><?php }
 	}
 	/**
-	 * input_check
-	 * 
 	 * This will output a well formed table row for a checkbox input
 	 * 
 	 * @param string $label
@@ -539,8 +566,6 @@ abstract class mtekk_admin
 	<?php
 	}
 	/**
-	 * input_radio
-	 * 
 	 * This will output a singular radio type form input field
 	 * 
 	 * @param string $label
@@ -558,8 +583,6 @@ abstract class mtekk_admin
 	<?php
 	}
 	/**
-	 * input_select
-	 * 
 	 * This will output a well formed table row for a select input
 	 * 
 	 * @param string $label
@@ -586,8 +609,6 @@ abstract class mtekk_admin
 	<?php
 	}
 	/**
-	 * select_options
-	 *
 	 * Displays wordpress options as <seclect> options defaults to true/false
 	 *
 	 * @param string $optionname name of wordpress options store

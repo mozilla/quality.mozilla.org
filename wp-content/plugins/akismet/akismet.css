@@ -1,0 +1,12 @@
+
+#submitted-on { position: relative; }
+.author { padding-bottom: 5px !important; white-space: nowrap; }
+.author a { padding-left: 42px !important; }
+.author img { position: absolute; top: 1px; left: 0; }
+.author strong { padding-left: 42px; font-size: 14px; position: relative; }
+.author .akismet-user-comment-count { display: inline; }
+.author .akismet-user-comment-counts { padding-left: 42px; }
+.akismet-status { background: #EEE; border: 1px solid #E4E4E4; color: #999; margin-bottom: 5px; padding: 1px 8px 2px 8px; -moz-border-radius:6px; border-radius:6px; -webkit-border-radius:6px; float: right; line-height: 1.2em; }
+.row-actions { margin-top: -3px; }
+span.comment-link a { text-decoration: underline; }
+span.comment-link:after { content: " " attr(title) " "; color: #aaa; text-decoration: none; }
