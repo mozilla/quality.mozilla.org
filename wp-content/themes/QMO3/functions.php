@@ -539,10 +539,23 @@ endif;
 
 
 /*********
- * Kill the admin bar
+ * Kill the BuddyPress admin bar
  */
 remove_action( 'wp_head', 'bp_core_admin_bar_css', 1 );
 remove_action( 'wp_footer', 'bp_core_admin_bar', 8 );
+
+/*********
+ * Kill the WordPress admin bar (new in 3.1)
+ */
+add_filter( 'show_admin_bar', '__return_false' );
+
+/*********
+ * Hide the admin bar settings on profile page
+ */
+function qmo_hide_admin_bar_settings() { ?>
+<style type="text/css">.show-admin-bar { display: none; }</style>
+<?php }
+add_action( 'admin_print_scripts-profile.php', 'qmo_hide_admin_bar_settings' );
 
 
 /*********
