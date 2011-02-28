@@ -681,7 +681,7 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 				return true;
 			}
 			$cat_id = get_query_var( 'cat' );
-			if( $cat_id == $this->eventCategory() ) {
+			if( !is_singular && $cat_id == $this->eventCategory() ) {
 				return true;
 			}
 			$cats = get_categories('child_of=' . $this->eventCategory());
