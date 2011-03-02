@@ -4,7 +4,7 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 	 * Main plugin
 	 */
 	class The_Events_Calendar {
-		const VERSION 				= '1.6.4';
+		const VERSION 				= '1.6.5';
 		const EVENTSERROROPT		= '_tec_events_errors';
 		const CATEGORYNAME	 		= 'Events';
 		const OPTIONNAME 			= 'sp_events_calendar_options';
@@ -676,12 +676,12 @@ if ( !class_exists( 'The_Events_Calendar' ) ) {
 		/**
 		 * @return bool true if is_category() is on a child of the events category
 		 */
-		public function in_event_category( ) {
+		public function in_event_category() {
 			if( is_category( The_Events_Calendar::CATEGORYNAME ) ) {
 				return true;
 			}
 			$cat_id = get_query_var( 'cat' );
-			if( !is_singular && $cat_id == $this->eventCategory() ) {
+			if( !is_singular() && $cat_id == $this->eventCategory() ) {
 				return true;
 			}
 			$cats = get_categories('child_of=' . $this->eventCategory());
