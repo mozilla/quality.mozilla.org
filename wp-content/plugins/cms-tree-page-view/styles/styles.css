@@ -8,11 +8,25 @@
 
 .cms_tpv_wrapper {
 	z-index: 10;
+	margin-right: 250px;
 }
+
+.postbox .cms_tpv_wrapper {
+	width: auto;
+}
+
 .cms_tpv_container {
-	clear: both;
+	/* clear: both; */
 	overflow: visible;
 	margin-top: 1.5em;
+}
+
+#wpbody-content .cms_tpv_container {
+	margin-right: 250px;
+}
+
+#dashboard-widgets-wrap .cms_tpv_container {
+	margin-right: 0;
 }
 
 .pages_page_cms-tpv-pages-page .updated {
@@ -298,4 +312,12 @@ p.cms_tpv_annoying_little_box_close {
 li.cms_tpv_user_can_edit_page_no a {
 	opacity: .6; /* Standard: FF gt 1.5, Opera, Safari */
 	-ms-filter: "alpha(opacity=60)"; /* IE 8 */
+}
+
+.bonny-plugins-inner-sidebar {
+	float: right;
+	width: 210px;
+	padding-right: 10px;
+	padding-left: 10px;
+	border-left: 1px solid #E3E3E3;
 }

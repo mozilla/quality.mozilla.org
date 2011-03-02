@@ -376,7 +376,7 @@ function bp_the_profile_field_options( $args = '' ) {
 					$html .= '<option value="">--------</option>';
 
 				for ( $k = 0; $k < count($options); $k++ ) {
-					$option_values = BP_XProfile_ProfileData::get_value_byid( $options[$k]->parent_id );
+					$option_values = maybe_unserialize( BP_XProfile_ProfileData::get_value_byid( $options[$k]->parent_id ) );
 					$option_values = (array)$option_values;
 
 					/* Check for updated posted values, but errors preventing them from being saved first time */
@@ -393,7 +393,7 @@ function bp_the_profile_field_options( $args = '' ) {
 						$selected = '';
 					}
 
-					$html .= apply_filters( 'bp_get_the_profile_field_options_select', '<option' . $selected . ' value="' . esc_attr( $options[$k]->name ) . '">' . esc_attr( $options[$k]->name ) . '</option>', $options[$k] );
+					$html .= apply_filters( 'bp_get_the_profile_field_options_select', '<option' . $selected . ' value="' . stripslashes( esc_attr( $options[$k]->name ) ) . '">' . stripslashes( esc_attr( $options[$k]->name ) ) . '</option>', $options[$k] );
 				}
 				break;
 
@@ -409,13 +409,13 @@ function bp_the_profile_field_options( $args = '' ) {
 							$option_value = $_POST['field_' . $field->id];
 					}
 
-					if ( $option_value == $options[$k]->name || $value == $options[$k]->name || $options[$k]->is_default_option ) {
+					if ( $option_value == $options[$k]->name || $value == $options[$k]->name || ( empty( $option_value ) && $options[$k]->is_default_option ) ) {
 						$selected = ' checked="checked"';
 					} else {
 						$selected = '';
 					}
 
-					$html .= apply_filters( 'bp_get_the_profile_field_options_radio', '<label><input' . $selected . ' type="radio" name="field_' . $field->id . '" id="option_' . $options[$k]->id . '" value="' . esc_attr( $options[$k]->name ) . '"> ' . esc_attr( $options[$k]->name ) . '</label>', $options[$k] );
+					$html .= apply_filters( 'bp_get_the_profile_field_options_radio', '<label><input' . $selected . ' type="radio" name="field_' . $field->id . '" id="option_' . $options[$k]->id . '" value="' . stripslashes( esc_attr( $options[$k]->name ) ) . '"> ' . stripslashes( esc_attr( $options[$k]->name ) ) . '</label>', $options[$k] );
 				}
 
 				$html .= '</div>';
@@ -440,7 +440,7 @@ function bp_the_profile_field_options( $args = '' ) {
 						}
 					}
 
-					$html .= apply_filters( 'bp_get_the_profile_field_options_checkbox', '<label><input' . $selected . ' type="checkbox" name="field_' . $field->id . '[]" id="field_' . $options[$k]->id . '_' . $k . '" value="' . esc_attr( $options[$k]->name ) . '"> ' . esc_attr( $options[$k]->name ) . '</label>', $options[$k] );
+					$html .= apply_filters( 'bp_get_the_profile_field_options_checkbox', '<label><input' . $selected . ' type="checkbox" name="field_' . $field->id . '[]" id="field_' . $options[$k]->id . '_' . $k . '" value="' . stripslashes( esc_attr( $options[$k]->name ) ) . '"> ' . stripslashes( esc_attr( $options[$k]->name ) ) . '</label>', $options[$k] );
 					$selected = '';
 				}
 				break;
@@ -552,10 +552,12 @@ function bp_profile_field_data( $args = '' ) {
 	echo bp_get_profile_field_data( $args );
 }
 	function bp_get_profile_field_data( $args = '' ) {
+		global $bp;
+
 		$defaults = array(
-			'field' => false, // Field name or ID.
+			'field'   => false, // Field name or ID.
 			'user_id' => $bp->displayed_user->id
-			);
+		);
 
 		$r = wp_parse_args( $args, $defaults );
 		extract( $r, EXTR_SKIP );

@@ -2,6 +2,8 @@
 class FeedWordPressAdminPage {
 	var $context;
 	var $updated = false;
+	var $mesg = NULL;
+
 	var $link = NULL;
 	var $dispatch = NULL;
 	var $filename = NULL;
@@ -43,13 +45,44 @@ class FeedWordPressAdminPage {
 	} /* FeedWordPressAdminPage::pagename () */
 
 	function accept_POST ($post) {
-		if ($this->save_requested_in($post)) : // User mashed Save Changes
+		if ($this->for_feed_settings() and $this->update_requested_in($post)) :
+			$this->update_feed();
+		elseif ($this->save_requested_in($post)) : // User mashed Save Changes
 			$this->save_settings($post);
 		endif;
-		do_action($this->dispatch.'_post', $post, $this);		
+		do_action($this->dispatch.'_post', &$post, &$this);		
+	}
+
+	function update_feed () {
+		global $feedwordpress;
+
+		add_action('feedwordpress_check_feed', 'update_feeds_mention');
+		add_action('feedwordpress_check_feed_complete', 'update_feeds_finish', 10, 3);
+		
+		print '<div class="updated">';
+		print "<ul>";
+		$uri = $this->link->uri();
+		$delta = $feedwordpress->update($uri);
+		print "</ul>";
+
+		if (!is_null($delta)) :
+			$mesg = array();
+			if (isset($delta['new'])) : $mesg[] = ' '.$delta['new'].' new posts were syndicated'; endif;
+			if (isset($delta['updated'])) : $mesg[] = ' '.$delta['updated'].' existing posts were updated'; endif;
+			echo "<p><strong>Update complete.</strong>".implode(' and', $mesg)."</p>";
+			echo "\n"; flush();
+		else :
+			$uri = esc_html($uri);
+			echo "<p><strong>Error:</strong> There was a problem updating <a href=\"$uri\">$uri</a></p>\n";
+		endif;
+		print "</div>\n";
+		remove_action('feedwordpress_check_feed', 'update_feeds_mention');
+		remove_action('feedwordpress_check_feed_complete', 'update_feeds_finish', 10, 3);
 	}
 
 	function save_settings ($post) {
+		do_action($this->dispatch.'_save', &$post, &$this);
+
 		if ($this->for_feed_settings()) :
 			// Save settings
 			$this->link->save_settings(/*reload=*/ true);
@@ -62,11 +95,36 @@ class FeedWordPressAdminPage {
 		else :
 			$this->updated = true;
 		endif;
-		do_action($this->dispatch.'_save', $post, $this);
 	} /* FeedWordPressAdminPage::save_settings () */
 
 	function for_feed_settings () { return (is_object($this->link) and method_exists($this->link, 'found') and $this->link->found()); }
 	function for_default_settings () { return !$this->for_feed_settings(); }
+
+	function setting ($names, $fallback_value = NULL, $params = array()) {
+		if (!is_array($params)) :
+			$params = array('default' => $params);
+		endif;
+		$params = shortcode_atts(array(
+		'default' => 'default',
+		'fallback' => true,
+		), $params);
+
+		if (is_string($names)) :
+			$feed_name = $names;
+			$global_name = 'feedwordpress_'.preg_replace('![\s/]+!', '_', $names);
+		else :
+			$feed_name = $names['feed'];
+			$global_name = 'feedwordpress_'.$names['global'];
+		endif;
+
+		if ($this->for_feed_settings()) : // Check feed-specific setting first; fall back to global
+			if (!$params['fallback']) : $global_name = NULL; endif; 
+			$ret = $this->link->setting($feed_name, $global_name, $fallback_value, $params['default']);
+		else : // Check global setting
+			$ret = get_option($global_name, $fallback_value);
+		endif;
+		return $ret;
+	}
 
 	function update_setting ($names, $value, $default = 'default') {
 		if (is_string($names)) :
@@ -87,7 +145,10 @@ class FeedWordPressAdminPage {
 	function save_requested_in ($post) {
 		return (isset($post['save']) or isset($post['submit']));
 	}
-
+	function update_requested_in ($post) {
+		return (isset($post['update']) and (strlen($post['update']) > 0));
+	}
+	
 	/*static*/ function submitted_link_id () {
 		global $fwp_post;
 
@@ -262,7 +323,7 @@ class FeedWordPressAdminPage {
 		  <option value="<?php print (int) $ddlink->link_id; ?>"<?php if (!is_null($this->link) and ($this->link->id==$ddlink->link_id)) : ?> selected="selected"<?php endif; ?>><?php print esc_html($ddlink->link_name); ?></option>
 		<?php endforeach; endif; ?>
 		</select>
-		<input class="button" type="submit" name="go" value="<?php _e('Go') ?> &raquo;" /></li>
+		<input id="fwpfs-button" class="button" type="submit" name="go" value="<?php _e('Go') ?> &raquo;" /></li>
 
 		<?php
 		$this->display_feed_settings_page_links(array(
@@ -271,8 +332,14 @@ class FeedWordPressAdminPage {
 			'after' => '</li>',
 			'subscription' => $this->link,
 		));
+		
+		if ($this->for_feed_settings()) :
 		?>
-		</ul>
+		<li><input class="button" type="submit" name="update" value="Update Now" /></li>
+		<?php
+		endif;
+		?>
+		</ul>		
 		</div>
 		<?php
 	} /* FeedWordPressAdminPage::display_feed_select_dropdown() */
@@ -285,18 +352,22 @@ class FeedWordPressAdminPage {
 	}
 
 	function display_update_notice_if_updated ($pagename = 'Syndication', $mesg = NULL) {
+		if (!is_null($mesg)) :
+			$this->mesg = $mesg;
+		endif;
+
 		if ($this->updated) :
 			if ($this->updated === true) :
-				$mesg = $pagename . ' settings updated.';
+				$this->mesg = $pagename . ' settings updated.';
 			else :
-				$mesg = $this->updated;
+				$this->mesg = $this->updated;
 			endif;
 		endif;
 		
-		if (!is_null($mesg)) :
+		if (!is_null($this->mesg)) :
 			?>
 			<div class="updated">
-			<p><?php print esc_html($mesg); ?></p>
+			<p><?php print esc_html($this->mesg); ?></p>
 			</div>
 			<?php
 		endif;
@@ -328,7 +399,7 @@ class FeedWordPressAdminPage {
 	} /* FeedWordPressAdminPage::form_action () */
 
 	function update_message () {
-		return NULL;
+		return $this->mesg;
 	}
 
 	function display () {
@@ -493,6 +564,7 @@ class FeedWordPressAdminPage {
 		// This allows us to provide an alternative set of human-readable
 		// labels for each potential value. For use in Currently: line.
 		if (isset($params['labels'])) : $labels = $params['labels'];
+		elseif (is_callable($options)) : $labels = NULL;
 		else : $labels = $options;
 		endif;
 		
@@ -572,6 +644,8 @@ class FeedWordPressAdminPage {
 			<span class="current-setting">Currently:
 			<strong><?php if (is_callable($labels)) :
 				print call_user_func($labels, $globalSetting, $defaulted, $params);
+			elseif (is_null($labels)) :
+				print $globalSetting;
 			else :
 				print $labels[$globalSetting];
 			endif;  ?></strong> (<a href="<?php print $href; ?>">change</a>)</span></li>
@@ -676,6 +750,11 @@ function fwp_tags_box ($tags, $object, $params = array()) {
 	$tax_name = (isset($params['taxonomy']) ? $params['taxonomy'] : 'post_tag');
 	$desc = "<p style=\"font-size:smaller;font-style:bold;margin:0\">Tag $object as...</p>";
 
+	if (isset($params['textarea_name'])) :
+		$textAreaName = $params['textarea_name'];
+	else :
+		$textAreaName = "tax_input[$tax_name]";
+	endif;
 	print $desc;
 	$helps = __('Separate tags with commas.');
 	$box['title'] = __('Tags');
@@ -684,7 +763,7 @@ function fwp_tags_box ($tags, $object, $params = array()) {
 	        <div class="jaxtag">
 	        <div class="nojs-tags hide-if-js">
 	        <p><?php _e('Add or remove tags'); ?></p>
-	        <textarea name="<?php echo "tax_input[$tax_name]"; ?>" class="the-tags" id="tax-input[<?php echo $tax_name; ?>]"><?php echo esc_attr(implode(",", $tags)); ?></textarea></div>
+	        <textarea name="<?php echo esc_html($textAreaName); ?>" class="the-tags" id="tax-input[<?php echo $tax_name; ?>]"><?php echo esc_attr(implode(",", $tags)); ?></textarea></div>
 	
 	        <div class="ajaxtag hide-if-no-js">
 	                <label class="screen-reader-text" for="new-tag-<?php echo $tax_name; ?>"><?php echo $box['title']; ?></label>
@@ -805,7 +884,7 @@ function fwp_author_list () {
 	global $wpdb;
 	$ret = array();
 
-	$users = $wpdb->get_results("SELECT * FROM $wpdb->users ORDER BY display_name");
+	$users = get_users_of_blog();
 	if (is_array($users)) :
 		foreach ($users as $user) :
 			$id = (int) $user->ID;
@@ -848,6 +927,14 @@ class FeedWordPressSettingsUI {
 	function admin_styles () {
 		?>
 		<style type="text/css">
+		#feedwordpress-admin-feeds .link-rss-params-remove .x, .feedwordpress-admin .remove-it .x {
+			background: url(<?php print admin_url('images/xit.gif') ?>) no-repeat scroll 0 0 transparent;
+		}
+
+		#feedwordpress-admin-feeds .link-rss-params-remove:hover .x, .feedwordpress-admin .remove-it:hover .x {
+			background: url(<?php print admin_url('images/xit.gif') ?>) no-repeat scroll -10px 0 transparent;
+		}
+
 		.fwpfs {
 			background-image: url(<?php print admin_url('images/fav.png'); ?>);
 			background-repeat: repeat-x;
@@ -890,10 +977,13 @@ class FeedWordPressSettingsUI {
 	} /* FeedWordPressSettingsUI::fix_toggles_js () */
 	
 	function magic_input_tip_js ($id) {
+			if (!preg_match('/^[.#]/', $id)) :
+				$id = '#'.$id;
+			endif;
 		?>
 			<script type="text/javascript">
 			jQuery(document).ready( function () {
-				var inputBox = jQuery("#<?php print $id; ?>");
+				var inputBox = jQuery("<?php print $id; ?>");
 				var boxEl = inputBox.get(0);
 				if (boxEl.value==boxEl.defaultValue) { inputBox.addClass('form-input-tip'); }
 				inputBox.focus(function() {
@@ -1069,7 +1159,10 @@ function fwp_syndication_manage_page_links_table_rows ($links, $page, $visible =
 	<td class="feed-missing"><p><strong>no feed assigned</strong></p></td>
 				<?php endif; ?>
 
-	<td><?php print $lastUpdated; ?>
+	<td><div style="float: right; padding-left: 10px">
+	<input type="submit" class="button" name="update_uri[<?php print esc_html($link->link_rss); ?>]" value="<?php _e('Update Now'); ?>" />
+	</div>
+	<?php print $lastUpdated; ?>
 	<?php print $errorsSince; ?>
 	<?php print $nextUpdate; ?>
 	</td>

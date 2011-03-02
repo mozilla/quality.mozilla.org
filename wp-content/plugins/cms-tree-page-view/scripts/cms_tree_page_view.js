@@ -153,7 +153,7 @@ jQuery(".cms_tpv_action_add_page_after").live("click", function() {
 	jPrompt(cmstpv_l10n.Enter_title_of_new_page, "", "CMS Tree Page View", function(new_page_title) {
 		if (new_page_title) {
 			var pageID = $this.parents("li:first").attr("id");
-			$this.closest(".cms_tpv_container").html(cmstpv_l10n.Adding_page);
+			jQuery(".cms_tpv_message").html("<p>"+cmstpv_l10n.Adding_page+"</p>").slideDown("fast");
 			jQuery.post(ajaxurl, {
 				"action": "cms_tpv_add_page",
 				"pageID": pageID,
@@ -196,7 +196,7 @@ jQuery(".cms_tpv_action_add_page_inside").live("click", function() {
 	jPrompt(cmstpv_l10n.Enter_title_of_new_page, "", "CMS Tree Page View", function(new_page_title) {
 		if (new_page_title) {
 			var pageID = $this.parents("li:first").attr("id");
-			$this.closest(".cms_tpv_container").html(cmstpv_l10n.Adding_page);
+			jQuery(".cms_tpv_message").html("<p>" + cmstpv_l10n.Adding_page + "</p>").slideDown("fast");
 			jQuery.post(ajaxurl, {
 				"action": "cms_tpv_add_page",
 				"pageID": pageID,
@@ -419,8 +419,16 @@ function cms_tpv_bind_clean_node() {
 	
 					// add page type
 					var post_status = li.data("jstree").post_status;
+					// post_status can be any value because of plugins like Edit flow
+					// check if we have an existing translation for the string, otherwise use the post status directly
+					var post_status_to_show = "";
+					if (post_status_to_show = cmstpv_l10n["Status_"+post_status]) {
+						// it's ok
+					} else {
+						post_status_to_show = post_status;
+					}
 					if (post_status != "publish") {
-						aFirst.find("ins").first().after("<span class='post_type post_type_"+post_status+"'>" + cmstpv_l10n["Status_"+post_status] + "</span>");
+						aFirst.find("ins").first().after("<span class='post_type post_type_"+post_status+"'>" + post_status_to_show + "</span>");
 					}
 				}
 				
@@ -494,7 +502,7 @@ jQuery("a.cms_tvp_switch_lang").live("click", function(e) {
 	$wrapper.find("ul.cms_tvp_switch_langs a").removeClass("current");
 	jQuery(this).addClass("current");
 
-	var re = /cms_tpv_switch_language_code_([\w]+)/;
+	var re = /cms_tpv_switch_language_code_([\w-]+)/;
 	var matches = re.exec( jQuery(this).attr("class") );
 	var lang_code = matches[1];
 	$wrapper.find("[name=cms_tpv_meta_wpml_language]").val(lang_code);

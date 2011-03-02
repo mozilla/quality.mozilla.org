@@ -6,7 +6,7 @@
  Author: rich fuller - rich! @ etiviti
  Author URI: http://buddypress.org/developers/nuprn1/
  License: GNU GENERAL PUBLIC LICENSE 3.0 http://www.gnu.org/licenses/gpl.txt
- Version: 0.4.0
+ Version: 0.4.2
  Text Domain: bp-member-profile-stats
  Site Wide Only: true
 */

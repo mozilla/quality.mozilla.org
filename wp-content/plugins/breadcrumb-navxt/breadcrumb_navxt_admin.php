@@ -3,11 +3,11 @@
 Plugin Name: Breadcrumb NavXT
 Plugin URI: http://mtekk.us/code/breadcrumb-navxt/
 Description: Adds a breadcrumb navigation showing the visitor&#39;s path to their current location. For details on how to use this plugin visit <a href="http://mtekk.us/code/breadcrumb-navxt/">Breadcrumb NavXT</a>. 
-Version: 3.7.0
+Version: 3.8.1
 Author: John Havlik
 Author URI: http://mtekk.us/
 */
-/*  Copyright 2007-2010  John Havlik  (email : mtekkmonkey@gmail.com)
+/*  Copyright 2007-2011  John Havlik  (email : mtekkmonkey@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,7 +26,13 @@ Author URI: http://mtekk.us/
 //Do a PHP version check, require 5.2 or newer
 if(version_compare(PHP_VERSION, '5.2.0', '<'))
 {
-	wp_die(sprintf(__('Your PHP version is too old, please upgrade to a newer version. Your version is %s, this plugin requires %s', 'breadcrumb_navxt'), phpversion(), '5.2.0'));
+	//Silently deactivate plugin, keeps admin usable
+	if(function_exists('deactivate_plugins'))
+	{
+		deactivate_plugins(plugin_basename(__FILE__), true);
+	}
+	//Spit out die messages
+	wp_die(sprintf(__('Your PHP version is too old, please upgrade to a newer version. Your version is %s, Breadcrumb NavXT requires %s', 'breadcrumb_navxt'), phpversion(), '5.2.0'));
 }
 //Include the breadcrumb class
 require_once(dirname(__FILE__) . '/breadcrumb_navxt_class.php');
@@ -48,7 +54,7 @@ class bcn_admin extends mtekk_admin
 	 * 
 	 * @var   string
 	 */
-	protected $version = '3.7.0';
+	protected $version = '3.8.1';
 	protected $full_name = 'Breadcrumb NavXT Settings';
 	protected $short_name = 'Breadcrumb NavXT';
 	protected $access_level = 'manage_options';
@@ -161,7 +167,7 @@ class bcn_admin extends mtekk_admin
 		//If our version is not the same as in the db, time to update
 		if($version !== $this->version)
 		{
-			//Upgrading from 3.4
+			//Upgrading to 3.4
 			if(version_compare($version, '3.4.0', '<'))
 			{
 				//Inline upgrade of the tag setting
@@ -239,6 +245,12 @@ class bcn_admin extends mtekk_admin
 					}
 				}
 			}
+			//Upgrading to 3.8.1
+			if(version_compare($version, '3.8.1', '<'))
+			{
+				$opts['post_page_root'] = get_option('page_on_front');
+				$opts['post_post_root'] = get_option('page_for_posts');
+			}
 			//Save the passed in opts to the object's option array
 			$this->opt = $opts;
 		}
@@ -262,6 +274,9 @@ class bcn_admin extends mtekk_admin
 		$this->update_option('bcn_options_bk', $this->opt);
 		//Grab our incomming array (the data is dirty)
 		$input = $_POST['bcn_options'];
+		//We have two "permi" variables
+		$input['post_page_root'] = get_option('page_on_front');
+		$input['post_post_root'] = get_option('page_for_posts');
 		//Loop through all of the existing options (avoids random setting injection)
 		foreach($this->opt as $option => $value)
 		{
@@ -288,8 +303,23 @@ class bcn_admin extends mtekk_admin
 		}
 		//Commit the option changes
 		$this->update_option('bcn_options', $this->opt);
-		//Let the user know everything went ok
-		$this->message['updated fade'][] = __('Settings successfully saved.', $this->identifier) . $this->undo_anchor(__('Undo the options save.', $this->identifier));
+		//Check if known settings match attempted save
+		if(count(array_diff_key($input, $this->opt)) == 0)
+		{
+			//Let the user know everything went ok
+			$this->message['updated fade'][] = __('Settings successfully saved.', $this->identifier) . $this->undo_anchor(__('Undo the options save.', $this->identifier));
+		}
+		else
+		{
+			//Let the user know the following were not saved
+			$this->message['updated fade'][] = __('Some settings were not saved.', $this->identifier) . $this->undo_anchor(__('Undo the options save.', $this->identifier));
+			$temp = __('The following settings were not saved:', $this->identifier);
+			foreach(array_diff_key($input, $this->opt) as $setting => $value)
+			{
+				$temp .= '<br />' . $setting;
+			}
+			$this->message['updated fade'][] = $temp . '<br />' . sprintf(__('Please include this message in your %sbug report%s.', $this->identifier),'<a title="' . __('Go to the Breadcrumb NavXT support post for your version.', $this->identifier) . '" href="http://mtekk.us/archives/wordpress/plugins-wordpress/breadcrumb-navxt-' . $this->version . '/#respond">', '</a>');
+		}
 		add_action('admin_notices', array($this, 'message'));
 	}
 	/**
@@ -311,10 +341,11 @@ class bcn_admin extends mtekk_admin
 	protected function _get_help_text()
 	{
 		return '<p>' . sprintf(__('Tips for the settings are located below select options. Please refer to the %sdocumentation%s for more information.', 'breadcrumb_navxt'), 
-			'<a title="' . __('Go to the Breadcrumb NavXT online documentation', 'breadcrumb_navxt') . '" href="http://mtekk.us/code/breadcrumb-navxt/breadcrumb-navxt-doc/">', '</a>') . '</p><h5>' .
+			'<a title="' . __('Go to the Breadcrumb NavXT online documentation', 'breadcrumb_navxt') . '" href="http://mtekk.us/code/breadcrumb-navxt/breadcrumb-navxt-doc/">', '</a>') . ' ' .
+			sprintf(__('If you think you have found a bug, please include your WordPress version and details on how to reproduce the bug when you %sreport the issue%s.', $this->identifier),'<a title="' . __('Go to the Breadcrumb NavXT support post for your version.', 'breadcrumb_navxt') . '" href="http://mtekk.us/archives/wordpress/plugins-wordpress/breadcrumb-navxt-' . $this->version . '/#respond">', '</a>') . '</p><h5>' .
 		__('Quick Start Information', 'breadcrumb_navxt') . '</h5><p>' . __('For the settings on this page to take effect, you must either use the included Breadcrumb NavXT widget, or place either of the code sections below into your theme.', 'breadcrumb_navxt') .
 		'</p><h5>' . __('Breadcrumb trail with separators', 'breadcrumb_navxt').'</h5><code>&lt;div class="breadcrumbs"&gt;'."&lt;?php if(function_exists('bcn_display')){ bcn_display();}?&gt;&lt;/div&gt;</code>" .
-		'<h5>' . __('Breadcrumb trail in list form', 'breadcrumb_navxt').'</h5><code>&lt;ul class="breadcrumbs"&gt;'."&lt;?php if(function_exists('bcn_display_list')){ bcn_display_list();}?&gt;&lt;/ul&gt;</code>";
+		'<h5>' . __('Breadcrumb trail in list form', 'breadcrumb_navxt').'</h5><code>&lt;ol class="breadcrumbs"&gt;'."&lt;?php if(function_exists('bcn_display_list')){ bcn_display_list();}?&gt;&lt;/ol&gt;</code>";
 	}
 	/**
 	 * Adds in the JavaScript and CSS for the tabs in the adminsitrative 
@@ -415,7 +446,8 @@ class bcn_admin extends mtekk_admin
 	{
 		global $wp_taxonomies, $wp_post_types;
 		$this->security();
-		$this->version_check($this->get_option($this->unique_prefix . '_version'));?>
+		$this->version_check($this->get_option($this->unique_prefix . '_version'));
+		?>
 		<div class="wrap"><h2><?php _e('Breadcrumb NavXT Settings', 'breadcrumb_navxt'); ?></h2>		
 		<div<?php if($this->_has_contextual_help): ?> class="hide-if-js"<?php endif; ?>><?php 
 			print $this->_get_help_text();
@@ -470,6 +502,7 @@ class bcn_admin extends mtekk_admin
 									<label for="mainsite_title">
 										<?php _e('Main Site Home Title: ','breadcrumb_navxt');?>
 										<input type="text" name="bcn_options[mainsite_title]" id="mainsite_title" <?php if(!is_multisite()){echo 'disabled="disabled" class="disabled"';}?> value="<?php echo htmlentities($this->opt['mainsite_title'], ENT_COMPAT, 'UTF-8'); ?>" size="20" />
+										<?php if(!is_multisite()){?><input type="hidden" name="bcn_options[mainsite_title]" value="<?php echo htmlentities($this->opt['mainsite_title'], ENT_COMPAT, 'UTF-8');?>" /><?php } ?>
 									</label>
 								</li>
 							</ul>							
@@ -521,7 +554,7 @@ class bcn_admin extends mtekk_admin
 									//We only want custom taxonomies
 									if(($taxonomy->object_type == 'post' || is_array($taxonomy->object_type) && in_array('post', $taxonomy->object_type)) && !$taxonomy->_builtin)
 									{
-										$this->input_radio('post_post_taxonomy_type', $taxonomy->name, ucwords(__($taxonomy->label)));
+										$this->input_radio('post_post_taxonomy_type', $taxonomy->name, mb_convert_case(__($taxonomy->label), MB_CASE_TITLE, 'UTF-8'));
 									}
 								}
 							?>
@@ -542,11 +575,10 @@ class bcn_admin extends mtekk_admin
 			foreach($wp_post_types as $post_type)
 			{
 				//We only want custom post types
-				//if($post_type->name != 'post' && $post_type->name != 'page' && $post_type->name != 'attachment' && $post_type->name != 'revision' && $post_type->name != 'nav_menu_item')
 				if(!$post_type->_builtin)
 				{
 					//If the post type does not have settings in the options array yet, we need to load some defaults
-					if(!array_key_exists('post_' . $post_type->name . '_anchor', $this->opt))
+					if(!array_key_exists('post_' . $post_type->name . '_anchor', $this->opt) || !$post_type->hierarchical && !array_key_exists('post_' . $post_type->name . '_taxonomy_type', $this->opt))
 					{
 						//Add the necessary option array members
 						$this->opt['post_' . $post_type->name . '_prefix'] = '';
@@ -563,6 +595,8 @@ class bcn_admin extends mtekk_admin
 						{
 							//Set post_root for flat types
 							$this->opt['post_' . $post_type->name . '_root'] = get_option('page_for_posts');
+							//Default to not displaying a taxonomy
+							$this->opt['post_' . $post_type->name . '_taxonomy_display'] = false;
 							//Loop through all of the possible taxonomies
 							foreach($wp_taxonomies as $taxonomy)
 							{
@@ -574,9 +608,12 @@ class bcn_admin extends mtekk_admin
 									break;
 								}
 							}
+							//If there are no valid taxonomies for this type, we default to not displaying taxonomies for this post type
+							if(!isset($this->opt['post_' . $post_type->name . '_taxonomy_type']))
+							{
+								$this->opt['post_' . $post_type->name . '_taxonomy_type'] = 'date';
+							}
 						}
-						//Let's make sure that the newly available options are "registered" in our db
-						$this->update_option('bcn_options', $this->opt);
 					}?>
 			<fieldset id="post_<?php echo $post_type->name ?>" class="bcn_options">
 				<h3><?php echo $post_type->labels->singular_name; ?></h3>
@@ -607,6 +644,7 @@ class bcn_admin extends mtekk_admin
 						</th>
 						<td>
 							<?php
+								$this->input_radio('post_' . $post_type->name . '_taxonomy_type', 'date', __('Dates'));
 								$this->input_radio('post_' . $post_type->name . '_taxonomy_type', 'page', __('Pages'));
 								//Loop through all of the taxonomies in the array
 								foreach($wp_taxonomies as $taxonomy)
@@ -656,7 +694,6 @@ class bcn_admin extends mtekk_admin
 			foreach($wp_taxonomies as $taxonomy)
 			{
 				//We only want custom taxonomies
-				//if(($taxonomy->object_type == 'post' || is_array($taxonomy->object_type) && in_array('post', $taxonomy->object_type)) && ($taxonomy->name != 'post_tag' && $taxonomy->name != 'category'))
 				if(!$taxonomy->_builtin)
 				{
 					//If the taxonomy does not have settings in the options array yet, we need to load some defaults
@@ -668,12 +705,10 @@ class bcn_admin extends mtekk_admin
 						$this->opt[$taxonomy->name . '_anchor'] = __(sprintf('<a title="Go to the %%title%% %s archives." href="%%link%%">', $taxonomy->labels->singular_name), 'breadcrumb_navxt');
 						$this->opt['archive_' . $taxonomy->name . '_prefix'] = '';
 						$this->opt['archive_' . $taxonomy->name . '_suffix'] = '';
-						//Let's make sure that the newly available options are "registered" in our db
-						$this->update_option('bcn_options', $this->opt);
 					}
 				?>
 			<fieldset id="<?php echo $taxonomy->name; ?>" class="bcn_options">
-				<h3><?php echo ucwords(__($taxonomy->label)); ?></h3>
+				<h3><?php echo mb_convert_case(__($taxonomy->label), MB_CASE_TITLE, 'UTF-8'); ?></h3>
 				<table class="form-table">
 					<?php
 						$this->input_text(sprintf(__('%s Prefix', 'breadcrumb_navxt'), $taxonomy->labels->singular_name), $taxonomy->name . '_prefix', '32', false, sprintf(__('Applied before the anchor on all %s breadcrumbs.', 'breadcrumb_navxt'), strtolower(__($taxonomy->label))));
@@ -728,16 +763,15 @@ class bcn_admin extends mtekk_admin
 	 */
 	function find_posttypes(&$opts)
 	{
-		global $wp_post_types;
+		global $wp_post_types, $wp_taxonomies;
 		//Loop through all of the post types in the array
 		foreach($wp_post_types as $post_type)
 		{
 			//We only want custom post types
-			//if($post_type->name != 'post' && $post_type->name != 'page' && $post_type->name != 'attachment' && $post_type->name != 'revision' && $post_type->name != 'nav_menu_item')
 			if(!$post_type->_builtin)
 			{
 				//If the post type does not have settings in the options array yet, we need to load some defaults
-				if(!array_key_exists('post_' . $post_type->name . '_anchor', $this->opt))
+				if(!array_key_exists('post_' . $post_type->name . '_anchor', $opts) || !$post_type->hierarchical && !array_key_exists('post_' . $post_type->name . '_taxonomy_type', $opts))
 				{
 					//Add the necessary option array members
 					$opts['post_' . $post_type->name . '_prefix'] = '';
@@ -767,6 +801,11 @@ class bcn_admin extends mtekk_admin
 								break;
 							}
 						}
+						//If there are no valid taxonomies for this type, we default to not displaying taxonomies for this post type
+						if(!isset($opts['post_' . $post_type->name . '_taxonomy_type']))
+						{
+							$opts['post_' . $post_type->name . '_taxonomy_type'] = 'date';
+						}
 					}
 				}
 			}
@@ -784,7 +823,6 @@ class bcn_admin extends mtekk_admin
 		foreach($wp_taxonomies as $taxonomy)
 		{
 			//We only want custom taxonomies
-			//if(($taxonomy->object_type == 'post' || is_array($taxonomy->object_type) && in_array('post', $taxonomy->object_type)) && ($taxonomy->name != 'post_tag' && $taxonomy->name != 'category'))
 			if(!$taxonomy->_builtin)
 			{
 				//If the taxonomy does not have settings in the options array yet, we need to load some defaults
@@ -792,7 +830,7 @@ class bcn_admin extends mtekk_admin
 				{
 					$opts[$taxonomy->name . '_prefix'] = '';
 					$opts[$taxonomy->name . '_suffix'] = '';
-					$opts[$taxonomy->name . '_anchor'] = __(sprintf('<a title="Go to the %%title%% %s archives." href="%%link%%">',  ucwords(__($taxonomy->label))), 'breadcrumb_navxt');
+					$opts[$taxonomy->name . '_anchor'] = __(sprintf('<a title="Go to the %%title%% %s archives." href="%%link%%">',  mb_convert_case(__($taxonomy->label), MB_CASE_TITLE, 'UTF-8')), 'breadcrumb_navxt');
 					$opts['archive_' . $taxonomy->name . '_prefix'] = '';
 					$opts['archive_' . $taxonomy->name . '_suffix'] = '';
 				}
@@ -859,8 +897,11 @@ class bcn_admin extends mtekk_admin
 	 */
 	function display($return = false, $linked = true, $reverse = false)
 	{
+		//First make sure our defaults are safe
+		$this->find_posttypes($this->breadcrumb_trail->opt);
+		$this->find_taxonomies($this->breadcrumb_trail->opt);
 		//Grab the current settings from the db
-		$this->breadcrumb_trail->opt = $this->get_option('bcn_options');
+		$this->breadcrumb_trail->opt = wp_parse_args($this->get_option('bcn_options'), $this->breadcrumb_trail->opt);
 		//Generate the breadcrumb trail
 		$this->breadcrumb_trail->fill();
 		return $this->breadcrumb_trail->display($return, $linked, $reverse);
@@ -875,11 +916,34 @@ class bcn_admin extends mtekk_admin
 	 */
 	function display_list($return = false, $linked = true, $reverse = false)
 	{
+		//First make sure our defaults are safe
+		$this->find_posttypes($this->breadcrumb_trail->opt);
+		$this->find_taxonomies($this->breadcrumb_trail->opt);
 		//Grab the current settings from the db
-		$this->breadcrumb_trail->opt = $this->get_option('bcn_options');
+		$this->breadcrumb_trail->opt = wp_parse_args($this->get_option('bcn_options'), $this->breadcrumb_trail->opt);
 		//Generate the breadcrumb trail
 		$this->breadcrumb_trail->fill();
 		return $this->breadcrumb_trail->display_list($return, $linked, $reverse);
+	}
+	/**
+	 * Outputs the breadcrumb trail
+	 * 
+	 * @since  3.8.0
+	 * @param bool $return Whether to return data or to echo it.
+	 * @param bool $linked[optional] Whether to allow hyperlinks in the trail or not.
+	 * @param string $tag[optional] The tag to use for the nesting
+	 * @param string $mode[optional] Whether to follow the rdfa or Microdata format
+	 */
+	function display_nested($return = false, $linked = true, $tag = 'span', $mode = 'rdfa')
+	{
+		//First make sure our defaults are safe
+		$this->find_posttypes($this->breadcrumb_trail->opt);
+		$this->find_taxonomies($this->breadcrumb_trail->opt);
+		//Grab the current settings from the db
+		$this->breadcrumb_trail->opt = wp_parse_args($this->get_option('bcn_options'), $this->breadcrumb_trail->opt);
+		//Generate the breadcrumb trail
+		$this->breadcrumb_trail->fill();
+		return $this->breadcrumb_trail->display_nested($return, $linked, $tag, $mode);
 	}
 }
 //Let's make an instance of our object takes care of everything
@@ -907,4 +971,17 @@ function bcn_display_list($return = false, $linked = true, $reverse = false)
 {
 	global $bcn_admin;
 	return $bcn_admin->display_list($return, $linked, $reverse);
+}
+/**
+ * A wrapper for the internal function in the class
+ * 
+ * @param bool $return Whether to return data or to echo it.
+ * @param bool $linked[optional] Whether to allow hyperlinks in the trail or not.
+ * @param string $tag[optional] The tag to use for the nesting
+ * @param string $mode[optional] Whether to follow the rdfa or Microdata format
+ */
+function bcn_display_nested($return = false, $linked = true, $tag = 'span', $mode = 'rdfa')
+{
+	global $bcn_admin;
+	return $bcn_admin->display_nested($return, $linked, $tag, $mode);
 }

@@ -2,9 +2,9 @@
 Contributors: matt, ryan, andy, mdawaffe, tellyworth, josephscott, lessbloat, automattic
 Tags: akismet, comments, spam
 Requires at least: 3.0
-Tested up to: 3.0
-Stable tag: 2.5.0
-License: GPLv2
+Tested up to: 3.1
+Stable tag: 2.5.3
+License: GPLv2 or later
 
 Akismet checks your comments against the Akismet web service to see if they look like spam or not.
 
@@ -21,7 +21,7 @@ Major new features in Akismet 2.5 include:
 * Moderators can see the number of approved comments for each user
 * Spam and Unspam reports now include more information, to help improve accuracy
 
-PS: You'll need an [Akismet.com API key](http://akismet.com/signup/) to use it.  Keys are free for personal blogs, with paid subscriptions available for businesses and commercial sites.
+PS: You'll need an [Akismet.com API key](http://akismet.com/get/) to use it.  Keys are free for personal blogs, with paid subscriptions available for businesses and commercial sites.
 
 == Installation ==
 
@@ -30,6 +30,38 @@ Upload the Akismet plugin to your blog, Activate it, then enter your [Akismet.co
 1, 2, 3: You're done!
 
 == Changelog ==
+
+= 2.5.3 = 
+* Specify the license is GPL v2 or later
+* Fix a bug that could result in orphaned commentmeta entries
+* Include hotfix for WordPress 3.0.5 filter issue
+
+= 2.5.2 =
+
+* Properly format the comment count for author counts
+* Look for super admins on multisite installs when looking up user roles
+* Increase the HTTP request timeout
+* Removed padding for author approved count
+* Fix typo in function name
+* Set Akismet stats iframe height to fixed 2500px.  Better to have one tall scroll bar than two side by side.
+
+= 2.5.1 =
+
+* Fix a bug that caused the "Auto delete" option to fail to discard comments correctly
+* Remove the comment nonce form field from the 'Akismet Configuration' page in favor of using a filter, akismet_comment_nonce
+* Fixed padding bug in "author" column of posts screen
+* Added margin-top to "cleared by ..." badges on dashboard
+* Fix possible error when calling akismet_cron_recheck()
+* Fix more PHP warnings
+* Clean up XHTML warnings for comment nonce
+* Fix for possible condition where scheduled comment re-checks could get stuck
+* Clean up the comment meta details after deleting a comment
+* Only show the status badge if the comment status has been changed by someone/something other than Akismet
+* Show a 'History' link in the row-actions
+* Translation fixes
+* Reduced font-size on author name
+* Moved "flagged by..." notification to top right corner of comment container and removed heavy styling
+* Hid "flagged by..." notification while on dashboard
 
 = 2.5.0 =
 

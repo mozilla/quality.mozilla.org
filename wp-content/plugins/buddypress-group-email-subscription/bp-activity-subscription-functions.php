@@ -22,7 +22,7 @@ add_filter( 'bp_activity_get_activity_id', 'ass_item_is_update' );
 
 
 
-// send email notificaitons for new forum topics
+// send email notificaitons for new forum topics. Note that $content is sent as a reference
 function ass_group_notification_new_forum_topic( $content ) {
 	global $bp, $ass_item_is_new;
 
@@ -37,7 +37,7 @@ function ass_group_notification_new_forum_topic( $content ) {
 	/* Subject & Content */
 	$action = ass_clean_subject( $content->action );
 	$subject = $action . ' [' . get_blog_option( BP_ROOT_BLOG, 'blogname' ) . ']';
-	$the_content = html_entity_decode( strip_tags( stripslashes( $content->content ) ) );
+	$the_content = apply_filters( 'bp_ass_new_topic_content', html_entity_decode( strip_tags( stripslashes( $content->content ) ) ), $content );
 	
 	$message = sprintf( __(
 '%s
@@ -59,10 +59,13 @@ To view or reply to this topic, log in and go to:
 	
 	// cycle through subscribed members and send an email
 	foreach ( (array)$subscribed_users as $user_id => $group_status ) { 		
-
-		if ( $user_id == $bp->loggedin_user->id )  // don't send email to topic author	
-			continue;
 		
+		// Does the author want updates of his own posts?	
+		if ( $user_id == $bp->loggedin_user->id ) {
+			if ( !ass_self_post_notification() )
+				continue;
+		}
+	
 		if ( $group_status == 'sub' || $group_status == 'supersub' )  {
 		
 			if ( !$ass_item_is_new ) //don't send emails for item edits (but do update the digest)
@@ -112,7 +115,7 @@ function ass_group_notification_forum_reply( $content ) {
 	/* Subject & Content */
 	$action = ass_clean_subject( $content->action );
 	$subject = $action . ' [' . get_blog_option( BP_ROOT_BLOG, 'blogname' ) . ']';
-	$the_content = html_entity_decode( strip_tags( stripslashes( $content->content ) ) );
+	$the_content = apply_filters( 'bp_ass_forum_reply_content', html_entity_decode( strip_tags( stripslashes( $content->content ) ) ), $content );
 	
 	$message = sprintf( __(
 '%s
@@ -149,19 +152,22 @@ To view or reply to this topic, log in and go to:
 	}
 	
 	foreach ( (array)$subscribed_users as $user_id => $group_status ) {
-		if ( $user_id == $bp->loggedin_user->id )  // don't send email to topic author	
-			continue;
+		// Does the author want updates of his own posts?	
+		if ( $user_id == $bp->loggedin_user->id ) {
+			if ( !ass_self_post_notification() ) {
+				continue;
+			}
+		}
 		
-		$send_it = NULL;
-		//$group_status = $subscribed_users[ $user_id ]; // only need this if we're looping through user_ids
+		$send_it = false;
 		$topic_status = $user_topic_status[ $user_id ];
-	
-	 	//echo '<p>uid:' . $user_id .' | gstat:' . $group_status . ' | tstat:'.$topic_status . ' | owner:'.$topic->topic_poster . ' | prev:'.$previous_posters[ $user_id ];
+
+		//header('HTTP/1.1 200 OK'); echo '<p>uid:' . $user_id .' | gstat:' . $group_status . ' | tstat:'.$topic_status . ' | owner:'.$topic->topic_poster . ' | prev:'.$previous_posters[ $user_id ]; 
 		
 		if ( $topic_status == 'mute' )  // the topic mute button will override the subscription options below
 			continue;
 		
-		if ( $group_status == 'sum' ) // skip if user set to weekly summary
+		if ( $group_status == 'sum' && $topic_status != 'sub' ) // skip if user set to weekly summary (and they're not following this topic) // maybe not neccedary, but good to be cautious
 			continue;
 		
 		if ( $group_status == 'supersub' )
@@ -197,28 +203,43 @@ add_action( 'bp_activity_after_save', 'ass_group_notification_forum_reply' );
 
 
 // The email notification function for all other activity
-// as of right now activity_comment is not caught because it is missing the proper group_id a track request has be added for this feature at http://trac.buddypress.org/ticket/2388
 function ass_group_notification_activity( $content ) {
 	global $bp;
-	$type = $content->type;	
+	$type = $content->type;
+	$component = $content->component;
+				
+	// the first two are handled above, the last is skipped entirely
+	if ( $type == 'new_forum_topic' || $type == 'new_forum_post' || $type == 'created_group' )
+		return;
+			
+	// get group activity update replies to work (there is no group id passed in $content, but we can get it from $bp)
+	if ( $type == 'activity_comment' && $bp->current_component == 'groups' && $component == 'activity' )
+		$component = 'groups';
 	
-	/* all other activity notifications */	
-	if ( $content->component != 'groups' || $type == 'new_forum_topic' || $type == 'new_forum_post' || $type == 'created_group' )
+	// at this point we only want group activity, perhaps later we can make a function and interface for personal activity...
+	if ( $component != 'groups' && ! $is_activity_comment )
 		return;
 
 	if ( !ass_registered_long_enough( $bp->loggedin_user->id ) )
 		return;
 	
-	if ( $type == 'joined_group' )	// TODO: in the future, it would be nice for admins to get this message
+	if ( $type == 'joined_group' )	// TODO: in the future, it might be nice for admins to optionally get this message
 		return;
 	
-	/* Subject & Content */
+	$group_id = $content->item_id;
 	$action = ass_clean_subject( $content->action );
-	$subject = $action . ' [' . get_blog_option( BP_ROOT_BLOG, 'blogname' ) . ']';
-	$the_content = html_entity_decode( strip_tags( stripslashes( $content->content ) ) );
-	
-	// TODO: if there is no content, perhaps we should not send the email?
 		
+	if ( $type == 'activity_comment' ) { // if it's an group activity comment, reset to the proper group id and append the group name to the action
+		$group_id = $bp->groups->current_group->id;
+		$action = ass_clean_subject_html( $content->action ) . ' ' . __( 'in the group', 'bp-ass' ) . ' ' . $bp->groups->current_group->name;
+	}	
+	
+	$action = apply_filters( 'bp_ass_activity_notification_action', $action, $content );
+	
+	/* Subject & Content */
+	$subject = $action . ' [' . get_blog_option( BP_ROOT_BLOG, 'blogname' ) . ']';
+	$the_content = apply_filters( 'bp_ass_activity_notification_content', html_entity_decode( strip_tags( stripslashes( $content->content ) ) ), $content );
+			
 	/* If it's an activity item, switch the activity permalink to the group homepage rather than the user's homepage */
 	$activity_permalink = ( isset( $content->primary_link ) && $content->primary_link != bp_core_get_user_domain( $content->user_id ) ) ? $content->primary_link : bp_get_group_permalink( $bp->groups->current_group );
 	
@@ -237,25 +258,19 @@ To view or reply, log in and go to:
 	$settings_link = $bp->root_domain . '/' . $bp->groups->slug . '/' . $bp->groups->current_group->slug . '/notifications/';
 	$message .= sprintf( __( 'To disable these notifications please log in and go to: %s', 'bp-ass' ), $settings_link );
 
-	$group_id = $content->item_id;
-	$subscribed_users = groups_get_groupmeta( $group_id , 'ass_subscribed_users' );
-	
-	//if ( $type == 'joined_group' )  // a failed attempt at restricting group join email to admins and mods
-	//	$group_admins_mods = ass_get_group_admins_mods( $group_id );
-		
+	$subscribed_users = groups_get_groupmeta( $group_id , 'ass_subscribed_users' );		
 	$this_activity_is_important = apply_filters( 'ass_this_activity_is_important', false, $type );	
 	
 	// cycle through subscribed users
 	foreach ( (array)$subscribed_users as $user_id => $group_status ) { 			
 		//echo '<p>uid: ' . $user_id .' | gstat: ' . $group_status ;
 
-		if ( $user_id == $bp->loggedin_user->id )  // don't send email to topic author	
-			continue;
+		// Does the author want updates of his own posts?	
+		if ( $user_id == $bp->loggedin_user->id ) {
+			if ( !ass_self_post_notification() )
+				continue;
+		}
 		
-		//if ( $type == 'joined_group' ) // a failed attempt at restricting group joins to admins and mods
-		//	if ( !$group_admins_mods[ $user_id ] )
-		//		continue;
-			
 		// activity update notifications only go to Email and Digest. However plugin authors can make important activity updates get emailed out to Weekly summary and New topics by using the ass_group_notification_activity action hook. 
 		
 		if ( $group_status == 'supersub' || $group_status == 'sub' && $this_activity_is_important ) {
@@ -270,7 +285,7 @@ To view or reply, log in and go to:
 	}
 	
 	//echo '<p>Subject: ' . $subject;
-	//echo '<pre>'; print_r( $message ); echo '</pre>';	
+	//echo '<pre>'; print_r( $message ); echo '</pre>';
 }
 add_action( 'bp_activity_after_save' , 'ass_group_notification_activity' , 50 );
 
@@ -991,6 +1006,7 @@ function ass_admin_notice_form() {
 
 
 // This function sends an email out to all group members regardless of subscription status. 
+// TODO: change this function so the separate from is remove from the admin area and make it a checkbox under the 'add new topic' form. that way group admins can simply check off the box and it'll go to everyone. The benefit: notices are stored in the discussion form for later viewing. We should also alert the admin just how many people will get his post. 
 function ass_admin_notice() {
     global $bp;
 
@@ -1049,7 +1065,7 @@ add_action('wp', 'ass_admin_notice');
 
 // adds forum notification options in the users settings->notifications page 
 function ass_group_subscription_notification_settings() {
-	global $current_user; ?>
+	global $bp; ?>
 	<table class="notification-settings zebra" id="groups-notification-settings">
 	<thead>
 		<tr>
@@ -1063,24 +1079,53 @@ function ass_group_subscription_notification_settings() {
 		<tr>
 			<td></td>
 			<td><?php _e( 'A member replies in a forum topic you\'ve started', 'bp-ass' ) ?></td>
-			<td class="yes"><input type="radio" name="notifications[ass_replies_to_my_topic]" value="yes" <?php if ( !get_usermeta( $current_user->id, 'ass_replies_to_my_topic') || 'yes' == get_usermeta( $current_user->id, 'ass_replies_to_my_topic') ) { ?>checked="checked" <?php } ?>/></td>
-			<td class="no"><input type="radio" name="notifications[ass_replies_to_my_topic]" value="no" <?php if ( 'no' == get_usermeta( $current_user->id, 'ass_replies_to_my_topic') ) { ?>checked="checked" <?php } ?>/></td>
+			<td class="yes"><input type="radio" name="notifications[ass_replies_to_my_topic]" value="yes" <?php if ( !get_user_meta( $bp->displayed_user->id, 'ass_replies_to_my_topic', true ) || 'yes' == get_user_meta( $bp->displayed_user->id, 'ass_replies_to_my_topic', true ) ) { ?>checked="checked" <?php } ?>/></td>
+			<td class="no"><input type="radio" name="notifications[ass_replies_to_my_topic]" value="no" <?php if ( 'no' == get_user_meta( $bp->displayed_user->id, 'ass_replies_to_my_topic', true ) ) { ?>checked="checked" <?php } ?>/></td>
 		</tr>
 		<tr>
 			<td></td>
 			<td><?php _e( 'A member replies after you in a forum topic', 'bp-ass' ) ?></td>
-			<td class="yes"><input type="radio" name="notifications[ass_replies_after_me_topic]" value="yes" <?php if ( !get_usermeta( $current_user->id, 'ass_replies_after_me_topic') || 'yes' == get_usermeta( $current_user->id, 'ass_replies_after_me_topic') ) { ?>checked="checked" <?php } ?>/></td>
-			<td class="no"><input type="radio" name="notifications[ass_replies_after_me_topic]" value="no" <?php if ( 'no' == get_usermeta( $current_user->id, 'ass_replies_after_me_topic') ) { ?>checked="checked" <?php } ?>/></td>
+			<td class="yes"><input type="radio" name="notifications[ass_replies_after_me_topic]" value="yes" <?php if ( !get_user_meta( $bp->displayed_user->id, 'ass_replies_after_me_topic', true ) || 'yes' == get_user_meta( $bp->displayed_user->id, 'ass_replies_after_me_topic', true ) ) { ?>checked="checked" <?php } ?>/></td>
+			<td class="no"><input type="radio" name="notifications[ass_replies_after_me_topic]" value="no" <?php if ( 'no' == get_user_meta( $bp->displayed_user->id, 'ass_replies_after_me_topic', true ) ) { ?>checked="checked" <?php } ?>/></td>
 		</tr>
-
+		<tr>
+			<td></td>
+			<td><?php _e( 'Receive notifications of your own posts?', 'bp-ass' ) ?></td>
+			<td class="yes"><input type="radio" name="notifications[ass_self_post_notification]" value="yes" <?php if ( ass_self_post_notification( $bp->displayed_user->id ) ) { ?>checked="checked" <?php } ?>/></td>
+			<td class="no"><input type="radio" name="notifications[ass_self_post_notification]" value="no" <?php if ( !ass_self_post_notification( $bp->displayed_user->id ) ) { ?>checked="checked" <?php } ?>/></td>
+		</tr>
+	
 		<?php do_action( 'ass_group_subscription_notification_settings' ); ?>
 		</tbody>
 	</table>
+	
+	
 <?php
 }
 add_action( 'bp_notification_settings', 'ass_group_subscription_notification_settings' );
 
-
+/**
+ * Determine whether user should receive a notification of their own posts
+ *
+ * The main purpose of the filter is so that admins can override the setting, especially
+ * in cases where the user has not specified a setting (ie you can set the default to true)
+ *
+ * @param int $user_id Optional 
+ * @return string|array Single metadata value, or array of values
+ */
+function ass_self_post_notification( $user_id = false ) {
+	global $bp;
+	
+	if ( empty( $user_id ) )
+		$user_id = $bp->loggedin_user->id;
+	
+	$meta = get_user_meta( $user_id, 'ass_self_post_notification', true );
+	
+	$self_notify = $meta == 'yes' ? true : false;
+	
+	//if ( $user_id == 4  ) { if ( $self_notify) print_r( $bp ); print_r( $meta ); die(); }
+	return apply_filters( 'ass_self_post_notification', $self_notify, $meta, $user_id );
+}
 
 
 

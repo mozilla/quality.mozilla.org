@@ -8,11 +8,11 @@ function widget_akismet_register() {
 	function widget_akismet($args) {
 		extract($args);
 		$options = get_option('widget_akismet');
-		$count = number_format_i18n(get_option('akismet_spam_count'));
+		$count = get_option('akismet_spam_count');
 		?>
 			<?php echo $before_widget; ?>
 				<?php echo $before_title . $options['title'] . $after_title; ?>
-				<div id="akismetwrap"><div id="akismetstats"><a id="aka" href="http://akismet.com" title=""><?php printf( __( '%1$s %2$sspam comments%3$s %4$sblocked by%5$s<br />%6$sAkismet%7$s' ), '<span id="akismet1"><span id="akismetcount">' . $count . '</span>', '<span id="akismetsc">', '</span></span>', '<span id="akismet2"><span id="akismetbb">', '</span>', '<span id="akismeta">', '</span></span>' ); ?></a></div></div>
+                <div id="akismetwrap"><div id="akismetstats"><a id="aka" href="http://akismet.com" title=""><?php printf( _n( '%1$s%2$s%3$s %4$sspam comment%5$s %6$sblocked by%7$s<br />%8$sAkismet%9$s', '%1$s%2$s%3$s %4$sspam comments%5$s %6$sblocked by%7$s<br />%8$sAkismet%9$s', $count ), '<span id="akismet1"><span id="akismetcount">', number_format_i18n( $count ), '</span>', '<span id="akismetsc">', '</span></span>', '<span id="akismet2"><span id="akismetbb">', '</span>', '<span id="akismeta">', '</span></span>' ); ?></a></div></div> 
 			<?php echo $after_widget; ?>
 	<?php
 	}
@@ -85,8 +85,6 @@ function akismet_counter() {
 #akismetwrap #akismetstats{background:url(<?php echo get_option('siteurl'), $plugin_dir; ?>/akismet/akismet.gif) no-repeat top left;border:none;color:#fff;font:11px 'Trebuchet MS','Myriad Pro',sans-serif;height:40px;line-height:100%;overflow:hidden;padding:8px 0 0;text-align:center;width:120px}
 </style>
 <?php
-$count = number_format_i18n(get_option('akismet_spam_count'));
-?>
-<div id="akismetwrap"><div id="akismetstats"><a id="aka" href="http://akismet.com" title=""><div id="akismet1"><span id="akismetcount"><?php echo $count; ?></span> <span id="akismetsc"><?php _e('spam comments') ?></span></div> <div id="akismet2"><span id="akismetbb"><?php _e('blocked by') ?></span><br /><span id="akismeta">Akismet</span></div></a></div></div>
-<?php
+$count = get_option('akismet_spam_count');
+printf( _n( '<div id="akismetwrap"><div id="akismetstats"><a id="aka" href="http://akismet.com" title=""><div id="akismet1"><span id="akismetcount">%1$s</span> <span id="akismetsc">spam comment</span></div> <div id="akismet2"><span id="akismetbb">blocked by</span><br /><span id="akismeta">Akismet</span></div></a></div></div>', '<div id="akismetwrap"><div id="akismetstats"><a id="aka" href="http://akismet.com" title=""><div id="akismet1"><span id="akismetcount">%1$s</span> <span id="akismetsc">spam comments</span></div> <div id="akismet2"><span id="akismetbb">blocked by</span><br /><span id="akismeta">Akismet</span></div></a></div></div>', $count ), number_format_i18n( $count ) );
 }

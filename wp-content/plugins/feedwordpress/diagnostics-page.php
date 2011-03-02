@@ -39,7 +39,8 @@ class FeedWordPressDiagnosticsPage extends FeedWordPressAdminPage {
 		<div id="post-body">
 		<?php
 		$boxes_by_methods = array(
-			'diagnostics_box' => __('Diagnostics'),
+			'info_box' => __('Diagnostic Information'),
+			'diagnostics_box' => __('Display Diagnostics'),
 			'updates_box' => __('Updates'),
 		);
 	
@@ -82,15 +83,89 @@ class FeedWordPressDiagnosticsPage extends FeedWordPressAdminPage {
 			endif;
 			update_option('feedwordpress_diagnostics_show', $post['diagnostics_show']);
 
+			if ($post['diagnostics_show']
+			and in_array('updated_feeds:errors:persistent', $post['diagnostics_show'])) :
+				update_option('feedwordpress_diagnostics_persistent_errors_hours', (int) $post['diagnostics_persistent_error_hours']);
+			else :
+				delete_option('feedwordpress_diagnostics_persistent_errors_hours');
+			endif;
+			
+			if (in_array('email', $post['diagnostics_output'])) :
+				$ded = $post['diagnostics_email_destination'];
+				if ('mailto'==$ded) :
+					$ded .= ':'.$post['diagnostics_email_destination_address'];
+				endif;
+
+				update_option('feedwordpress_diagnostics_email_destination', $ded);
+			else :
+				delete_option('feedwordpress_diagnostics_email_destination');
+			endif;
+			
 			$this->updated = true; // Default update message
 		endif;
 	} /* FeedWordPressDiagnosticsPage::accept_POST () */
 
-	/*static*/ function diagnostics_box ($page, $box = NULL) {
+	function info_box ($page, $box = NULL) {
+			$link_category_id = FeedWordPress::link_category_id();
+		?>
+		<table class="edit-form narrow">
+		<thead style="display: none">
+		<th scope="col">Topic</th>
+		<th scope="col">Information</th>
+		</thead>
+
+		<tbody>
+		<tr>
+		<th scope="row">Version:</th>
+		<td>You are using FeedWordPress version <strong><?php print FEEDWORDPRESS_VERSION; ?></strong>.</td>
+		</tr>
+
+		<tr>
+		<th scope="row">Link Category:</th>
+		<td><?php if (!is_wp_error($link_category_id)) :
+			$term = get_term($link_category_id, 'link_category');
+		?><p>Syndicated feeds are
+		kept in link category #<?php print $term->term_id; ?>, <strong><?php print $term->name; ?></strong>.</p>
+		<?php else : ?>
+		<p><strong>FeedWordPress has been unable to set up a valid Link Category
+		for syndicated feeds.</strong> Attempting to set one up returned an
+		<code><?php $link_category_id->get_error_code(); ?></code> error with this
+		additional data:</p>
+		<table>
+		<tbody>
+		<tr>
+		<th scope="row">Message:</th>
+		<td><?php print $link_category_id->get_error_message(); ?></td>
+		</tr>
+		<?php $data = $link_category_id->get_error_data(); if (!empty($data)) : ?>
+		<tr>
+		<th scope="row">Auxiliary Data:</th>
+		<td><pre><?php print esc_html(FeedWordPress::val($link_category_id->get_error_data())); ?></pre></td>
+		</tr>
+		<?php endif; ?>
+		</table>
+		<?php endif; ?></td>
+		</tr>
+		</table>
+
+		<?php
+	} /* FeedWordPressDiagnosticsPage::info_box () */
+	
+	function diagnostics_box ($page, $box = NULL) {
 		$settings = array();
 		$settings['debug'] = (get_option('feedwordpress_debug')=='yes');
 
 		$diagnostics_output = get_option('feedwordpress_diagnostics_output', array());
+		
+		$users = fwp_author_list();
+
+		$ded = get_option('feedwordpress_diagnostics_email_destination', 'admins');
+
+		if (preg_match('/^mailto:(.*)$/', $ded, $ref)) :
+			$ded_addy = $ref[1];
+		else :
+			$ded_addy = NULL;
+		endif;
 		
 		// Hey ho, let's go...
 		?>
@@ -116,21 +191,60 @@ testing but absolutely inappropriate for a production server.</p>
 <li><input type="checkbox" name="diagnostics_output[]" value="admin_footer" <?php print (in_array('admin_footer', $diagnostics_output) ? ' checked="checked"' : ''); ?> /> Display in WordPress admin footer</label></li>
 <li><input type="checkbox" name="diagnostics_output[]" value="echo" <?php print (in_array('echo', $diagnostics_output) ? ' checked="checked"' : ''); ?> /> Echo in web browser as they are issued</label></li>
 <li><input type="checkbox" name="diagnostics_output[]" value="echo_in_cronjob" <?php print (in_array('echo_in_cronjob', $diagnostics_output) ? ' checked="checked"' : ''); ?> /> Echo to output when they are issued during an update cron job</label></li>
-<li><input type="checkbox" name="diagnostics_output[]" value="email" <?php print (in_array('email', $diagnostics_output) ? ' checked="checked"' : ''); ?> /> Send a daily email digest to the site administrator</label></li>
+<li><input type="checkbox" name="diagnostics_output[]" value="email" <?php print (in_array('email', $diagnostics_output) ? ' checked="checked"' : ''); ?> /> Send a daily email digest to:</label> <select name="diagnostics_email_destination" id="diagnostics-email-destination" size="1">
+<option value="admins"<?php if ('admins'==$ded) : ?> selected="selected"<?php endif; ?>>the site administrators</option>
+<?php foreach ($users as $id => $name) : ?>
+<option value="user:<?php print (int) $id; ?>"<?php if (sprintf('user:%d', (int) $id)==$ded) : ?> selected="selected"<?php endif; ?>><?php print esc_html($name); ?></option>
+<?php endforeach; ?>
+<option value="mailto"<?php if (!is_null($ded_addy)) : ?> selected="selected"<?php endif; ?>>another e-mail address...</option>
+</select>
+<input type="email" id="diagnostics-email-destination-address" name="diagnostics_email_destination_address" value="<?php print $ded_addy; ?>" placeholder="email address" /></li>
 </ul></td>
 </tr>
 </table>
+
+<script type="text/javascript">
+	contextual_appearance(
+		'diagnostics-email-destination',
+		'diagnostics-email-destination-address',
+		'diagnostics-email-destination-default',
+		'mailto',
+		'inline'
+	);
+	jQuery('#diagnostics-email-destination').change ( function () {
+		contextual_appearance(
+			'diagnostics-email-destination',
+			'diagnostics-email-destination-address',
+			'diagnostics-email-destination-default',
+			'mailto',
+			'inline'
+		);
+	} );	
+</script>
 		<?php
 	} /* FeedWordPressDiagnosticsPage::diagnostics_box () */
 	
 	/*static*/ function updates_box ($page, $box = NULL) {
-		$checked = array(
-			'updated_feeds' => '', 'updated_feeds:errors' => '',
-			'updated_feeds:errors:persistent' => '',
-			"syndicated_posts" => '', 'syndicated_posts:meta_data' => '',
-			'feed_items' => '',
-			'memory_usage' => '',
-		);
+		$hours = get_option('feedwordpress_diagnostics_persistent_errors_hours', 2);
+		$fields = apply_filters('feedwordpress_diagnostics', array(
+			'Update Diagnostics' => array(
+				'updated_feeds' => 'as each feed checked for updates',
+				'updated_feeds:errors:persistent' => 'when attempts to update a feed have resulted in errors</label> <label>for at least <input type="number" min="1" max="360" step="1" name="diagnostics_persistent_error_hours" value="'.$hours.'" /> hours',
+				'updated_feeds:errors' => 'any time FeedWordPress encounters any errors while checking a feed for updates',
+				'syndicated_posts' => 'as each syndicated post is added to the database',
+				'feed_items' => 'as each syndicated item is considered on the feed',
+				'memory_usage' => 'indicating how much memory was used',
+			),
+			'Syndicated Post Details' => array(
+				'syndicated_posts:meta_data' => 'as syndication meta-data is added on the post',
+			),
+		), $page);
+		
+		foreach ($fields as $section => $items) :
+			foreach ($items as $key => $label) :
+				$checked[$key] = '';
+			endforeach;
+		endforeach;
 
 		$diagnostics_show = get_option('feedwordpress_diagnostics_show', array());
 		if (is_array($diagnostics_show)) : foreach ($diagnostics_show as $thingy) :
@@ -140,25 +254,21 @@ testing but absolutely inappropriate for a production server.</p>
 		// Hey ho, let's go...
 		?>
 <table class="edit-form">
-<tr>
-<th scope="row">Update diagnostics:</th>
-<td><p>Show a diagnostic message...</p>
-<ul class="options">
-<li><label><input type="checkbox" name="diagnostics_show[]" value="updated_feeds" <?php print $checked['updated_feeds']; ?> /> as each feed checked for updates</label></li>
-<li><label><input type="checkbox" name="diagnostics_show[]" value="updated_feeds:errors:persistent" <?php print $checked['updated_feeds:errors:persistent'] ?> /> when FeedWordPress encounters repeated errors while checking a feed for updates</label></li>
-<li><label><input type="checkbox" name="diagnostics_show[]" value="updated_feeds:errors" <?php print $checked['updated_feeds:errors']; ?> /> any time FeedWordPress encounters any errors while checking a feed for updates</label></li>
-<li><label><input type="checkbox" name="diagnostics_show[]" value="syndicated_posts" <?php print $checked['syndicated_posts']; ?> /> as each syndicated post is added to the database</label></li>
-<li><label><input type="checkbox" name="diagnostics_show[]" value="feed_items" <?php print $checked['feed_items']; ?> /> as each syndicated item is considered on the feed</label></li>
-<li><label><input type="checkbox" name="diagnostics_show[]" value="memory_usage" <?php print $checked['memory_usage']; ?> /> indicating how much memory was used</label></li>
-</ul></td>
-</tr>
-<tr>
-<th>Syndicated post details:</th>
-<td><p>Show a diagnostic message...</p>
-<ul class="options">
-<li><label><input type="checkbox" name="diagnostics_show[]" value="syndicated_posts:meta_data" <?php print $checked['syndicated_posts:meta_data']; ?> /> as syndication meta-data is added on the post</label></li>
-</ul></td>
-</tr>
+	<?php foreach ($fields as $section => $ul) : ?>
+	  <tr>
+	  <th scope="row"><?php print esc_html($section); ?>:</th>
+	  <td><p>Show a diagnostic message...</p>
+	  <ul class="options">
+	  <?php foreach ($ul as $key => $label) : ?>
+	    <li><label><input
+	    	type="checkbox" name="diagnostics_show[]"
+	    	value="<?php print esc_html($key); ?>"
+	    	<?php print $checked[$key]; ?> />
+	    <?php print $label; ?></label></li>
+	  <?php endforeach; ?>
+	  </ul></td>
+	  </tr>
+	<?php endforeach; ?>
 </table>
 		<?php
 	} /* FeedWordPressDiagnosticsPage::updates_box () */

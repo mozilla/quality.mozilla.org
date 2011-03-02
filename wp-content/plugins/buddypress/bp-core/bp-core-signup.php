@@ -256,49 +256,6 @@ add_action( 'wp', 'bp_core_screen_activation', 3 );
  */
 
 /**
- * bp_core_flush_illegal_names()
- *
- * Flush illegal names by getting and setting 'illegal_names' site option
- */
-function bp_core_flush_illegal_names() {
-	$illegal_names = get_site_option( 'illegal_names' );
-	update_site_option( 'illegal_names', $illegal_names );
-}
-
-/**
- * bp_core_illegal_names()
- *
- * Filter the illegal_names site option and make sure it includes a few
- * specific BuddyPress and Multi-site slugs
- *
- * @param array|string $value Illegal names from field
- * @param array|string $oldvalue The value as it is currently
- * @return array Merged and unique array of illegal names
- */
-function bp_core_illegal_names( $value = '', $oldvalue = '' ) {
-
-	// Make sure $value is array
-	if ( empty( $value ) )
-		$db_illegal_names = array();
-	if ( is_array( $value ) )
-		$db_illegal_names = $value;
-	elseif ( is_string( $value ) )
-		$db_illegal_names = implode( ' ', $names );
-
-	// Add our slugs to the array and allow them to be filtered
-	$filtered_illegal_names = apply_filters( 'bp_core_illegal_usernames', array( 'www', 'web', 'root', 'admin', 'main', 'invite', 'administrator', BP_GROUPS_SLUG, BP_MEMBERS_SLUG, BP_FORUMS_SLUG, BP_BLOGS_SLUG, BP_ACTIVITY_SLUG, BP_XPROFILE_SLUG, BP_FRIENDS_SLUG, BP_SEARCH_SLUG, BP_SETTINGS_SLUG, BP_REGISTER_SLUG, BP_ACTIVATION_SLUG ) );
-
-	// Merge the arrays together
-	$merged_names =	array_merge( (array)$filtered_illegal_names, (array)$db_illegal_names );
-
-	// Remove duplicates
-	$illegal_names = array_unique( (array)$merged_names );
-
-	return apply_filters( 'bp_core_illegal_names', $illegal_names );
-}
-add_filter( 'pre_update_site_option_illegal_names', 'bp_core_illegal_names', 10, 2 );
-
-/**
  * bp_core_validate_user_signup()
  *
  * Validate a user name and email address when creating a new user.
@@ -391,7 +348,7 @@ function bp_core_signup_user( $user_login, $user_password, $user_email, $usermet
 			'user_email' => $user_email
 		) );
 
-		if ( !$user_id ) {
+		if ( is_wp_error( $user_id ) || !$user_id ) {
 			$errors->add( 'registerfail', sprintf( __('<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !', 'buddypress' ), get_option( 'admin_email' ) ) );
 			return $errors;
 		}

@@ -171,10 +171,10 @@ function bp_member_profile_stats_status_count_delete_clear_cache( $args ) {
 add_action( 'bp_activity_delete', 'bp_member_profile_stats_status_count_delete_clear_cache' );
 
 //delete cache when adding status update
-function p_member_profile_stats_status_count_posted_clear_cache( $content, $user_id, $activity_id ) {
+function bp_member_profile_stats_status_count_posted_clear_cache( $content, $user_id, $activity_id ) {
 	wp_cache_delete( 'bp_member_profile_stats_get_member_status_'. $user_id );
 }
-add_action( 'bp_activity_posted_update', 'bp_community_stats_status_count_posted_clear_cache', 3 );
+add_action( 'bp_activity_posted_update', 'bp_member_profile_stats_status_count_posted_clear_cache', 50, 3 );
 
 
 function bp_member_profile_stats_member_posts_daysince() {

@@ -522,7 +522,7 @@ function bp_core_check_avatar_size($file) {
 }
 
 function bp_core_check_avatar_type($file) {
-	if ( ( strlen($file['file']['type']) && !preg_match('/(jpe?g|gif|png)$/', $file['file']['type'] ) ) && !preg_match( '/(jpe?g|gif|png)$/', $file['file']['name'] ) )
+	if ( ( !empty( $file['file']['type'] ) && !preg_match('/(jpe?g|gif|png)$/', $file['file']['type'] ) ) || !preg_match( '/(jpe?g|gif|png)$/', $file['file']['name'] ) )
 		return false;
 
 	return true;
@@ -567,7 +567,7 @@ function bp_core_avatar_url() {
 
 	// If multisite, and current blog does not match root blog, make adjustments
 	if ( bp_core_is_multisite() && BP_ROOT_BLOG != $current_blog->blog_id )
-		$upload_dir['baseurl'] = str_replace( get_blog_option( $current_blog->blog_id, 'home' ) , get_blog_option( BP_ROOT_BLOG, 'home' ), $upload_dir['baseurl'] );
+		$upload_dir['baseurl'] = trailingslashit( get_blog_option( BP_ROOT_BLOG, 'home' ) ) . get_blog_option( BP_ROOT_BLOG, 'upload_path' );
 
 	return apply_filters( 'bp_core_avatar_url', $upload_dir['baseurl'] );
 }

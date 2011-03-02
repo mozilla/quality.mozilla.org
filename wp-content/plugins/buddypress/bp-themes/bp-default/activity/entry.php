@@ -12,12 +12,12 @@
 	<div class="activity-content">
 
 		<div class="activity-header">
-			<?php bp_activity_action(); ?>
+			<?php bp_activity_action() ?>
 		</div>
 
 		<?php if ( bp_activity_has_content() ) : ?>
 			<div class="activity-inner">
-				<?php bp_activity_content_body(); ?>
+				<?php bp_activity_content_body() ?>
 			</div>
 		<?php endif; ?>
 
@@ -25,7 +25,7 @@
 
 		<div class="activity-meta">
 			<?php if ( is_user_logged_in() && bp_activity_can_comment() ) : ?>
-				<a href="<?php bp_activity_comment_link(); ?>" class="reply" id="acomment-comment-<?php bp_activity_id() ?>"><?php _e( 'Reply', 'buddypress' ) ?> (<span><?php bp_activity_comment_count() ?></span>)</a>
+				<a href="<?php bp_activity_comment_link() ?>" class="acomment-reply" id="acomment-comment-<?php bp_activity_id() ?>"><?php _e( 'Reply', 'buddypress' ) ?> (<span><?php bp_activity_comment_count() ?></span>)</a>
 			<?php endif; ?>
 
 			<?php if ( is_user_logged_in() ) : ?>

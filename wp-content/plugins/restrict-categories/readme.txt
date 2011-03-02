@@ -3,13 +3,17 @@ Contributors: mmuro
 Tags: restrict, admin, administration, cms, categories, category
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 1.4
+Stable tag: 1.7
 
-Restrict the categories that users in defined roles can view, add, and edit in the admin panel.
+Restrict the categories that users can view, add, and edit in the admin panel.
 
 == Description ==
 
 *Restrict Categories* is a plugin that allows you to select which categories users can view, add, and edit in the Posts edit screen.
+
+**Major new feature**
+
+*Restrict Categories* now allows you to restrict access based on the user role AND username.
 
 == Installation ==
 
@@ -36,11 +40,32 @@ To fix this, go to <em>Settings > Restrict Categories</em>, uncheck <em>all</em>
 
 == Screenshots ==
 
-1. A custom role with selected categories to restrict
+1. Roles and Users with selected categories to restrict
 2. The Posts edit screen with restricted categories
 3. The Categories selection on the Add New Post screen with restricted categories
 
 == Changelog ==
+
+**Version 1.7**
+
+* Fix bug that hid list of images under Gallery tab on Media Uploader.
+
+**Version 1.6.1**
+
+* Fix bug where user restriction was not being applied.
+
+**Version 1.6**
+
+* Added restriction based on username
+* Show number of selected categories for each role and username
+* Improve reliability of Posts Edit screen query
+
+**Version 1.5**
+
+* Updated user interface
+* Fix bug to allow sub-categories
+* Fix bug to allow duplicate category names
+* Fix bug for categories with single quotes, ampersands, and other encoded characters
 
 **Version 1.4**
 
@@ -68,6 +93,18 @@ To fix this, go to <em>Settings > Restrict Categories</em>, uncheck <em>all</em>
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 1.7 =
+Bug fix for restricted users where uploaded images listed in the Gallery tab on Media Uploader were hidden.
+
+= 1.6.1 =
+For WordPress 3.0 - 3.0.4 users: highly recommended update that fixes a bug where user restriction was not being applied.
+
+= 1.6 =
+Added ability to restrict categories based on username.
+
+= 1.5 =
+Recommended upgrade that improves user interface and fixes reported bugs.
 
 = 1.4 =
 This version fixes problems with error messages.

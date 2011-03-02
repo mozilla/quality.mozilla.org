@@ -108,7 +108,7 @@ function bp_group_management_join_group( $group_id, $user_id = false ) {
 	/* Record this in activity streams */
 	groups_record_activity( array(
 		'user_id' => $user_id,
-		'action' => apply_filters( 'groups_activity_joined_group', sprintf( __( '%s joined the group %s', 'buddypress'), bp_core_get_userlink( $user_id ), '<a href="' . bp_get_group_permalink( $bp->groups->current_group ) . '">' . attribute_escape( $bp->groups->current_group->name ) . '</a>' ) ),
+		'action' => apply_filters( 'groups_activity_joined_group', sprintf( __( '%s joined the group %s', 'bp-group-management'), bp_core_get_userlink( $user_id ), '<a href="' . bp_get_group_permalink( $bp->groups->current_group ) . '">' . attribute_escape( $bp->groups->current_group->name ) . '</a>' ) ),
 		'type' => 'joined_group',
 		'item_id' => $group_id
 	) );

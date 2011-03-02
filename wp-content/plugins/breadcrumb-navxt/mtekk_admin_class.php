@@ -1,6 +1,6 @@
 <?php
 /*  
-	Copyright 2009-2010  John Havlik  (email : mtekkmonkey@gmail.com)
+	Copyright 2009-2011  John Havlik  (email : mtekkmonkey@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@ abstract class mtekk_admin
 	protected $_has_contextual_help = false;
 	function __construct()
 	{
+		//We set the plugin basename here, could manually set it
+		$this->plugin_basename = plugin_basename(__FILE__);
 		//Admin Init Hook
 		add_action('admin_init', array($this, 'init'));
 		//WordPress Admin interface hook
@@ -56,12 +58,16 @@ abstract class mtekk_admin
 		//Return a valid Undo anchor
 		return ' <a title="' . $title . '" href="' . $url . '">' . __('Undo', $this->identifier) . '</a>';
 	}
-	function upgrade_anchor($title = '')
+	function upgrade_anchor($title = '', $text = '')
 	{
 		//Assemble our url, nonce and all
 		$url = wp_nonce_url($this->admin_url() . '&' . $this->unique_prefix . '_admin_upgrade=true', $this->unique_prefix . '_admin_upgrade');
+		if($text == '')
+		{
+			$text = __('Migrate now.', $this->identifier);
+		}
 		//Return a valid Undo anchor
-		return ' <a title="' . $title . '" href="' . $url . '">' . __('Migrate now.', $this->identifier) . '</a>';
+		return ' <a title="' . $title . '" href="' . $url . '">' . $text . '</a>';
 	}
 	function init()
 	{
@@ -168,6 +174,8 @@ abstract class mtekk_admin
 	{
 		//Remove the option array setting
 		delete_option($this->unique_prefix . '_options');
+		//Remove the option backup array setting
+		delete_option($this->unique_prefix . '_options_bk');
 		//Remove the version setting
 		delete_option($this->unique_prefix . '_version');
 	}
@@ -177,13 +185,17 @@ abstract class mtekk_admin
 	function version_check($version)
 	{
 		//Do a quick version check
-		list($plug_major, $plug_minor, $plug_release) = explode('.', $this->version);
-		list($major, $minor, $release) = explode('.', $version);
-		//Check if we have a newer version than the DB
-		if($major < $plug_major || ($major == $plug_major && $minor < $plug_minor) || ($major == $plug_major && $minor == $plug_minor && $release < $plug_release))
+		if(version_compare($version, $this->version, '<'))
 		{
-			//Throw an error since we could not load the file for various reasons
-			$this->message['error'][] = __('Your settings are out of date.', $this->identifier) . $this->upgrade_anchor(__('Migrate the settings now.', $this->identifier));
+			//Throw an error since the DB version is out of date
+			$this->message['error'][] = __('Your settings are out of date.', $this->identifier) . $this->upgrade_anchor(__('Migrate the settings now.', $this->identifier), __('Migrate now.', $this->identifier));
+			//Output any messages that there may be
+			$this->message();
+		}
+		else if(!is_array($this->opt))
+		{
+			//Throw an error since it appears the options were never registered
+			$this->message['error'][] = __('Your plugin install is incomplete.', $this->identifier) . $this->upgrade_anchor(__('Load default settings now.', $this->identifier), __('Complete now.', $this->identifier));
 			//Output any messages that there may be
 			$this->message();
 		}
@@ -363,27 +375,37 @@ abstract class mtekk_admin
 		check_admin_referer($this->unique_prefix . '_admin_upgrade');
 		//Grab the database options
 		$opts = get_option($this->unique_prefix . '_options');
-		//Feed the just read options into the upgrade function
-		$this->opts_upgrade($opts, get_option($this->unique_prefix . '_version'));
-		//Always have to update the version
-		update_option($this->unique_prefix . '_version', $this->version);
-		//Store the options
-		update_option($this->unique_prefix . '_options', $this->opt);
-		//Send the success/undo message
-		$this->message['updated fade'][] = __('Settings successfully migrated.', $this->identifier);
+		if(is_array($opts))
+		{
+			//Feed the just read options into the upgrade function
+			$this->opts_upgrade($opts, get_option($this->unique_prefix . '_version'));
+			//Always have to update the version
+			update_option($this->unique_prefix . '_version', $this->version);
+			//Store the options
+			update_option($this->unique_prefix . '_options', $this->opt);
+			//Send the success message
+			$this->message['updated fade'][] = __('Settings successfully migrated.', $this->identifier);
+		}
+		else
+		{
+			//Run the install script
+			$this->install();
+			//Send the success message
+			$this->message['updated fade'][] = __('Default settings successfully installed.', $this->identifier);
+		}
 		add_action('admin_notices', array($this, 'message'));
 	}
 	/**
 	 * contextual_help action hook function
 	 * 
 	 * @param  string $contextual_help
-	 * @param  string $screen
+	 * @param  string $screen_id
 	 * @return string
 	 */
-	function contextual_help($contextual_help, $screen)
+	function contextual_help($contextual_help, $screen_id)
 	{
-		//Add contextual help on current screen, keep compatibility with 2.8, 2.9 and 3.0
-		if($screen->base == 'settings_page_' . $this->identifier || $screen == 'settings_page_' . $this->identifier)
+		//Add contextual help on current screen
+		if($screen_id == 'settings_page_' . $this->identifier)
 		{
 			$contextual_help = $this->_get_contextual_help();
 			$this->_has_contextual_help = true;
@@ -508,7 +530,11 @@ abstract class mtekk_admin
 	 */
 	function input_text($label, $option, $width = '32', $disable = false, $description = '')
 	{
-		$optid = $this->get_valid_id($option);?>
+		$optid = $this->get_valid_id($option);
+		if($disable)
+		{?>
+			<input type="hidden" name="<?php echo $this->unique_prefix . '_options[' . $option;?>]" value="<?php echo htmlentities($this->opt[$option], ENT_COMPAT, 'UTF-8');?>" />
+		<?php } ?>
 		<tr valign="top">
 			<th scope="row">
 				<label for="<?php echo $optid;?>"><?php echo $label;?></label>
@@ -529,7 +555,7 @@ abstract class mtekk_admin
 	 * @param bool $disable [optional]
 	 * @param string $description [optional]
 	 */
-	function textbox($label, $option, $rows = '3', $disable = false, $description = '')
+	function textbox($label, $option, $height = '3', $disable = false, $description = '')
 	{
 		$optid = $this->get_valid_id($option);?>
 		<p>
@@ -537,6 +563,33 @@ abstract class mtekk_admin
 		</p>
 		<textarea rows="<?php echo $height;?>" <?php if($disable){echo 'disabled="disabled" class="large-text code disabled"';}else{echo 'class="large-text code"';}?> id="<?php echo $optid;?>" name="<?php echo $this->unique_prefix . '_options[' . $option;?>]"><?php echo htmlentities($this->opt[$option], ENT_COMPAT, 'UTF-8');?></textarea><br />
 		<?php if($description !== ''){?><span class="setting-description"><?php echo $description;?></span><?php }
+	}
+	/**
+	 * This will output a well formed tiny mce ready textbox
+	 * 
+	 * @param string $label
+	 * @param string $option
+	 * @param string $rows [optional]
+	 * @param bool $disable [optional]
+	 * @param string $description [optional]
+	 */
+	function tinymce($label, $option, $height = '3', $disable = false, $description = '')
+	{
+		$optid = $this->get_valid_id($option);
+		if($disable)
+		{?>
+			<input type="hidden" name="<?php echo $this->unique_prefix . '_options[' . $option;?>]" value="<?php echo htmlentities($this->opt[$option], ENT_COMPAT, 'UTF-8');?>" />
+		<?php } ?>
+		<tr valign="top">
+			<th scope="row">
+				<label for="<?php echo $optid;?>"><?php echo $label;?></label>
+			</th>
+			<td>
+				<textarea rows="<?php echo $height;?>" <?php if($disable){echo 'disabled="disabled" class="mtekk_mce disabled"';}else{echo 'class="mtekk_mce"';}?> id="<?php echo $optid;?>" name="<?php echo $this->unique_prefix . '_options[' . $option;?>]"><?php echo htmlentities($this->opt[$option], ENT_COMPAT, 'UTF-8');?></textarea><br />
+				<?php if($description !== ''){?><span class="setting-description"><?php echo $description;?></span><?php }?>
+			</td>
+		</tr>
+	<?php
 	}
 	/**
 	 * This will output a well formed table row for a checkbox input
@@ -592,8 +645,13 @@ abstract class mtekk_admin
 	 * @param string $description [optional]
 	 * @return 
 	 */
-	function input_select($label, $option, $values, $disable = false, $description = '')
+	function input_select($label, $option, $values, $disable = false, $description = '', $titles = false)
 	{
+		//If we don't have titles passed in, we'll use option names as values
+		if(!$titles)
+		{
+			$titles = $values;
+		}
 		$optid = $this->get_valid_id($option);?>
 		<tr valign="top">
 			<th scope="row">
@@ -601,7 +659,7 @@ abstract class mtekk_admin
 			</th>
 			<td>
 				<select name="<?php echo $this->unique_prefix . '_options[' . $option;?>]" id="<?php echo $optid;?>" <?php if($disable){echo 'disabled="disabled" class="disabled"';}?>>
-					<?php $this->select_options($option, $values); ?>
+					<?php $this->select_options($option, $titles, $values); ?>
 				</select><br />
 				<?php if($description !== ''){?><span class="setting-description"><?php echo $description;?></span><?php }?>
 			</td>
@@ -609,27 +667,21 @@ abstract class mtekk_admin
 	<?php
 	}
 	/**
-	 * Displays wordpress options as <seclect> options defaults to true/false
+	 * Displays wordpress options as <seclect>
 	 *
 	 * @param string $optionname name of wordpress options store
 	 * @param array $options array of names of options that can be selected
 	 * @param array $exclude[optional] array of names in $options array to be excluded
 	 */
-	function select_options($optionname, $options, $exclude = array())
+	function select_options($optionname, $options, $values, $exclude = array())
 	{
 		$value = $this->opt[$optionname];
-		//First output the current value
-		if($value)
-		{
-			printf('<option>%s</option>', $value);
-		}
 		//Now do the rest
-		foreach($options as $option)
+		foreach($options as $key => $option)
 		{
-			//Don't want multiple occurance of the current value
-			if($option != $value && !in_array($option, $exclude))
+			if(!in_array($option, $exclude))
 			{
-				printf('<option>%s</option>', $option);
+				printf('<option value="%s" %s>%s</option>', $values[$key], selected(true, ($value == $values[$key]), false), $option);
 			}
 		}
 	}

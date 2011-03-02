@@ -118,7 +118,7 @@ function cms_tpv_wp_dashboard_setup() {
  * Output on dashboard
  */
 function cms_tpv_dashboard($post_type = "") {
-	cms_tpv_show_annoying_box();
+	// cms_tpv_show_annoying_box();
 	cms_tpv_print_common_tree_stuff($post_type);
 }
 
@@ -170,10 +170,10 @@ foreach ($posts as $one_post) {
 // */
 
 	?>
-	
 	<div class="wrap">
+	
 		<h2><?php echo CMS_TPV_NAME ?> <?php _e("settings", 'cms-tree-page-view') ?></h2>
-		
+
 		<form method="post" action="options.php">
 			<?php wp_nonce_field('update-options'); ?>
 					
@@ -365,6 +365,8 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 			<div class="cms_tpv_working">
 				<?php _e("Loading...", 'cms-tree-page-view') ?>
 			</div>
+
+			<div class="cms_tpv_message updated below-h2 hidden"><p>Message goes here.</p></div>
 			
 			<div class="updated below-h2 hidden cms_tpv_search_no_hits"><p><?php _e("Search: no pages found", 'cms-tree-page-view') ?></p></div>
 			
@@ -425,10 +427,49 @@ function cms_tpv_pages_page() {
 	<div class="wrap">
 		<h2><?php echo ($post_type_object->labels->name); ?> Tree View</h2>
 
+		<div class="bonny-plugins-inner-sidebar">
+			<h3>Support the author</h3>
+			<p>
+				If you like this plugin you are welcome to support the author by donating:
+			</p>
+			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="text-align: center">
+				<input type="hidden" name="cmd" value="_s-xclick">
+				<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----">
+				<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+				<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+			</form>
+
+			<p style="text-align: center">
+				<a href="http://flattr.com/thing/117882/CMS-Tree-Page-View-Plugin-for-WordPress" target="_blank">
+				<img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a>
+			</p>
+
+			<p>
+				You can also show your appreciation 
+				by giving the plugin a <a href="http://wordpress.org/extend/plugins/cms-tree-page-view/">good rating over at the plugin directory</a>
+				or blog or tweet something nice about this plugin.
+			</p>
+
+			<h3>Support</h3>
+			<p>If you have any problems with this plugins please check out the <a href="http://wordpress.org/tags/cms-tree-page-view?forum_id=10">support forum</a>.</p>
+			
+			<h3>More CMS related plugins</h3>
+			<p>These are some more plugins that enhance the CMS functionality of WordPress. Please check them out!</p>
+			<ul>
+				<li><a href="http://wordpress.org/extend/plugins/admin-menu-tree-page-view/">Admin Menu Tree Page View</a></li>
+				<li><a href="http://wordpress.org/extend/plugins/simple-history/">Simple History</a></li>
+				<li><a href="http://wordpress.org/extend/plugins/simple-fields/">Simple Fields</a></li>
+				<li><a href="http://wordpress.org/extend/plugins/simple-front-end-edit-buttons/">Simple Front End Edit Buttons</a></li>
+			</ul>
+			
+			
+		</div>
+
 		<?php
-		cms_tpv_show_annoying_box();
+		// cms_tpv_show_annoying_box();
 		cms_tpv_print_common_tree_stuff($post_type);
 		?>
+
 	</div>
 	<?php
 }
@@ -512,7 +553,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 		$screen = convert_to_screen("edit");
 		$screen->post_type = null;
 
-		ob_start(); // some plugins, for example magic fields, return javascript and things here. we're not campatible with that, so just swallow any output
+		ob_start(); // some plugins, for example magic fields, return javascript and things here. we're not compatible with that, so just swallow any output
 		$posts_columns = get_column_headers($screen);
 		ob_get_clean();
 
@@ -653,7 +694,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 					"editlink": "<?php echo htmlspecialchars_decode($editLink) ?>",
 					"modified_time": "<?php echo $post_modified_time ?>",
 					"modified_author": "<?php echo $post_author ?>",
-					"columns": "<?php echo rawurlencode($str_columns) ?>",
+					"columns": "<?php echo rawurlencode(utf8_decode($str_columns)) ?>",
 					"user_can_edit_page": "<?php echo (int) $user_can_edit_page ?>"
 				}
 				<?php

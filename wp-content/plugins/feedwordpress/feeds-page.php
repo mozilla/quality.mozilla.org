@@ -47,6 +47,37 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 	);
 	var $updatedPosts = NULL;
 
+	var $special_settings = array ( /* Regular expression syntax is OK here */
+		'cats',
+		'cat_split',
+		'fetch timeout',
+		'freeze updates',
+		'hardcode name',
+		'hardcode url',
+		'hardcode description',
+		'hardcode categories', /* Deprecated */
+		'comment status',
+		'terms',
+		'map authors',
+		'munge permalink',
+		'ping status',
+		'post status',
+		'postmeta',
+		'query parameters',
+		'resolve relative',
+		'syndicated post type',
+		'tags',
+		'unfamiliar author',
+		'unfamliar categories', /* Deprecated */
+		'unfamiliar category',
+		'unfamiliar post_tag',
+		'add/.*',
+		'update/.*',
+		'feed/.*',
+		'link/.*',
+		'match/.*',
+	);
+
 	/**
 	 * Constructs the Feeds page object
 	 *
@@ -67,35 +98,9 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 		);
 		$this->filename = __FILE__;
 		$this->updatedPosts = new UpdatedPostsControl($this);
+		
+		$this->special_settings = apply_filters('syndicated_feed_special_settings', $this->special_settings, $this);
 	} /* FeedWordPressFeedsPage constructor */
-
-	var $special_settings = array ( /* Regular expression syntax is OK here */
-		'cats',
-		'cat_split',
-		'freeze updates',
-		'hardcode name',
-		'hardcode url',
-		'hardcode description',
-		'hardcode categories', /* Deprecated */
-		'comment status',
-		'terms',
-		'map authors',
-		'munge permalink',
-		'ping status',
-		'post status',
-		'postmeta',
-		'resolve relative',
-		'syndicated post type',
-		'tags',
-		'unfamiliar author',
-		'unfamliar categories', /* Deprecated */
-		'unfamiliar category',
-		'unfamiliar post_tag',
-		'update/.*',
-		'feed/.*',
-		'link/.*',
-		'match/.*',
-	);
 
 	function display () {
 		global $fwp_post;
@@ -106,6 +111,7 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 			'global_feeds_box' => __('Update Scheduling'),
 			'updated_posts_box' => __('Updated Posts'),
 			'custom_settings_box' => __('Custom Feed Settings (for use in templates)'),
+			'fetch_settings_box' => __('Settings for Fetching Feeds (Advanced)'),
 		);
 		if ($this->for_default_settings()) :
 			unset($this->boxes_by_methods['custom_settings_box']);
@@ -298,8 +304,47 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 		return sprintf(__($caption), $updateWindow);
 	} /* FeedWordPressFeedsPage::update_window_currently () */
 	
+	function fetch_timeout_setting ($setting, $defaulted, $params) {
+		$timeout = intval($this->setting('fetch timeout', FEEDWORDPRESS_FETCH_TIMEOUT_DEFAULT));
+
+		if ($this->for_feed_settings()) :
+			$article = 'this';
+		else :
+			$article = 'a';
+		endif;
+		?>
+		<p>Wait no more than
+		than <input name="fetch_timeout" type="number" min="0" size="3" value="<?php print $timeout; ?>" />
+		second(s) when trying to fetch <?php print $article; ?> feed to check for updates.</p>
+		<p>If <?php print $article; ?> source's web server does not respond before time runs
+		out, FeedWordPress will skip over the source and try again during
+		the next update cycle.</p>
+		<?php
+	}
+	function fetch_timeout_setting_value ($setting, $defaulted, $params) {
+		print number_format(intval($setting)) . " " . (($setting==1) ? "second" : "seconds");
+	}
+	
+	function fetch_settings_box ($page, $box = NULL) {
+		$this->setting_radio_control(
+			'fetch timeout', 'fetch_timeout',
+			array(&$this, 'fetch_timeout_setting'),
+			array(
+				'global-setting-default' => FEEDWORDPRESS_FETCH_TIMEOUT_DEFAULT,
+				'input-name' => 'fetch_timeout',
+				'default-input-name' => 'fetch_timeout_default',
+				'labels' => array(&$this, 'fetch_timeout_setting_value'),
+			)
+		);
+	} /* FeedWordPressFeedsPage::fetch_settings_box () */
+	
 	function feed_information_box ($page, $box = NULL) {
 		global $wpdb;
+		$link_rss_params = maybe_unserialize($page->setting('query parameters', ''));
+		if (!is_array($link_rss_params)) :
+			$link_rss_params = array();
+		endif;
+		
 		if ($page->for_feed_settings()) :
 			$info['name'] = esc_html($page->link->link->link_name);
 			$info['description'] = esc_html($page->link->link->link_description);
@@ -353,7 +398,69 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 		<td><a href="<?php echo esc_html($rss_url); ?>"><?php echo esc_html($rss_url); ?></a>
 		(<a href="<?php echo FEEDVALIDATOR_URI; ?>?url=<?php echo urlencode($rss_url); ?>"
 		title="Check feed &lt;<?php echo esc_html($rss_url); ?>&gt; for validity">validate</a>)
-		<input type="submit" name="feedfinder" value="switch &rarr;" style="font-size:smaller" /></td>
+		<input type="submit" name="feedfinder" value="switch &rarr;" style="font-size:smaller" />
+		
+		<table id="link-rss-params">
+		<tbody>
+		<?php
+		$link_rss_params['new'] = array('', '');
+		$i = 0;
+		foreach ($link_rss_params as $index => $pair) :
+		?>
+		<tr class="link-rss-params-row" id="link-rss-params-<?php print $index; ?>">
+		<td><label>Parameter: <input type="text" class="link_params_key"
+		name="link_rss_params_key[<?php print $index; ?>]" value="<?php print esc_html($pair[0]); ?>"
+		size="5" style="width: 5em" placeholder="name" /></label></td>
+		<td class="link-rss-params-value-cell"><label class="link_params_value_label">= <input type="text" class="link_params_value"
+		name="link_rss_params_value[<?php print $index; ?>]" value="<?php print esc_html($pair[1]); ?>"
+		size="8" placeholder="value" /></label></td>
+		</tr>
+		<?php
+			$i++;
+		endforeach;
+		?>
+		</tbody>
+		</table>
+		
+		<div><input type="hidden" id="link-rss-params-num" name="link_rss_params_num" value="<?php print $i; ?>" /></div>
+		
+		<script type="text/javascript">
+		function linkParamsRowRemove (element) {
+			jQuery(element).closest('tr').fadeOut('slow', function () {
+				jQuery(this).remove();
+			} );
+		}
+
+		jQuery('<td><a href="#" class="add-remove link-rss-params-remove"><span class="x">(X)</span> Remove</a></td>').insertAfter('.link-rss-params-value-cell');
+
+		jQuery('#link-rss-params-new').hide();
+		jQuery('<a  class="add-remove" id="link-rss-params-add" href="#">+ Add a query parameter</a>').insertAfter('#link-rss-params');
+		jQuery('#link-rss-params-add').click( function () {
+			var next = jQuery('#link-rss-params-num').val();
+			var newRow = jQuery('#link-rss-params-new').clone().attr('id', 'link-rss-params-'+next);
+			newRow.find('.link_params_key').attr('name', 'link_rss_params_key['+next+']');
+			newRow.find('.link_params_value').attr('name', 'link_rss_params_value['+next+']');
+			
+			newRow.find('.link-rss-params-remove').click( function () {
+				linkParamsRowRemove(this);
+				return false;
+			} );
+
+			newRow.appendTo('#link-rss-params');
+			newRow.show();
+			
+			// Update counter for next row.
+			next++;
+			jQuery('#link-rss-params-num').val(next);
+
+			return false;
+		} );
+		jQuery('.link-rss-params-remove').click( function () {
+			linkParamsRowRemove(this);
+			return false;
+		} );
+		</script>
+		</td>
 		</tr>
 
 		<?php
@@ -735,6 +842,20 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 	
 	function save_settings ($post) {
 		if ($this->for_feed_settings()) :
+			if (isset($post['link_rss_params_key'])) :
+				$qp = array();
+				foreach ($post['link_rss_params_key'] as $index => $key) :
+					if (strlen($key) > 0) :
+						if (isset($post['link_rss_params_value'][$index])
+						and strlen($post['link_rss_params_value'][$index])) :
+							$value = $post['link_rss_params_value'][$index];
+							$qp[] = array($key, $value);
+						endif;
+					endif;
+				endforeach;
+				$this->update_setting('query parameters', serialize($qp));
+			endif;
+			
 			// custom feed settings first
 			foreach ($post['notes'] as $mn) :
 				$mn['key0'] = (isset($mn['key0']) ? trim($mn['key0']) : NULL);
@@ -803,6 +924,20 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 				$hardcode = (isset($post["hardcode_{$what}"]) ? $post["hardcode_{$what}"] : 'yes');
 				update_option("feedwordpress_hardcode_{$what}", $hardcode);
 			endforeach;
+			
+		endif;
+		
+		if (isset($post['fetch_timeout'])) :
+			if (isset($post['fetch_timeout_default']) and $post['fetch_timeout_default']=='yes') :
+				$timeout = NULL;
+			else :
+				$timeout = $post['fetch_timeout'];
+			endif;
+
+			if (is_int($timeout)) :
+				$timeout = intval($timeout);
+			endif;
+			$this->update_setting('fetch timeout', $timeout);
 		endif;
 		
 		$this->updatedPosts->accept_POST($post);

@@ -3,7 +3,7 @@
 Plugin Name: FeedWordPress
 Plugin URI: http://feedwordpress.radgeek.com/
 Description: simple and flexible Atom/RSS syndication for WordPress
-Version: 2010.0905
+Version: 2011.0211.2
 Author: Charles Johnson
 Author URI: http://radgeek.com/
 License: GPL
@@ -11,7 +11,7 @@ License: GPL
 
 /**
  * @package FeedWordPress
- * @version 2010.0905
+ * @version 2011.0211.2
  */
 
 # This uses code derived from:
@@ -34,7 +34,7 @@ License: GPL
 
 # -- Don't change these unless you know what you're doing...
 
-define ('FEEDWORDPRESS_VERSION', '2010.0905');
+define ('FEEDWORDPRESS_VERSION', '2011.0211.2');
 define ('FEEDWORDPRESS_AUTHOR_CONTACT', 'http://radgeek.com/contact');
 
 if (!defined('FEEDWORDPRESS_BLEG')) :
@@ -86,13 +86,13 @@ if (FEEDWORDPRESS_DEBUG) :
 	 // used for more than testing purposes!
 	define('FEEDWORDPRESS_CACHE_AGE', 1);
 	define('FEEDWORDPRESS_CACHE_LIFETIME', 1);
-	define('FEEDWORDPRESS_FETCH_TIME_OUT', 60);
+	define('FEEDWORDPRESS_FETCH_TIMEOUT_DEFAULT', 60);
 else :
 	// Hold onto data all day for conditional GET purposes,
 	// but consider it stale after 1 min (requiring a conditional GET)
 	define('FEEDWORDPRESS_CACHE_LIFETIME', 24*60*60);
 	define('FEEDWORDPRESS_CACHE_AGE', 1*60);
-	define('FEEDWORDPRESS_FETCH_TIME_OUT', 10);
+	define('FEEDWORDPRESS_FETCH_TIMEOUT_DEFAULT', 20);
 endif;
 
 // Use our the cache settings that we want.
@@ -105,7 +105,9 @@ if (!class_exists('SimplePie')) :
 endif;
 require_once(ABSPATH . WPINC . '/class-feed.php');
 
-require_once (ABSPATH . WPINC . '/registration.php'); // for wp_insert_user
+if (!function_exists('wp_insert_user')) :
+	require_once (ABSPATH . WPINC . '/registration.php'); // for wp_insert_user
+endif;
 
 require_once(dirname(__FILE__) . '/admin-ui.php');
 require_once(dirname(__FILE__) . '/feedwordpresssyndicationpage.class.php');
@@ -118,7 +120,10 @@ require_once(dirname(__FILE__) . '/feedwordpress-content-type-sniffer.class.php'
 
 // Magic quotes are just about the stupidest thing ever.
 if (is_array($_POST)) :
-	$fwp_post = stripslashes_deep($_POST);
+	$fwp_post = $_POST;
+	if (get_magic_quotes_gpc()) :
+		$fwp_post = stripslashes_deep($fwp_post);
+	endif;
 endif;
 
 // Get the path relative to the plugins directory in which FWP is stored
@@ -253,7 +258,11 @@ class FeedWordPressDiagnostic {
 				'updated_feeds:errors',
 				"Feed Error: [${url}] update returned error: $mesg"
 			);
-			if ($error['ts'] > $error['since']) :
+			
+			$hours = get_option('feedwordpress_diagnostics_persistent_errors_hours', 2);
+			$span = ($error['ts'] - $error['since']);
+
+			if ($span >= ($hours * 60 * 60)) :
 				$since = date('r', $error['since']);
 				$mostRecent = date('r', $error['ts']);
 				FeedWordPress::diagnostic(
@@ -270,7 +279,8 @@ class FeedWordPressDiagnostic {
 		$users = get_users_of_blog($id);
 		$recipients = array();
 		foreach ($users as $user) :
-			$dude = new WP_User($user->user_id);
+			$user_id = (isset($user->user_id) ? $user->user_id : $user->ID);
+			$dude = new WP_User($user_id);
 			if ($dude->has_cap('administrator')) :
 				if ($dude->user_email) :
 					$recipients[] = $dude->user_email;
@@ -670,21 +680,53 @@ function syndication_comments_feed_link ($link) {
 ################################################################################
 
 function fwp_add_pages () {
-	global $fwp_path;
+	$menu_cap = FeedWordPress::menu_cap();
+	$settings_cap = FeedWordPress::menu_cap(/*sub=*/ true);
+	$syndicationMenu = FeedWordPress::path('syndication.php');
+	
+	add_menu_page(
+		'Syndicated Sites', 'Syndication',
+		$menu_cap,
+		$syndicationMenu,
+		NULL,
+		WP_PLUGIN_URL.'/'.FeedWordPress::path('feedwordpress-tiny.png')
+	);
 
-	add_menu_page('Syndicated Sites', 'Syndication', 'manage_links', $fwp_path.'/syndication.php', NULL, WP_PLUGIN_URL.'/'.$fwp_path.'/feedwordpress-tiny.png');
-	do_action('feedwordpress_admin_menu_pre_feeds');
-	add_submenu_page($fwp_path.'/syndication.php', 'Syndicated Feeds & Updates', 'Feeds & Updates', 'manage_options', $fwp_path.'/feeds-page.php');
-	do_action('feedwordpress_admin_menu_pre_posts');
-	add_submenu_page($fwp_path.'/syndication.php', 'Syndicated Posts & Links', 'Posts & Links', 'manage_options', $fwp_path.'/posts-page.php');
-	do_action('feedwordpress_admin_menu_pre_authors');
-	add_submenu_page($fwp_path.'/syndication.php', 'Syndicated Authors', 'Authors', 'manage_options', $fwp_path.'/authors-page.php');
-	do_action('feedwordpress_admin_menu_pre_categories');
-	add_submenu_page($fwp_path.'/syndication.php', 'Categories'.FEEDWORDPRESS_AND_TAGS, 'Categories'.FEEDWORDPRESS_AND_TAGS, 'manage_options', $fwp_path.'/categories-page.php');
-	do_action('feedwordpress_admin_menu_pre_performance');
-	add_submenu_page($fwp_path.'/syndication.php', 'FeedWordPress Performance', 'Performance', 'manage_options', $fwp_path.'/performance-page.php');
-	do_action('feedwordpress_admin_menu_pre_diagnostics');
-	add_submenu_page($fwp_path.'/syndication.php', 'FeedWordPress Diagnostics', 'Diagnostics', 'manage_options', $fwp_path.'/diagnostics-page.php');
+	do_action('feedwordpress_admin_menu_pre_feeds', $menu_cap, $settings_cap);
+	add_submenu_page(
+		$syndicationMenu, 'Syndicated Feeds & Updates', 'Feeds & Updates',
+		$settings_cap, FeedWordPress::path('feeds-page.php')
+	);
+
+	do_action('feedwordpress_admin_menu_pre_posts', $menu_cap, $settings_cap);
+	add_submenu_page(
+		$syndicationMenu, 'Syndicated Posts & Links', 'Posts & Links',
+		$settings_cap, FeedWordPress::path('posts-page.php')
+	);
+
+	do_action('feedwordpress_admin_menu_pre_authors', $menu_cap, $settings_cap);
+	add_submenu_page(
+		$syndicationMenu, 'Syndicated Authors', 'Authors',
+		$settings_cap, FeedWordPress::path('authors-page.php')
+	);
+
+	do_action('feedwordpress_admin_menu_pre_categories', $menu_cap, $settings_cap);
+	add_submenu_page(
+		$syndicationMenu, 'Categories'.FEEDWORDPRESS_AND_TAGS, 'Categories'.FEEDWORDPRESS_AND_TAGS,
+		$settings_cap, FeedWordPress::path('categories-page.php')
+	);
+
+	do_action('feedwordpress_admin_menu_pre_performance', $menu_cap, $settings_cap);
+	add_submenu_page(
+		$syndicationMenu, 'FeedWordPress Performance', 'Performance',
+		$settings_cap, FeedWordPress::path('performance-page.php')
+	);
+
+	do_action('feedwordpress_admin_menu_pre_diagnostics', $menu_cap, $settings_cap);
+	add_submenu_page(
+		$syndicationMenu, 'FeedWordPress Diagnostics', 'Diagnostics',
+		$settings_cap, FeedWordPress::path('diagnostics-page.php')
+	);
 } /* function fwp_add_pages () */
 
 function fwp_check_debug () {
@@ -939,12 +981,7 @@ class FeedWordPress {
 		do_action('feedwordpress_update', $uri);
 
 		if (is_null($crash_ts)) :
-			$crash_dt = (int) get_option('feedwordpress_update_time_limit');
-			if ($crash_dt > 0) :
-				$crash_ts = time() + $crash_dt;
-			else :
-				$crash_ts = NULL;
-			endif;
+			$crash_ts = $this->crash_ts();
 		endif;
 
 		// Randomize order for load balancing purposes
@@ -990,6 +1027,16 @@ class FeedWordPress {
 		return $delta;
 	}
 
+	function crash_ts ($default = NULL) {
+		$crash_dt = (int) get_option('feedwordpress_update_time_limit', 0);
+		if ($crash_dt > 0) :
+			$crash_ts = time() + $crash_dt;
+		else :
+			$crash_ts = $default;
+		endif;
+		return $crash_ts;
+	}
+	
 	function stale () {
 		if (get_option('feedwordpress_automatic_updates')) :
 			// Do our best to avoid possible simultaneous
@@ -1027,54 +1074,58 @@ class FeedWordPress {
 	} /* FeedWordPress::init() */
 	
 	function dashboard_setup () {
-		// Get the stylesheet
-		wp_enqueue_style('feedwordpress-elements');
-
-		$widget_id = 'feedwordpress_dashboard';
-		$widget_name = __('Syndicated Sources');
-		$column = 'side';
-		$priority = 'core';
-
-		// I would love to use wp_add_dashboard_widget() here and save
-		// myself some trouble. But WP 3 does not yet have any way to
-		// push a dashboard widget onto the side, or to give it a default
-		// location.
-		add_meta_box(
-			/*id=*/ $widget_id,
-			/*title=*/ $widget_name,
-			/*callback=*/ array(&$this, 'dashboard'),
-			/*page=*/ 'dashboard',
-			/*context=*/ $column,
-			/*priority=*/ $priority
-		);
-		/*control_callback= array(&$this, 'dashboard_control') */
+		$see_it = FeedWordPress::menu_cap();
 		
-		// This is kind of rude, I know, but the dashboard widget isn't
-		// worth much if users don't know that it exists, and I don't
-		// know of any better way to reorder the boxen.
-		//
-		// Gleefully ripped off of codex.wordpress.org/Dashboard_Widgets_API
-		
-		// Globalize the metaboxes array, this holds all the widgets for wp-admin
-		global $wp_meta_boxes;
-
-		// Get the regular dashboard widgets array 
-		// (which has our new widget already but at the end)
-
-		$normal_dashboard = $wp_meta_boxes['dashboard'][$column][$priority];
+		if (current_user_can($see_it)) :
+			// Get the stylesheet
+			wp_enqueue_style('feedwordpress-elements');
 	
-		// Backup and delete our new dashbaord widget from the end of the array
-		if (isset($normal_dashboard[$widget_id])) :
-			$backup = array();
-			$backup[$widget_id] = $normal_dashboard[$widget_id];
-			unset($normal_dashboard[$widget_id]);
-
-			// Merge the two arrays together so our widget is at the
-			// beginning
-			$sorted_dashboard = array_merge($backup, $normal_dashboard);
-
-			// Save the sorted array back into the original metaboxes 
-			$wp_meta_boxes['dashboard'][$column][$priority] = $sorted_dashboard;
+			$widget_id = 'feedwordpress_dashboard';
+			$widget_name = __('Syndicated Sources');
+			$column = 'side';
+			$priority = 'core';
+	
+			// I would love to use wp_add_dashboard_widget() here and save
+			// myself some trouble. But WP 3 does not yet have any way to
+			// push a dashboard widget onto the side, or to give it a default
+			// location.
+			add_meta_box(
+				/*id=*/ $widget_id,
+				/*title=*/ $widget_name,
+				/*callback=*/ array(&$this, 'dashboard'),
+				/*page=*/ 'dashboard',
+				/*context=*/ $column,
+				/*priority=*/ $priority
+			);
+			/*control_callback= array(&$this, 'dashboard_control') */
+			
+			// This is kind of rude, I know, but the dashboard widget isn't
+			// worth much if users don't know that it exists, and I don't
+			// know of any better way to reorder the boxen.
+			//
+			// Gleefully ripped off of codex.wordpress.org/Dashboard_Widgets_API
+			
+			// Globalize the metaboxes array, this holds all the widgets for wp-admin
+			global $wp_meta_boxes;
+	
+			// Get the regular dashboard widgets array 
+			// (which has our new widget already but at the end)
+	
+			$normal_dashboard = $wp_meta_boxes['dashboard'][$column][$priority];
+		
+			// Backup and delete our new dashbaord widget from the end of the array
+			if (isset($normal_dashboard[$widget_id])) :
+				$backup = array();
+				$backup[$widget_id] = $normal_dashboard[$widget_id];
+				unset($normal_dashboard[$widget_id]);
+	
+				// Merge the two arrays together so our widget is at the
+				// beginning
+				$sorted_dashboard = array_merge($backup, $normal_dashboard);
+	
+				// Save the sorted array back into the original metaboxes 
+				$wp_meta_boxes['dashboard'][$column][$priority] = $sorted_dashboard;
+			endif;
 		endif;
 	} /* FeedWordPress::dashboard_setup () */
 	
@@ -1170,7 +1221,12 @@ class FeedWordPress {
 	function syndicate_link ($name, $uri, $rss) {
 		// Get the category ID#
 		$cat_id = FeedWordPress::link_category_id();
-		
+		if (!is_wp_error($cat_id)) :
+			$link_category = array($cat_id);
+		else :
+			$link_category = array();
+		endif;
+
 		// WordPress gets cranky if there's no homepage URI
 		if (!is_string($uri) or strlen($uri)<1) : $uri = $rss; endif;
 		
@@ -1180,7 +1236,7 @@ class FeedWordPress {
 		"link_rss" => $rss,
 		"link_name" => $name,
 		"link_url" => $uri,
-		"link_category" => array($cat_id),
+		"link_category" => $link_category,
 		"link_visible" => 'Y', // reactivate if inactivated
 		));
 
@@ -1243,10 +1299,14 @@ class FeedWordPress {
 
 	function syndicated_links ($args = array()) {
 		$contributors = FeedWordPress::link_category_id();
-		$links = get_bookmarks(array_merge(
-			array("category" => $contributors),
-			$args
-		));
+		if (!is_wp_error($contributors)) :
+			$links = get_bookmarks(array_merge(
+				array("category" => $contributors),
+				$args
+			));
+		else :
+			$links = array();
+		endif;
 		return $links;
 	} // function FeedWordPress::syndicated_links()
 
@@ -1273,9 +1333,10 @@ class FeedWordPress {
 		// make a new one for ourselves.
 		if (!$cat_id) :
 			$cat_id = FeedWordPressCompatibility::insert_link_category(DEFAULT_SYNDICATION_CATEGORY);
-
-			// Stamp it
-			update_option('feedwordpress_cat_id', $cat_id);
+			if (!is_wp_error($cat_id)) :
+				// Stamp it
+				update_option('feedwordpress_cat_id', $cat_id);
+			endif;
 		endif;
 
 		return $cat_id;
@@ -1404,14 +1465,47 @@ class FeedWordPress {
 		");
 	}
 
-	/*static*/ function fetch ($url, $force_feed = true) {
-		$feed = new SimplePie();
+	/*static*/ function fetch_timeout () {
+		return apply_filters(
+			'feedwordpress_fetch_timeout',
+			intval(get_option('feedwordpress_fetch_timeout', FEEDWORDPRESS_FETCH_TIMEOUT_DEFAULT))
+		);
+	}
+	
+	/*static*/ function fetch ($url, $params = array()) {
+		$force_feed = true; // Default
+
+		// Allow user to change default feed-fetch timeout with a global setting. Props Erigami Scholey-Fuller <http://www.piepalace.ca/blog/2010/11/feedwordpress-broke-my-heart.html>			'timeout' => 
+		$timeout = FeedWordPress::fetch_timeout();
+ 		
+		if (!is_array($params)) :
+			$force_feed = $params;
+		else : // Parameter array
+			$args = shortcode_atts(array(
+			'force_feed' => $force_feed,
+			'timeout' => $timeout
+			), $params);
+			
+			extract($args);
+		endif;
+		$timeout = intval($timeout);
+		
+		$pie_class = apply_filters('feedwordpress_simplepie_class', 'SimplePie');
+		$cache_class = apply_filters('feedwordpress_cache_class', 'WP_Feed_Cache');
+		$file_class = apply_filters('feedwordpress_file_class', 'FeedWordPress_File');
+		$parser_class = apply_filters('feedwordpress_parser_class', 'FeedWordPress_Parser');
+
+		$sniffer_class = apply_filters('feedwordpress_sniffer_class', 'FeedWordPress_Content_Type_Sniffer');
+
+		$feed = new $pie_class;
 		$feed->set_feed_url($url);
-		$feed->set_cache_class('WP_Feed_Cache');
-		$feed->set_file_class('WP_SimplePie_File');
-		$feed->set_content_type_sniffer_class('FeedWordPress_Content_Type_Sniffer');
-		$feed->set_file_class('FeedWordPress_File');
-		$feed->set_parser_class('FeedWordPress_Parser');
+		$feed->set_cache_class($cache_class);
+		$feed->set_timeout($timeout);
+		
+		//$feed->set_file_class('WP_SimplePie_File');
+		$feed->set_content_type_sniffer_class($sniffer_class);
+		$feed->set_file_class($file_class);
+		$feed->set_parser_class($parser_class);
 		$feed->force_feed($force_feed);
 		$feed->set_cache_duration(FeedWordPress::cache_duration());
 		$feed->init();
@@ -1568,11 +1662,6 @@ class FeedWordPress {
 	
 	function email_diagnostic_log () {
 		$dlog = get_option('feedwordpress_diagnostics_log', array());
-
-		$recipients = get_option('feedwordpress_diagnostics_log_recipients', NULL);
-		if (is_null($recipients)) :
-			$recipients = FeedWordPressDiagnostic::admin_emails();
-		endif;
 		
 		if (isset($dlog['schedule']) and isset($dlog['schedule']['last'])) :
 			if (time() > ($dlog['schedule']['last'] + $dlog['schedule']['freq'])) :
@@ -1636,6 +1725,23 @@ $body
 </html>
 
 EOMAIL;
+
+					$ded = get_option('feedwordpress_diagnostics_email_destination', 'admins');
+
+					// e-mail address
+					if (preg_match('/^mailto:(.*)$/', $ded, $ref)) :
+						$recipients = array($ref[1]);
+						
+					// userid
+					elseif (preg_match('/^user:(.*)$/', $ded, $ref)) :
+						$userdata = get_userdata((int) $ref[1]);
+						$recipients = array($userdata->user_email);
+					
+					// admins
+					else :
+						$recipients = FeedWordPressDiagnostic::admin_emails();
+					endif;
+
 					foreach ($recipients as $email) :						
 						add_filter('wp_mail_content_type', array('FeedWordPress', 'allow_html_mail'));
 						wp_mail($email, $subj, $body);
@@ -1652,7 +1758,7 @@ EOMAIL;
 			endif;
 		else :
 			$dlog['schedule'] = array(
-				'freq' =>24 /*hr*/ * 60 /*min*/ * 60 /*s*/,
+				'freq' => 24 /*hr*/ * 60 /*min*/ * 60 /*s*/,
 				'last' => time(),
 			);
 		endif;
@@ -1679,6 +1785,42 @@ EOMAIL;
 		endif;
 		return $prefix;
 	} /* FeedWordPress::log_prefix () */
+	
+	function menu_cap ($sub = false) {
+		if ($sub) :
+			$cap = apply_filters('feedwordpress_menu_settings_capacity', 'manage_options');
+		else :
+			$cap = apply_filters('feedwordpress_menu_main_capacity', 'manage_links');
+		endif;
+		return $cap;
+	} /* FeedWordPress::menu_cap () */
+	
+	function path ($filename = '') {
+		global $fwp_path;
+		
+		$path = $fwp_path;
+		if (strlen($filename) > 0) :
+			$path .= '/'.$filename;
+		endif;
+		return $path;
+	}
+	
+	function param ($key, $type = 'REQUEST', $default = NULL) {
+		$where = '_'.strtoupper($type);
+		$ret = $default;
+		if (isset($GLOBALS[$where]) and is_array($GLOBALS[$where])) :
+			if (isset($GLOBALS[$where][$key])) :
+				$ret = $GLOBALS[$where][$key];
+				if (get_magic_quotes_gpc()) :
+					$ret = stripslashes_deep($ret);
+				endif;
+			endif;
+		endif;
+		return $ret;
+	}
+	function post ($key, $default = NULL) {
+		return FeedWordPress::param($key, 'POST');
+	}
 } // class FeedWordPress
 
 class FeedWordPress_File extends WP_SimplePie_File {

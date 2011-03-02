@@ -4,7 +4,17 @@
 ################################################################################
 
 class FeedWordPressCompatibility {
-	// version testing based on database schema version
+
+	/**
+	 * FeedWordPressCompatibility::test_version: test version of WordPress
+	 * based on the database schema version.
+	 *
+	 * @param int $floor The minimum version necessary
+	 * @param mixed $ceiling The first version that is too high. If omitted
+	 * 	or NULL, no version is too high.
+	 * @return bool TRUE if within the range of versions, FALSE if too low
+	 * 	or too high.
+	 */
 	/*static*/ function test_version ($floor, $ceiling = null) {
 		global $wp_db_version;
 		
@@ -19,12 +29,23 @@ class FeedWordPressCompatibility {
 	/*static*/ function insert_link_category ($name) {
 		global $wpdb;
 
-		$name = $wpdb->escape($name);
-
 		// WordPress 2.3+ term/taxonomy API
 		$term = wp_insert_term($name, 'link_category');
-		$cat_id = $term['term_id'];
-		
+
+		// OK: returned array('term_id' => $term_id, 'term_taxonomy_id' => $tt_id)
+		if (!is_wp_error($term)) :
+			$cat_id = $term['term_id'];
+
+		// Error: term with this name already exists. Well, let's use that then.
+		elseif ($term->get_error_code() == 'term_exists') :
+			// Already-existing term ID is returned in data field
+			$cat_id = $term->get_error_data('term_exists');
+
+		// Error: another kind of error, harder to recover from. Return WP_Error.
+		else :
+			$cat_id = $term;
+		endif;
+	
 		// Return newly-created category ID
 		return $cat_id;
 	} /* FeedWordPressCompatibility::insert_link_category () */
@@ -122,6 +143,38 @@ if (!function_exists('disabled')) {
 	}
 } /* if */
 
+// Compat
+
+if (!function_exists('set_post_field')) {
+
+	/**
+	 * Update data from a post field based on Post ID
+	 *
+	 * Examples of the post field will be, 'post_type', 'post_status', 'post_content', etc.
+	 *
+	 * The context values are based off of the taxonomy filter functions and
+	 * supported values are found within those functions.
+	 *
+	 * @uses sanitize_post_field()
+	 *
+	 * @param string $field Post field name
+	 * @param mixed $value New value for post field
+	 * @param id $post Post ID
+	 * @return bool Result of UPDATE query
+	 *
+	 * Included under terms of GPL from WordPress Ticket #10946 <http://core.trac.wordpress.org/attachment/ticket/10946/post.php.diff>
+	 */
+	function set_post_field ($field, $value, $post_id) {
+		global $wpdb; 
+
+		$post_id = absint($post_id);
+		// sigh ... when FWP is active, I need to avoid avoid_kses_munge
+		// $value = sanitize_post_field($field, $value, $post_id, 'db'); 
+		return $wpdb->update($wpdb->posts, array($field => $value), array('ID' => $post_id));
+	} /* function set_post_field () */
+
+} /* if */
+
 if (!function_exists('term_exists')) {
 	// Fucking WordPress 3.0 wordsmithing.
 	function term_exists ( $term, $taxonomy = '', $parent = 0 ) {
@@ -140,7 +193,7 @@ function fwp_category_checklist ($post_id = 0, $descendents_and_self = 0, $selec
 		$taxonomy = (isset($params['taxonomy']) ? $params['taxonomy'] : 'category');
 	endif;
 	
-	$walker = new FeedWordPress_Walker_Category_Checklist;
+	$walker = new FeedWordPress_Walker_Category_Checklist($params);
 	$walker->set_prefix($prefix);
 	$walker->set_taxonomy($taxonomy); 
 	wp_terms_checklist(/*post_id=*/ $post_id, array(

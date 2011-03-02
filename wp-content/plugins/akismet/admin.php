@@ -25,9 +25,9 @@ function akismet_admin_init() {
         $hook = 'dashboard_page_akismet-stats-display';
     add_action('admin_head-'.$hook, 'akismet_stats_script');
     add_meta_box('akismet-status', __('Comment History'), 'akismet_comment_status_meta_box', 'comment', 'normal');
-	wp_register_style('akismet.css', AKISMET_PLUGIN_URL . '/akismet.css');
+	wp_register_style('akismet.css', AKISMET_PLUGIN_URL . 'akismet.css');
 	wp_enqueue_style('akismet.css');
-	wp_register_script('akismet.js', AKISMET_PLUGIN_URL . '/akismet.js', array('jquery'));
+	wp_register_script('akismet.js', AKISMET_PLUGIN_URL . 'akismet.js', array('jquery'));
 	wp_enqueue_script('akismet.js');
 }
 add_action('admin_init', 'akismet_admin_init');
@@ -91,11 +91,6 @@ function akismet_conf() {
 		else
 			update_option( 'akismet_show_user_comments_approved', 'false' );
 
-		if ( isset( $_POST['akismet_comment_nonce'] ) )
-			update_option( 'akismet_comment_nonce', 'true' );
-		else
-			update_option( 'akismet_comment_nonce', 'false' );
-
 	} elseif ( isset($_POST['check']) ) {
 		akismet_get_server_connectivity(0);
 	}
@@ -141,7 +136,7 @@ function akismet_conf() {
 <div class="wrap">
 <h2><?php _e('Akismet Configuration'); ?></h2>
 <?php if (isset($_GET['message']) && $_GET['message'] == 'success') { ?>
-	<div class="updated below-h2" id="message"><p><strong>Sign up success!</strong> Please check your email for your Akismet API Key and enter it below.</p></div>
+	<div class="updated below-h2" id="message"><p><?php _e( '<strong>Sign up success!</strong> Please check your email for your Akismet API Key and enter it below.' ); ?></p></div>
 <?php } ?>
 <div class="narrow">
 <form action="" method="post" id="akismet-conf" style="margin: auto; width: 400px; ">
@@ -161,7 +156,6 @@ function akismet_conf() {
 <?php akismet_nonce_field($akismet_nonce) ?>
 <p><label><input name="akismet_discard_month" id="akismet_discard_month" value="true" type="checkbox" <?php if ( get_option('akismet_discard_month') == 'true' ) echo ' checked="checked" '; ?> /> <?php _e('Auto-delete spam submitted on posts more than a month old.'); ?></label></p>
 <p><label><input name="akismet_show_user_comments_approved" id="akismet_show_user_comments_approved" value="true" type="checkbox" <?php if ( get_option('akismet_show_user_comments_approved') == 'true' ) echo ' checked="checked" '; ?> /> <?php _e('Show the number of comments you\'ve approved beside each comment author.'); ?></label></p>
-<p><label><input name="akismet_comment_nonce" id="akismet_comment_nonce" value="true" type="checkbox" <?php if ( get_option( 'akismet_comment_nonce' ) == 'true' || get_option( 'akismet_comment_nonce' ) == '' ) echo ' checked="checked" '; ?> /> <?php _e( 'Use a nonce on the comment form.' ); ?></label></p>
 	<p class="submit"><input type="submit" name="submit" value="<?php _e('Update options &raquo;'); ?>" /></p>
 </form>
 
@@ -242,11 +236,8 @@ function akismet_stats_script() {
 	?>
 <script type="text/javascript">
 function resizeIframe() {
-    var height = document.documentElement.clientHeight;
-    height -= document.getElementById('akismet-stats-frame').offsetTop;
-    height += 100; // magic padding
-    
-    document.getElementById('akismet-stats-frame').style.height = height +"px";
+  
+    document.getElementById('akismet-stats-frame').style.height = "2500px";
     
 };
 function resizeIframeInit() {
@@ -281,13 +272,13 @@ function akismet_stats() {
 	if ( !$count = get_option('akismet_spam_count') )
 		return;
 	$path = plugin_basename(__FILE__);
-	echo '<h3>'.__('Spam').'</h3>';
+	echo '<h3>' . _x( 'Spam', 'comments' ) . '</h3>';
 	global $submenu;
 	if ( isset( $submenu['edit-comments.php'] ) )
 		$link = 'edit-comments.php';
 	else
 		$link = 'edit.php';
-	echo '<p>'.sprintf(__('<a href="%1$s">Akismet</a> has protected your site from <a href="%2$s">%3$s spam comments</a>.'), 'http://akismet.com/', clean_url("$link?page=akismet-admin"), number_format_i18n($count) ).'</p>';
+	echo '<p>'.sprintf( _n( '<a href="%1$s">Akismet</a> has protected your site from <a href="%2$s">%3$s spam comments</a>.', '<a href="%1$s">Akismet</a> has protected your site from <a href="%2$s">%3$s spam comments</a>.', $count ), 'http://akismet.com/', clean_url("$link?page=akismet-admin"), number_format_i18n($count) ).'</p>';
 }
 add_action('activity_box_end', 'akismet_stats');
 
@@ -308,7 +299,7 @@ function akismet_admin_warnings() {
 				$next_check = human_time_diff( wp_next_scheduled('akismet_schedule_cron_recheck') );
 				if ( $waiting > 0 )
 					echo "
-			<div id='akismet-warning' class='updated fade'><p><strong>".__('Akismet has detected a problem.')."</strong> ".sprintf(_n('A server or network problem prevented Akismet from checking %d comment. It has been temporarily held for moderation and will be automatically re-checked in %s.', 'A server or network problem prevented Akismet from checking %d comments. They have been temporarily held for moderation and will be automatically re-checked in %s.', $waiting), $waiting, $next_check)."</p></div>
+			<div id='akismet-warning' class='updated fade'><p><strong>".__('Akismet has detected a problem.')."</strong> ".sprintf(_n('A server or network problem prevented Akismet from checking %d comment. It has been temporarily held for moderation and will be automatically re-checked in %s.', 'A server or network problem prevented Akismet from checking %d comments. They have been temporarily held for moderation and will be automatically re-checked in %s.', $waiting), number_format_i18n( $waiting ), $next_check)."</p></div>
 			";
 		}
 		add_action('admin_notices', 'akismet_warning');
@@ -326,13 +317,14 @@ function akismet_comment_row_action( $a, $comment ) {
 
 	$akismet_result = get_comment_meta( $comment->comment_ID, 'akismet_result', true );
 	$user_result = get_comment_meta( $comment->comment_ID, 'akismet_user_result', true);
+	$comment_status = wp_get_comment_status( $comment->comment_ID );
 	$desc = null;
 	if ( !$user_result || $user_result == $akismet_result ) {
 		// Show the original Akismet result if the user hasn't overridden it, or if their decision was the same
-		if ( $akismet_result == 'true' )
-			$desc = 'Flagged as spam by Akismet';
-		elseif ( $akismet_result == 'false' )
-			$desc = 'Cleared by Akismet';
+		if ( $akismet_result == 'true' && $comment_status != 'spam' && $comment_status != 'trash' )
+			$desc = __( 'Flagged as spam by Akismet' );
+		elseif ( $akismet_result == 'false' && $comment_status == 'spam' )
+			$desc = __( 'Cleared by Akismet' );
 	} else {
 		$who = get_comment_meta( $comment->comment_ID, 'akismet_user', true );
 		if ( $user_result == 'true' )
@@ -340,13 +332,26 @@ function akismet_comment_row_action( $a, $comment ) {
 		else
 			$desc = sprintf( __('Un-spammed by %s'), $who );
 	}
-	
+
+	// add a History item to the hover links, just after Edit
+	if ( $akismet_result ) {
+		$b = array();
+		foreach ( $a as $k => $item ) {
+			$b[ $k ] = $item;
+			if ( $k == 'edit' )
+				$b['history'] = '<a href="comment.php?action=editcomment&amp;c='.$comment->comment_ID.'#akismet-status" title="'. esc_attr__( 'View comment history' ) . '"> '. __('History') . '</a>';
+		}
+		
+		$a = $b;
+	}
+		
 	if ( $desc )
 		echo '<span class="akismet-status" commentid="'.$comment->comment_ID.'"><a href="comment.php?action=editcomment&amp;c='.$comment->comment_ID.'#akismet-status" title="' . esc_attr__( 'View comment history' ) . '">'.htmlspecialchars($desc).'</a></span>';
 		
 	if ( apply_filters( 'akismet_show_user_comments_approved', get_option('akismet_show_user_comments_approved') ) == 'true' ) {
-		$comment_count = akimset_get_user_comments_approved( $comment->user_id, $comment->comment_author_email, $comment->comment_author, $comment->comment_author_url );
-		echo '<span class="akismet-user-comment-count" commentid="'.$comment->comment_ID.'" style="display:none;"><br><span class="akismet-user-comment-counts">'.sprintf( __( '%s approved' ), intval($comment_count) ).'</span></span>';
+		$comment_count = akismet_get_user_comments_approved( $comment->user_id, $comment->comment_author_email, $comment->comment_author, $comment->comment_author_url );
+		$comment_count = intval( $comment_count );
+		echo '<span class="akismet-user-comment-count" commentid="'.$comment->comment_ID.'" style="display:none;"><br><span class="akismet-user-comment-counts">'.sprintf( _n( '%s approved', '%s approved', $comment_count ), number_format_i18n( $comment_count ) ) . '</span></span>';
 	}
 	
 	return $a;
@@ -423,10 +428,6 @@ add_filter('comment_text', 'akismet_text_add_link_class');
 function akismet_rightnow() {
 	global $submenu, $wp_db_version;
 
-	$plural_func = '__ngettext';
-	if ( function_exists( '_n' ) )
-		$plural_func = '_n';
-
 	// clean_url was deprecated in WP 3.0
 	$esc_url = 'clean_url';
 	if ( function_exists( 'esc_url' ) )
@@ -440,31 +441,26 @@ function akismet_rightnow() {
 		$link = 'edit.php?page=akismet-admin';
 
 	if ( $count = get_option('akismet_spam_count') ) {
-		$intro = sprintf( $plural_func(
-			'<a href="%1$s">Akismet</a> has protected your site from %2$s spam comment already,',
-			'<a href="%1$s">Akismet</a> has protected your site from %2$s spam comments already,',
+		$intro = sprintf( _n(
+			'<a href="%1$s">Akismet</a> has protected your site from %2$s spam comment already. ',
+			'<a href="%1$s">Akismet</a> has protected your site from %2$s spam comments already. ',
 			$count
 		), 'http://akismet.com/', number_format_i18n( $count ) );
 	} else {
-		$intro = sprintf( __('<a href="%1$s">Akismet</a> blocks spam from getting to your blog,'), 'http://akismet.com/' );
+		$intro = sprintf( __('<a href="%1$s">Akismet</a> blocks spam from getting to your blog. '), 'http://akismet.com/' );
 	}
 
 	if ( $queue_count = akismet_spam_count() ) {
-		$queue_text = sprintf( $plural_func(
-			'and there\'s <a href="%2$s">%1$s comment</a> in your spam queue right now.',
-			'and there are <a href="%2$s">%1$s comments</a> in your spam queue right now.',
+		$queue_text = sprintf( _n(
+			'There\'s <a href="%2$s">%1$s comment</a> in your spam queue right now.',
+			'There are <a href="%2$s">%1$s comments</a> in your spam queue right now.',
 			$queue_count
 		), number_format_i18n( $queue_count ), $esc_url($link) );
 	} else {
-		$queue_text = sprintf( __( " but there's nothing in your <a href='%1\$s'>spam queue</a> at the moment." ), $esc_url($link) );
+		$queue_text = sprintf( __( "There's nothing in your <a href='%1\$s'>spam queue</a> at the moment." ), $esc_url($link) );
 	}
 
-	// _c was deprecated in WP 2.9.0
-	if ( function_exists( '_x' ) )
-		$text = sprintf( _x( '%1$s%2$s', 'akismet_rightnow' ), $intro, $queue_text );
-	else 
-		$text = sprintf( _c( '%1$s%2$s|akismet_rightnow' ), $intro, $queue_text );
-
+	$text = $intro . '<br />' . $queue_text;
 	echo "<p class='akismet-right-now'>$text</p>\n";
 }
 	
@@ -581,6 +577,16 @@ function akismet_submit_spam_comment ( $comment_id ) {
 // For WP 2.7+
 function akismet_transition_comment_status( $new_status, $old_status, $comment ) {
 	if ( $new_status == $old_status )
+		return;
+
+	# we don't need to record a history item for deleted comments
+	if ( $new_status == 'delete' )
+		return;
+		
+	if ( !is_admin() )
+		return;
+		
+	if ( !current_user_can( 'edit_post', $comment->comment_post_ID ) && !current_user_can( 'moderate_comments' ) )
 		return;
 
 	if ( defined('WP_IMPORTING') && WP_IMPORTING == true )
