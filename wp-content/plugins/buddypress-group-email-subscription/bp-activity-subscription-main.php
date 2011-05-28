@@ -43,6 +43,12 @@ class Group_Activity_Subscription extends BP_Group_Extension {
 		if ( $bp->current_component == $bp->groups->slug ) {
 			wp_register_script('bp-activity-subscription-js', WP_PLUGIN_URL . '/buddypress-group-email-subscription/bp-activity-subscription-js.js');
 			wp_enqueue_script( 'bp-activity-subscription-js' );
+			
+			wp_localize_script( 'bp-activity-subscription-js', 'bp_ass', array(
+				'mute' 		=> __( 'Mute', 'bp-ass' ),
+				'follow'	=> __( 'Follow', 'bp-ass' ),
+				'error'		=> __( 'Error', 'bp-ass' )
+			) );
 		}
 	}
 	
@@ -64,7 +70,7 @@ class Group_Activity_Subscription extends BP_Group_Extension {
 
 	function edit_screen() {
 		// if ass-admin-can-send-email = no this won't show
-		ass_admin_notice_form();
+		ass_admin_notice_form(); // removed for now because it was broken
 		return true;
 	}
 

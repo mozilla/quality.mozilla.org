@@ -4,7 +4,7 @@ Plugin Name: Widget Logic
 Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
 Description: Control widgets with WP's conditional tags is_home etc
 Author: Alan Trewartha
-Version: 0.47
+Version: 0.48
 Author URI: http://freakytrigger.co.uk/author/alan/
 */ 
 
@@ -115,7 +115,7 @@ function widget_logic_extra_control()
 	if (is_callable($callback))
 		call_user_func_array($callback, $params);		// go to the original control function
 
-	$value=htmlspecialchars(stripslashes($wl_options[$id]),ENT_QUOTES);
+	$value = !empty( $wl_options[$id ] ) ? htmlspecialchars( stripslashes( $wl_options[$id ] ),ENT_QUOTES ) : '';
 
 	// dealing with multiple widgets - get the number. if -1 this is the 'template' for the admin interface
 	if (is_array($params[0]) && isset($params[0]['number'])) $number=$params[0]['number'];
@@ -134,7 +134,7 @@ add_action('wp_head', 'widget_logic_redirect_callback');
 function widget_logic_redirect_callback()
 {	global $wp_registered_widgets;
 	foreach ( $wp_registered_widgets as $id => $widget )
-	{	if (!$wp_registered_widgets[$id]['callback_wl_redirect'])
+	{	if ( empty( $wp_registered_widgets[$id]['callback_wl_redirect'] ) )
 		{	array_push($wp_registered_widgets[$id]['params'],$id);
 			$wp_registered_widgets[$id]['callback_wl_redirect']=$wp_registered_widgets[$id]['callback'];
 			$wp_registered_widgets[$id]['callback']='widget_logic_redirected_callback';
@@ -151,16 +151,16 @@ function widget_logic_redirected_callback()
 	$callback=$wp_registered_widgets[$id]['callback_wl_redirect'];		// find the real callback
 	
 	$wl_options = get_option('widget_logic');							// do we want the widget?
-	$wl_value=($wl_options[$id])?stripslashes($wl_options[$id]):"true";
-	$wl_value=(stristr($wl_value, "return"))?$wl_value:"return (".$wl_value.");";
+	$wl_value   = ( !empty( $wl_options[$id] ) )     ? stripslashes( $wl_options[$id] ) : "true";
+	$wl_value   = ( stristr( $wl_value, "return" ) ) ? $wl_value                        : "return (" . $wl_value . ");";
 
 	// before we execute the condtional code, perhaps we want to wp_reset_query...
-	if ($wl_options['widget_logic-options-wp_reset_query']=='checked' && !$wp_reset_query_is_done)
+	if ( !empty( $wl_options['widget_logic-options-wp_reset_query'] ) && ( $wl_options['widget_logic-options-wp_reset_query'] == 'checked' ) && empty( $wp_reset_query_is_done ) )
 	{	wp_reset_query(); $wp_reset_query_is_done=true;	}
 
 	$wl_value=(eval($wl_value) && is_callable($callback));
 	if ( $wl_value )
-	{	if ($wl_options['widget_logic-options-filter']!='checked')
+	{	if ( !empty( $wl_options['widget_logic-options-filter'] ) && ( $wl_options['widget_logic-options-filter'] != 'checked' ) )
 			call_user_func_array($callback, $params);					// if so callback with original params!
 		else
 		{	ob_start();

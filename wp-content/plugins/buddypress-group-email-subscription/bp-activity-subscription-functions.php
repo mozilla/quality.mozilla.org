@@ -1,7 +1,7 @@
 <?php
 
 //
-// !SEND EMAIL UDPATES FOR FORUM TOPICS AND POSTS
+// !SEND EMAIL UPDATES FOR FORUM TOPICS AND POSTS
 //
 
 // these hooks are a bit cludgy, but they work to ensure that only new posts get emailed out and post edits don't
@@ -37,7 +37,7 @@ function ass_group_notification_new_forum_topic( $content ) {
 	/* Subject & Content */
 	$action = ass_clean_subject( $content->action );
 	$subject = $action . ' [' . get_blog_option( BP_ROOT_BLOG, 'blogname' ) . ']';
-	$the_content = apply_filters( 'bp_ass_new_topic_content', html_entity_decode( strip_tags( stripslashes( $content->content ) ) ), $content );
+	$the_content = apply_filters( 'bp_ass_new_topic_content', html_entity_decode( strip_tags( stripslashes( $content->content ) ), ENT_QUOTES ), $content );
 	
 	$message = sprintf( __(
 '%s
@@ -115,7 +115,7 @@ function ass_group_notification_forum_reply( $content ) {
 	/* Subject & Content */
 	$action = ass_clean_subject( $content->action );
 	$subject = $action . ' [' . get_blog_option( BP_ROOT_BLOG, 'blogname' ) . ']';
-	$the_content = apply_filters( 'bp_ass_forum_reply_content', html_entity_decode( strip_tags( stripslashes( $content->content ) ) ), $content );
+	$the_content = apply_filters( 'bp_ass_forum_reply_content', html_entity_decode( strip_tags( stripslashes( $content->content ) ), ENT_QUOTES ), $content );
 	
 	$message = sprintf( __(
 '%s
@@ -231,14 +231,14 @@ function ass_group_notification_activity( $content ) {
 		
 	if ( $type == 'activity_comment' ) { // if it's an group activity comment, reset to the proper group id and append the group name to the action
 		$group_id = $bp->groups->current_group->id;
-		$action = ass_clean_subject_html( $content->action ) . ' ' . __( 'in the group', 'bp-ass' ) . ' ' . $bp->groups->current_group->name;
+		$action = ass_clean_subject( $content->action ) . ' ' . __( 'in the group', 'bp-ass' ) . ' ' . $bp->groups->current_group->name;
 	}	
 	
 	$action = apply_filters( 'bp_ass_activity_notification_action', $action, $content );
 	
 	/* Subject & Content */
 	$subject = $action . ' [' . get_blog_option( BP_ROOT_BLOG, 'blogname' ) . ']';
-	$the_content = apply_filters( 'bp_ass_activity_notification_content', html_entity_decode( strip_tags( stripslashes( $content->content ) ) ), $content );
+	$the_content = apply_filters( 'bp_ass_activity_notification_content', html_entity_decode( strip_tags( stripslashes( $content->content ) ), ENT_QUOTES ), $content );
 			
 	/* If it's an activity item, switch the activity permalink to the group homepage rather than the user's homepage */
 	$activity_permalink = ( isset( $content->primary_link ) && $content->primary_link != bp_core_get_user_domain( $content->user_id ) ) ? $content->primary_link : bp_get_group_permalink( $bp->groups->current_group );
@@ -269,6 +269,30 @@ To view or reply, log in and go to:
 		if ( $user_id == $bp->loggedin_user->id ) {
 			if ( !ass_self_post_notification() )
 				continue;
+		}
+		
+		// If this is an activity comment, and the $user_id is the user who is being replied
+		// to, check to make sure that the user is not subscribed to BP's native activity
+		// reply notifications
+		if ( 'activity_comment' == $type ) {
+			// First, look at the immediate parent
+			$immediate_parent = new BP_Activity_Activity( $content->secondary_item_id );
+			
+			// Don't send the bp-ass notification if the user is subscribed through BP
+			if ( $user_id == $immediate_parent->user_id && 'no' != get_user_meta( $user_id, 'notification_activity_new_reply', true ) ) {
+				continue;
+			}
+			
+			// We only need to check the root parent if it's different from the
+			// immediate parent
+			if ( $content->secondary_item_id != $content->item_id ) {
+				$root_parent = new BP_Activity_Activity( $content->item_id );
+				
+				// Don't send the bp-ass notification if the user is subscribed through BP
+				if ( $user_id == $root_parent->user_id && 'no' != get_user_meta( $user_id, 'notification_activity_new_reply', true ) ) {
+					continue;
+				}
+			}
 		}
 		
 		// activity update notifications only go to Email and Digest. However plugin authors can make important activity updates get emailed out to Weekly summary and New topics by using the ass_group_notification_activity action hook. 
@@ -404,7 +428,7 @@ function ass_group_subscribe_settings ( $group = false ) {
 
 	<input type="submit" value="<?php _e('Save Settings', 'bp-ass') ?>" id="ass-save" name="ass-save" class="button-primary">
 
-	<p class="ass-sub-note"><?php _e('Note: Normally, you receive email notifications for topics you start or comment on. This can be changed at', 'bp-ass'); ?> <a href="<?php echo $bp->loggedin_user->domain . 'settings/notifications/' ?>"><?php _e('email notifications', 'bp-ass'); ?></a>.</p>
+	<p class="ass-sub-note"><?php _e('Note: Normally, you receive email notifications for topics you start or comment on. This can be changed at', 'bp-ass'); ?> <a href="<?php echo $bp->loggedin_user->domain . BP_SETTINGS_SLUG . '/notifications/' ?>"><?php _e('email notifications', 'bp-ass'); ?></a>.</p>
 	
 	</form>
 	</div><!-- end ass-email-subscriptions-options-page -->
@@ -431,7 +455,7 @@ function ass_update_group_subscribe_settings() {
 				
 			ass_group_subscription( $action, $user_id, $group_id ); // save the settings
 			
-			bp_core_add_message( __( $security.'Your email notifications are set to ' . ass_subscribe_translate( $action ) . ' for this group.', 'bp-ass' ) );
+			bp_core_add_message( sprintf( __( 'Your email notifications are set to %s for this group.', 'bp-ass' ), ass_subscribe_translate( $action ) ) );
 			bp_core_redirect( wp_get_referer() );	
 		}
 	}
@@ -531,11 +555,12 @@ function ass_group_ajax_callback() {
 add_action( 'wp_ajax_ass_group_ajax', 'ass_group_ajax_callback' );
 
 
-// if the user leaves the group, delete their subscription status
+// if the user leaves the group or if they are removed by an admin, delete their subscription status
 function ass_unsubscribe_on_leave( $group_id, $user_id ){
 	ass_group_subscription( 'delete', $user_id, $group_id );
 }
 add_action( 'groups_leave_group', 'ass_unsubscribe_on_leave', 100, 2 );
+add_action( 'groups_remove_member', 'ass_unsubscribe_on_leave', 100, 2 );
 
 
 
@@ -571,7 +596,7 @@ function ass_join_group_message( $group_id, $user_id ) {
 	if ( $user_id != $bp->loggedin_user->id  )
 		return;
 	
-	$status = groups_get_groupmeta( $group_id, 'ass_default_subscription' );
+	$status = apply_filters( 'ass_default_subscription_level', groups_get_groupmeta( $group_id, 'ass_default_subscription' ), $group_id );
 	
 	if ( !$status )
 		$status = 'no';
@@ -820,7 +845,7 @@ function ass_clean_subject( $subject ) {
 		$subject = preg_replace( '/ in the group /', '" in the group ', $subject_quotes );
 	
 	$subject = preg_replace( '/:$/', '', $subject ); // remove trailing colon
-	$subject = html_entity_decode( strip_tags( $subject ) );
+	$subject = html_entity_decode( strip_tags( $subject ), ENT_QUOTES );
 		
 	return apply_filters( 'ass_clean_subject', $subject );
 }
@@ -965,7 +990,7 @@ add_action( 'wp', 'ass_manage_all_members_email_update', 4 );
 // Add a notice at end of email notification about how to change group email subscriptions
 function ass_add_notice_to_notifications_page() {
 	echo '<p><b>'.__('Group Email Settings','bp-ass').'</b></p>';
-	echo '<p>' . sprintf( __('To change the email notification settings for your groups go to %s and click change for each group.','bp-ass') . '</p>', '<a href="'. bp_loggedin_user_domain() .'groups/">'.__('My Groups','bp-ass') .'</a>' );
+	echo '<p>' . sprintf( __('To change the email notification settings for your groups go to %s and click change for each group.','bp-ass') . '</p>', '<a href="'. bp_loggedin_user_domain() . trailingslashit( BP_GROUPS_SLUG ) . '">'.__('My Groups','bp-ass') .'</a>' );
 }
 add_action( 'bp_notification_settings', 'ass_add_notice_to_notifications_page', 9000 );
 
@@ -981,7 +1006,7 @@ add_action( 'bp_notification_settings', 'ass_add_notice_to_notifications_page', 
 //
 
 
-// creata a form that allows admins to email everyone in the group
+// create a form that allows admins to email everyone in the group
 function ass_admin_notice_form() {	
 	global $bp;	
 
@@ -1013,7 +1038,7 @@ function ass_admin_notice() {
     if ( $bp->current_component == 'groups' && $bp->current_action == 'admin' && $bp->action_variables[0] == 'notifications' ) {
     
 	    // Make sure the user is an admin
-		if ( !groups_is_user_admin( $bp->loggedin_user->id , $group_id ) && !is_site_admin() )
+		if ( !groups_is_user_admin( $bp->loggedin_user->id, $bp->groups->current_group->id ) && !is_site_admin() )
 			return;
 		
 		if ( get_option('ass-admin-can-send-email') == 'no' )
@@ -1137,17 +1162,36 @@ function ass_self_post_notification( $user_id = false ) {
 
 
 // Functions to add the backend admin menu to control changing default settings
+
+/**
+ * Adds "Group Email Options" panel under "BuddyPress" in the admin/network admin
+ *
+ * The add_action() hook is conditional to account for variations between WP 3.0.x/3.1.x and 
+ * BP < 1.2.7/>1.2.8.
+ *
+ * @package BuddyPress Group Email Subscription
+ */
 function ass_admin_menu() {
 	add_submenu_page( 'bp-general-settings', __("Group Email Options", 'bp-ass'), __("Group Email Options", 'bp-ass'), 'manage_options', 'ass_admin_options', "ass_admin_options" );
 }
-add_action('admin_menu', 'ass_admin_menu');
+add_action( is_multisite() && function_exists( 'is_network_admin' ) ? 'network_admin_menu' : 'admin_menu', 'ass_admin_menu' );
+
 
 // function to create the back end admin form
 function ass_admin_options() {
 	//print_r($_POST); die();
 	
-	if ( $_POST )
-		ass_update_dashboard_settings();
+	if ( !empty( $_POST ) ) {
+		if ( ass_update_dashboard_settings() ) {
+			?>
+			
+			<div id="message" class="updated">
+				<p><?php _e( 'Settings saved.', 'bp-ass' ) ?></p>
+			</div>
+			
+			<?php
+		}
+	}
 	
 	//set the first time defaults
 	if ( !$ass_digest_time = get_option( 'ass_digest_time' ) )
@@ -1271,6 +1315,7 @@ function ass_update_dashboard_settings() {
 	if ( $_POST['ass_registered_req'] != get_option( 'ass_registered_req' ) )
 		update_option( 'ass_registered_req', $_POST['ass_registered_req'] );
 	
+	return true;
 	//echo '<pre>'; print_r( $_POST ); echo '</pre>';
 }
 

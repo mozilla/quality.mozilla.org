@@ -288,7 +288,10 @@ function bp_group_management_admin_edit() {
 			
 			break;
 		
-		do_action( 'bp_gm_member_action', $group, $id, $_GET['member_action'] );
+		default :
+			do_action( 'bp_gm_member_action', $group, $id, $_GET['member_action'] );
+			
+			break;
 	}
 ?>
 

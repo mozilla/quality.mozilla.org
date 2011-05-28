@@ -3,9 +3,9 @@
 Plugin Name: Buddypress Humanity
 Plugin URI: http://hyperspatial.com/wordpress-development/plugins/buddypress-humanity
 Description: Add a question to the Buddypress registration form to combat spam blogs. You choose the question and answer.  Multiple answers are allowed.
-Version: 1.1
+Version: 1.2
 Requires at least: 2.9.2 / 1.2.4
-Tested up to: 3.0 / 1.2.5.2
+Tested up to: 3.1 / 1.2.8
 Author: Adam J Nowak
 Author URI: http://hyperspatial.com
 License: GPL2

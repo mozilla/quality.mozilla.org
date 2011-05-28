@@ -20,7 +20,7 @@ jQuery(function($) {
 				"data" : function (n) { 
 					// the result is fed to the AJAX request `data` option
 					if (n.data) {
-						var post_id = n.data("jstree").post_id;
+						var post_id = n.data("post_id");
 						return {
 							"id": post_id
 						}
@@ -142,7 +142,7 @@ jQuery(".cms_tpv_action_add_page_after").live("click", function() {
 	var post_type = cms_tpv_get_post_type(this);
 	var selected_lang = cms_tpv_get_wpml_selected_lang(this);
 
-	var post_status = $this.closest("li").data("jstree").post_status;
+	var post_status = $this.closest("li").data("post_status");
 
 	// not allowed when status is trash
 	if (post_status == "trash") {
@@ -176,7 +176,7 @@ jQuery(".cms_tpv_action_add_page_inside").live("click", function() {
 	var post_type = cms_tpv_get_post_type(this);
 	var selected_lang = cms_tpv_get_wpml_selected_lang(this);
 	
-	var post_status = $this.closest("li").data("jstree").post_status;
+	var post_status = $this.closest("li").data("post_status");
 
 	// check page status, because we cant add a page inside a page with status draft or status trash
 	// if we edit the page wordpress will forget the parent
@@ -238,17 +238,17 @@ function cms_tpv_mouseover_li(li) {
 			
 			// setup link for view page
 			$view = div_actions_for_post_type.find(".cms_tpv_action_view");
-			var permalink = $li.data("jstree").permalink;
+			var permalink = $li.data("permalink");
 			$view.attr("href", permalink);
 
 			// setup link for edit page
 			$edit = div_actions_for_post_type.find(".cms_tpv_action_edit");
-			var editlink = $li.data("jstree").editlink;
+			var editlink = $li.data("editlink");
 			$edit.attr("href", editlink);
 			
 			// check if user is allowed to edit page
 			var $cms_tpv_action_add_and_edit_page = div_actions_for_post_type.find(".cms_tpv_action_add_and_edit_page");
-			if ($li.data("jstree").user_can_edit_page == 0) {
+			if ($li.data("user_can_edit_page") == 0) {
 				// nooope
 				$edit.hide();
 				$cms_tpv_action_add_and_edit_page.hide();
@@ -258,18 +258,18 @@ function cms_tpv_mouseover_li(li) {
 			}
 			
 			// ..and some extras
-			div_actions_for_post_type.find(".cms_tpv_page_actions_modified_time").text($li.data("jstree").modified_time);
-			div_actions_for_post_type.find(".cms_tpv_page_actions_modified_by").text($li.data("jstree").modified_author);
-			div_actions_for_post_type.find(".cms_tpv_page_actions_page_id").text($li.data("jstree").post_id);		
+			div_actions_for_post_type.find(".cms_tpv_page_actions_modified_time").text($li.data("modified_time"));
+			div_actions_for_post_type.find(".cms_tpv_page_actions_modified_by").text($li.data("modified_author"));
+			div_actions_for_post_type.find(".cms_tpv_page_actions_page_id").text($li.data("post_id"));		
 			
-			div_actions_for_post_type.find(".cms_tpv_page_actions_columns").html( unescape($li.data("jstree").columns) );
+			div_actions_for_post_type.find(".cms_tpv_page_actions_columns").html( unescape($li.data("columns")) );
 			
 			// position and show action div
 			var $a = $li.find("a");
 			var width = $a.outerWidth(true);
 			$li.append(div_actions_for_post_type);
 			left_pos = width+28;
-			top_pos = -3;
+			top_pos = -8;
 			div_actions_for_post_type.css("left", left_pos);
 			div_actions_for_post_type.css("top", top_pos);
 			div_actions_for_post_type.show();
@@ -343,7 +343,7 @@ function cms_tpv_bind_clean_node() {
 		var nodePosition = data.rslt.p;
 		var nodeR = data.rslt.r;
 		var nodeRef = data.rslt.or; // noden som positionen gäller versus
-
+		var selected_lang = cms_tpv_get_wpml_selected_lang(nodeBeingMoved);
 		/*
 
 		// om ovanför
@@ -384,41 +384,43 @@ function cms_tpv_bind_clean_node() {
 				action: "cms_tpv_move_page", 
 				"node_id": node_id, 
 				"ref_node_id": ref_node_id, 
-				type: nodePosition 
+				"type": nodePosition,
+				"icl_post_language": selected_lang
 			}, function(data, textStatus) {
 		});
 
 	});
 	
 	cms_tpv_tree.bind("clean_node.jstree", function(event, data) {
-		obj = (data.rslt.obj);
+		var obj = (data.rslt.obj);
 		if (obj && obj != -1) {
 			obj.each(function(i, elm) {
 				var li = jQuery(elm);
 				var aFirst = li.find("a:first");
-				
+
 				// check that we haven't added our stuff already
 				if (li.data("done_cms_tpv_clean_node")) {
 					return;
 				} else {
 					li.data("done_cms_tpv_clean_node", true);
 				}
-				
+				// new way:
+				// console.log(li.data("childCount"));
 				// add number of children
-				if (li.data("jstree")) {
-					var childCount = li.data("jstree").childCount;
+				//if (li.data("jstree")) {
+					var childCount = li.data("childCount");
 					if (childCount > 0) {
 						aFirst.append("<span title='" + childCount + " " + cmstpv_l10n.child_pages + "' class='child_count'>("+childCount+")</span>");
 					}
 					
 					// add protection type
-					var rel = li.data("jstree").rel;
+					var rel = li.data("rel");
 					if(rel == "password") {
 						aFirst.find("ins").after("<span class='post_protected' title='" + cmstpv_l10n.Password_protected_page + "'>&nbsp;</span>");
 					}
 	
 					// add page type
-					var post_status = li.data("jstree").post_status;
+					var post_status = li.data("post_status");
 					// post_status can be any value because of plugins like Edit flow
 					// check if we have an existing translation for the string, otherwise use the post status directly
 					var post_status_to_show = "";
@@ -430,7 +432,7 @@ function cms_tpv_bind_clean_node() {
 					if (post_status != "publish") {
 						aFirst.find("ins").first().after("<span class='post_type post_type_"+post_status+"'>" + post_status_to_show + "</span>");
 					}
-				}
+				//}
 				
 			});
 		}

@@ -237,7 +237,10 @@ function cms_tpv_get_selected_post_type() {
 	// http://localhost/wp-admin/edit.php?post_type=movies&page=cms-tpv-page-xmovies
 	// movies funkar inte:
 	// http://localhost/wp-admin/admin.php?page=cms-tpv-page-movies
-	$post_type = $_GET["post_type"];
+	$post_type = NULL;
+	if (isset($_GET["post_type"])) {
+		$post_type = $_GET["post_type"];
+	}
 	if (!$post_type) {
 		// no post type, happens with ozh admin drop down, so get it via page instead
 		$page = $_GET["page"];
@@ -518,6 +521,9 @@ function cms_tpv_get_pages($args = null) {
 
 	// does not work with plugin role scoper. don't know why, but this should fix it
 	remove_action("get_pages", array('ScoperHardway', 'flt_get_pages'), 1, 2);
+
+	// does not work with plugin ALO EasyMail Newsletter
+	remove_filter('get_pages','ALO_exclude_page');
 	
 	#do_action_ref_array('parse_query', array(&$this));
 	#print_r($get_posts_args);
@@ -526,7 +532,7 @@ function cms_tpv_get_pages($args = null) {
 	// filter out pages for wpml, by applying same filter as get_pages does
 	// only run if wpml is available or always?
 	$pages = apply_filters('get_pages', $pages, $get_posts_args);
-
+	
 	return $pages;
 
 }
@@ -665,7 +671,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 			if ($str_columns) {
 				$str_columns = "<dl>$str_columns</dl>";
 			}
-
+			$str_columns = json_encode($str_columns);
 			?>
 			{
 				"data": {
@@ -694,7 +700,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 					"editlink": "<?php echo htmlspecialchars_decode($editLink) ?>",
 					"modified_time": "<?php echo $post_modified_time ?>",
 					"modified_author": "<?php echo $post_author ?>",
-					"columns": "<?php echo rawurlencode(utf8_decode($str_columns)) ?>",
+					"columns": <?php echo $str_columns ?>,
 					"user_can_edit_page": "<?php echo (int) $user_can_edit_page ?>"
 				}
 				<?php
@@ -909,6 +915,8 @@ function cms_tpv_move_page() {
 
 	$node_id = str_replace("cms-tpv-", "", $node_id);
 	$ref_node_id = str_replace("cms-tpv-", "", $ref_node_id);
+	
+	$_POST["skip_sitepress_actions"] = true; // sitepress.class.php->save_post_actions
 	
 	if ($node_id && $ref_node_id) {
 		#echo "\nnode_id: $node_id";

@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: Category Posts Widget
-Plugin URI: http://jameslao.com/2009/12/30/category-posts-widget-3-0/
+Plugin URI: http://jameslao.com/2011/03/24/category-posts-widget-3-2/
 Description: Adds a widget that can display posts from a single category.
 Author: James Lao	
-Version: 3.1
+Version: 3.2
 Author URI: http://jameslao.com/
 */
 
@@ -40,10 +40,25 @@ function widget($args, $instance) {
 	if( !$instance["title"] ) {
 		$category_info = get_category($instance["cat"]);
 		$instance["title"] = $category_info->name;
-	}
+  }
+
+  $valid_sort_orders = array('date', 'title', 'comment_count', 'random');
+  if ( in_array($instance['sort_by'], $valid_sort_orders) ) {
+    $sort_by = $instance['sort_by'];
+    $sort_order = (bool) $instance['asc_sort_order'] ? 'ASC' : 'DESC';
+  } else {
+    // by default, display latest first
+    $sort_by = 'date';
+    $sort_order = 'DESC';
+  }
 	
 	// Get array of post info.
-	$cat_posts = new WP_Query("showposts=" . $instance["num"] . "&cat=" . $instance["cat"]);
+  $cat_posts = new WP_Query(
+    "showposts=" . $instance["num"] . 
+    "&cat=" . $instance["cat"] .
+    "&orderby=" . $sort_by .
+    "&order=" . $sort_order
+  );
 
 	// Excerpt length filter
 	$new_excerpt_length = create_function('$length', "return " . $instance["excerpt_length"] . ";");
@@ -156,8 +171,30 @@ function form($instance) {
 				<?php _e('Number of posts to show'); ?>:
 				<input style="text-align: center;" id="<?php echo $this->get_field_id("num"); ?>" name="<?php echo $this->get_field_name("num"); ?>" type="text" value="<?php echo absint($instance["num"]); ?>" size='3' />
 			</label>
-		</p>
+    </p>
+
+    <p>
+			<label for="<?php echo $this->get_field_id("sort_by"); ?>">
+        <?php _e('Sort by'); ?>:
+        <select id="<?php echo $this->get_field_id("sort_by"); ?>" name="<?php echo $this->get_field_name("sort_by"); ?>">
+          <option value="date"<?php selected( $instance["sort_by"], "date" ); ?>>Date</option>
+          <option value="title"<?php selected( $instance["sort_by"], "title" ); ?>>Title</option>
+          <option value="comment_count"<?php selected( $instance["sort_by"], "comment_count" ); ?>>Number of comments</option>
+          <option value="random"<?php selected( $instance["sort_by"], "random" ); ?>>Random</option>
+        </select>
+			</label>
+    </p>
 		
+		<p>
+			<label for="<?php echo $this->get_field_id("asc_sort_order"); ?>">
+        <input type="checkbox" class="checkbox" 
+          id="<?php echo $this->get_field_id("asc_sort_order"); ?>" 
+          name="<?php echo $this->get_field_name("asc_sort_order"); ?>"
+          <?php checked( (bool) $instance["asc_sort_order"], true ); ?> />
+				<?php _e( 'Reverse sort order (ascending)' ); ?>
+			</label>
+    </p>
+
 		<p>
 			<label for="<?php echo $this->get_field_id("title_link"); ?>">
 				<input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id("title_link"); ?>" name="<?php echo $this->get_field_name("title_link"); ?>"<?php checked( (bool) $instance["title_link"], true ); ?> />

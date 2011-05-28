@@ -11,8 +11,8 @@ if ( file_exists( BP_PLUGIN_DIR . '/bp-languages/buddypress-' . BPLANG . '.mo' )
 }
 
 // For BP Group Email Subscription
-if ( file_exists( WP_PLUGIN_DIR . '/buddypress-group-email-subscription/languages/buddypress-group-email-subscription-'.BPLANG.'.mo' ) ) {
-    load_textdomain( 'bp-ass', WP_PLUGIN_DIR . '/buddypress-group-email-subscription/languages/buddypress-group-email-subscription-'.BPLANG.'.mo' );
+if ( file_exists( WP_PLUGIN_DIR . '/buddypress-group-email-subscription/languages/bp-ass-'.BPLANG.'.mo' ) ) {
+    load_textdomain( 'bp-ass', WP_PLUGIN_DIR . '/buddypress-group-email-subscription/languages/bp-ass-'.BPLANG.'.mo' );
 }
 
 

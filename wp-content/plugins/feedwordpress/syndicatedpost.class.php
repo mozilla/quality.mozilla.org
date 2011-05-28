@@ -755,6 +755,20 @@ class SyndicatedPost {
 		return $ts;
 	} /* SyndicatedPost::updated() */
 
+	var $_hashes = array();
+	function stored_hashes ($id = NULL) {
+		if (is_null($id)) :
+			$id = $this->wp_id();
+		endif;
+
+		if (!isset($this->_hashes[$id])) :
+			$this->_hashes[$id] = get_post_custom_values(
+				'syndication_item_hash', $id
+			);
+		endif;
+		return $this->_hashes[$id];
+	}
+
 	function update_hash () {
 		return md5(serialize($this->item));
 	} /* SyndicatedPost::update_hash() */
@@ -859,8 +873,12 @@ class SyndicatedPost {
 			$author['email'] = $this->feed->channel['author_email'];
 		endif;
 		
-		if (isset($this->item['author_url'])):
+		if (isset($this->item['author_uri'])):
+			$author['uri'] = $this->item['author_uri'];
+		elseif (isset($this->item['author_url'])):
 			$author['uri'] = $this->item['author_url'];
+		elseif (isset($this->feed->channel['author_uri'])) :
+			$author['uri'] = $this->item['author_uri'];
 		elseif (isset($this->feed->channel['author_url'])) :
 			$author['uri'] = $this->item['author_url'];
 		elseif (isset($this->feed->channel['link'])) :
@@ -1199,10 +1217,10 @@ class SyndicatedPost {
 		global $wpdb;
 
 		if ($this->filtered()) : // This should never happen.
-			FeedWordPress::critical_bug('SyndicatedPost', $this, __LINE__);
+			FeedWordPress::critical_bug('SyndicatedPost', $this, __LINE__, __FILE__);
 		endif;
 		
-		if (is_null($this->_freshness)) :
+		if (is_null($this->_freshness)) : // Not yet checked and cached.
 			$guid = $wpdb->escape($this->guid());
 
 			$result = $wpdb->get_row("
@@ -1210,10 +1228,11 @@ class SyndicatedPost {
 			FROM $wpdb->posts WHERE guid='$guid'
 			");
 
-			if (!$result) :
+			if (!$result) : // No post with this guid
+				FeedWordPress::diagnostic('feed_items:freshness', 'Item ['.$this->guid().'] "'.$this->entry->get_title().'" is a NEW POST.');
 				$this->_wp_id = NULL;
 				$this->_freshness = 2; // New content
-			else:
+			else :
 				preg_match('/([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $result->post_modified_gmt, $backref);
 
 				$last_rev_ts = gmmktime($backref[4], $backref[5], $backref[6], $backref[2], $backref[3], $backref[1]);
@@ -1225,12 +1244,13 @@ class SyndicatedPost {
 					and ($updated_ts > $last_rev_ts)
 				);
 				
+				
 				if (!$updated) :
 					// Or the hash...
-					$stored_update_hashes = get_post_custom_values('syndication_item_hash', $result->id);
-					if (count($stored_update_hashes) > 0) :
-						$stored_update_hash = $stored_update_hashes[0];
-						$updated = ($stored_update_hash != $this->update_hash());
+					$hash = $this->update_hash();
+					$seen = $this->stored_hashes($result->id);
+					if (count($seen) > 0) :
+						$updated = !in_array($hash, $seen); // Not seen yet?
 					else :
 						$updated = true; // Can't find syndication meta-data
 					endif;
@@ -1247,9 +1267,19 @@ class SyndicatedPost {
 				$updated = ($updated and !$frozen);
 
 				if ($updated) :
+					FeedWordPress::diagnostic('feed_items:freshness', 'Item ['.$this->guid().'] "'.$this->entry->get_title().'" is an update of an existing post.');
 					$this->_freshness = 1; // Updated content
 					$this->_wp_id = $result->id;
+					
+					// We want this to keep a running list of all the
+					// processed update hashes.
+					$this->post['meta']['syndication_item_hash'] = array_merge(
+						$this->stored_hashes(),
+						array($this->update_hash())
+					);
+
 				else :
+					FeedWordPress::diagnostic('feed_items:freshness', 'Item ['.$this->guid().'] "'.$this->entry->get_title().'" is a duplicate of an existing post.');
 					$this->_freshness = 0; // Same old, same old
 					$this->_wp_id = $result->id;
 				endif;
@@ -1264,7 +1294,7 @@ class SyndicatedPost {
 
 	function wp_id () {
 		if ($this->filtered()) : // This should never happen.
-			FeedWordPress::critical_bug('SyndicatedPost', $this, __LINE__);
+			FeedWordPress::critical_bug('SyndicatedPost', $this, __LINE__, __FILE__);
 		endif;
 		
 		if (is_null($this->_wp_id) and is_null($this->_freshness)) :
@@ -1277,7 +1307,7 @@ class SyndicatedPost {
 		global $wpdb;
 
 		if ($this->filtered()) : // This should never happen.
-			FeedWordPress::critical_bug('SyndicatedPost', $this, __LINE__);
+			FeedWordPress::critical_bug('SyndicatedPost', $this, __LINE__, __FILE__);
 		endif;
 		
 		$freshness = $this->freshness();
@@ -1288,6 +1318,7 @@ class SyndicatedPost {
 			);
 
 			if (is_null($this->post['post_author'])) :
+				FeedWordPress::diagnostic('feed_items:rejected', 'Filtered out item ['.$this->guid().'] without syndication: no author available');
 				$this->post = NULL;
 			endif;
 		endif;
@@ -1436,7 +1467,14 @@ class SyndicatedPost {
 			// Kludge to prevent kses filters from stripping the
 			// content of posts when updating without a logged in
 			// user who has `unfiltered_html` capability.
-			add_filter('content_save_pre', array($this, 'avoid_kses_munge'), 11);
+			$mungers = array('wp_filter_kses', 'wp_filter_post_kses');
+			$removed = array();
+			foreach ($mungers as $munger) :
+				if (has_filter('content_save_pre', $munger)) :
+					remove_filter('content_save_pre', $munger);
+					$removed[] = $munger;
+				endif;
+			endforeach;
 			
 			if ($update and function_exists('get_post_field')) :
 				// Don't munge status fields that the user may
@@ -1470,7 +1508,7 @@ class SyndicatedPost {
 				$this->post['ID'] = $this->wp_id();
 				$dbpost['ID'] = $this->post['ID'];
 			endif;
-			$this->_wp_id = wp_insert_post($dbpost);
+			$this->_wp_id = wp_insert_post($dbpost, /*return wp_error=*/ true);
 
 			remove_action(
 			/*hook=*/ 'transition_post_status',
@@ -1488,9 +1526,11 @@ class SyndicatedPost {
 
 			// Turn off ridiculous fucking kludges #1 and #2
 			remove_action('_wp_put_post_revision', array($this, 'fix_revision_meta'));
-			remove_filter('content_save_pre', array($this, 'avoid_kses_munge'), 11);
-	
-			$this->validate_post_id($dbpost, array(__CLASS__, __FUNCTION__));
+			foreach ($removed as $filter) :
+				add_filter('content_save_pre', $removed);
+			endforeach;
+			
+			$this->validate_post_id($dbpost, $update, array(__CLASS__, __FUNCTION__));
 		endif;
 	} /* function SyndicatedPost::insert_post () */
 	
@@ -1550,20 +1590,41 @@ class SyndicatedPost {
 	 * @param array $dbpost An array representing the post we attempted to insert or update
 	 * @param mixed $ns A string or array representing the namespace (class, method) whence this method was called.
 	 */
-	function validate_post_id ($dbpost, $ns) {
+	function validate_post_id ($dbpost, $is_update, $ns) {
 		if (is_array($ns)) : $ns = implode('::', $ns);
 		else : $ns = (string) $ns; endif;
-		
+
 		// This should never happen.
 		if (!is_numeric($this->_wp_id) or ($this->_wp_id == 0)) :
-			FeedWordPress::critical_bug(
-				/*name=*/ $ns.'::_wp_id',
+			$verb = ($is_update ? 'update existing' : 'insert new');
+			$guid = $this->guid();
+			$url = $this->permalink();
+			$feed = $this->link->uri(array('add_params' => true));
+
+			// wp_insert_post failed. Diagnostics, or barf up a critical bug
+			// notice if we are in debug mode.
+			$mesg = "Failed to $verb item [$guid]. WordPress API returned no valid post ID.\n"
+				."\t\tID = ".serialize($this->_wp_id)."\n"
+				."\t\tURL = ".FeedWordPress::val($url)
+				."\t\tFeed = ".FeedWordPress::val($feed); 
+			FeedWordPress::diagnostic('updated_feeds:errors', "WordPress API error: $mesg");
+			FeedWordPress::diagnostic('feed_items:rejected', $mesg);
+
+			$mesg = <<<EOM
+The WordPress API returned an invalid post ID
+			   when FeedWordPress tried to $verb item $guid
+			   [URL: $url]
+			   from the feed at $feed 
+
+$ns::_wp_id 
+EOM;
+			FeedWordPress::noncritical_bug(
+				/*message=*/ $mesg,
 				/*var =*/ array(
 					"\$this->_wp_id" => $this->_wp_id,
 					"\$dbpost" => $dbpost,
-					"\$this" => $this
 				),
-				/*line # =*/ __LINE__
+				/*line # =*/ __LINE__, /*filename=*/ __FILE__
 			);
 		endif;
 	} /* SyndicatedPost::validate_post_id() */
@@ -1597,31 +1658,6 @@ class SyndicatedPost {
 		WHERE post_type = 'revision' AND ID='$revision_id'
 		");
 	} /* SyndicatedPost::fix_revision_meta () */
-
-	/**
-	 * SyndicatedPost::avoid_kses_munge() -- If FeedWordPress is processing
-	 * an automatic update, that generally means that wp_insert_post() is
-	 * being called under the user credentials of whoever is viewing the
-	 * blog at the time -- usually meaning no user at all. But if WordPress
-	 * gets a wp_insert_post() when current_user_can('unfiltered_html') is
-	 * false, it will run the content of the post through a kses function
-	 * that strips out lots of HTML tags -- notably <object> and some others.
-	 * This causes problems for syndicating (for example) feeds that contain
-	 * YouTube videos. It also produces an unexpected asymmetry between
-	 * automatically-initiated updates and updates initiated manually from
-	 * the WordPress Dashboard (which are usually initiated under the
-	 * credentials of a logged-in admin, and so don't get run through the
-	 * kses function). So, to avoid the whole mess, what we do here is
-	 * just forcibly disable the kses munging for a single syndicated post,
-	 * by restoring the contents of the `post_content` field.
-	 *
-	 * @param string $content The content of the post, after other filters have gotten to it
-	 * @return string The original content of the post, before other filters had a chance to munge it.
-	 */
-	 function avoid_kses_munge ($content) {
-		 global $wpdb;
-		 return $wpdb->escape($this->post['post_content']);
-	 }
 	 
 	/**
 	 * SyndicatedPost::add_terms() -- if FeedWordPress is processing an
@@ -1641,14 +1677,15 @@ class SyndicatedPost {
 	 * @param object $post The database record for the post just inserted.
 	 */
 	function add_terms ($new_status, $old_status, $post) {
-		if ( is_array($this->post) and isset($this->post['tax_input']) and is_array($this->post['tax_input']) ) :
-			foreach ($this->post['tax_input'] as $taxonomy => $terms) :
-				if (is_array($terms)) :
-					$terms = array_filter($terms); // strip out empties
-				endif;
-				
-				wp_set_post_terms($post->ID, $terms, $taxonomy);
-			endforeach;
+		if ($new_status!='inherit') : // Bail if we are creating a revision.
+			if ( is_array($this->post) and isset($this->post['tax_input']) and is_array($this->post['tax_input']) ) :
+				foreach ($this->post['tax_input'] as $taxonomy => $terms) :
+					if (is_array($terms)) :
+						$terms = array_filter($terms); // strip out empties
+					endif;
+					wp_set_post_terms($post->ID, $terms, $taxonomy);
+				endforeach;
+			endif;
 		endif;
 	} /* SyndicatedPost::add_terms () */
 	
@@ -1669,10 +1706,12 @@ class SyndicatedPost {
 	 */
 	function fix_post_modified_ts ($new_status, $old_status, $post) {
 		global $wpdb;
-		$wpdb->update( $wpdb->posts, /*data=*/ array(
-		'post_modified' => $this->post['post_modified'],
-		'post_modified_gmt' => $this->post['post_modified_gmt'],
-		), /*where=*/ array('ID' => $post->ID) );
+		if ($new_status!='inherit') : // Bail if we are creating a revision.
+			$wpdb->update( $wpdb->posts, /*data=*/ array(
+			'post_modified' => $this->post['post_modified'],
+			'post_modified_gmt' => $this->post['post_modified_gmt'],
+			), /*where=*/ array('ID' => $post->ID) );
+		endif;
 	} /* SyndicatedPost::fix_post_modified_ts () */
 	
 	/**
@@ -1691,38 +1730,40 @@ class SyndicatedPost {
 	 * @param object $post The database record for the post just inserted.
 	 */
 	function add_rss_meta ($new_status, $old_status, $post) {
-		FeedWordPress::diagnostic('syndicated_posts:meta_data', 'Adding post meta-data: {'.implode(", ", array_keys($this->post['meta'])).'}');
-
 		global $wpdb;
-		if ( is_array($this->post) and isset($this->post['meta']) and is_array($this->post['meta']) ) :
-			$postId = $post->ID;
-			
-			// Aggregated posts should NOT send out pingbacks.
-			// WordPress 2.1-2.2 claim you can tell them not to
-			// using $post_pingback, but they don't listen, so we
-			// make sure here.
-			$result = $wpdb->query("
-			DELETE FROM $wpdb->postmeta
-			WHERE post_id='$postId' AND meta_key='_pingme'
-			");
+		if ($new_status!='inherit') : // Bail if we are creating a revision.
+			FeedWordPress::diagnostic('syndicated_posts:meta_data', 'Adding post meta-data: {'.implode(", ", array_keys($this->post['meta'])).'}');
 
-			foreach ( $this->post['meta'] as $key => $values ) :
-				$eKey = $wpdb->escape($key);
-
-				// If this is an update, clear out the old
-				// values to avoid duplication.
+			if ( is_array($this->post) and isset($this->post['meta']) and is_array($this->post['meta']) ) :
+				$postId = $post->ID;
+				
+				// Aggregated posts should NOT send out pingbacks.
+				// WordPress 2.1-2.2 claim you can tell them not to
+				// using $post_pingback, but they don't listen, so we
+				// make sure here.
 				$result = $wpdb->query("
 				DELETE FROM $wpdb->postmeta
-				WHERE post_id='$postId' AND meta_key='$eKey'
+				WHERE post_id='$postId' AND meta_key='_pingme'
 				");
-
-				// Allow for either a single value or an array
-				if (!is_array($values)) $values = array($values);
-				foreach ( $values as $value ) :
-				FeedWordPress::diagnostic('syndicated_posts:meta_data', "Adding post meta-datum to post [$postId]: [$key] = ".FeedWordPress::val($value, /*no newlines=*/ true));
-					add_post_meta($postId, $key, $value, /*unique=*/ false);
+	
+				foreach ( $this->post['meta'] as $key => $values ) :
+					$eKey = $wpdb->escape($key);
+	
+					// If this is an update, clear out the old
+					// values to avoid duplication.
+					$result = $wpdb->query("
+					DELETE FROM $wpdb->postmeta
+					WHERE post_id='$postId' AND meta_key='$eKey'
+					");
+					
+					// Allow for either a single value or an array
+					if (!is_array($values)) $values = array($values);
+					foreach ( $values as $value ) :
+					FeedWordPress::diagnostic('syndicated_posts:meta_data', "Adding post meta-datum to post [$postId]: [$key] = ".FeedWordPress::val($value, /*no newlines=*/ true));
+						add_post_meta($postId, $key, $value, /*unique=*/ false);
+					endforeach;
 				endforeach;
-			endforeach;
+			endif;
 		endif;
 	} /* SyndicatedPost::add_rss_meta () */
 
@@ -1739,11 +1780,17 @@ class SyndicatedPost {
 		global $wpdb;
 
 		$a = $this->named['author'];
-		
+
 		$source = $this->source();
 		$forbidden = apply_filters('feedwordpress_forbidden_author_names',
 			array('admin', 'administrator', 'www', 'root'));
 		
+		// Prepare the list of candidates to try for author name: name from
+		// feed, original source title (if any), immediate source title live
+		// from feed, subscription title, prettied version of feed homepage URL,
+		// prettied version of feed URL, or, failing all, use "unknown author"
+		// as last resort
+
 		$candidates = array();
 		$candidates[] = $a['name'];
 		if (!is_null($source)) : $candidates[] = $source['title']; endif;
@@ -1752,6 +1799,9 @@ class SyndicatedPost {
 		if (strlen($this->link->homepage()) > 0) : $candidates[] = feedwordpress_display_url($this->link->homepage()); endif;
 		$candidates[] = feedwordpress_display_url($this->link->uri());
 		$candidates[] = 'unknown author';
+		
+		// Pick the first one that works from the list, screening against empty
+		// or forbidden names.
 		
 		$author = NULL;
 		while (is_null($author) and ($candidate = each($candidates))) :
@@ -1835,6 +1885,7 @@ class SyndicatedPost {
 			$id = $wpdb->get_var(
 			"SELECT ID FROM $wpdb->users
 			WHERE TRIM(LCASE(display_name)) = TRIM(LCASE('$author'))
+			OR TRIM(LCASE(user_login)) = TRIM(LCASE('$author'))
 			OR (
 				LENGTH(TRIM(LCASE(user_email))) > 0
 				AND TRIM(LCASE(user_email)) = TRIM(LCASE('$test_email'))
@@ -1878,6 +1929,10 @@ class SyndicatedPost {
 					$userdata['user_pass'] = substr(md5(uniqid(microtime())), 0, 6); // just something random to lock it up
 					$userdata['user_email'] = $email;
 					$userdata['user_url'] = $authorUrl;
+					$userdata['nickname'] = $author;
+					$parts = preg_split('/\s+/', trim($author), 2);
+					if (isset($parts[0])) : $userdata['first_name'] = $parts[0]; endif;
+					if (isset($parts[1])) : $userdata['last_name'] = $parts[1]; endif;
 					$userdata['display_name'] = $author;
 					$userdata['role'] = 'contributor';
 					
@@ -1924,7 +1979,7 @@ class SyndicatedPost {
 			endif;
 		endif;
 		return $id;	
-	} // function SyndicatedPost::author_id ()
+	} /* function SyndicatedPost::author_id () */
 
 	/**
 	 * category_ids: look up (and create) category ids from a list of categories
@@ -2007,7 +2062,7 @@ class SyndicatedPost {
 						endif;
 						$term = wp_insert_term($cat_name, $tax);
 						if (is_wp_error($term)) :
-							FeedWordPress::noncritical_bug('term insertion problem', array('cat_name' => $cat_name, 'term' => $term, 'this' => $this), __LINE__);
+							FeedWordPress::noncritical_bug('term insertion problem', array('cat_name' => $cat_name, 'term' => $term, 'this' => $this), __LINE__, __FILE__);
 						else :
 							if (!isset($terms[$tax])) :
 								$terms[$tax] = array();

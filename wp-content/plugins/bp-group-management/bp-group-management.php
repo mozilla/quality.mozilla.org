@@ -3,7 +3,7 @@
 Plugin Name: BP Group Management
 Plugin URI: http://teleogistic.net/code/buddypress/bp-group-management
 Description: Allows site administrators to manage BuddyPress group membership
-Version: 0.4.2
+Version: 0.4.3
 Author: Boone Gorges
 Author URI: http://teleogistic.net
 */
