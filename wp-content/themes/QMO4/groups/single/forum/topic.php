@@ -37,7 +37,7 @@
         
       <?php /* No admin links on the first post */
         global $topic_template; 
-        if ( $topic_template->current_post != 0 && $topic_template->pag_page == 1 ) : ?>  
+        if ( ($topic_template->current_post != 0) || ($topic_template->pag_page > 1) ) : ?>  
         <?php if ( bp_group_is_admin() || bp_group_is_mod() || bp_get_the_topic_post_is_mine() ) : ?>
           <p class="admin-links">
             <?php bp_the_topic_post_admin_links(); ?>
@@ -70,11 +70,12 @@
               <?php global $current_user; get_currentuserinfo(); 
                 echo bp_core_fetch_avatar( 'width=40&height=40&item_id='.$current_user->ID ); ?>
             <?php endif; ?>
-            <p><textarea name="reply_text" id="reply_text" rows="6" cols="60"></textarea></p>
+            <p><textarea name="reply_text" id="reply_text" rows="6" cols="60" class="expand100-400"></textarea></p>
             <p class="submit"><button type="submit" name="submit_reply" id="submit"><?php _e( 'Post Reply', 'buddypress' ); ?></button></p>
             <?php do_action( 'groups_forum_new_reply_after' ); ?>
 
             <?php wp_nonce_field( 'bp_forums_new_reply' ); ?>
+            
           </div>
 
         <?php else : ?>

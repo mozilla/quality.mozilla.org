@@ -408,7 +408,8 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 #user-state .login .check input { width: auto; }
 
 /* @Follow | Icons by Paul Robert Lloyd - http://prlloyd.com/e/226 *********/
-#site-follow { overflow: hidden; list-style: none; margin: 0 0 1em; padding: 5px 0 30px; background: url("img/hatches.png") center bottom repeat-x; }
+#site-follow { margin: 0 0 1em; padding: 0 0 30px; background: url("img/hatches.png") center bottom repeat-x; }
+#site-follow ul { overflow: hidden; list-style: none; padding-top: 5px; margin: 0 auto; width: 128px; }
 #site-follow li { float: left; margin: 0 5px; }
 #site-follow a { display: block; width: 32px; height: 32px; text-indent: -999em; overflow: hidden; background: transparent url("img/icons-social.png") no-repeat; -moz-transition: margin ease-out 0.2s; -webkit-transition: margin ease-out 0.2s; -o-transition: margin ease-out 0.2s; transition: margin ease-out 0.2s; }
 #site-follow a:hover, #site-follow a:focus, #site-follow a:active { margin-top: -4px; -moz-transition: margin ease-in-out 0.1s; -webkit-transition: margin ease-in-out 0.1s; -o-transition: margin ease-in-out 0.1s; transition: margin ease-in-out 0.1s; }
@@ -507,6 +508,10 @@ ul.wp-tag-cloud li { display: inline; }
 .widget_recent_entries li { border-top: 1px dashed #999; padding: .15em 1px; }
 .widget_categories ul.children, .widget_pages .page_item ul { margin: 0 0 0 10px; }
 .widget_search .fm-search { margin-bottom: 1.5em; }
+
+/*** Getting Started (category ID may differ) */ 
+#content-sub #linkcat-13 .blogroll { padding: 10px 15px; border: 1px solid #eee; -moz-border-radius: 6px; -webkit-border-radius: 6px; border-radius: 6px; -moz-box-shadow: inset 0 0 10px rgba(0,150,150,.15); -webkit-box-shadow: inset 0 0 10px rgba(0,150,150,.15); box-shadow: inset 0 0 10px rgba(0,150,150,.15); }
+#content-sub #linkcat-13 .blogroll li:first-child { border: 0; }
 
 /* @Comments *********/
 #comments { padding-top: 3.5em; margin-top: 3em; background: url("img/squiggle.png") 50% 0 repeat-x; }
@@ -926,6 +931,7 @@ table.notification-settings .yes, .settings table.notification-settings .no { wi
 #post-topic-reply { position: relative; padding-left: 60px; }
 #post-topic-reply .avatar { position: absolute; left: 0; }
 #post-topic-reply .submit { padding: 0; font-size: 1em; }
+#reply_text { width: 98%; }
 
 .dir-form { clear: both; position: relative; }
 .dir-form #pag-count-head { position: relative; right: 0; }

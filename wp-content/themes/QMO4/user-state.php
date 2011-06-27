@@ -22,8 +22,10 @@
   <?php endif; ?>
 </div>
 
-<ul id="site-follow">
-  <li><a href="http://www.facebook.com/pages/Mozilla-QA/122167964300" class="flw-facebook" rel="external" title="Follow us on Facebook">Facebook</a></li>
-  <li><a href="http://twitter.com/mozillaqa" class="flw-twitter" rel="external" title="Follow @mozillaqa on Twitter">Twitter</a></li>
-  <li><a href="<?php bloginfo('rss2_url'); echo '?cat='.$news_cat.','.$events_cat; ?>" class="flw-feed" rel="alternate" title="Subscribe to our feed (News and Events)">RSS</a></li>
-</ul>
+<div id="site-follow">
+  <ul>
+    <li><a href="http://www.facebook.com/pages/Mozilla-QA/122167964300" class="flw-facebook" rel="external" title="Follow us on Facebook">Facebook</a></li>
+    <li><a href="http://twitter.com/mozillaqa" class="flw-twitter" rel="external" title="Follow @mozillaqa on Twitter">Twitter</a></li>
+    <li><a href="<?php bloginfo('rss2_url'); echo '?cat='.$news_cat.','.$events_cat; ?>" class="flw-feed" rel="alternate" title="Subscribe to our feed (News and Events)">RSS</a></li>
+  </ul>
+</div>
