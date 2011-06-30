@@ -69,7 +69,7 @@ if ( function_exists('bp_is_active') && bp_is_active( 'forums' ) ) :
   if (get_page_by_path('media')) :
     if ( is_page('media') ) : ?>
   <li class="current" title="This is the current page"><em>Media</em></li>
-<?php elseif ( fc_is_child(get_page_by_path('docs')->ID) ) : ?>
+<?php elseif ( fc_is_child(get_page_by_path('media')->ID) ) : ?>
   <li class="current"><a href="<?php echo get_permalink(get_page_by_path('media')->ID); ?>">Media</a></li>
 <?php else : ?>
   <li><a href="<?php echo get_permalink(get_page_by_path('media')->ID); ?>">Media</a></li>
