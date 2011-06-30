@@ -3,7 +3,7 @@
 Plugin Name: FeedWordPress
 Plugin URI: http://feedwordpress.radgeek.com/
 Description: simple and flexible Atom/RSS syndication for WordPress
-Version: 2011.0512
+Version: 2011.0602
 Author: Charles Johnson
 Author URI: http://radgeek.com/
 License: GPL
@@ -11,7 +11,7 @@ License: GPL
 
 /**
  * @package FeedWordPress
- * @version 2011.0512
+ * @version 2011.0602
  */
 
 # This uses code derived from:
@@ -34,7 +34,7 @@ License: GPL
 
 # -- Don't change these unless you know what you're doing...
 
-define ('FEEDWORDPRESS_VERSION', '2011.0512');
+define ('FEEDWORDPRESS_VERSION', '2011.0602');
 define ('FEEDWORDPRESS_AUTHOR_CONTACT', 'http://radgeek.com/contact');
 
 if (!defined('FEEDWORDPRESS_BLEG')) :
@@ -109,14 +109,16 @@ if (!function_exists('wp_insert_user')) :
 	require_once (ABSPATH . WPINC . '/registration.php'); // for wp_insert_user
 endif;
 
-require_once(dirname(__FILE__) . '/admin-ui.php');
-require_once(dirname(__FILE__) . '/feedwordpresssyndicationpage.class.php');
-require_once(dirname(__FILE__) . '/compatability.php'); // LEGACY API: Replicate or mock up functions for legacy support purposes
-
-require_once(dirname(__FILE__) . '/syndicatedpost.class.php');
-require_once(dirname(__FILE__) . '/syndicatedlink.class.php');
-require_once(dirname(__FILE__) . '/feedwordpresshtml.class.php');
-require_once(dirname(__FILE__) . '/feedwordpress-content-type-sniffer.class.php');
+$dir = dirname(__FILE__); 
+require_once("${dir}/admin-ui.php");
+require_once("${dir}/feedwordpresssyndicationpage.class.php");
+require_once("${dir}/compatability.php"); // Legacy API             
+require_once("${dir}/syndicatedpost.class.php");
+require_once("${dir}/syndicatedlink.class.php");
+require_once("${dir}/feedwordpresshtml.class.php");
+require_once("${dir}/feedwordpress-content-type-sniffer.class.php");
+require_once("${dir}/inspectpostmeta.class.php");
+require_once("${dir}/syndicationdataqueries.class.php");
 
 // Magic quotes are just about the stupidest thing ever.
 if (is_array($_POST)) :
@@ -810,6 +812,9 @@ function fwp_publish_post_hook ($post_id) {
 
 	function feedwordpress_add_post_edit_controls () {
 		add_meta_box('feedwordpress-post-controls', __('Syndication'), 'feedwordpress_post_edit_controls', 'post', 'side', 'high');
+		if (FeedWordPress::diagnostic_on('syndicated_posts:static_meta_data')) :
+			$GLOBALS['inspectPostMeta'] = new InspectPostMeta;
+		endif;
 	} // function FeedWordPress::postEditControls
 	
 	function feedwordpress_post_edit_controls () {

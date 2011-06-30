@@ -180,17 +180,18 @@ abstract class mtekk_admin
 		delete_option($this->unique_prefix . '_version');
 	}
 	/**
-	 * Compairs the supplided version with the internal version, places an upgrade warning if there is a missmatch
+	 * Compares the supplided version with the internal version, places an upgrade warning if there is a missmatch
 	 */
 	function version_check($version)
 	{
 		//Do a quick version check
-		if(version_compare($version, $this->version, '<'))
+		if(version_compare($version, $this->version, '<') && is_array($this->opt))
 		{
 			//Throw an error since the DB version is out of date
 			$this->message['error'][] = __('Your settings are out of date.', $this->identifier) . $this->upgrade_anchor(__('Migrate the settings now.', $this->identifier), __('Migrate now.', $this->identifier));
 			//Output any messages that there may be
 			$this->message();
+			return false;
 		}
 		else if(!is_array($this->opt))
 		{
@@ -198,7 +199,9 @@ abstract class mtekk_admin
 			$this->message['error'][] = __('Your plugin install is incomplete.', $this->identifier) . $this->upgrade_anchor(__('Load default settings now.', $this->identifier), __('Complete now.', $this->identifier));
 			//Output any messages that there may be
 			$this->message();
+			return false;
 		}
+		return true;
 	}
 	/**
 	 * Synchronizes the backup options entry with the current options entry
@@ -627,10 +630,10 @@ abstract class mtekk_admin
 	 * @param object $disable [optional]
 	 * @return 
 	 */
-	function input_radio($option, $value, $instruction, $disable = false)
+	function input_radio($option, $value, $instruction, $disable = false, $type = 'radio')
 	{?>
 		<label>
-			<input name="<?php echo $this->unique_prefix . '_options[' . $option;?>]" type="radio" <?php if($disable){echo 'disabled="disabled" class="disabled togx"';}else{echo 'class="togx"';}?> value="<?php echo $value;?>" <?php checked($value, $this->opt[$option]);?> />
+			<input name="<?php echo $this->unique_prefix . '_options[' . $option;?>]" type="<?php echo $type;?>" <?php if($disable){echo 'disabled="disabled" class="disabled togx"';}else{echo 'class="togx"';}?> value="<?php echo $value;?>" <?php checked($value, $this->opt[$option]);?> />
 			<?php echo $instruction; ?>
 		</label><br/>
 	<?php

@@ -3,7 +3,7 @@
 Plugin Name: Breadcrumb NavXT
 Plugin URI: http://mtekk.us/code/breadcrumb-navxt/
 Description: Adds a breadcrumb navigation showing the visitor&#39;s path to their current location. For details on how to use this plugin visit <a href="http://mtekk.us/code/breadcrumb-navxt/">Breadcrumb NavXT</a>. 
-Version: 3.8.1
+Version: 3.9.0
 Author: John Havlik
 Author URI: http://mtekk.us/
 */
@@ -24,15 +24,19 @@ Author URI: http://mtekk.us/
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 //Do a PHP version check, require 5.2 or newer
-if(version_compare(PHP_VERSION, '5.2.0', '<'))
+if(version_compare(phpversion(), '5.2.0', '<'))
 {
-	//Silently deactivate plugin, keeps admin usable
-	if(function_exists('deactivate_plugins'))
+	//Only purpose of this function is to echo out the PHP version error
+	function bcn_phpold()
 	{
-		deactivate_plugins(plugin_basename(__FILE__), true);
+		printf('<div class="error"><p>' . __('Your PHP version is too old, please upgrade to a newer version. Your version is %s, Breadcrumb NavXT requires %s', 'breadcrumb_navxt') . '</p></div>', phpversion(), '5.2.0');
 	}
-	//Spit out die messages
-	wp_die(sprintf(__('Your PHP version is too old, please upgrade to a newer version. Your version is %s, Breadcrumb NavXT requires %s', 'breadcrumb_navxt'), phpversion(), '5.2.0'));
+	//If we are in the admin, let's print a warning then return
+	if(is_admin())
+	{
+		add_action('admin_notices', 'bcn_phpold');
+	}
+	return;
 }
 //Include the breadcrumb class
 require_once(dirname(__FILE__) . '/breadcrumb_navxt_class.php');
@@ -54,7 +58,7 @@ class bcn_admin extends mtekk_admin
 	 * 
 	 * @var   string
 	 */
-	protected $version = '3.8.1';
+	protected $version = '3.9.0';
 	protected $full_name = 'Breadcrumb NavXT Settings';
 	protected $short_name = 'Breadcrumb NavXT';
 	protected $access_level = 'manage_options';
@@ -264,8 +268,13 @@ class bcn_admin extends mtekk_admin
 		$this->security();
 		//Do a nonce check, prevent malicious link/form problems
 		check_admin_referer('bcn_options-options');
-		//Update local options from database
-		$this->opt = $this->get_option('bcn_options');
+		//Update local options from database, going to always do a safe get
+		$this->opt = wp_parse_args($this->get_option('bcn_options'), $this->breadcrumb_trail->opt);
+		//If we did not get an array, might as well just quit here
+		if(!is_array($this->opt))
+		{
+			return;
+		}
 		//Add custom post types
 		$this->find_posttypes($this->opt);
 		//Add custom taxonomy types
@@ -445,13 +454,18 @@ class bcn_admin extends mtekk_admin
 	function admin_page()
 	{
 		global $wp_taxonomies, $wp_post_types;
-		$this->security();
-		$this->version_check($this->get_option($this->unique_prefix . '_version'));
-		?>
+		$this->security();?>
 		<div class="wrap"><h2><?php _e('Breadcrumb NavXT Settings', 'breadcrumb_navxt'); ?></h2>		
 		<div<?php if($this->_has_contextual_help): ?> class="hide-if-js"<?php endif; ?>><?php 
 			print $this->_get_help_text();
 		?></div>
+		<?php
+		//We exit after the version check if there is an action the user needs to take before saving settings
+		if(!$this->version_check($this->get_option($this->unique_prefix . '_version')))
+		{
+			return;
+		}
+		?>
 		<form action="options-general.php?page=breadcrumb_navxt" method="post" id="bcn_admin-options">
 			<?php settings_fields('bcn_options');?>
 			<div id="hasadmintabs">
@@ -958,7 +972,10 @@ $bcn_admin = new bcn_admin;
 function bcn_display($return = false, $linked = true, $reverse = false)
 {
 	global $bcn_admin;
-	return $bcn_admin->display($return, $linked, $reverse);
+	if($bcn_admin !== null)
+	{
+		return $bcn_admin->display($return, $linked, $reverse);
+	}
 }
 /**
  * A wrapper for the internal function in the class
@@ -970,7 +987,10 @@ function bcn_display($return = false, $linked = true, $reverse = false)
 function bcn_display_list($return = false, $linked = true, $reverse = false)
 {
 	global $bcn_admin;
-	return $bcn_admin->display_list($return, $linked, $reverse);
+	if($bcn_admin !== null)
+	{
+		return $bcn_admin->display_list($return, $linked, $reverse);
+	}
 }
 /**
  * A wrapper for the internal function in the class
@@ -983,5 +1003,8 @@ function bcn_display_list($return = false, $linked = true, $reverse = false)
 function bcn_display_nested($return = false, $linked = true, $tag = 'span', $mode = 'rdfa')
 {
 	global $bcn_admin;
-	return $bcn_admin->display_nested($return, $linked, $tag, $mode);
+	if($bcn_admin !== null)
+	{
+		return $bcn_admin->display_nested($return, $linked, $tag, $mode);
+	}
 }

@@ -111,31 +111,5 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
 <section id="content-sub" class="vcalendar" role="complementary">
 <?php include (TEMPLATEPATH . '/user-state.php'); ?>
 <?php if ( function_exists('dynamic_sidebar') && dynamic_sidebar('sidebar-home') ) : else : endif; ?>
-
-<div id="recent-updates" class="widget">
-  <h3 class="widgettitle">Recently Updated Docs</h3>
-  <ul>
-
-<?php
-$today = current_time('mysql', 1);
-$howMany = 5; //Number of posts you want to display
-$docs_id = get_page_by_path('docs')->ID;
-if ( $recentposts = $wpdb->get_results("SELECT ID, post_title FROM $wpdb->posts WHERE post_status = 'publish' AND post_type = 'page' AND post_modified_gmt < '$today' ORDER BY post_modified_gmt DESC LIMIT $howMany")):
-?>
-
-<?php
-	foreach ($recentposts as $post) {
-		if ($post->post_title == '') $post->post_title = sprintf(__('Post #%s'), $post->ID);
-		echo "<li><a href='".get_permalink($post->ID)."'>";
-		the_title();
-		echo '</a></li>';
-	}
-?>
-<?php endif; ?>
-
-  </ul>
- 
-</div>
-
 </section>
 <?php get_footer(); ?>
