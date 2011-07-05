@@ -166,7 +166,7 @@ legend { color: #390; font-size: 1.2em; }
 /* @Posts *********/
 section.post, article.post, div.post, li.post, 
 section.page, article.page, div.page, li.page, 
-section.attachment, article.attachment, div.attachment, li.attachment { padding: 0 0 1em 80px; min-height: 6em; overflow: hidden; margin-bottom: 2em; position: relative; background: url("img/pencil-line.png") right bottom repeat-x; }
+section.attachment, article.attachment, div.attachment, li.attachment { padding: 0 0 1em 80px; min-height: 6em; margin-bottom: 2em; position: relative; background: url("img/pencil-line.png") right bottom repeat-x; }
 .post:nth-child(even), .page:nth-child(even) { background-position: left bottom; }
 .post:last-child, .page:last-child { padding-bottom: 0; background-image: none; }
 
@@ -174,6 +174,8 @@ body.single .post, body.single .attachment { padding-bottom: 0; background-image
 body.page .page { padding: 0; background-image: none; }
 
 #activate-page { padding: 0; background-image: none; }
+
+.post:after, .page:after, .attachment:after { content: "."; display: block; clear: both; height: 0; visibility: hidden; }
 
 /*** @Flags *********/
 .post .event-flag, .post .tweet-flag, .page .doc-flag, .page .team-flag { position: absolute; left: 0; top: 0; width: 50px; padding-top: 50px; text-align: center; font: bold .846em Verdana, Tahoma, sans-serif; text-transform: uppercase; letter-spacing: 0.1em; color: #390; }
@@ -1019,14 +1021,13 @@ dl.tubepress_meta_group { margin-top: .25em; }
 dl.tubepress_meta_group dt.tubepress_meta { font: normal 1em Verdana, Tahoma, sans-serif; }
 dl.tubepress_meta_group dd.tubepress_meta { padding: 0; font: normal 1em Verdana, Tahoma, sans-serif; }
 dl.tubepress_meta_group dd.tubepress_meta_title { font-family: Georgia, Times, serif; color: #369; }
-.tubepress_thumbs { margin: 0 auto 1.5em; }
-.tubepress_thumb { margin: 0 10px 1.5em; }
+.tubepress_thumbnail_area { width: 100% !important; }
+.tubepress_thumbs { float: none; margin: 0 auto 1.5em; }
+.tubepress_thumb { margin: 0 10px 1.5em; min-height: 175px; overflow: visible; }
 
 .tubepress_container div.pagination { overflow: visible; }
 .tubepress_container div.pagination span { position: static; left: auto; }
-.tubepress_container div.tubepress_thumbnail_area div.pagination span.current { border-color: #ef8f30; background: #f93; color: #fff; }
+.tubepress_container div.tubepress_thumbnail_area div.pagination span.current { padding: .1em .5em; border-color: #ef8f30; background: #f93; color: #fff; border-radius: 0; font-weight: bold; }
 
-#content .tubepress_container div.pagination a { padding: .15em .5em; border: 1px solid #d6e4e5; text-decoration: none; color: #369; background: #fff; }
-#content .tubepress_container div.pagination a:hover { background: #dfe9f2; text-decoration: none; color: #333; }
-
-
+#content .tubepress_container div.pagination a { padding: .1em .5em; border: 1px solid #d6e4e5; text-decoration: none; color: #369; background: #fff; border-radius: 0; }
+#content .tubepress_container div.pagination a:hover { background: #dfe9f2; text-decoration: none; color: #333; box-shadow: none; }
