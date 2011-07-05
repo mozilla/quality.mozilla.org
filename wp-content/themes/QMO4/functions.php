@@ -1131,7 +1131,7 @@ function qmo_activity_filter( $a, $activities ) {
           || $activity->type === 'new_wire_post'
           || $activity->type === 'friendship_created'
           || $activity->type === 'new_member'
-//          || $activity->type === 'new_achievement'
+          || $activity->type === 'new_achievement'
           || $activity->type === 'achievement_created'
         ) {
       unset( $activities->activities[$key] );
@@ -1156,6 +1156,5 @@ remove_action( 'dpa_achievement_unlocked', 'dpa_achievement_unlocked_notificatio
  * Limit avatar uploads to 100k (102,400 bytes)
  */
 define('BP_AVATAR_ORIGINAL_MAX_FILESIZE', 102400);
-
 
 /** END BUDDYPRESS FUNCTIONS **/
