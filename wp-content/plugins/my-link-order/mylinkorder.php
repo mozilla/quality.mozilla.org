@@ -3,21 +3,19 @@
 Plugin Name: My Link Order
 Plugin URI: http://www.geekyweekly.com/mylinkorder
 Description: My Link Order allows you to set the order in which links and link categories will appear in the sidebar. Uses a drag and drop interface for ordering. Adds a widget with additional options for easy installation on widgetized themes.
-Version: 2.9.1
+Version: 3.1.4
 Author: Andrew Charlton
 Author URI: http://www.geekyweekly.com
 Author Email: froman118@gmail.com
 */
 
-function mylinkorder_init() {
-
 function mylinkorder_menu()
-{   if (function_exists('add_submenu_page'))
-        add_submenu_page(mylinkorder_getTarget(), 'My Link Order', __('My Link Order', 'mylinkorder'), 5, "mylinkorder", 'mylinkorder');
+{    
+	add_links_page(__('My Link Order', 'mylinkorder'), __('My Link Order', 'mylinkorder'), 'manage_links', 'mylinkorder', 'mylinkorder');
 }
 
 function mylinkorder_js_libs() {
-	if ( $_GET['page'] == "mylinkorder" ) {
+	if ( isset($_GET['page']) && $_GET['page'] == "mylinkorder" ) {
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-ui-core');
 		wp_enqueue_script('jquery-ui-sortable');
@@ -25,7 +23,7 @@ function mylinkorder_js_libs() {
 }
 
 function mylinkorder_getTarget() {
-	return "link-manager.php";
+	return "link-manager.php?page=mylinkorder";
 }
 
 function mylinkorder_set_plugin_meta($links, $file) {
@@ -33,7 +31,7 @@ function mylinkorder_set_plugin_meta($links, $file) {
 	// create link
 	if ($file == $plugin) {
 		return array_merge( $links, array( 
-			'<a href="link-manager.php?page=mylinkorder">' . __('Order Links') . '</a>',
+			'<a href="' . mylinkorder_getTarget() . '">' . __('Order Links') . '</a>',
 			'<a href="http://wordpress.org/tags/my-link-order?forum_id=10#postform">' . __('Support Forum') . '</a>',
 			'<a href="http://geekyweekly.com/gifts-and-donations">' . __('Donate') . '</a>' 
 		));
@@ -41,18 +39,24 @@ function mylinkorder_set_plugin_meta($links, $file) {
 	return $links;
 }
 
-add_filter( 'plugin_row_meta', 'mylinkorder_set_plugin_meta', 10, 2 );
+add_filter('plugin_row_meta', 'mylinkorder_set_plugin_meta', 10, 2 );
 add_action('admin_menu', 'mylinkorder_menu');
-add_action('admin_menu', 'mylinkorder_js_libs');
+add_action('admin_print_scripts', 'mylinkorder_js_libs');
 
 function mylinkorder()
 {
 	global $wpdb;
-	$mode = "";
-	$mode = $_GET['mode'];
 	$success = "";
-	$catID = "";
+	$catID = 0;
 	
+	if (isset($_POST['btnCats']))
+		$catID = $_POST['cats'];
+	elseif (isset($_POST['hdnCatID'])) 
+		$catID = $_POST['hdnCatID'];
+
+	if (isset($_POST['btnReturnParent']))
+		$catID = 0;
+
 	if(isset($_GET['hideNote']))
 		update_option('mylinkorder_hideNote', '1');
 	
@@ -68,134 +72,148 @@ function mylinkorder()
 	if ($query2 == 0)
 		$wpdb->query("ALTER TABLE $wpdb->links ADD `link_order` INT( 4 ) NULL DEFAULT '0'");
 	
-	if($mode == "act_OrderCategories")
-	{
-		$idString = $_GET['idString'];
+	if (isset($_POST['btnOrderCats'])) { 
+		$idString = $_POST['hdnMyLinkOrder'];
 		$catIDs = explode(",", $idString);
 		$result = count($catIDs);
 		for($i = 0; $i <= $result; $i++)
-			$wpdb->query("UPDATE $wpdb->terms SET term_order = '$i' WHERE term_id ='$catIDs[$i]'");
+		{
+			$str = str_replace("id_", "", $catIDs[$i]);
+			$wpdb->query("UPDATE $wpdb->terms SET term_order = '$i' WHERE term_id ='$str'");
+		}
 			
 		$success = '<div id="message" class="updated fade"><p>'. __('Link Categories updated successfully.', 'mylinkorder').'</p></div>';
 	}
 	
-	if($mode == "act_OrderLinks")
-	{
-		$idString = $_GET['idString'];
+	if (isset($_POST['btnOrderLinks'])) { 
+		$idString = $_POST['hdnMyLinkOrder'];
 		$linkIDs = explode(",", $idString);
 		$result = count($linkIDs);
 		for($i = 0; $i <= $result; $i++)
-			$wpdb->query("UPDATE $wpdb->links SET link_order = '$i' WHERE link_id ='$linkIDs[$i]'");
+		{
+			$str = str_replace("id_", "", $linkIDs[$i]);
+			$wpdb->query("UPDATE $wpdb->links SET link_order = '$i' WHERE link_id ='$str'");
+		}
 		
 		$success = '<div id="message" class="updated fade"><p>'. __('Links updated successfully.', 'mylinkorder').'</p></div>';
-		$mode = "dsp_OrderLinks";
 	}
+?>
 
-	if($mode == "dsp_OrderLinks")
-	{
-		$catID = $_GET['catID'];
-		$results=$wpdb->get_results("SELECT * FROM $wpdb->links l inner join $wpdb->term_relationships tr on l.link_id = tr.object_id inner join $wpdb->term_taxonomy tt on tt.term_taxonomy_id = tr.term_taxonomy_id inner join $wpdb->terms t on t.term_id = tt.term_id WHERE t.term_id = $catID ORDER BY link_order ASC");
-		$cat_name = $wpdb->get_var("SELECT name FROM $wpdb->terms WHERE term_id=$catID");
-	?>
-
-	<div class='wrap'>
-		<h2><?php _e('Order Links for', 'mylinkorder') ?> <?=$cat_name?></h2>
-		
-		<?php 
+<div class='wrap'>
+	<form name="frmMyLinkOrder" method="post" action="">
+		<h2><?php _e('My Link Order', 'mylinkorder') ?></h2>
+		<?php
 		echo $success; 
+		
 		if (get_option("mylinkorder_hideNote") != "1")
 		{	?>
 			<div class="updated">
-				<strong><p><?php _e('If you like my plugin please consider donating. Every little bit helps me provide support and continue development.','mylinkorder'); ?> <a href="http://geekyweekly.com/gifts-and-donations"><?php _e('Donate', 'mylinkorder'); ?></a>&nbsp;&nbsp;<small><a href="link-manager.php?page=mylinkorder&hideNote=true"><?php _e('No thanks, hide this', 'mylinkorder'); ?></a></small></p></strong>
+				<strong><p><?php _e('If you like my plugin please consider donating. Every little bit helps me provide support and continue development.','mylinkorder'); ?> <a href="http://geekyweekly.com/gifts-and-donations"><?php _e('Donate', 'mylinkorder'); ?></a>&nbsp;&nbsp;<small><a href="<?php echo mylinkorder_getTarget(); ?>&hideNote=true"><?php _e('No thanks, hide this', 'mylinkorder'); ?></a></small></p></strong>
 			</div>
 		<?php
 		}
 		
-		?>
-		
+	if($catID != 0)
+	{
+		$results=$wpdb->get_results("SELECT * FROM $wpdb->links l inner join $wpdb->term_relationships tr on l.link_id = tr.object_id inner join $wpdb->term_taxonomy tt on tt.term_taxonomy_id = tr.term_taxonomy_id inner join $wpdb->terms t on t.term_id = tt.term_id WHERE t.term_id = $catID ORDER BY link_order ASC");
+		$cat_name = $wpdb->get_var("SELECT name FROM $wpdb->terms WHERE term_id=$catID");
+	?>
+		<h3><?php _e('Order Links for', 'mylinkorder') ?> <?php _e($cat_name) ?></h3>
+
 		<p><?php _e('Order the links by dragging and dropping them into the desired order.', 'mylinkorder') ?></p>
-		<ul id="order" style="width: 90%; margin:10px 10px 10px 0px; padding:10px; border:1px solid #B2B2B2; list-style:none;"><?php
+		<ul id="myLinkOrderList"><?php
 		foreach($results as $row)
 		{
-			echo "<li id='$row->link_id' class='lineitem'>$row->link_name</li>";
+			echo "<li id='id_$row->link_id' class='lineitem'>".__($row->link_name)."</li>";
 		}?>
 		</ul>
 	
-		<input type="button" id="orderButton" Value="<?php _e('Click to Order Links', 'mylinkorder') ?>" onclick="javascript:orderLinks();">&nbsp;&nbsp;<strong id="updateText"></strong>
-		<br /><br />
-		<a href='<?php echo mylinkorder_getTarget(); ?>?page=mylinkorder'><?php _e('Go Back', 'mylinkorder') ?></a>
-	
-	</div>
-
+		<input type="submit" id="btnOrderLinks" name="btnOrderLinks" class="button-primary" value="<?php _e('Click to Order Links', 'mylinkorder') ?>" onclick="javascript:orderLinks(); return true;" />
+		&nbsp;&nbsp;<input type="submit" class="button" id="btnReturnParent" name="btnReturnParent" value="<?php _e('Go Back', 'mylinkorder') ?>" />
 	<?php
 	}
 	else
 	{
 		$results=$wpdb->get_results("SELECT DISTINCT t.term_id, name FROM $wpdb->term_taxonomy tt inner join $wpdb->term_relationships tr on tt.term_taxonomy_id = tr.term_taxonomy_id inner join $wpdb->terms t on t.term_id = tt.term_id where taxonomy = 'link_category' ORDER BY t.term_order ASC");
 		?>
-	<div class='wrap'>
-		<h2><?php _e('My Link Order', 'mylinkorder') ?></h2>
-		
-		<?php 
-		echo $success; 
-		if (get_option("mylinkorder_hideNote") != "1")
-		{	?>
-			<div class="updated">
-				<strong><p><?php _e('If you like my plugin please consider donating. Every little bit helps me provide support and continue development.','mylinkorder'); ?> <a href="http://geekyweekly.com/gifts-and-donations"><?php _e('Donate', 'mylinkorder'); ?></a>&nbsp;&nbsp;<small><a href="link-manager.php?page=mylinkorder&hideNote=true"><?php _e('No thanks, hide this', 'mylinkorder'); ?></a></small></p></strong>
-			</div>
-		<?php
-		}
-		
-		?>
 		
 		<p><?php _e('Choose a category from the drop down to order the links in that category or order the categories by dragging and dropping them.', 'mylinkorder') ?></p>
 	
 		<h3><?php _e('Order Links', 'mylinkorder') ?></h3>
 	
-		<select id="cats" name='cats'><?php
+		<select id="cats" name="cats"><?php
 		foreach($results as $row)
 		{
-			echo "<option value='$row->term_id'>$row->name</option>";
+			echo "<option value='$row->term_id'>".__($row->name)."</option>";
 		}?>
 		</select>
-		&nbsp;<input type="button" name="edit" Value="<?php _e('Order Links in this Category', 'mylinkorder') ?>" onClick="javascript:goEdit();">
+		&nbsp;<input type="submit" name="btnCats" id="btnCats" class="button" value="<?php _e('Order Links in this Category', 'mylinkorder') ?>" />
 	
 		<h3><?php _e('Order Link Categories', 'mylinkorder') ?></h3>
 	
-		<ul id="order" style="width: 90%; margin:10px 10px 10px 0px; padding:10px; border:1px solid #B2B2B2; list-style:none;"><?php
+		<ul id="myLinkOrderList"><?php
 		foreach($results as $row)
 		{
-			echo "<li id='$row->term_id' class='lineitem'>$row->name</li>";
+			echo "<li id='id_$row->term_id' class='lineitem'>".__($row->name)."</li>";
 		}?>
 		</ul>
-		<input type="button" id="orderButton" Value="<?php _e('Click to Order Categories', 'mylinkorder') ?>" onclick="javascript:orderLinkCats();">&nbsp;&nbsp;<strong id="updateText"></strong>
+		<input type="submit" name="btnOrderCats" id="btnOrderCats" class="button-primary" value="<?php _e('Click to Order Categories', 'mylinkorder') ?>" onclick="javascript:orderLinkCats(); return true;" />
 		
-		<p>
-			<a href="http://geekyweekly.com/mylinkorder"><?php _e('Plugin Homepage', 'mylinkorder') ?></a>
-			&nbsp;|&nbsp;
-			<a href="http://geekyweekly.com/gifts-and-donations"><?php _e('Donate', 'mylinkorder') ?></a>
-			&nbsp;|&nbsp;
-			<a href="http://wordpress.org/tags/my-link-order?forum_id=10"><?php _e('Support Forum', 'mylinkorder') ?></a>
-		</p>
-	</div>
 	<?php
 	}
 	?>
-	<style>
+	&nbsp;&nbsp;<strong id="updateText"></strong>
+	<br /><br />
+		<p>
+			<a href="http://geekyweekly.com/mylinkorder"><?php _e('Plugin Homepage', 'mylinkorder') ?></a>&nbsp;|&nbsp;<a href="http://geekyweekly.com/gifts-and-donations"><?php _e('Donate', 'mylinkorder') ?></a>&nbsp;|&nbsp;<a href="http://wordpress.org/tags/my-link-order?forum_id=10"><?php _e('Support Forum', 'mylinkorder') ?></a>
+		</p>
+		<input type="hidden" id="hdnMyLinkOrder" name="hdnMyLinkOrder" />
+		<input type="hidden" id="hdnCatID" name="hdnCatID" value="<?php echo $catID; ?>" />
+		</form>
+	</div>
+	
+	<style type="text/css">
+		#myLinkOrderList {
+			width: 90%; 
+			border:1px solid #B2B2B2; 
+			margin:10px 10px 10px 0px;
+			padding:5px 10px 5px 10px;
+			list-style:none;
+			background-color:#fff;
+			-moz-border-radius:3px;
+			-webkit-border-radius:3px;
+		}
+
 		li.lineitem {
-			margin: 3px 0px;
-			padding: 2px 5px 2px 5px;
-			background-color: #F1F1F1;
 			border:1px solid #B2B2B2;
-			cursor: move;
+			-moz-border-radius:3px;
+			-webkit-border-radius:3px;
+			background-color:#F1F1F1;
+			color:#000;
+			cursor:move;
+			font-size:13px;
+			margin-top:5px;
+			margin-bottom:5px;
+			padding: 2px 5px 2px 5px;
+			height:1.5em;
+			line-height:1.5em;
+		}
+		
+		.sortable-placeholder{ 
+			border:1px dashed #B2B2B2;
+			margin-top:5px;
+			margin-bottom:5px; 
+			padding: 2px 5px 2px 5px;
+			height:1.5em;
+			line-height:1.5em;	
 		}
 	</style>
 	
 	<script language="JavaScript" type="text/javascript">
 	
 		function mylinkorderaddloadevent(){
-			jQuery("#order").sortable({ 
-				placeholder: "ui-selected", 
+			jQuery("#myLinkOrderList").sortable({ 
+				placeholder: "sortable-placeholder", 
 				revert: false,
 				tolerance: "pointer" 
 			});
@@ -204,30 +222,18 @@ function mylinkorder()
 		addLoadEvent(mylinkorderaddloadevent);
 	
 		function orderLinkCats() {
-			jQuery("#orderButton").css("display", "none");
 			jQuery("#updateText").html("<?php _e('Updating Link Category Order...', 'mylinkorder') ?>");
-			
-			idList = jQuery("#order").sortable("toArray");
-			location.href = '<?php echo mylinkorder_getTarget(); ?>?page=mylinkorder&mode=act_OrderCategories&idString='+idList;
+			jQuery("#hdnMyLinkOrder").val(jQuery("#myLinkOrderList").sortable("toArray"));
 		}
 	
 		function orderLinks() {
-			jQuery("#orderButton").css("display", "none");
 			jQuery("#updateText").html("<?php _e('Updating Link Order...', 'mylinkorder') ?>");
-			
-			idList = jQuery("#order").sortable("toArray");
-			location.href = '<?php echo mylinkorder_getTarget(); ?>?page=mylinkorder&mode=act_OrderLinks&catID=<?php echo $catID; ?>&idString='+idList;
+			jQuery("#hdnMyLinkOrder").val(jQuery("#myLinkOrderList").sortable("toArray"));
 		}
-	
-		function goEdit ()
-		{
-			if(jQuery("#cats").val() != "")
-				location.href="<?php echo mylinkorder_getTarget(); ?>?page=mylinkorder&mode=dsp_OrderLinks&catID="+jQuery("#cats").val();
-		}
+		
 	</script>
 
 	<?php
-}
 }
 
 function mylinkorder_applyorderfilter($orderby, $args)
@@ -239,10 +245,6 @@ function mylinkorder_applyorderfilter($orderby, $args)
 }
 
 add_filter('get_terms_orderby', 'mylinkorder_applyorderfilter', 10, 2);
-
-add_action('plugins_loaded', 'mylinkorder_init');
-
-/* Load Translations */
 add_action('init', 'mylinkorder_loadtranslation');
 
 function mylinkorder_loadtranslation() {
@@ -281,7 +283,7 @@ class mylinkorder_Widget extends WP_Widget {
 		$link_after = empty( $instance['link_after'] ) ? '' : $instance['link_after'];
 
 		$before_widget = preg_replace('/id="[^"]*"/','id="%id"', $before_widget);
-		wp_list_bookmarks(apply_filters('widget_links_args', array('title_before' => $before_title, 'title_after' => $after_title, 'class' => 'linkcat widget',
+		mylinkorder_list_bookmarks(apply_filters('widget_links_args', array('title_before' => $before_title, 'title_after' => $after_title, 'class' => 'linkcat widget',
 			'category_before' => $before_widget, 'category_after' => $after_widget, 'exclude' => $exclude, 'include' => $include,
 			'title_li' => $title_li, 'category_orderby' => $category_orderby, 'category_order' => $category_order, 'orderby' => $orderby, 'order' => $order,
 			'category' => $category, 'exclude_category' => $exclude_category, 'limit' => $limit, 'categorize' => $categorize,
@@ -478,5 +480,206 @@ function mylinkorder_widgets_init() {
 }
 
 add_action('widgets_init', 'mylinkorder_widgets_init');
+
+function mylinkorder_list_bookmarks($args = '') {
+	$defaults = array(
+		'orderby' => 'name', 'order' => 'ASC',
+		'limit' => -1, 'category' => '', 'exclude_category' => '',
+		'category_name' => '', 'hide_invisible' => 1,
+		'show_updated' => 0, 'echo' => 1,
+		'categorize' => 1, 'title_li' => __('Bookmarks'),
+		'title_before' => '<h2>', 'title_after' => '</h2>',
+		'category_orderby' => 'name', 'category_order' => 'ASC',
+		'class' => 'linkcat', 'category_before' => '<li id="%id" class="%class">',
+		'category_after' => '</li>'
+	);
+
+	$r = wp_parse_args( $args, $defaults );
+	extract( $r, EXTR_SKIP );
+
+	$output = '';
+
+	if ( $categorize ) {
+		//Split the bookmarks into ul's for each category
+		$cats = get_terms('link_category', array('name__like' => $category_name, 'include' => $category, 'exclude' => $exclude_category, 'orderby' => $category_orderby, 'order' => $category_order, 'hierarchical' => 0));
+
+		foreach ( (array) $cats as $cat ) {
+			$params = array_merge($r, array('category'=>$cat->term_id));
+			$bookmarks = mylinkorder_get_bookmarks($params);
+			if ( empty($bookmarks) )
+				continue;
+			$output .= str_replace(array('%id', '%class'), array("linkcat-$cat->term_id", $class), $category_before);
+			$catname = apply_filters( "link_category", $cat->name );
+			$output .= "$title_before$catname$title_after\n\t<ul class='xoxo blogroll'>\n";
+			$output .= _walk_bookmarks($bookmarks, $r);
+			$output .= "\n\t</ul>\n$category_after\n";
+		}
+	} else {
+		//output one single list using title_li for the title
+		$bookmarks = mylinkorder_get_bookmarks($r);
+
+		if ( !empty($bookmarks) ) {
+			if ( !empty( $title_li ) ){
+				$output .= str_replace(array('%id', '%class'), array("linkcat-$category", $class), $category_before);
+				$output .= "$title_before$title_li$title_after\n\t<ul class='xoxo blogroll'>\n";
+				$output .= _walk_bookmarks($bookmarks, $r);
+				$output .= "\n\t</ul>\n$category_after\n";
+			} else {
+				$output .= _walk_bookmarks($bookmarks, $r);
+			}
+		}
+	}
+
+	$output = apply_filters( 'wp_list_bookmarks', $output );
+
+	if ( !$echo )
+		return $output;
+	echo $output;
+}
+
+function mylinkorder_get_bookmarks($args = '') {
+	global $wpdb;
+
+	$defaults = array(
+		'orderby' => 'name', 'order' => 'ASC',
+		'limit' => -1, 'category' => '',
+		'category_name' => '', 'hide_invisible' => 1,
+		'show_updated' => 0, 'include' => '',
+		'exclude' => '', 'search' => ''
+	);
+
+	$r = wp_parse_args( $args, $defaults );
+	extract( $r, EXTR_SKIP );
+
+	$cache = array();
+	$key = md5( serialize( $r ) );
+	if ( $cache = wp_cache_get( 'get_bookmarks', 'bookmark' ) ) {
+		if ( is_array($cache) && isset( $cache[ $key ] ) )
+			return apply_filters('get_bookmarks', $cache[ $key ], $r );
+	}
+
+	if ( !is_array($cache) )
+		$cache = array();
+
+	$inclusions = '';
+	if ( !empty($include) ) {
+		$exclude = '';  //ignore exclude, category, and category_name params if using include
+		$category = '';
+		$category_name = '';
+		$inclinks = preg_split('/[\s,]+/',$include);
+		if ( count($inclinks) ) {
+			foreach ( $inclinks as $inclink ) {
+				if (empty($inclusions))
+					$inclusions = ' AND ( link_id = ' . intval($inclink) . ' ';
+				else
+					$inclusions .= ' OR link_id = ' . intval($inclink) . ' ';
+			}
+		}
+	}
+	if (!empty($inclusions))
+		$inclusions .= ')';
+
+	$exclusions = '';
+	if ( !empty($exclude) ) {
+		$exlinks = preg_split('/[\s,]+/',$exclude);
+		if ( count($exlinks) ) {
+			foreach ( $exlinks as $exlink ) {
+				if (empty($exclusions))
+					$exclusions = ' AND ( link_id <> ' . intval($exlink) . ' ';
+				else
+					$exclusions .= ' AND link_id <> ' . intval($exlink) . ' ';
+			}
+		}
+	}
+	if (!empty($exclusions))
+		$exclusions .= ')';
+
+	if ( !empty($category_name) ) {
+		if ( $category = get_term_by('name', $category_name, 'link_category') ) {
+			$category = $category->term_id;
+		} else {
+			$cache[ $key ] = array();
+			wp_cache_set( 'get_bookmarks', $cache, 'bookmark' );
+			return apply_filters( 'get_bookmarks', array(), $r );
+		}
+	}
+
+	if ( ! empty($search) ) {
+		$search = like_escape($search);
+		$search = " AND ( (link_url LIKE '%$search%') OR (link_name LIKE '%$search%') OR (link_description LIKE '%$search%') ) ";
+	}
+
+	$category_query = '';
+	$join = '';
+	if ( !empty($category) ) {
+		$incategories = preg_split('/[\s,]+/',$category);
+		if ( count($incategories) ) {
+			foreach ( $incategories as $incat ) {
+				if (empty($category_query))
+					$category_query = ' AND ( tt.term_id = ' . intval($incat) . ' ';
+				else
+					$category_query .= ' OR tt.term_id = ' . intval($incat) . ' ';
+			}
+		}
+	}
+	if (!empty($category_query)) {
+		$category_query .= ") AND taxonomy = 'link_category'";
+		$join = " INNER JOIN $wpdb->term_relationships AS tr ON ($wpdb->links.link_id = tr.object_id) INNER JOIN $wpdb->term_taxonomy as tt ON tt.term_taxonomy_id = tr.term_taxonomy_id";
+	}
+
+	if ( $show_updated && get_option('links_recently_updated_time') ) {
+		$recently_updated_test = ", IF (DATE_ADD(link_updated, INTERVAL " . get_option('links_recently_updated_time') . " MINUTE) >= NOW(), 1,0) as recently_updated ";
+	} else {
+		$recently_updated_test = '';
+	}
+
+	$get_updated = ( $show_updated ) ? ', UNIX_TIMESTAMP(link_updated) AS link_updated_f ' : '';
+
+	$orderby = strtolower($orderby);
+	$length = '';
+	switch ( $orderby ) {
+		case 'length':
+			$length = ", CHAR_LENGTH(link_name) AS length";
+			break;
+		case 'rand':
+			$orderby = 'rand()';
+			break;
+		case 'link_id':
+			$orderby = "$wpdb->links.link_id";
+			break;
+		default:
+			$orderparams = array();
+			foreach ( explode(',', $orderby) as $ordparam ) {
+				$ordparam = trim($ordparam);
+				if ( in_array( $ordparam, array( 'order', 'name', 'url', 'visible', 'rating', 'owner', 'updated' ) ) )
+					$orderparams[] = 'link_' . $ordparam;
+			}
+			$orderby = implode(',', $orderparams);
+	}
+
+	if ( empty( $orderby ) )
+		$orderby = 'link_name';
+
+	$order = strtoupper( $order );
+	if ( '' !== $order && !in_array( $order, array( 'ASC', 'DESC' ) ) )
+		$order = 'ASC';
+
+	$visible = '';
+	if ( $hide_invisible )
+		$visible = "AND link_visible = 'Y'";
+
+	$query = "SELECT * $length $recently_updated_test $get_updated FROM $wpdb->links $join WHERE 1=1 $visible $category_query";
+	$query .= " $exclusions $inclusions $search";
+	$query .= " ORDER BY $orderby $order";
+	if ($limit != -1)
+		$query .= " LIMIT $limit";
+
+	$results = $wpdb->get_results($query);
+
+	$cache[ $key ] = $results;
+	wp_cache_set( 'get_bookmarks', $cache, 'bookmark' );
+
+	return apply_filters('get_bookmarks', $results, $r);
+}
 
 ?>
