@@ -1,1 +1,0 @@
-var TubePressYouTubePlayer=(function(){var c=TubePressEvents,b="youtube",a=function(i,h,g,f,d){window.location="http://www.youtube.com/watch?v="+h};jQuery(document).bind(c.PLAYER_INVOKE+b,a)}());
