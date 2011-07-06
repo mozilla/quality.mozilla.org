@@ -3,7 +3,7 @@
 Plugin Name: FeedWordPress
 Plugin URI: http://feedwordpress.radgeek.com/
 Description: simple and flexible Atom/RSS syndication for WordPress
-Version: 2011.0602
+Version: 2011.0706
 Author: Charles Johnson
 Author URI: http://radgeek.com/
 License: GPL
@@ -11,7 +11,7 @@ License: GPL
 
 /**
  * @package FeedWordPress
- * @version 2011.0602
+ * @version 2011.0706
  */
 
 # This uses code derived from:
@@ -34,7 +34,7 @@ License: GPL
 
 # -- Don't change these unless you know what you're doing...
 
-define ('FEEDWORDPRESS_VERSION', '2011.0602');
+define ('FEEDWORDPRESS_VERSION', '2011.0706');
 define ('FEEDWORDPRESS_AUTHOR_CONTACT', 'http://radgeek.com/contact');
 
 if (!defined('FEEDWORDPRESS_BLEG')) :
@@ -119,6 +119,9 @@ require_once("${dir}/feedwordpresshtml.class.php");
 require_once("${dir}/feedwordpress-content-type-sniffer.class.php");
 require_once("${dir}/inspectpostmeta.class.php");
 require_once("${dir}/syndicationdataqueries.class.php");
+require_once("${dir}/feedwordpress_file.class.php");
+require_once("${dir}/feedwordpress_parser.class.php");
+require_once("${dir}/feedwordpressrpc.class.php");
 
 // Magic quotes are just about the stupidest thing ever.
 if (is_array($_POST)) :
@@ -226,11 +229,11 @@ if (!FeedWordPress::needs_upgrade()) : // only work if the conditions are safe!
 	$feedwordpress = new FeedWordPress;
 
 	# Cron-less auto-update. Hooray!
-	$autoUpdateHook = get_option('feedwordpress_automatic_updates');
-	if ($autoUpdateHook != 'init') :
-		$autoUpdateHook = 'shutdown';
+	$autoUpdateHook = $feedwordpress->automatic_update_hook();
+	if (!is_null($autoUpdateHook)) :
+		add_action($autoUpdateHook, array(&$feedwordpress, 'auto_update'));
 	endif;
-	add_action($autoUpdateHook, array(&$feedwordpress, 'auto_update'));
+	
 	add_action('init', array(&$feedwordpress, 'init'));
 	add_action('shutdown', array(&$feedwordpress, 'email_diagnostic_log'));
 	add_action('wp_dashboard_setup', array(&$feedwordpress, 'dashboard_setup'));
@@ -1042,12 +1045,49 @@ class FeedWordPress {
 		return $crash_ts;
 	}
 	
+	function secret_key () {
+		$secret = get_option('feedwordpress_secret_key', false);
+		if (!$secret) : // Generate random key.
+			$secret = substr(md5(uniqid(microtime())), 0, 6);
+			update_option('feedwordpress_secret_key', $secret);
+		endif;
+		return $secret;
+	}
+	
+	function has_secret () {
+		return (isset($_REQUEST['feedwordpress_key']) and ($_REQUEST['feedwordpress_key']==$this->secret_key()));
+	}
+
+	function automatic_update_hook () {
+		$hook = get_option('feedwordpress_automatic_updates', NULL);
+		if ($this->has_secret() and isset($_REQUEST['automatic_update'])) : // For forced behavior in testing.
+			$hook = $_REQUEST['automatic_update'];
+		endif;
+		
+		if (!is_null($hook)) :
+			if ($hook != 'init') : // Constrain values.
+				$hook = 'shutdown';
+			endif;
+		endif;
+		return $hook; 
+	}
+	function last_update_all () {
+		$last = get_option('feedwordpress_last_update_all');
+		if ($this->has_secret() and isset($_REQUEST['automatic_update']) and ((strlen($_REQUEST['automatic_update']) > 0))) :
+			$last = 1; // A long, long time ago.
+		endif;
+		return $last;
+	}
+	function force_update_all () {
+		return ($this->has_secret() and isset($_REQUEST['force_update_feeds']) and !!$_REQUEST['force_update_feeds']);
+	}
+	
 	function stale () {
-		if (get_option('feedwordpress_automatic_updates')) :
+		if (!is_null($this->automatic_update_hook())) :
 			// Do our best to avoid possible simultaneous
 			// updates by getting up-to-the-minute settings.
 			
-			$last = get_option('feedwordpress_last_update_all');
+			$last = $this->last_update_all();
 		
 			// If we haven't updated all yet, give it a time window
 			if (false === $last) :
@@ -1060,9 +1100,9 @@ class FeedWordPress {
 				if (false === $freshness) : // Use default
 					$freshness = FEEDWORDPRESS_FRESHNESS_INTERVAL;
 				endif;
-				$ret = ( (time() - $last) > $freshness);
-
-			 // This should never happen.
+				$ret = ( (time() - $last) > $freshness );
+			
+			// This should never happen.
 			else :
 				FeedWordPress::critical_bug('FeedWordPress::stale::last', $last, __LINE__, __FILE__);
 			endif;
@@ -1507,7 +1547,6 @@ class FeedWordPress {
 		$feed->set_cache_class($cache_class);
 		$feed->set_timeout($timeout);
 		
-		//$feed->set_file_class('WP_SimplePie_File');
 		$feed->set_content_type_sniffer_class($sniffer_class);
 		$feed->set_file_class($file_class);
 		$feed->set_parser_class($parser_class);
@@ -1673,11 +1712,31 @@ class FeedWordPress {
 		update_option('feedwordpress_diagnostics_log', $dlog);		
 	} /* FeedWordPress::diagnostic () */
 	
+	function email_diagnostics_override () {
+		return ($this->has_secret() and isset($_REQUEST['feedwordpress_email_diagnostics']) and !!$_REQUEST['feedwordpress_email_diagnostics']);
+	}
+	function has_emailed_diagnostics ($dlog) {
+		$ret = false;
+		if ($this->email_diagnostics_override()
+		or (isset($dlog['schedule']) and isset($dlog['schedule']['last']))) :
+			$ret = true;
+		endif;
+		return $ret;
+	}
+	function ready_to_email_diagnostics ($dlog) {
+		$ret = false;
+		if ($this->email_diagnostics_override()
+		or (time() > ($dlog['schedule']['last'] + $dlog['schedule']['freq']))) :
+			$ret = true;
+		endif;
+		return $ret;
+	}
+	
 	function email_diagnostic_log () {
 		$dlog = get_option('feedwordpress_diagnostics_log', array());
 		
-		if (isset($dlog['schedule']) and isset($dlog['schedule']['last'])) :
-			if (time() > ($dlog['schedule']['last'] + $dlog['schedule']['freq'])) :
+		if ($this->has_emailed_diagnostics($dlog)) :
+			if ($this->ready_to_email_diagnostics($dlog)) :
 				// No news is good news; only send if
 				// there are some messages to send.
 				$body = NULL;
@@ -1711,9 +1770,10 @@ class FeedWordPress {
 					endif;
 				endforeach;
 				
+				$body = apply_filters('feedwordpress_diagnostic_email_body', $body, $dlog);
 				if (!is_null($body)) :
 					$home = feedwordpress_display_url(get_bloginfo('url'));
-					$subj = $home . " syndication issues for ".date('j-M-y', time());
+					$subj = apply_filters('feedwordpress_diagnostic_email_subject', $home . " syndication issues", $dlog);
 					$agent = 'FeedWordPress '.FEEDWORDPRESS_VERSION;
 					$body = <<<EOMAIL
 <html>
@@ -1836,343 +1896,7 @@ EOMAIL;
 	}
 } // class FeedWordPress
 
-class FeedWordPress_File extends WP_SimplePie_File {
-	function FeedWordPress_File ($url, $timeout = 10, $redirects = 5, $headers = null, $useragent = null, $force_fsockopen = false) {
-		WP_SimplePie_File::WP_SimplePie_File($url, $timeout, $redirects, $headers, $useragent, $force_fsockopen);
-
-		// SimplePie makes a strongly typed check against integers with
-		// this, but WordPress puts a string in. Which causes caching
-		// to break and fall on its ass when SimplePie is getting a 304,
-		// but doesn't realize it because this member is "304" instead.
-		$this->status_code = (int) $this->status_code;
-	}
-} /* class FeedWordPress_File () */
-
-class FeedWordPress_Parser extends SimplePie_Parser {
-	function parse (&$data, $encoding) {
-		// Use UTF-8 if we get passed US-ASCII, as every US-ASCII character is a UTF-8 character
-		if (strtoupper($encoding) === 'US-ASCII')
-		{
-			$this->encoding = 'UTF-8';
-		}
-		else
-		{
-			$this->encoding = $encoding;
-		}
-
-		// Strip BOM:
-		// UTF-32 Big Endian BOM
-		if (substr($data, 0, 4) === "\x00\x00\xFE\xFF")
-		{
-			$data = substr($data, 4);
-		}
-		// UTF-32 Little Endian BOM
-		elseif (substr($data, 0, 4) === "\xFF\xFE\x00\x00")
-		{
-			$data = substr($data, 4);
-		}
-		// UTF-16 Big Endian BOM
-		elseif (substr($data, 0, 2) === "\xFE\xFF")
-		{
-			$data = substr($data, 2);
-		}
-		// UTF-16 Little Endian BOM
-		elseif (substr($data, 0, 2) === "\xFF\xFE")
-		{
-			$data = substr($data, 2);
-		}
-		// UTF-8 BOM
-		elseif (substr($data, 0, 3) === "\xEF\xBB\xBF")
-		{
-			$data = substr($data, 3);
-		}
-
-		if (substr($data, 0, 5) === '<?xml' && strspn(substr($data, 5, 1), "\x09\x0A\x0D\x20") && ($pos = strpos($data, '?>')) !== false)
-		{
-			$declaration =& new SimplePie_XML_Declaration_Parser(substr($data, 5, $pos - 5));
-			if ($declaration->parse())
-			{
-				$data = substr($data, $pos + 2);
-				$data = '<?xml version="' . $declaration->version . '" encoding="' . $encoding . '" standalone="' . (($declaration->standalone) ? 'yes' : 'no') . '"?>' . $data;
-			}
-			else
-			{
-				$this->error_string = 'SimplePie bug! Please report this!';
-				return false;
-			}
-		}
-
-		$return = true;
-
-		static $xml_is_sane = null;
-		if ($xml_is_sane === null)
-		{
-			$parser_check = xml_parser_create();
-			xml_parse_into_struct($parser_check, '<foo>&amp;</foo>', $values);
-			xml_parser_free($parser_check);
-			$xml_is_sane = isset($values[0]['value']);
-		}
-
-		// Create the parser
-		if ($xml_is_sane)
-		{
-			$xml = xml_parser_create_ns($this->encoding, $this->separator);
-			xml_parser_set_option($xml, XML_OPTION_SKIP_WHITE, 1);
-			xml_parser_set_option($xml, XML_OPTION_CASE_FOLDING, 0);
-			xml_set_object($xml, $this);
-			xml_set_character_data_handler($xml, 'cdata');
-			xml_set_element_handler($xml, 'tag_open', 'tag_close');
-			xml_set_start_namespace_decl_handler($xml, 'start_xmlns');
-
-			// Parse!
-			if (!xml_parse($xml, $data, true))
-			{
-				$this->error_code = xml_get_error_code($xml);
-				$this->error_string = xml_error_string($this->error_code);
-				$return = false;
-			}
-
-			$this->current_line = xml_get_current_line_number($xml);
-			$this->current_column = xml_get_current_column_number($xml);
-			$this->current_byte = xml_get_current_byte_index($xml);
-			xml_parser_free($xml);
-
-			return $return;
-		}
-		else
-		{
-			libxml_clear_errors();
-			$xml =& new XMLReader();
-			$xml->xml($data);
-			while (@$xml->read())
-			{
-				switch ($xml->nodeType)
-				{
-
-					case constant('XMLReader::END_ELEMENT'):
-						if ($xml->namespaceURI !== '')
-						{
-							$tagName = "{$xml->namespaceURI}{$this->separator}{$xml->localName}";
-						}
-						else
-						{
-							$tagName = $xml->localName;
-						}
-						$this->tag_close(null, $tagName);
-						break;
-					case constant('XMLReader::ELEMENT'):
-						$empty = $xml->isEmptyElement;
-						if ($xml->namespaceURI !== '')
-						{
-							$tagName = "{$xml->namespaceURI}{$this->separator}{$xml->localName}";
-						}
-						else
-						{
-							$tagName = $xml->localName;
-						}
-						$attributes = array();
-						while ($xml->moveToNextAttribute())
-						{
-							if ($xml->namespaceURI !== '')
-							{
-								$attrName = "{$xml->namespaceURI}{$this->separator}{$xml->localName}";
-							}
-							else
-							{
-								$attrName = $xml->localName;
-							}
-							$attributes[$attrName] = $xml->value;
-						}
-						
-						foreach ($attributes as $attr => $value) :
-							list($ns, $local) = $this->split_ns($attr);
-							if ($ns=='http://www.w3.org/2000/xmlns/') :
-								if ('xmlns' == $local) : $local = false; endif;
-								$this->start_xmlns(null, $local, $value);
-							endif;
-						endforeach;
-						
-						$this->tag_open(null, $tagName, $attributes);
-						if ($empty)
-						{
-							$this->tag_close(null, $tagName);
-						}
-						break;
-					case constant('XMLReader::TEXT'):
-
-					case constant('XMLReader::CDATA'):
-						$this->cdata(null, $xml->value);
-						break;
-				}
-			}
-			if ($error = libxml_get_last_error())
-			{
-				$this->error_code = $error->code;
-				$this->error_string = $error->message;
-				$this->current_line = $error->line;
-				$this->current_column = $error->column;
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
-	} /* FeedWordPress_Parser::parse() */
-	
-	var $xmlns_stack = array();
-	var $xmlns_current = array();
-	function tag_open ($parser, $tag, $attributes) {
-		$ret = parent::tag_open($parser, $tag, $attributes);
-		if ($this->current_xhtml_construct < 0) :
-			$this->data['xmlns'] = $this->xmlns_current;
-			$this->xmlns_stack[] = $this->xmlns_current;
-		endif;
-		return $ret;
-	}
-	
-	function tag_close($parser, $tag) {
-		if ($this->current_xhtml_construct < 0) :
-			$this->xmlns_current = array_pop($this->xmlns_stack);
-		endif;
-		$ret = parent::tag_close($parser, $tag);
-		return $ret;
-	}
-	
-	function start_xmlns ($parser, $prefix, $uri) {
-		if (!$prefix) :
-			$prefix = '';
-		endif;
-		if ($this->current_xhtml_construct < 0) :
-			$this->xmlns_current[$prefix] = $uri;
-		endif;
-		return true;
-	} /* FeedWordPress_Parser::start_xmlns() */
-}
-
 $feedwordpress_admin_footer = array();
-
-################################################################################
-## XML-RPC HOOKS: accept XML-RPC update pings from Contributors ################
-################################################################################
-
-class FeedWordPressRPC {
-	function FeedWordPressRPC () {
-		add_filter('xmlrpc_methods', array(&$this, 'xmlrpc_methods'));
-	}
-	
-	function xmlrpc_methods ($args = array()) {
-		$args['weblogUpdates.ping'] = array(&$this, 'ping');
-		$args['feedwordpress.subscribe'] = array(&$this, 'subscribe');
-		$args['feedwordpress.deactivate'] = array(&$this, 'deactivate');
-		$args['feedwordpress.delete'] = array(&$this, 'delete');
-		$args['feedwordpress.nuke'] = array(&$this, 'nuke');
-		return $args;
-	}
-	
-	function ping ($args) {
-		global $feedwordpress;
-		
-		$delta = @$feedwordpress->update($args[1]);
-		if (is_null($delta)):
-			return array('flerror' => true, 'message' => "Sorry. I don't syndicate <$args[1]>.");
-		else:
-			$mesg = array();
-			if (isset($delta['new'])) { $mesg[] = ' '.$delta['new'].' new posts were syndicated'; }
-			if (isset($delta['updated'])) { $mesg[] = ' '.$delta['updated'].' existing posts were updated'; }
-	
-			return array('flerror' => false, 'message' => "Thanks for the ping.".implode(' and', $mesg));
-		endif;
-	}
-	
-	function validate (&$args) {
-		global $wp_xmlrpc_server;
-
-		// First two params are username/password
-		$username = $wp_xmlrpc_server->escape(array_shift($args));
-		$password = $wp_xmlrpc_server->escape(array_shift($args));
-
-		$ret = array();
-		if ( !$user = $wp_xmlrpc_server->login($username, $password) ) :
-			$ret = $wp_xmlrpc_server->error;
-		elseif (!current_user_can('manage_links')) :
-			$ret = new IXR_Error(401, 'Sorry, you cannot change the subscription list.');
-		endif;
-		return $ret;
-	}
-
-	function subscribe ($args) {
-		$ret = $this->validate($args);
-		if (is_array($ret)) : // Success
-			// The remaining params are feed URLs
-			foreach ($args as $arg) :
-				$finder = new FeedFinder($arg, /*verify=*/ false, /*fallbacks=*/ 1);
-				$feeds = array_values(array_unique($finder->find()));
-				
-				if (count($feeds) > 0) :
-					$link_id = FeedWordPress::syndicate_link(
-						/*title=*/ feedwordpress_display_url($feeds[0]),
-						/*homepage=*/ $feeds[0],
-						/*feed=*/ $feeds[0]
-					);
-					$ret[] = array(
-						'added',
-						$feeds[0],
-						$arg,
-					);
-				else :
-					$ret[] = array(
-						'error',
-						$arg
-					);
-				endif;
-			endforeach;
-		endif;
-		return $ret;
-	} /* FeedWordPressRPC::subscribe () */
-	
-	function unsubscribe ($method, $args) {
-		$ret = $this->validate($args);
-		if (is_array($ret)) : // Success
-			// The remaining params are feed URLs
-			foreach ($args as $arg) :
-				$link_id = FeedWordPress::find_link($arg);
-				
-				if (!$link_id) :
-					$link_id = FeedWordPress::find_link($arg, 'link_url');
-				endif;
-				
-				if ($link_id) :
-					$link = new SyndicatedLink($link_id);
-					
-					$link->{$method}();
-					$ret[] = array(
-						'deactivated',
-						$arg,
-					);
-				else :
-					$ret[] = array(
-						'error',
-						$arg,
-					);
-				endif;
-			endforeach;
-		endif;
-		return $ret;
-	} /* FeedWordPress::unsubscribe () */
-	
-	function deactivate ($args) {
-		return $this->unsubscribe('deactivate', $args);
-	} /* FeedWordPressRPC::deactivate () */
-	
-	function delete ($args) {
-		return $this->unsubscribe('delete', $args);
-	} /* FeedWordPressRPC::delete () */
-	
-	function nuke ($args) {
-		return $this->unsubscribe('nuke', $args);
-	} /* FeedWordPressRPC::nuke () */
-} /* class FeedWordPressRPC */
 
 // take your best guess at the realname and e-mail, given a string
 define('FWP_REGEX_EMAIL_ADDY', '([^@"(<\s]+@[^"@(<\s]+\.[^"@(<\s]+)');
