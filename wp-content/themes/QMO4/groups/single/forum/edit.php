@@ -22,7 +22,7 @@
     <?php if ( bp_group_is_member() ) : ?>
 
       <?php if ( bp_is_edit_topic() ) : ?>
-
+        <script src="<?php bloginfo('stylesheet_directory'); ?>/js/jquery.textarea-expander.js" type="text/javascript"></script>
         <div id="edit-topic">
           <?php do_action( 'bp_group_before_edit_forum_topic' ); ?>
 
@@ -30,7 +30,7 @@
           <p><label for="topic_title"><?php _e( 'Title:', 'buddypress' ); ?></label>
           <input type="text" name="topic_title" id="topic_title" value="<?php bp_the_topic_title() ?>" /></p>
           <p><label for="topic_text"><?php _e( 'Content:', 'buddypress' ); ?></label>
-          <textarea name="topic_text" id="topic_text" rows="6" cols="60"><?php bp_the_topic_text() ?></textarea></p>
+          <textarea name="topic_text" id="topic_text" rows="6" cols="60" class="expand100-400"><?php bp_the_topic_text() ?></textarea></p>
           <?php do_action( 'bp_group_after_edit_forum_topic' ) ?>
 
           <p class="submit"><button type="submit" name="save_changes" id="save_changes"><?php _e( 'Save Changes', 'buddypress' ); ?></button></p>
@@ -40,12 +40,12 @@
         </div>
 
       <?php else : ?>
-
+        <script src="<?php bloginfo('stylesheet_directory'); ?>/js/jquery.textarea-expander.js" type="text/javascript"></script>
         <div id="edit-post">
           <?php do_action( 'bp_group_before_edit_forum_post' ); ?>
 
           <p><label for="post_text"><?php _e( 'Edit Post:', 'buddypress' ); ?></label>
-          <textarea name="post_text" id="post_text" rows="6" cols="60"><?php bp_the_topic_post_edit_text(); ?></textarea></p>
+          <textarea name="post_text" id="post_text" rows="6" cols="60" class="expand100-400"><?php bp_the_topic_post_edit_text(); ?></textarea></p>
           <?php do_action( 'bp_group_after_edit_forum_post' ); ?>
           <p class="submit"><button type="submit" name="save_changes" id="save_changes"><?php _e( 'Save Changes', 'buddypress' ); ?></button></p>
 

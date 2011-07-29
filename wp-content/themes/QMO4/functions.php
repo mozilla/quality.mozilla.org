@@ -428,8 +428,6 @@ endif;
 /*********
  * Add an excerpt field to Pages
  */
-add_action( 'admin_menu', 'fc_add_page_excerpt_box' );
-
 function fc_add_page_excerpt_box() {
   add_meta_box( 'fc_page_excerpt', __( 'Excerpt' ), 'fc_page_excerpt_box', 'page', 'normal', 'high' );
 }
@@ -444,6 +442,7 @@ function fc_page_excerpt_box() {
   </div>
 EOF;
 }
+add_action( 'admin_menu', 'fc_add_page_excerpt_box' );
 
 
 /*********
@@ -480,6 +479,46 @@ function fc_get_post($id='GETPOST') {
   get_post_custom($post->ID);
   setup_postdata($post);
 }
+
+
+/*********
+* Add reCAPTCHA to registration form (requires WP reCAPTCHA)
+* Out of the box, WP reCAPCTCHA can't insert into the registration form because it's expecting 
+* a different set of hooks (BP's signup form differs from WP's). This simply copies the same 
+* functions from recaptcha.php and inserts them into a BP register form.
+*/
+if ( function_exists('bp_is_active') && get_option('users_can_register') && class_exists('reCAPTCHA') ) :
+  class BP_reCAPTCHA_Connector {
+  	var $data;
+  
+  	function check_recaptcha_result( $result ) {
+  		global $recaptcha;
+  		$this->data = $recaptcha->validate_recaptcha_response($errors);
+  		return $this->data;
+  	}
+  	
+  	function display_recaptcha_box() {
+  		global $recaptcha;
+  		$errors = new WP_Error();
+  
+  		if(isset($this->data['errors'])) {
+  			if($this->data['errors']->get_error_message('blank_captcha') != '') {
+  				$errors->add('captcha',$this->data['errors']->get_error_message('blank_captcha'));
+  			} else if($this->data['errors']->get_error_message('captcha_wrong') != '') {
+  				$errors->add('captcha',$this->data['errors']->get_error_message('captcha_wrong'));
+  			}
+  		}
+  
+  		if($errors->get_error_message('captcha') != '') {
+  			echo '<div class="error">' . $errors->get_error_message('captcha') . '</div>';
+  		}
+  		$recaptcha->show_recaptcha_in_registration( $errors );
+  	}
+  }
+  $connector = new BP_reCAPTCHA_Connector;
+  add_action( 'bp_core_validate_user_signup', array($connector,'check_recaptcha_result') );
+  add_action( 'bp_before_registration_submit_buttons', array($connector,'display_recaptcha_box') );
+endif;
 
 
 /**********

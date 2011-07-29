@@ -53,7 +53,11 @@
           <li id="cmt-email"><label for="email">Your e-mail <?php if ($req) echo "<abbr title='required'>*</abbr>"; ?> <span class="note">(not published)</span> </label> <input type="text" name="email" id="email" value="<?php echo $comment_author_email; ?>" size="25" /></li>
           <li id="cmt-web"><label for="url">Your website</label> <input type="text" name="url" id="url" value="<?php echo $comment_author_url; ?>" size="25" /></li>
         <?php endif; ?>
-          <li id="cmt-cmt"><label for="comment">Your comment</label> <textarea name="comment" id="comment" cols="50" rows="10"></textarea></li>
+          <li id="cmt-cmt">
+            <script src="<?php bloginfo('stylesheet_directory'); ?>/js/jquery.textarea-expander.js" type="text/javascript"></script>
+            <label for="comment">Your comment</label> 
+            <textarea name="comment" id="comment" cols="50" rows="10" class="expand100-400"></textarea>
+          </li>
           <li id="comment-submit"><button name="submit" type="submit" id="submit"><?php _e('Submit', 'qmo'); ?></button>
           <?php comment_id_fields(); ?>
           <?php do_action('comment_form', $post->ID); ?></li>

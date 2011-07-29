@@ -362,23 +362,29 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 #nav-main { list-style: none; margin: 0; padding: 0; font: bold 1em/1 "Trebuchet MS", sans-serif; text-transform: uppercase; }
 #nav-main li { float: left; background: none; margin: 0 0 0 -1px; padding: 0; position: relative; }
 #nav-main li a, #nav-main li a:link, #nav-main li a:visited, #nav-main li em { padding: 15px 16px 10px 8px; height: 18px; float: left; border: solid #98b2c9; border-width: 0 1px; color: #484848; text-decoration: none; 
-  -moz-transition: background 0.1s ease-in 0s; 
-  -webkit-transition: background 0.1s ease-in 0s; 
-  -o-transition: background 0.1s ease-in 0s; 
-  transition: background 0.1s ease-in 0s; 
+  -moz-transition: all 0.1s ease-in 0s; 
+  -webkit-transition: all 0.1s ease-in 0s; 
+  -o-transition: all 0.1s ease-in 0s; 
+  transition: all 0.1s ease-in 0s; 
 }
 #nav-main li.current.last a { border-color: #98b2c9; }
 #nav-main li a:hover, #nav-main li:hover a, #nav-main li.current a, #nav-main li.current em { 
   font-style: normal;
+  border: 1px solid #98b2c9;
+  border-top-width: 0;
+  -moz-border-radius: 0 0 6px 6px;
+  -webkit-border-radius: 0 0 6px 6px;
+  border-radius: 0 0 6px 6px;
+  color: #369;
   box-shadow: 0 0 0 rgba(152,178,201,0.2), inset  0 -6px 20px 10px rgba(255,255,255,0.8);
   -moz-transition: 0.2s linear;
-  -moz-transition-property: background, box-shadow, border-right;
+  -moz-transition-property: background, box-shadow, border, color;
   -webkit-transition: all 0.2s linear;
-  -webkit-transition-property: background, box-shadow, border-right;
+  -webkit-transition-property: background, box-shadow, border, color;
   -o-transition: 0.2s linear;
-  -o-transition-property: background, box-shadow, border-right;
+  -o-transition-property: background, box-shadow, border, color;
   transition: 0.2s linear;
-  transition-property: background, box-shadow, border-right;
+  transition-property: background, box-shadow, border, color;
   background: rgb(251,253,255);
   background: rgba(255,255,255,0);
   outline: 0;

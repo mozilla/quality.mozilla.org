@@ -36,6 +36,8 @@ function cms_tpv_admin_head() {
 
 function cms_tpv_admin_init() {
 
+	// @todo: only load these when we do show a tree, ie. on the dashboard or showing the tree for a post type
+	// see: http://devpress.com/blog/how-to-load-javascript-in-the-wordpress-admin/
 	wp_enqueue_style( "cms_tpv_styles", CMS_TPV_URL . "styles/styles.css", false, CMS_TPV_VERSION );
 	wp_enqueue_style( "jquery-alerts", CMS_TPV_URL . "styles/jquery.alerts.css", false, CMS_TPV_VERSION );
 	wp_enqueue_script( "jquery-cookie", CMS_TPV_URL . "scripts/jquery.biscuit.js", array("jquery")); // renamed from cookie to fix problems with mod_security
@@ -134,11 +136,12 @@ function cms_tpv_admin_menu() {
 			$slug = "edit.php?post_type=$one_menu_post_type";
 		}
 		$post_type_object = get_post_type_object($one_menu_post_type);
-		add_submenu_page($slug, $post_type_object->labels->name . " Tree View", $post_type_object->labels->name . " Tree View", "edit_pages", "cms-tpv-page-$one_menu_post_type", "cms_tpv_pages_page");
+		// print_r($post_type_object);
+		add_submenu_page($slug, $post_type_object->labels->name . " Tree View", $post_type_object->labels->name . " Tree View", $post_type_object->cap->edit_posts, "cms-tpv-page-$one_menu_post_type", "cms_tpv_pages_page");
 	}
 
 	add_submenu_page( 'options-general.php' , CMS_TPV_NAME, CMS_TPV_NAME, "administrator", "cms-tpv-options", "cms_tpv_options");
-
+	
 }
 
 
@@ -189,7 +192,9 @@ foreach ($posts as $one_post) {
 				
 				if ($name == "post") {
 					// no support for pages. you could show them.. but since we can't reorder them there is not idea to show them.. or..?
-					continue;
+					// 14 jul 2011: ok, let's enable it for posts too. some people says it useful
+					// http://wordpress.org/support/topic/this-plugin-should-work-also-on-posts
+					// continue;
 				}
 
 				if ($one_post_type->show_ui) {
@@ -252,6 +257,18 @@ function cms_tpv_get_selected_post_type() {
 }
 
 /**
+ * Determine if a post type is considered hierarchical
+ */
+function cms_tpv_is_post_type_hierarchical($post_type_object) {
+	$is_hierarchical = $post_type_object->hierarchical;	
+	// special case for posts, fake-support hierachical
+	if ("post" == $post_type_object->name) {
+		$is_hierarchical = true;
+	}
+	return $is_hierarchical;
+}
+
+/**
  * Print tree stuff that is common for both dashboard and page
  */
 function cms_tpv_print_common_tree_stuff($post_type = "") {
@@ -293,7 +310,7 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 	
 	<div class="cms_tpv_wrapper">
 		<input type="hidden" name="cms_tpv_meta_post_type" value="<?php echo $post_type ?>" />
-		<input type="hidden" name="cms_tpv_meta_post_type_hierarchical" value="<?php echo (int) $post_type_object->hierarchical ?>" />
+		<input type="hidden" name="cms_tpv_meta_post_type_hierarchical" value="<?php echo (int) cms_tpv_is_post_type_hierarchical($post_type_object) ?>" />
 		<input type="hidden" name="cms_tpv_meta_wpml_language" value="<?php echo $wpml_current_lang ?>" />
 		<?php
 
@@ -346,7 +363,7 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 				<li><a class="cms_tvp_view_trash <?php echo ($cms_tpv_view=="trash") ? "current" : "" ?>" href="#"><?php _e("Trash", 'cms-tree-page-view') ?></a></li>
 	
 				<?php
-				if ($post_type_object->hierarchical) {
+				if (cms_tpv_is_post_type_hierarchical($post_type_object)) {
 					?>
 					<li><a href="#" class="cms_tpv_open_all"><?php _e("Expand", 'cms-tree-page-view') ?></a> |</li>
 					<li><a href="#" class="cms_tpv_close_all"><?php _e("Collapse", 'cms-tree-page-view') ?></a></li>
@@ -389,7 +406,7 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 					<a href="#" title='<?php _e("Add new page after", "cms-tree-page-view")?>' class='cms_tpv_action_add_page_after'><?php _e("After", "cms-tree-page-view")?></a>
 					<?php
 					// if post type is hierarchical we can add pages inside
-					if ($post_type_object->hierarchical) {
+					if (cms_tpv_is_post_type_hierarchical($post_type_object)) {
 						?> | <a href="#" title='<?php _e("Add new page inside", "cms-tree-page-view")?>' class='cms_tpv_action_add_page_inside'><?php _e("Inside", "cms-tree-page-view")?></a><?php
 					}
 					// if post status = draft then we can not add pages inside because wordpress currently can not keep its parent if we edit the page

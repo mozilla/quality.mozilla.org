@@ -58,7 +58,7 @@
       <?php if ( bp_get_the_topic_is_last_page() ) : ?>
 
         <?php if ( bp_get_the_topic_is_topic_open() ) : ?>
-
+          <script src="<?php bloginfo('stylesheet_directory'); ?>/js/jquery.textarea-expander.js" type="text/javascript"></script>
           <div id="post-topic-reply">
             <?php if ( !bp_group_is_member() ) : ?>
               <p><?php _e( 'You will automatically join this group when you reply to this topic.', 'qmo' ); ?></p>
