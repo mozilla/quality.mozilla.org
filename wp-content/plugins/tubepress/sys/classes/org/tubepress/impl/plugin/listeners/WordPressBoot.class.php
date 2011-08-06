@@ -56,7 +56,7 @@ class org_tubepress_impl_plugin_listeners_WordPressBoot
         if (!defined('WP_PLUGIN_DIR')) define('WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins');
  	
         $tubepress_base_url = WP_PLUGIN_URL . "/$baseName";
-
+        
         /* register the plugin's message bundles */
         load_plugin_textdomain('tubepress', false, "$baseName/sys/i18n");
 

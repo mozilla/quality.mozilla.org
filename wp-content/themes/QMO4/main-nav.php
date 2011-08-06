@@ -66,7 +66,7 @@ if ( function_exists('bp_is_active') && bp_is_active( 'forums' ) ) :
   endif; ?>
   
 <?php // Media
-  if (get_page_by_path('media')) :
+  if ( get_page_by_path('media') && (get_post_status( get_page_by_path('media') ) === 'publish') ) :
     if ( is_page('media') ) : ?>
   <li class="current" title="This is the current page"><em>Media</em></li>
 <?php elseif ( fc_is_child(get_page_by_path('media')->ID) ) : ?>

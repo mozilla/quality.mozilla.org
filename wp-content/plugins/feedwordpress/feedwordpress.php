@@ -3,7 +3,7 @@
 Plugin Name: FeedWordPress
 Plugin URI: http://feedwordpress.radgeek.com/
 Description: simple and flexible Atom/RSS syndication for WordPress
-Version: 2011.0706
+Version: 2011.0721
 Author: Charles Johnson
 Author URI: http://radgeek.com/
 License: GPL
@@ -11,7 +11,7 @@ License: GPL
 
 /**
  * @package FeedWordPress
- * @version 2011.0706
+ * @version 2011.0721
  */
 
 # This uses code derived from:
@@ -34,7 +34,7 @@ License: GPL
 
 # -- Don't change these unless you know what you're doing...
 
-define ('FEEDWORDPRESS_VERSION', '2011.0706');
+define ('FEEDWORDPRESS_VERSION', '2011.0721');
 define ('FEEDWORDPRESS_AUTHOR_CONTACT', 'http://radgeek.com/contact');
 
 if (!defined('FEEDWORDPRESS_BLEG')) :
@@ -983,6 +983,13 @@ class FeedWordPress {
 		if (!is_null($uri) and $uri != '*') :
 			$uri = trim($uri);
 		else : // Update all
+			if ($this->update_hooked) :
+				$diag = $this->update_hooked;
+			else :
+				$diag = 'Initiating a MANUAL check-in on the update schedule at '.date('r', time());
+			endif;
+			$this->diagnostic('update_schedule:check', $diag);
+
 			update_option('feedwordpress_last_update_all', time());
 		endif;
 
@@ -992,6 +999,8 @@ class FeedWordPress {
 			$crash_ts = $this->crash_ts();
 		endif;
 
+		$max_polls = apply_filters('feedwordpress_polls_per_update', get_option('feedwordpress_polls_per_update', 10), $uri);
+		
 		// Randomize order for load balancing purposes
 		$feed_set = $this->feeds;
 		shuffle($feed_set);
@@ -999,12 +1008,20 @@ class FeedWordPress {
 		$feed_set = apply_filters('feedwordpress_update_feeds', $feed_set, $uri);
 
 		// Loop through and check for new posts
-		$delta = NULL;
+		$delta = NULL; $remaining = $max_polls;
 		foreach ($feed_set as $feed) :
-			if (!is_null($crash_ts) and (time() > $crash_ts)) : // Check whether we've exceeded the time limit
+
+			// Has this process overstayed its welcome?
+			if (
+				// Over time limit?
+				(!is_null($crash_ts) and (time() > $crash_ts))
+				
+				// Over feed count?
+				or ($remaining == 0) 
+			) :
 				break;
 			endif;
-
+			
 			$pinged_that = (is_null($uri) or ($uri=='*') or in_array($uri, array($feed->uri(), $feed->homepage())));
 
 			if (!is_null($uri)) : // A site-specific ping always updates
@@ -1018,6 +1035,8 @@ class FeedWordPress {
 			endif;
 
 			if ($pinged_that and $timely) :
+				$remaining = $remaining - 1;
+
 				do_action('feedwordpress_check_feed', $feed->settings);
 				$start_ts = time();
 				$added = $feed->poll($crash_ts);
@@ -1055,31 +1074,61 @@ class FeedWordPress {
 	}
 	
 	function has_secret () {
-		return (isset($_REQUEST['feedwordpress_key']) and ($_REQUEST['feedwordpress_key']==$this->secret_key()));
+		return ($this->by_request('feedwordpress_key', $this->secret_key()));
 	}
 
-	function automatic_update_hook () {
+	// Utility function so I don't have to repeat myself w/ 1,000,003 isset()'s
+	function by_request ($param, $eq = NULL) {
+		$match = false;
+		if (isset($_REQUEST[$param])) :
+			$match = (is_null($eq) ? $_REQUEST[$param] : ($eq==$_REQUEST[$param]));
+		endif;
+		return $match;
+	}
+	
+	var $update_hooked = NULL;
+	function automatic_update_hook ($params = array()) {
+		$params = wp_parse_args($params, array( // Defaults
+			'setting only' => false,
+		));
 		$hook = get_option('feedwordpress_automatic_updates', NULL);
-		if ($this->has_secret() and isset($_REQUEST['automatic_update'])) : // For forced behavior in testing.
+		$method = 'FeedWordPress option';
+
+		// Allow for forced behavior in testing.
+		if (
+			!$params['setting only']
+			and $this->has_secret()
+			and $this->by_request('automatic_update')
+		) :
 			$hook = $_REQUEST['automatic_update'];
+			$method = 'URL parameter';
 		endif;
 		
-		if (!is_null($hook)) :
+		$exact = $hook; // Before munging
+		
+		if (!!$hook) :
 			if ($hook != 'init') : // Constrain values.
 				$hook = 'shutdown';
 			endif;
 		endif;
+		
+		if ($hook) :
+			$this->update_hooked = "Initiating an AUTOMATIC CHECK FOR UPDATES ON PAGE LOAD ".$hook." due to ".$method." = ".trim($this->val($exact));
+		endif;
+		
 		return $hook; 
 	}
 	function last_update_all () {
 		$last = get_option('feedwordpress_last_update_all');
-		if ($this->has_secret() and isset($_REQUEST['automatic_update']) and ((strlen($_REQUEST['automatic_update']) > 0))) :
+		if ($this->has_secret() and $this->by_request('automatic_update')) :
 			$last = 1; // A long, long time ago.
+		elseif ($this->has_secret() and $this->by_request('last_update_all')) :
+			$last = $_REQUEST['last_update_all'];
 		endif;
 		return $last;
 	}
 	function force_update_all () {
-		return ($this->has_secret() and isset($_REQUEST['force_update_feeds']) and !!$_REQUEST['force_update_feeds']);
+		return ($this->has_secret() and $this->by_request('force_update_feeds'));
 	}
 	
 	function stale () {
@@ -1184,6 +1233,8 @@ class FeedWordPress {
 
 		// Explicit update request in the HTTP request (e.g. from a cron job)
 		if ($this->update_requested()) :
+			$this->update_hooked = "Initiating a CRON JOB CHECK-IN ON UPDATE SCHEDULE due to URL parameter = ".trim($this->val($_REQUEST['update_feedwordpress']));
+
 			$this->update($this->update_requested_url());
 			
 			if (FEEDWORDPRESS_DEBUG and count($wpdb->queries) > 0) :
@@ -1227,10 +1278,7 @@ class FeedWordPress {
 	} /* FeedWordPress::clear_cache_requested() */
 
 	function update_requested () {
-		return (
-			isset($_REQUEST['update_feedwordpress'])
-			and $_REQUEST['update_feedwordpress']
-		);
+		return FeedWordPress::by_request('update_feedwordpress');
 	} // FeedWordPress::update_requested()
 
 	function update_requested_url () {
@@ -1740,6 +1788,8 @@ class FeedWordPress {
 				// No news is good news; only send if
 				// there are some messages to send.
 				$body = NULL;
+				if (!isset($dlog['mesg'])) : $dlog['mesg'] = array(); endif;
+				
 				foreach ($dlog['mesg'] as $sect => $mesgs) :
 					if (count($mesgs) > 0) :
 						if (is_null($body)) : $body = ''; endif;

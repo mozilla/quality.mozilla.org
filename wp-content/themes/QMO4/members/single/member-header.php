@@ -1,4 +1,5 @@
-<?php do_action( 'bp_before_member_header' ); ?>
+<?php global $bp; 
+do_action( 'bp_before_member_header' ); ?>
 <div id="member-head" class="hcard">
   <div class="member-info">
     <h1 class="fn"><a class="url" href="<?php bp_user_link(); ?>"><?php bp_displayed_user_fullname(); ?> <?php bp_displayed_user_avatar( 'type=full&width=100&height=100' ); ?></a></h1>
@@ -16,7 +17,7 @@
   </div>
   <?php endif; ?>
   
-  <?php global $bp;
+  <?php 
     if ( is_super_admin() ) :
   ?>
 		<ul class="admin-links">

@@ -175,7 +175,8 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 	} /* FeedWordPressFeedsPage::updated_posts_box() */
 
 	/*static*/ function global_feeds_box ($page, $box = NULL) {
-		$automatic_updates = get_option('feedwordpress_automatic_updates');
+		global $feedwordpress;
+		$automatic_updates = $feedwordpress->automatic_update_hook(array('setting only' => true));
 		$update_time_limit = (int) get_option('feedwordpress_update_time_limit');
 
 		// Hey, ho, let's go...
@@ -263,6 +264,30 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 			?></td>
 		</tr>
 
+		<tr>
+		<th scope="row"><?php print __('Minimum Interval:'); ?></th>
+		<td><p style="margin-top:0px">Some feeds include standard elements that
+		request a specific update schedule. If the interval requested by the
+		feed provider is <em>longer</em> than FeedWordPress's normal scheduling,
+		FeedWordPress will always respect their request to slow down. But what
+		should it do if the update interval is <em>shorter</em> than the schedule set above?</p>
+		<?php
+			$this->setting_radio_control(
+				'update/minimum', 'update_minimum',
+				/*options=*/ array(
+					'no' => 'Speed up and accept the interval from the feed provider',
+					'yes' => 'Keep pace and use the longer scheduling from FeedWordPress',
+				),
+				/*params=*/ array(
+					'setting-default' => NULL,
+					'global-setting-default' => 'no',
+					'default-input-value' => 'default',
+				)
+			);
+		?>
+		</td>
+		</tr>
+		
 		<?php if ($this->for_default_settings()) : ?>
 		
 		<tr>
@@ -905,7 +930,7 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 			update_option('feedwordpress_cat_id', $post['syndication_category']);
 			
 			if (!isset($post['automatic_updates']) or !in_array($post['automatic_updates'], array('init', 'shutdown'))) :
-				$automatic_updates = false;
+				$automatic_updates = NULL;
 			else :
 				$automatic_updates = $post['automatic_updates'];
 			endif;
@@ -938,6 +963,10 @@ class FeedWordPressFeedsPage extends FeedWordPressAdminPage {
 				$timeout = intval($timeout);
 			endif;
 			$this->update_setting('fetch timeout', $timeout);
+		endif;
+
+		if (isset($post['update_minimum'])) :
+			$this->update_setting('update/minimum', $post['update_minimum']);
 		endif;
 		
 		$this->updatedPosts->accept_POST($post);

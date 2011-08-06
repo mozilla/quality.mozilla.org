@@ -393,6 +393,12 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 #nav-main li.last a, #nav-main li.last span { border-right-color: transparent; }
 #nav-main li.last a:hover, #nav-main li.last a:focus, #nav-main li.last a:active, .js #nav-main li.last a:focus, #nav-main li.hover a{ border-right-color: #98b2c9; }
 
+@media (max-width:900px) {
+  #nav-main { font-size: .925em; -moz-transition: font-size .1s ease-in-out; -webkit-transition: font-size .1s ease-in-out; -o-transition: font-size .1s ease-in-out; transition: font-size .1s ease-in-out; }
+  #nav-main li a, #nav-main li a:link, #nav-main li a:visited, #nav-main li em { padding-right: 8px; -moz-transition: padding-right .1s ease-in-out; -webkit-transition: padding-right .1s ease-in-out; -o-transition: padding-right .1s ease-in-out; transition: padding-right .1s ease-in-out; }
+}
+
+
 /*** @Branding *********/
 #branding { height: 56px; width: 155px; }
 #logo { position: relative; z-index: 99; top: 6px; }
@@ -863,8 +869,9 @@ table.notification-settings { width: 70%; }
 table.notification-settings th, table.notification-settings td { border-bottom: 1px solid #eee; padding: 2px 4px; vertical-align: top; text-align: left; }
 table.notification-settings .yes, .settings table.notification-settings .no { width: 40px; }
 
-.bz-stats dt { width: 180px; float: left; clear: both; color: #390; margin: 0 20px 1em 0; }
-.bz-stats dd { float: left; clear: right; font-weight: bold; margin-bottom: 1em; }
+.bz-stats { clear: both; overflow: hidden; }
+.bz-stats dt { width: 200px; float: left; clear: both; margin: 0 20px 1em 0; }
+.bz-stats dd { float: left; clear: right; font-size: 1.125em; font-weight: bold; margin-bottom: .875em; }
 
 /* @Members @List *********/
 #member-list { border-top: 1px solid #eee; }
@@ -896,7 +903,7 @@ table.notification-settings .yes, .settings table.notification-settings .no { wi
 #groupblog-member-roles { margin-top: 2em; }
 #groupblog-members li { margin: 0 0 .5em; }
 
-#signup_form .bph_container { width: 45% !important; float: left; margin: 0 4.5% 1em 0 !important; }
+#signup_form .bph_container { width: 45% !important; float: left; margin: 0 4.5% 1em 0 !important; clear: both; }
 #signup_form .bph_container p { margin: 0 0 .25em; }
 
 /* @Group @Admin *********/

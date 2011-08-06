@@ -57,7 +57,6 @@ remove_action('wp_head', 'wp_generator');
 /*********
 * Style the visual editor to match the theme styles
 */
-add_filter('mce_css', 'my_editor_style');
 function my_editor_style($url) {
   if ( !empty($url) ) {
     $url .= ',';
@@ -65,7 +64,7 @@ function my_editor_style($url) {
   $url .= trailingslashit( get_stylesheet_directory_uri() ) . '/css/editor-style.css';
   return $url;
 }
-
+add_filter('mce_css', 'my_editor_style');
 
 /*********
 * Add more-links to excerpts
@@ -84,8 +83,9 @@ load_theme_textdomain( 'qmo', TEMPLATEPATH . '/languages' );
 
 $locale = get_locale();
 $locale_file = TEMPLATEPATH . "/languages/$locale.php";
-if ( is_readable( $locale_file ) )
+if ( is_readable( $locale_file ) ) {
   require_once( $locale_file );
+}
 
 
 /*********

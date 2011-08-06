@@ -15,7 +15,7 @@
   <?php do_action( 'bp_after_group_forum_content' ); ?>
 
   <?php if ( ( is_user_logged_in() && 'public' == bp_get_group_status() ) || bp_group_is_member() ) : ?>
-
+    <script src="<?php bloginfo('stylesheet_directory'); ?>/js/jquery.textarea-expander.js" type="text/javascript"></script>
     <form action="" method="post" id="new-topic" class="standard-form full">
       <fieldset id="post-new-topic">
         <legend><?php _e( 'Post a New Topic', 'qmo' ); ?></legend>
@@ -36,7 +36,7 @@
           </li>
           <li>
             <label for="topic_text"><?php _e( 'Content:', 'buddypress' ) ?></label>
-            <textarea name="topic_text" id="topic_text" rows="10" cols="60"></textarea>
+            <textarea name="topic_text" id="topic_text" rows="10" cols="60" class="expand100-400"></textarea>
           </li>
           <li>
             <label for="topic_tags"><?php _e( 'Tags (comma separated):', 'buddypress' ) ?></label>

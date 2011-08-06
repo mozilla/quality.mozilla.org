@@ -11,18 +11,18 @@ get_header(); ?>
     <h2 id="tagline"><?php _e('The home of <strong>Mozilla QA</strong>', 'qmo'); ?></h2>
     <h3 class="section-title"><?php the_title(); ?></h3>
 
-    <?php if ( bp_has_groups( bp_ajax_querystring( 'groups' ) ) ) : ?>
-      <ul class="teams-list">
-      <?php while ( bp_groups() ) : bp_the_group(); ?>
-        <li>
-          <a href="<?php bp_group_permalink(); ?>">
-            <?php bp_group_avatar( 'width=100&height=100' ); ?>
-            <?php bp_group_name(); ?>
-          </a>
-        </li>
-      <?php endwhile; ?>
-      </ul>
-    <?php endif; ?>
+  <?php if ( function_exists('bp_is_active') && bp_is_active( 'groups' ) && bp_has_groups( bp_ajax_querystring( 'groups' ) ) ) : ?>
+    <ul class="teams-list">
+    <?php while ( bp_groups() ) : bp_the_group(); ?>
+      <li>
+        <a href="<?php bp_group_permalink(); ?>">
+          <?php bp_group_avatar( 'width=100&height=100' ); ?>
+          <?php bp_group_name(); ?>
+        </a>
+      </li>
+    <?php endwhile; ?>
+    </ul>
+  <?php endif; ?>
 
     <?php the_content(); ?>
   </div>

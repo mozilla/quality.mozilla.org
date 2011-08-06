@@ -46,10 +46,15 @@
     elseif ( is_day() ) { $post = $posts[0]; _e('Posts for ', 'qmo'); echo the_time('F jS, Y'); echo ' &#124; '; bloginfo('name'); qmo_page_number(); }
     elseif ( is_month() ) { $post = $posts[0]; _e('Posts for ', 'qmo'); echo the_time('F, Y'); echo ' &#124; '; bloginfo('name'); qmo_page_number(); }
     elseif ( is_year() ) { $post = $posts[0]; _e('Posts for ', 'qmo'); echo the_time('Y'); echo ' &#124; '; bloginfo('name'); qmo_page_number(); }
-    else { qmo_page_title('&#124;',1,'right'); bloginfo('name'); qmo_page_number(); }
+    else {
+      if ( function_exists('bp_is_active') ) :
+        qmo_page_title('&#124;',1,'right'); bloginfo('name'); qmo_page_number(); 
+      else : 
+        wp_title('&#124;',1,'right'); bloginfo('name'); qmo_page_number();
+      endif;
+      }
   ?></title>
-  
-  <?php do_action( 'bp_head' ); ?>
+  <?php if ( function_exists('bp_is_active') ) { do_action( 'bp_head' ); } ?>
   <?php wp_head(); ?>
 </head>
 

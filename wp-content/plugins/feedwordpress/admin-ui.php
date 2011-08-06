@@ -746,38 +746,68 @@ function fwp_option_box_closer () {
 }
 
 function fwp_tags_box ($tags, $object, $params = array()) {
+	$params = wp_parse_args($params, array( // Default values
+	'taxonomy' => 'post_tag',
+	'textarea_name' => NULL,
+	'textarea_id' => NULL,
+	'input_id' => NULL,
+	'input_name' => NULL,
+	'id' => NULL,
+	'box_title' => __('Post Tags'),
+	));
+	
 	if (!is_array($tags)) : $tags = array(); endif;
-	$tax_name = (isset($params['taxonomy']) ? $params['taxonomy'] : 'post_tag');
+	
+	$tax_name = $params['taxonomy'];
+	$taxonomy = get_taxonomy($params['taxonomy']);
+	$disabled = (!current_user_can($taxonomy->cap->assign_terms) ? 'disabled="disabled"' : '');
+	
 	$desc = "<p style=\"font-size:smaller;font-style:bold;margin:0\">Tag $object as...</p>";
 
-	if (isset($params['textarea_name'])) :
-		$textAreaName = $params['textarea_name'];
-	else :
-		$textAreaName = "tax_input[$tax_name]";
+	if (is_null($params['textarea_name'])) :
+		$params['textarea_name'] = "tax_input[$tax_name]";
 	endif;
+	if (is_null($params['textarea_id'])) :
+		$params['textarea_id'] = "tax-input-${tax_name}";
+	endif;
+	if (is_null($params['input_id'])) :
+		$params['input_id'] = "new-tag-${tax_name}";
+	endif;
+	if (is_null($params['input_name'])) :
+		$params['input_name'] = "newtag[$tax_name]";
+	endif;
+	
+	if (is_null($params['id'])) :
+		$params['id'] = $tax_name;
+	endif;
+	
 	print $desc;
 	$helps = __('Separate tags with commas.');
 	$box['title'] = __('Tags');
 	?>
-		<div class="tagsdiv" id="<?php echo $tax_name; ?>">
-	        <div class="jaxtag">
-	        <div class="nojs-tags hide-if-js">
-	        <p><?php _e('Add or remove tags'); ?></p>
-	        <textarea name="<?php echo esc_html($textAreaName); ?>" class="the-tags" id="tax-input[<?php echo $tax_name; ?>]"><?php echo esc_attr(implode(",", $tags)); ?></textarea></div>
+<div class="tagsdiv" id="<?php echo $params['id']; ?>">
+	<div class="jaxtag">
+	<div class="nojs-tags hide-if-js">
+    <p><?php echo $taxonomy->labels->add_or_remove_items; ?></p>
+	<textarea name="<?php echo $params['textarea_name']; ?>" class="the-tags" id="<?php echo $params['textarea_id']; ?>"><?php echo esc_attr(implode(",", $tags)); ?></textarea></div>
 	
-	        <div class="ajaxtag hide-if-no-js">
-	                <label class="screen-reader-text" for="new-tag-<?php echo $tax_name; ?>"><?php echo $box['title']; ?></label>
-	                <div class="taghint"><?php _e('Add new tag'); ?></div>
-	                <p>
-	                <input type="text" id="new-tag-<?php echo $tax_name; ?>" name="newtag[<?php echo $tax_name; ?>]" class="newtag form-input-tip" size="16" autocomplete="off" value="" />
-	                <input type="button" class="button tagadd" value="<?php esc_attr_e('Add'); ?>" tabindex="3" />
-	                </p>
-	        </div></div>
-	        <p class="howto"><?php echo $helps; ?></p>
-	        <div class="tagchecklist"></div>
-	        </div>
-	        <p class="hide-if-no-js"><a href="#titlediv" class="tagcloud-link" id="link-<?php echo $tax_name; ?>"><?php printf( __('Choose from the most used tags in %s'), $box['title'] ); ?></a></p>
-        <?php
+	<?php if ( current_user_can($taxonomy->cap->assign_terms) ) :?>
+	<div class="ajaxtag hide-if-no-js">
+		<label class="screen-reader-text" for="<?php echo $params['input_id']; ?>"><?php echo $params['box_title']; ?></label>
+		<div class="taghint"><?php echo $taxonomy->labels->add_new_item; ?></div>
+		<p><input type="text" id="<?php print $params['input_id']; ?>" name="<?php print $params['input_name']; ?>" class="newtag form-input-tip" size="16" autocomplete="off" value="" />
+		<input type="button" class="button tagadd" value="<?php esc_attr_e('Add'); ?>" tabindex="3" /></p>
+	</div>
+	<p class="howto"><?php echo esc_attr( $taxonomy->labels->separate_items_with_commas ); ?></p>
+	<?php endif; ?>
+	</div>
+	
+	<div class="tagchecklist"></div>
+</div>
+<?php if ( current_user_can($taxonomy->cap->assign_terms) ) : ?>
+<p class="hide-if-no-js"><a href="#titlediv" class="tagcloud-link" id="link-<?php echo $tax_name; ?>"><?php echo $taxonomy->labels->choose_from_most_used; ?></a></p>
+<?php endif;
+
 }
 
 function fwp_category_box ($checked, $object, $tags = array(), $params = array()) {
@@ -1082,7 +1112,7 @@ function fwp_syndication_manage_page_links_table_rows ($links, $page, $visible =
 				// Prep: Get last updated timestamp
 				$sLink = new SyndicatedLink($link->link_id);
 				if (!is_null($sLink->setting('update/last'))) :
-					$lastUpdated = fwp_time_elapsed($sLink->setting('update/last'));
+					$lastUpdated = 'Last checked '. fwp_time_elapsed($sLink->setting('update/last'));
 				else :
 					$lastUpdated = __('None yet');
 				endif;
@@ -1107,19 +1137,41 @@ function fwp_syndication_manage_page_links_table_rows ($links, $page, $visible =
 						."</div>\n";
 				endif;
 
-				$nextUpdate = "<div style='font-style:italic;size:0.9em'>Ready for next update ";
-				if (isset($sLink->settings['update/ttl']) and is_numeric($sLink->settings['update/ttl'])) :
-					if (isset($sLink->settings['update/timed']) and $sLink->settings['update/timed']=='automatically') :
-						$next = $sLink->settings['update/last'] + ((int) $sLink->settings['update/ttl'] * 60);
+				$nextUpdate = "<div style='max-width: 30.0em; font-size: 0.9em;'><div style='font-style:italic;'>";
+				
+				$ttl = $sLink->setting('update/ttl');
+				if (is_numeric($ttl)) :
+					$next = $sLink->setting('update/last') + $sLink->setting('update/fudge') + ((int) $ttl * 60);
+					if ('automatically'==$sLink->setting('update/timed')) :
+						if ($next < time()) :
+							$nextUpdate .= 'Ready and waiting to be updated since ';
+						else :
+							$nextUpdate .= 'Scheduled for next update ';
+						endif;
 						$nextUpdate .= fwp_time_elapsed($next);
 						if (FEEDWORDPRESS_DEBUG) : $nextUpdate .= " [".(($next-time())/60)." minutes]"; endif;
 					else :
-						$nextUpdate .= "every ".$sLink->settings['update/ttl']." minute".(($sLink->settings['update/ttl']!=1)?"s":"");
+						$lastUpdated .= " &middot; Next ";
+						if ($next < time()) :
+							$lastUpdated .= 'ASAP';
+						elseif ($next - time() < 60) :
+							$lastUpdated .= fwp_time_elapsed($next);
+						elseif ($next - time() < 60*60*24) :
+							$lastUpdated .= gmdate('g:ia', $next + (get_option('gmt_offset') * 3600));
+						else :
+							$lastUpdated .= gmdate('F j', $next + (get_option('gmt_offset') * 3600));
+						endif;
+						
+						$nextUpdate .= "Scheduled to be checked for updates every ".$ttl." minute".(($ttl!=1)?"s":"")."</div><div style='size:0.9em; margin-top: 0.5em'>	This update schedule was requested by the feed provider";
+						if ($sLink->setting('update/xml')) :
+							$nextUpdate .= " using a standard <code style=\"font-size: inherit; padding: 0; background: transparent\">&lt;".$sLink->setting('update/xml')."&gt;</code> element";
+						endif;
+						$nextUpdate .= ".";
 					endif;
 				else:
-					$nextUpdate .= "as soon as possible";
+					$nextUpdate .= "Scheduled for update as soon as possible";
 				endif;
-				$nextUpdate .= "</div>";
+				$nextUpdate .= "</div></div>";
 
 				unset($sLink);
 				
