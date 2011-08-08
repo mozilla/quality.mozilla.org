@@ -1,0 +1,137 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Flexi Pages Widget\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-09-03 12:08+0530\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Rene - WordPressPluginGuide.com <info@wppg.me>\n"
+"Language-Team: WordPressPluginGuide.com <info@wppg.me>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"X-Poedit-Language: Dutch\n"
+"X-Poedit-Country: NETHERLANDS\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: /flexi-pages-widget.php:36
+msgid "Pages"
+msgstr "Pagina's"
+
+#: /flexi-pages-widget.php:46
+#: /flexi-pages-widget.php:279
+msgid "Home"
+msgstr "Start"
+
+#: /flexi-pages-widget.php:385
+msgid "Title"
+msgstr "Titel"
+
+#: /flexi-pages-widget.php:390
+msgid "Sort by"
+msgstr "Sorteren op"
+
+#: /flexi-pages-widget.php:392
+msgid "Page title"
+msgstr "Pagina titel"
+
+#: /flexi-pages-widget.php:393
+msgid "Menu order"
+msgstr "Menu rangorde"
+
+#: /flexi-pages-widget.php:394
+msgid "Date created"
+msgstr "Datum creatie"
+
+#: /flexi-pages-widget.php:395
+msgid "Date modified"
+msgstr "Datum wijziging"
+
+#: /flexi-pages-widget.php:396
+msgid "Page ID"
+msgstr "Pagina ID"
+
+#: /flexi-pages-widget.php:397
+msgid "Page author ID"
+msgstr "Pagina auteur ID"
+
+#: /flexi-pages-widget.php:398
+msgid "Page slug"
+msgstr "Verkorte naam pagina"
+
+#: /flexi-pages-widget.php:401
+msgid "ASC"
+msgstr "Oplopend"
+
+#: /flexi-pages-widget.php:402
+msgid "DESC"
+msgstr "Aflopend"
+
+#: /flexi-pages-widget.php:407
+msgid "Exclude"
+msgstr "Uitsluiten"
+
+#: /flexi-pages-widget.php:408
+msgid "Include"
+msgstr "Bevatten"
+
+#: /flexi-pages-widget.php:409
+msgid "pages"
+msgstr "pagina's"
+
+#: /flexi-pages-widget.php:413
+msgid "use &lt;Ctrl&gt; key to select multiple pages"
+msgstr "gebruik de &lt;Ctrl&gt; toets om meerdere pagina's te selecteren"
+
+#: /flexi-pages-widget.php:417
+msgid "Show sub-pages"
+msgstr "Laat sub-pagina's zien"
+
+#: /flexi-pages-widget.php:419
+msgid "Show all sub-pages"
+msgstr "Laat alle sub-pagina's zien"
+
+#: /flexi-pages-widget.php:420
+msgid "Only related sub-pages"
+msgstr "Alleen gerelateerde sub-pagina's"
+
+#: /flexi-pages-widget.php:421
+msgid "Only strictly related sub-pages"
+msgstr "Alleen strikt genomen gerelateerde sub-pagina's"
+
+#: /flexi-pages-widget.php:427
+msgid "Show hierarchy"
+msgstr "Laat hierarchie zien"
+
+#: /flexi-pages-widget.php:431
+#, php-format
+msgid "%d levels deep"
+msgstr "%d lagen diep"
+
+#: /flexi-pages-widget.php:433
+msgid "Unlimited depth"
+msgstr "Ongelimiteerde diepte"
+
+#: /flexi-pages-widget.php:438
+msgid "Show home page"
+msgstr "Laat startpagina zien"
+
+#: /flexi-pages-widget.php:442
+msgid "Show date"
+msgstr "Laat datum zien"
+
+#: /flexi-pages-widget.php:444
+msgid "Choose Format"
+msgstr "Kies formaat"
+
+#: /flexi-pages-widget.php:462
+msgid "A highly configurable widget to list pages and sub-pages."
+msgstr "Een widget met zeer veel instellingen om pagina's en subpagina's te laten zien"
+
+#: /flexi-pages-widget.php:999
+msgid "Show as dropdown"
+msgstr "Laat zien als uitklapmenu"
+
+#: /flexi-pages-widget.php:999
+msgid "Go"
+msgstr "Start"

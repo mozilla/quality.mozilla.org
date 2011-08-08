@@ -1,0 +1,163 @@
+# Translation of the WordPress plugin   by .
+# Copyright (C) 2010
+# This file is distributed under the same license as the  package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/cms-tree-page-view\n"
+"POT-Creation-Date: 2010-06-30 19:00+0000\n"
+"PO-Revision-Date: 2010-07-01 14:45+0100\n"
+"Last-Translator: Pär Thernström <par.thernstrom@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
+
+#: functions.php:45
+msgid "Enter title of new page"
+msgstr "Saisissez le titre de la page"
+
+#: functions.php:46
+msgid "child pages"
+msgstr "Pages sous cette page"
+
+#: functions.php:47
+msgid "Edit page"
+msgstr "Modifier la page"
+
+#: functions.php:48
+msgid "View page"
+msgstr "Voir la page"
+
+#: functions.php:49
+msgid "Edit"
+msgstr "Modifier"
+
+#: functions.php:50
+msgid "View"
+msgstr "Voir"
+
+#: functions.php:51
+msgid "Add page"
+msgstr "Ajouter une page"
+
+#: functions.php:52
+msgid "Add new page after"
+msgstr "Ajouter une page après cette page"
+
+#: functions.php:53
+msgid "after"
+msgstr "après"
+
+#: functions.php:54
+msgid "inside"
+msgstr "sous cette page"
+
+#: functions.php:55
+msgid "Add new page inside"
+msgstr "Ajouter une page sous cette page"
+
+#: functions.php:56
+msgid "draft"
+msgstr "brouillon"
+
+#: functions.php:57
+msgid "future"
+msgstr "planifié"
+
+#: functions.php:58
+msgid "protected"
+msgstr "protégé"
+
+#: functions.php:59
+msgid "pending"
+msgstr "en attente"
+
+#: functions.php:60
+msgid "private"
+msgstr "privé"
+
+#: functions.php:61
+msgid "Password protected page"
+msgstr "Page protégée par mot de passe"
+
+#: functions.php:113
+msgid "settings"
+msgstr "paramètres"
+
+#: functions.php:120
+msgid "Show tree"
+msgstr "Voir l'arborescence"
+
+#: functions.php:124
+msgid "on the dashboard"
+msgstr "dans le menu"
+
+#: functions.php:128
+msgid "under the pages menu"
+msgstr "sous les pages du menu"
+
+#: functions.php:135
+msgid "Save Changes"
+msgstr "Enregistrer"
+
+#: functions.php:150
+msgid "No pages found. Maybe you want to <a href='post-new.php?post_type=page'>add a new page</a>?"
+msgstr "Aucune page trouvée. Peut-être voulez-vous <a href='post-new.php?post_type=page'>ajouter une page</a>?"
+
+#: functions.php:157
+msgid "All"
+msgstr "Toutes les pages"
+
+#: functions.php:158
+msgid "Public"
+msgstr "Pages publiées"
+
+#: functions.php:160
+msgid "Expand"
+msgstr "Dérouler"
+
+#: functions.php:161
+msgid "Collapse"
+msgstr "Refermer"
+
+#: functions.php:166
+msgid "Clear search"
+msgstr "Effacer la recherche"
+
+#: functions.php:167
+msgid "Search"
+msgstr "Rechercher"
+
+#: functions.php:168
+msgid "Searching..."
+msgstr "Recherche en cours"
+
+#: functions.php:173
+msgid "Loading..."
+msgstr "Chargement en cours"
+
+#: functions.php:175
+msgid "Search: no pages found"
+msgstr "Recherche : aucune page trouvée"
+
+#: functions.php:177
+msgid "Loading tree"
+msgstr "Chargement de l'arborescence"
+
+#: functions.php:277
+msgid "<Untitled page>"
+msgstr "<Sans-titre>"
+
+#: functions.php:295
+msgid "Click to edit. Drag to move."
+msgstr "Cliquez pour modifier, vous pouvez aussi déplacer la page"
+
+#: functions.php:432
+msgid "New page"
+msgstr "Nouvelle page"
+

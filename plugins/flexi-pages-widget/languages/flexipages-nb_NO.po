@@ -1,0 +1,109 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Flexi Pages Widget 1.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-09-03 12:08+0530\n"
+"PO-Revision-Date: 2011-04-24 11:05+0100\n"
+"Last-Translator: Tore Johnny Bråtveit <oversetter@punktlig-ikt.no>\n"
+"Language-Team: Punktlig IKT <oversetter@punktlig-ikt.no>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Norsk bokmål\n"
+"X-Poedit-Country: Norway\n"
+"X-Poedit-SearchPath-0: \n"
+
+msgid "Pages"
+msgstr "Sider"
+
+msgid "Home"
+msgstr "Forsiden"
+
+msgid "Title"
+msgstr "Tittel"
+
+msgid "Sort by"
+msgstr "Sorter etter"
+
+msgid "Page title"
+msgstr "Sidetittel"
+
+msgid "Menu order"
+msgstr "Menyrekkefølge"
+
+msgid "Date created"
+msgstr "Dato siden ble laget"
+
+msgid "Date modified"
+msgstr "Dato siden ble endret"
+
+msgid "Page ID"
+msgstr "Side-ID"
+
+msgid "Page author ID"
+msgstr "Sideforfatters ID"
+
+msgid "Page slug"
+msgstr "Sideutdrag"
+
+msgid "ASC"
+msgstr "Stigende"
+
+msgid "DESC"
+msgstr "Synkende"
+
+msgid "Exclude"
+msgstr "Ekskluder"
+
+msgid "Include"
+msgstr "Inkluder"
+
+msgid "pages"
+msgstr "Sider"
+
+msgid "use &lt;Ctrl&gt; key to select multiple pages"
+msgstr "Bruk &lt;Ctrl&gt;-tasten for å velge flere sider"
+
+msgid "Show sub-pages"
+msgstr "Vis undersider"
+
+msgid "Show all sub-pages"
+msgstr "Vis alle undersider"
+
+msgid "Only related sub-pages"
+msgstr "Bare beslektede undersider"
+
+msgid "Only strictly related sub-pages"
+msgstr "Bare nært beslektede undersider"
+
+msgid "Show hierarchy"
+msgstr "Vis hierarki"
+
+#, php-format
+msgid "%d levels deep"
+msgstr "Dybde på %d nivåer"
+
+msgid "Unlimited depth"
+msgstr "Ubegrenset dybde"
+
+msgid "Show home page"
+msgstr "Vis forsiden"
+
+msgid "Show date"
+msgstr "Vis dato"
+
+msgid "Choose Format"
+msgstr "Velg format"
+
+msgid "A highly configurable widget to list pages and sub-pages."
+msgstr "Et høyst konfigurerbart miniprogram for å vise sider og undersider."
+
+msgid "Go"
+msgstr "Utfør"
+
+msgid "Show as dropdown"
+msgstr "Vis som nedtrekksliste"
+

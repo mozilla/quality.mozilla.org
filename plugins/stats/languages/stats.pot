@@ -1,0 +1,299 @@
+# Copyright (C) 2010 WordPress.com Stats
+# This file is distributed under the same license as the WordPress.com Stats package.
+msgid ""
+msgstr ""
+"Project-Id-Version: WordPress.com Stats 1.8\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/stats\n"
+"POT-Creation-Date: 2011-01-17 18:24:52+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: stats.php:143
+msgid "Site Stats"
+msgstr ""
+
+#: stats.php:147
+msgid "WordPress.com Stats Plugin"
+msgstr ""
+
+#. #-#-#-#-#  stats.pot (WordPress.com Stats 1.8)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: stats.php:147 stats.php:417
+msgid "WordPress.com Stats"
+msgstr ""
+
+#: stats.php:386
+msgid ""
+"<a href=\"%s\">WordPress.com Stats</a> needs attention: please enter an API "
+"key or disable the plugin."
+msgstr ""
+
+#: stats.php:398
+msgid ""
+"WordPress.com Stats is unable to work properly because your theme seems to "
+"lack the necessary footer code. Usually this can be fixed by adding the "
+"following code just before &lt;/body&gt; in footer.php:"
+msgstr ""
+
+#: stats.php:421
+msgid "Error from last API Key attempt:"
+msgstr ""
+
+#: stats.php:427
+msgid ""
+"The API key \"%1$s\" belongs to the WordPress.com account \"%2$s\". If you "
+"want to use a different account, please <a href=\"%3$s\">enter the correct "
+"API key</a>."
+msgstr ""
+
+#: stats.php:428
+msgid ""
+"Note: the API key you use determines who will be registered as the \"owner\" "
+"of this blog in the WordPress.com database. Please choose your key "
+"accordingly. Do not use a temporary key."
+msgstr ""
+
+#: stats.php:444
+msgid "Recommended Action"
+msgstr ""
+
+#: stats.php:447
+msgid ""
+"It looks like you have installed Stats on a blog with this URL before. You "
+"can recover the stats history from that blog here."
+msgstr ""
+
+#: stats.php:448
+msgid "Recover stats"
+msgstr ""
+
+#: stats.php:450
+msgid ""
+"It looks like this blog has never had stats before. There is no record of "
+"its URL in the WordPress.com database."
+msgstr ""
+
+#: stats.php:451
+msgid "Add this blog to my WordPress.com account"
+msgstr ""
+
+#: stats.php:454
+msgid "Recover other stats"
+msgstr ""
+
+#: stats.php:455
+msgid ""
+"Have you relocated this blog from a different URL? You may opt to have this "
+"blog take over the stats history from any other self-hosted blog associated "
+"with your WordPress.com account. This is appropriate if this blog had a "
+"different URL in the past. The WordPress.com database will rename its "
+"records to match this blog's URL."
+msgstr ""
+
+#: stats.php:458
+msgid "Select a blog"
+msgstr ""
+
+#: stats.php:463
+msgid "Take over stats history"
+msgstr ""
+
+#: stats.php:471
+msgid "Add blog to WordPress.com account"
+msgstr ""
+
+#: stats.php:472
+msgid ""
+"This blog will be added to your WordPress.com account. You will be able to "
+"allow other WordPress.com users to see your stats if you like."
+msgstr ""
+
+#: stats.php:473
+msgid "Add blog to WordPress.com"
+msgstr ""
+
+#: stats.php:478
+msgid ""
+"The WordPress.com Stats Plugin is not working because it needs to be linked "
+"to a WordPress.com account."
+msgstr ""
+
+#: stats.php:482
+msgid ""
+"Enter your WordPress.com API key to link this blog to your WordPress.com "
+"account. Be sure to use your own API key! Using any other key will lock you "
+"out of your stats. (<a href=\"%s\">Get your key here.</a>)"
+msgstr ""
+
+#: stats.php:483
+msgid "API Key:"
+msgstr ""
+
+#: stats.php:485
+msgid "Save &raquo;"
+msgstr ""
+
+#: stats.php:488
+msgid "Visit <a href=\"%s\">your Dashboard</a> to see your site stats."
+msgstr ""
+
+#: stats.php:489
+msgid ""
+"You can also see your stats, plus grant access for others to see them, on <a "
+"href=\"https://dashboard.wordpress.com/wp-admin/index.php?page=stats&blog=%s"
+"\">your WordPress.com dashboard</a>."
+msgstr ""
+
+#: stats.php:490
+msgid "Options"
+msgstr ""
+
+#: stats.php:495
+msgid "Admin bar"
+msgstr ""
+
+#: stats.php:496
+msgid ""
+"Put a chart showing 48 hours of views in the admin bar. (Requires WordPress "
+"3.1)"
+msgstr ""
+
+#: stats.php:497
+msgid "Registered users"
+msgstr ""
+
+#: stats.php:498
+msgid "Count the page views of registered users who are logged in."
+msgstr ""
+
+#: stats.php:499
+msgid "Shortlinks"
+msgstr ""
+
+#: stats.php:500
+msgid ""
+"Publish WP.me <a href='http://wp.me/sf2B5-shorten'>shortlinks</a> as "
+"metadata. This is a free service from WordPress.com."
+msgstr ""
+
+#: stats.php:502
+msgid "Report visibility"
+msgstr ""
+
+#: stats.php:504
+msgid "Select the roles that will be able to view stats reports."
+msgstr ""
+
+#: stats.php:511
+msgid "Save options"
+msgstr ""
+
+#: stats.php:636
+msgid "WordPress.com Site Stats"
+msgstr ""
+
+#: stats.php:637
+msgid "Visit <a href=\"%s\">your Global Dashboard</a> to see your site stats."
+msgstr ""
+
+#: stats.php:727 stats.php:730
+msgid "Stats"
+msgstr ""
+
+#: stats.php:752
+msgid "day"
+msgstr ""
+
+#: stats.php:752
+msgid "week"
+msgstr ""
+
+#: stats.php:752
+msgid "month"
+msgstr ""
+
+#: stats.php:753
+msgid "the past day"
+msgstr ""
+
+#: stats.php:753
+msgid "the past week"
+msgstr ""
+
+#: stats.php:753
+msgid "the past month"
+msgstr ""
+
+#: stats.php:753
+msgid "the past quarter"
+msgstr ""
+
+#: stats.php:753
+msgid "the past year"
+msgstr ""
+
+#: stats.php:775
+msgid "Chart stats by"
+msgstr ""
+
+#: stats.php:784
+msgid "Show top posts over"
+msgstr ""
+
+#: stats.php:793
+msgid "Show top search terms over"
+msgstr ""
+
+#: stats.php:802
+msgid "Show most active posts over"
+msgstr ""
+
+#: stats.php:1053
+msgid "%1$s %2$s Views"
+msgstr ""
+
+#: stats.php:1057
+msgid "%1$s, %2$s views"
+msgstr ""
+
+#: stats.php:1076
+msgid "Top Posts"
+msgstr ""
+
+#: stats.php:1089
+msgid "Top Searches"
+msgstr ""
+
+#: stats.php:1095
+msgid "Most Active"
+msgstr ""
+
+#: stats.php:1109
+msgid "View All"
+msgstr ""
+
+#: stats.php:1210
+msgid "Get Shortlink"
+msgstr ""
+
+#: stats.php:1275
+msgid "Views over 48 hours. Click for more Site Stats."
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://wordpress.org/extend/plugins/stats/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Tracks views, post/page views, referrers, and clicks. Requires a WordPress."
+"com API key."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Automattic"
+msgstr ""

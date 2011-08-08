@@ -1,0 +1,163 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Flexi Pages Widget v1.5.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2009-09-28 22:21+0300\n"
+"Last-Translator: Hakan Demiray <hakan@dmry.net>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Language: Turkish\n"
+"X-Poedit-Country: TURKEY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: flexi-pages-widget.php:31
+#@ flexipages
+msgid "Pages"
+msgstr "Sayfalar"
+
+#: flexi-pages-widget.php:41
+#: flexi-pages-widget.php:272
+#@ flexipages
+msgid "Home"
+msgstr "Ana sayfa"
+
+#: flexi-pages-widget.php:383
+#@ flexipages
+msgid "Title"
+msgstr "Başlık"
+
+#: flexi-pages-widget.php:388
+#@ flexipages
+msgid "Sort by"
+msgstr "Sıralama"
+
+#: flexi-pages-widget.php:390
+#@ flexipages
+msgid "Page title"
+msgstr "Sayfa başlığı"
+
+#: flexi-pages-widget.php:391
+#@ flexipages
+msgid "Menu order"
+msgstr "Menü sırası"
+
+#: flexi-pages-widget.php:392
+#@ flexipages
+msgid "Date created"
+msgstr "Oluşturulma tarihi"
+
+#: flexi-pages-widget.php:393
+#@ flexipages
+msgid "Date modified"
+msgstr "Güncelleme tarihi"
+
+#: flexi-pages-widget.php:394
+#@ flexipages
+msgid "Page ID"
+msgstr "Sayfa ID"
+
+#: flexi-pages-widget.php:395
+#@ flexipages
+msgid "Page author ID"
+msgstr "Sayfa yazarı ID"
+
+#: flexi-pages-widget.php:396
+#@ flexipages
+msgid "Page slug"
+msgstr "Sayfa kısa adı"
+
+#: flexi-pages-widget.php:399
+#@ flexipages
+msgid "ASC"
+msgstr "ARTAN"
+
+#: flexi-pages-widget.php:400
+#@ flexipages
+msgid "DESC"
+msgstr "AZALAN"
+
+#: flexi-pages-widget.php:405
+#@ flexipages
+msgid "Exclude"
+msgstr "Çıkar"
+
+#: flexi-pages-widget.php:406
+#@ flexipages
+msgid "Include"
+msgstr "Ekle"
+
+#: flexi-pages-widget.php:407
+#@ flexipages
+msgid "pages"
+msgstr "sayfalar"
+
+#: flexi-pages-widget.php:411
+#@ flexipages
+msgid "use &lt;Ctrl&gt; key to select multiple pages"
+msgstr "birden fazla sayfa seçmek için &lt;Ctrl&gt; tuşunu kullanın"
+
+#: flexi-pages-widget.php:415
+#@ flexipages
+msgid "Show sub-pages"
+msgstr "Alt sayfaları göster"
+
+#: flexi-pages-widget.php:417
+#@ flexipages
+msgid "Show all sub-pages"
+msgstr "Tüm alt sayfaları göster"
+
+#: flexi-pages-widget.php:418
+#@ flexipages
+msgid "Only related sub-pages"
+msgstr "Sadece ilgili alt sayfalar"
+
+#: flexi-pages-widget.php:419
+#@ flexipages
+msgid "Only strictly related sub-pages"
+msgstr "Sadece yapışkan alt sayfalar"
+
+#: flexi-pages-widget.php:425
+#@ flexipages
+msgid "Show hierarchy"
+msgstr "Hiyerarşi göster"
+
+#: flexi-pages-widget.php:429
+#, php-format
+#@ flexipages
+msgid "%d levels deep"
+msgstr "%d seviye derinliğinde"
+
+#: flexi-pages-widget.php:431
+#@ flexipages
+msgid "Unlimited depth"
+msgstr "Sınırsız derinlikte"
+
+#: flexi-pages-widget.php:436
+#@ flexipages
+msgid "Show home page"
+msgstr "Ana sayfayı göster"
+
+#: flexi-pages-widget.php:440
+#@ flexipages
+msgid "Show date"
+msgstr "Tarihi göster"
+
+#: flexi-pages-widget.php:442
+#@ flexipages
+msgid "Choose Format"
+msgstr "Formatı Seçin"
+
+#: flexi-pages-widget.php:460
+#@ flexipages
+msgid "A highly configurable widget to list pages and sub-pages."
+msgstr "Liste sayfaları ve alt sayfalar için birçok yapılandırma ayarları içerir."
+

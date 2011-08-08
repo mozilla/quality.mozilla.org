@@ -1,0 +1,323 @@
+
+/*
+#cms_tpv_dashboard_widget {
+	z-index: 10;
+}
+*/
+
+
+.cms_tpv_wrapper {
+	z-index: 10;
+	margin-right: 250px;
+}
+
+.postbox .cms_tpv_wrapper {
+	width: auto;
+}
+
+.cms_tpv_container {
+	/* clear: both; */
+	overflow: visible;
+	margin-top: 1.5em;
+}
+
+#wpbody-content .cms_tpv_container {
+	margin-right: 250px;
+}
+
+#dashboard-widgets-wrap .cms_tpv_container {
+	margin-right: 0;
+}
+
+.pages_page_cms-tpv-pages-page .updated {
+	clear: both;
+}
+
+.cms-tpv-subsubsub li {
+	display: inline;
+}
+
+.cms-tpv-subsubsub li a.current {
+	font-weight: bold;
+	text-decoration: none;
+	color: black;
+}
+
+.pages_page_cms-tpv-pages-page .cms-tpv-subsubsub li {
+	zoom: 1; /* weird ie-problems otherwise, like li-items that disappear on search. */
+}
+
+.cms_tpv_search_no_hits {
+	clear: both;
+}
+
+/*
+span.cms_tpv_action_edit,
+li span.cms_tpv_action_view,
+li span.cms_tpv_action_add_page_after,
+li span.cms_tpv_action_add_page_inside
+{
+	display: none;
+	text-decoration: underline;
+	border: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	padding: 0 0 0 .5ex;
+
+}
+li span.cms_tpv_action_add_page {
+	display: none;
+	border: 0;
+	padding: 0 0 0 .5em;
+	color: #666;
+}
+*/
+
+.cms-tree-view-search
+{
+	background-color: #ffefba;
+	font-weight: bold;
+	font-family: "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+	font-size: 12px;
+}
+
+
+.jstree a ins {
+	cursor: move;
+}
+
+.tree-default li.open,
+.tree-default li.closed
+{
+	margin-top: 4px !important;
+	margin-bottom: 4px !important;
+	cursor: pointer;
+}
+
+.tree-default span.child_count {
+	background-color: transparent;
+	color: #999;
+	border: none;
+	font-size: .8em;
+	margin-left: .5em;
+}
+
+.tree-default span.post_protected {
+	display:inline-block;
+	margin:0 3px 0 0; padding:0;
+	width:16px; height:16px;
+	/* icon source => http://www.famfamfam.com/lab/icons/silk/  */
+	background:transparent url(images/lock.png) center no-repeat;
+}
+
+
+.tree-default span.post_type {
+	background-color: #f85b11;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	padding: 1px 4px 1px 4px;
+	color: white;
+	border: none;
+	font-size: .8em;
+	display: inline;
+	margin-right: .75ex;
+}
+.tree-default span.post_type_draft {
+	
+}
+.tree-default span.post_type_password {
+	background-color: #25b61a;
+}
+.tree-default span.post_type_private {
+	background-color: #25b61a;
+}
+.tree-default span.post_type_pending,
+.tree-default span.post_type_future
+{
+	background-color: #0069e0;
+}
+
+
+#jstree-dragged {
+	background-color: white;
+	opacity: .9;
+}
+
+.cms_tpv_open_all {
+	margin-left: 1em;
+}
+
+.cms_tree_view_search_form {
+	display: inline;
+	position: relative;
+	margin-left: 1em;
+	white-space: nowrap;
+}
+
+
+#cms_tpv_dashboard_widget .cms_tree_view_search_form {
+	display: block;
+	margin-left: 0;
+	margin-top: .5em;
+}
+
+#cms_tpv_dashboard_widget .cms-tpv-subsubsub {
+	margin-top: -6px;
+	position: relative;
+	right: auto;
+	left: auto;
+	top: auto;
+	bottom: auto;
+}
+
+.cms_tree_view_search {
+	width: 130px;
+}
+.cms_tree_view_search_form_working,
+.cms_tree_view_search_form_no_hits
+ {
+	position: absolute;
+	left: .5em;
+	top: 2em;
+	display: none;
+}
+.cms_tree_view_search_form_no_hits {
+	font-weight: bold;
+}
+
+.cms_tpv_working {
+	position: absolute;
+	line-height: 1;
+	display: none;
+}
+
+.cms_tree_view_search_form_reset {
+	display: none;
+	position: absolute;
+	top: 2px;
+	left: 112px;
+	width: 16px;
+	height: 16px;
+	background: transparent url(https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/ui-darkness/images/ui-icons_cccccc_256x240.png) no-repeat -32px -194px;
+	text-indent: -9999px;
+}
+#cms_tpv_dashboard_widget .cms_tree_view_search_form_reset {
+	top: 8px;
+}
+.cms_tree_view_search_form_reset:hover {
+	background: transparent url(https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/ui-lightness/images/ui-icons_222222_256x240.png) no-repeat -32px -194px;
+}
+
+.cms_tpv_annoying_little_box {
+	padding: 1em;
+	background-color: #FFFBCC;
+	border: 1px solid #E6DB55;
+	margin: 1em 0 1em 0;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+}
+.cms_tpv_annoying_little_box p {
+	margin: 0 0 .5em 0;
+}
+p.cms_tpv_annoying_little_box_close {
+	float: right;
+	margin-left: 2em;
+	font-size: .8em;
+	margin-top: -1em;
+	margin-right: -.5em;
+}
+
+.cms_tpv_page_actions {
+	width: auto;
+	min-width: 125px;
+	height: auto;
+	background-color: white;
+	position: absolute;
+	top: 0;
+	white-space: normal;
+	z-index: 100;
+	padding: 7px;
+	display: none;
+	-moz-box-shadow: 2px 2px 8px #ddd; /* FF3.5+ */
+	border: 1px solid #bbb;
+}
+.cms_tpv_page_actions p {
+	margin: 0 0 .5em 0;
+}
+.cms_tpv_wrapper .cms_tpv_page_actions a {
+	display: inline;
+	background: transparent;
+	text-decoration: underline;
+	padding: 0;
+	color: #21759B;
+}
+
+.cms_tpv_wrapper .cms_tpv_page_actions a:hover
+ {
+	color: #d54e21;
+}
+
+.cms_tpv_page_actions ul {
+	display: block;
+	overflow: auto;
+	margin: 0 0 1em 0;
+}
+.cms_tpv_page_actions li {
+	padding: 0;
+	margin: 0;
+	background: none;
+	display: inline;
+}
+.cms_tpv_action_add_page {
+	display: block;
+}
+.cms_tpv_page_actions dl {
+	margin-top: 1em;
+	color: #333;
+	font-size: 11px;
+}
+.cms_tpv_page_actions dl dd {
+}
+.cms_tpv_page_actions dl dt {
+	color: #999;
+}
+
+.cms_tpv_page_actions_arrow {
+	width: 8px;
+	height: 15px;
+	background: url(images/arrow-left.gif) no-repeat top left;
+	position: absolute;
+	display: block;
+	top: 7px;
+	left: -8px;
+}
+
+.cms_tpv_page_actions_columns table td {
+	font-size: 11px;
+}
+
+.cms_tpv_page_actions_columns .vers {
+	display: inline;
+	padding-right: 2px;
+	vertical-align: middle;
+}
+.cms_tpv_page_actions_columns .post-com-count-wrapper {
+}
+.cms_tpv_wrapper .cms_tpv_page_actions_columns a.post-com-count {
+}
+
+li.cms_tpv_user_can_edit_page_no a {
+	opacity: .6; /* Standard: FF gt 1.5, Opera, Safari */
+	-ms-filter: "alpha(opacity=60)"; /* IE 8 */
+}
+
+.bonny-plugins-inner-sidebar {
+	float: right;
+	width: 210px;
+	padding-right: 10px;
+	padding-left: 10px;
+	border-left: 1px solid #E3E3E3;
+}

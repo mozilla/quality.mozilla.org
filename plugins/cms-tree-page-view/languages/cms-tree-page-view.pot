@@ -1,0 +1,257 @@
+# Copyright (C) 2010 
+# This file is distributed under the same license as the  package.
+msgid ""
+msgstr ""
+"Project-Id-Version:  \n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/cms-tree-page-view\n"
+"POT-Creation-Date: 2011-03-06 14:33:36+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: functions.php:53
+msgid "Enter title of new page"
+msgstr ""
+
+#: functions.php:54
+msgid "child pages"
+msgstr ""
+
+#: functions.php:55 functions.php:381
+msgid "Edit page"
+msgstr ""
+
+#: functions.php:56 functions.php:382
+msgid "View page"
+msgstr ""
+
+#: functions.php:57 functions.php:381
+msgid "Edit"
+msgstr ""
+
+#: functions.php:58 functions.php:382
+msgid "View"
+msgstr ""
+
+#: functions.php:59
+msgid "Add page"
+msgstr ""
+
+#: functions.php:60 functions.php:386
+msgid "Add new page after"
+msgstr ""
+
+#: functions.php:61
+msgid "after"
+msgstr ""
+
+#: functions.php:62
+msgid "inside"
+msgstr ""
+
+#: functions.php:63
+msgid "Sorry, can't create a sub page to a page with status \"draft\"."
+msgstr ""
+
+#: functions.php:64
+msgid "Sorry, can't create a sub page to a page with status \"trash\"."
+msgstr ""
+
+#: functions.php:65
+msgid "Sorry, can't create a page after a page with status \"trash\"."
+msgstr ""
+
+#: functions.php:66 functions.php:390
+msgid "Add new page inside"
+msgstr ""
+
+#: functions.php:67
+msgid "draft"
+msgstr ""
+
+#: functions.php:68
+msgid "future"
+msgstr ""
+
+#: functions.php:69
+msgid "protected"
+msgstr ""
+
+#: functions.php:70 functions.php:644
+msgid "pending"
+msgstr ""
+
+#: functions.php:71
+msgid "private"
+msgstr ""
+
+#: functions.php:72
+msgid "trash"
+msgstr ""
+
+#: functions.php:73
+msgid "Password protected page"
+msgstr ""
+
+#: functions.php:74
+msgid "Adding page..."
+msgstr ""
+
+#: functions.php:175
+msgid "settings"
+msgstr ""
+
+#: functions.php:180
+msgid "Select where to show a tree for pages and custom post types"
+msgstr ""
+
+#: functions.php:204
+msgid "On dashboard"
+msgstr ""
+
+#: functions.php:208
+msgid "In menu"
+msgstr ""
+
+#: functions.php:219
+msgid "Save Changes"
+msgstr ""
+
+#: functions.php:335
+msgid "No posts found."
+msgstr ""
+
+#: functions.php:341
+msgid "All"
+msgstr ""
+
+#: functions.php:342
+msgid "Public"
+msgstr ""
+
+#: functions.php:343
+msgid "Trash"
+msgstr ""
+
+#: functions.php:348
+msgid "Expand"
+msgstr ""
+
+#: functions.php:349
+msgid "Collapse"
+msgstr ""
+
+#: functions.php:357
+msgid "Clear search"
+msgstr ""
+
+#: functions.php:358
+msgid "Search"
+msgstr ""
+
+#: functions.php:359
+msgid "Searching..."
+msgstr ""
+
+#: functions.php:360
+msgid "Nothing found."
+msgstr ""
+
+#: functions.php:366
+msgid "Loading..."
+msgstr ""
+
+#: functions.php:371
+msgid "Search: no pages found"
+msgstr ""
+
+#: functions.php:374
+msgid "Loading tree"
+msgstr ""
+
+#: functions.php:386
+msgid "After"
+msgstr ""
+
+#: functions.php:390
+msgid "Inside"
+msgstr ""
+
+#: functions.php:394
+msgid "Can not create page inside of a page with draft status"
+msgstr ""
+
+#: functions.php:397
+msgid "Last modified"
+msgstr ""
+
+#: functions.php:399
+msgid "by"
+msgstr ""
+
+#: functions.php:402
+msgid "Page ID"
+msgstr ""
+
+#: functions.php:609
+msgid "Unknown user"
+msgstr ""
+
+#: functions.php:614
+msgid "<Untitled page>"
+msgstr ""
+
+#: functions.php:634
+msgid "Comments"
+msgstr ""
+
+#: functions.php:641
+msgid "%s pending"
+msgstr ""
+
+#: functions.php:651
+msgctxt "comment count"
+msgid "0"
+msgstr ""
+
+#: functions.php:651
+msgctxt "comment count"
+msgid "1"
+msgstr ""
+
+#: functions.php:651
+msgctxt "comment count"
+msgid "%"
+msgstr ""
+
+#: functions.php:682
+msgid "Click to edit. Drag to move."
+msgstr ""
+
+#: functions.php:833
+msgid "New page"
+msgstr ""
+
+#: functions.php:1015
+msgid "Close"
+msgstr ""
+
+#: functions.php:1016
+msgid ""
+"<strong>Thank you for using this plugin!</strong> If you need help please "
+"check out the <a href=\"http://eskapism.se/code-playground/cms-tree-page-"
+"view/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox\">plugin "
+"homepage</a> or the <a href=\"http://wordpress.org/tags/cms-tree-page-view?"
+"forum_id=10\">support forum</a>."
+msgstr ""
+
+#: functions.php:1017
+msgid ""
+"If you like this plugin, please <a href=\"http://eskapism.se/sida/donate/?"
+"utm_source=wordpress&utm_medium=banner&utm_campaign=promobox\">support my "
+"work by donating</a> - or at least say something nice about this plugin in a "
+"blog post or tweet."
+msgstr ""

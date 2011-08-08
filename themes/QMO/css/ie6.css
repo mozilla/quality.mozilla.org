@@ -1,0 +1,27 @@
+/* Styles for IE6 */
+
+/* Trigger hasLayout */
+div.post, 
+div.page, 
+div.attachment, 
+#home-head ul.teams-list, 
+#teams-list .team, 
+#event-meta {
+  zoom: 1;
+}
+
+/* Restyle the events widget */
+.upcoming .vevent { padding-left: 0; }
+.upcoming .vevent .dtstart { width: auto; text-align: left; float: none; margin-left: 0; }
+.upcoming .vevent .month { display: inline; }
+.upcoming .vevent .date { font-size: 1em; }
+
+/* Change the positioning context */
+#masthead { position: relative; }
+#site-nav { top: -5.45em; border-bottom: 0; }
+
+/* Make room for hidden overflow */
+#nav-extra li { padding-top: 12px; margin-top: -12px; }
+
+/* No support for max-height */
+table.tec-calendar .tec-tooltip .tec-event-body { height: 7.5em; }

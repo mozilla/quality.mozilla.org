@@ -1,0 +1,30 @@
+/* Styles for IE7 */
+
+/* Trigger hasLayout */
+#content,
+#content-main,
+#content-sub {
+  zoom: 1;
+}
+
+/* Improves the look of images, smooths the jaggies. */
+img { -ms-interpolation-mode: bicubic; };
+
+/* This removes IE's default black border around submit buttons in active forms. */
+button { filter: chroma(color=#000000); border: none; }
+
+/* Push the numbers behind the popups */
+table.tec-calendar td .daynum { position: relative; z-index: -1; }
+
+/* Honor padding, make the full link clickable */
+#nav-main a, 
+.calendar-switch a { float: left; }
+
+/* Adjust the space so logos don't wrap */
+#home-head ul.teams-list li { margin-right: 2.65%; }
+
+/* Declare the color because inheritance is iffy */
+#team-leaders .avatar { border-color: #369; }
+
+/* Mysteriously fixes layout where zoom fails */
+.list-pagination { border: 1px solid transparent; }

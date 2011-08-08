@@ -1,0 +1,109 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Flexi Pages Widget in italiano\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-09-03 12:08+0530\n"
+"PO-Revision-Date: 2010-03-28 18:54+0100\n"
+"Last-Translator: Gianni Diurno (aka gidibao) <gidibao[at]gmail[dot]com>\n"
+"Language-Team: Gianni Diurno | gidibao.net <gidibao[at]gmail[dot]com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Italian\n"
+"X-Poedit-Country: ITALY\n"
+"X-Poedit-SearchPath-0: \n"
+
+msgid "Pages"
+msgstr "Pagine"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Title"
+msgstr "Titolo"
+
+msgid "Sort by"
+msgstr "Disponi per"
+
+msgid "Page title"
+msgstr "titolo pagina"
+
+msgid "Menu order"
+msgstr "ordine menu"
+
+msgid "Date created"
+msgstr "data creazione"
+
+msgid "Date modified"
+msgstr "modifiche data"
+
+msgid "Page ID"
+msgstr "ID pagina"
+
+msgid "Page author ID"
+msgstr "ID autore pagina"
+
+msgid "Page slug"
+msgstr "slug pagina"
+
+msgid "ASC"
+msgstr "ASC"
+
+msgid "DESC"
+msgstr "DISC"
+
+msgid "Exclude"
+msgstr "Escludi"
+
+msgid "Include"
+msgstr "Includi"
+
+msgid "pages"
+msgstr "pagine"
+
+msgid "use &lt;Ctrl&gt; key to select multiple pages"
+msgstr "tasto &lt;Ctrl&gt; per selezionare insieme più pagine"
+
+msgid "Show sub-pages"
+msgstr "Mostra sotto-pagine"
+
+msgid "Show all sub-pages"
+msgstr "mostra tutte"
+
+msgid "Only related sub-pages"
+msgstr "solo correlate"
+
+msgid "Only strictly related sub-pages"
+msgstr "solo altamente correlate"
+
+msgid "Show hierarchy"
+msgstr "Mostra gerarchia"
+
+#, php-format
+msgid "%d levels deep"
+msgstr "%d profondità livelli"
+
+msgid "Unlimited depth"
+msgstr "illimitata"
+
+msgid "Show home page"
+msgstr "Mostra pagina principale"
+
+msgid "Show date"
+msgstr "Mostra data"
+
+msgid "Choose Format"
+msgstr "Scegli formato"
+
+msgid "A highly configurable widget to list pages and sub-pages."
+msgstr "Widget per mostrare un menu pagine e sotto-pagine personalizzato"
+
+msgid "Go"
+msgstr "Vai"
+
+msgid "Show as dropdown"
+msgstr "Mostra come lista a cascata"
+
