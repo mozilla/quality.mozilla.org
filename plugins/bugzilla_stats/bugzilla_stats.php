@@ -51,7 +51,7 @@ $bugzilla_stats_service = false;
 if ($bugzilla_stats_options !== false) {
     $bugzilla_stats_service = new BugzillaStatisticsService(
         $bugzilla_stats_options['bugzilla_url'], array(
-            CURLOPT_TIMEOUT => 3,
+            CURLOPT_TIMEOUT => 10,
             CURLOPT_SSL_VERIFYPEER => false,
         )
     );
