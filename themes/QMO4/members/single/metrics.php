@@ -18,10 +18,8 @@
 			</div><!-- #item-nav -->
 
 			<div id="item-body">
-				<?php do_action( 'bp_before_member_body' ); ?>
+		  <?php do_action( 'bp_before_member_body' ); ?>
 				<h2>Bugzilla Statistics</h2>
-
-  <?php if (function_exists('get_bugzilla_stats_for_email')) : ?>
 
       <?php        
         global $bp;           
@@ -58,9 +56,7 @@
       
       <?php endif; ?>
 
-  <?php endif; ?>
-
-				<?php do_action( 'bp_after_member_body' ) ?>
+		  <?php do_action( 'bp_after_member_body' ) ?>
 
 			</div><!-- #item-body -->
 

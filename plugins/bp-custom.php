@@ -15,32 +15,6 @@ if ( file_exists( WP_PLUGIN_DIR . '/buddypress-group-email-subscription/language
     load_textdomain( 'bp-ass', WP_PLUGIN_DIR . '/buddypress-group-email-subscription/languages/bp-ass-'.BPLANG.'.mo' );
 }
 
-// Add Metrics tab if plugin is enabled
-//if ( function_exists('get_bugzilla_stats_for_user') ) {
-  function qmo_metrics_setup_nav() {
-  	global $bp;
-  	bp_core_new_nav_item( array( 
-      'name' => __( 'Metrics' ), 
-      'slug' => 'metrics', 
-      'parent_url' => $bp->loggedin_user->domain . $bp->slug . '/', 'parent_slug' => $bp->slug, 
-      'screen_function' => 'qmo_metrics_screen', 
-      'position' => 40 ) 
-    );
-  
-  	function qmo_metrics_screen() {
-    	add_action( 'bp_template_title', 'my_profile_page_function_to_show_screen_title' );
-      bp_core_load_template( apply_filters( 'bp_template_screen', 'members/single/metrics' ) );
-  	}
-  	
-  	function my_profile_page_function_to_show_screen_title() {
-  		echo 'Metrics';
-  	}
-  	
-  }
-  
-  add_action( 'bp_setup_nav', 'qmo_metrics_setup_nav', 10 );
-//}
-
 /*********
  * Change the profile tab order so "Profile" comes first and "Settings" comes last.
  */

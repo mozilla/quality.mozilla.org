@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Bugzilla Statistics
+Plugin Name: Buddypress Bugzilla Statistics
 Plugin URI: https://github.com/Osmose/wp-bugzilla-stats
 Description: Provides functions for retrieving bugzilla user statistics
 Version: 0.1
@@ -44,6 +44,16 @@ License: MPL
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+/*** Make sure BuddyPress is loaded ********************************/
+if ( !function_exists( 'bp_core_install' ) ) {
+	require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+	if ( is_plugin_active( 'buddypress/bp-loader.php' ) )
+		require_once ( WP_PLUGIN_DIR . '/buddypress/bp-loader.php' );
+	else
+		return;
+}
+
 require_once('class.BugzillaStatisticsService.php');
 $bzstats_version = 2;
 
@@ -129,12 +139,42 @@ function bzstats_get_service() {
     return $bugzilla_stats_service;
 }
 
-/*
+/**
  * Exceptions
  */
 class BugzillaUserNotFoundException extends Exception { }
 
-/*
+
+/**
+ * Add a 'Metrics' tab to member profiles
+ */
+function bzstats_setup_nav() {
+	global $bp;
+
+	bp_core_new_nav_item( array( 
+    'name' => __( 'Metrics' ), 
+    'slug' => 'metrics', 
+    'parent_url' => $bp->loggedin_user->domain . $bp->slug . '/', 'parent_slug' => $bp->slug, 
+    'screen_function' => 'bzstats_member_screen', 
+    'position' => 40 ) 
+  );
+	  	
+} 
+add_action( 'bp_setup_nav', 'bzstats_setup_nav', 10 );
+
+
+/**
+ * Load a user's Metrics page.
+ *
+ * @global object $bp BuddyPress global settings
+ * @since 2.0
+ */
+function bzstats_member_screen() {
+  do_action( 'bzstats_member_screen' );
+  bp_core_load_template( apply_filters( 'bp_template_screen', 'members/single/metrics' ) );
+}
+
+/**
  * Admin Settings Page
  */
 
