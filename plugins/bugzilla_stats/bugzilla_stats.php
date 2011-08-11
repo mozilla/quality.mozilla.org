@@ -45,13 +45,14 @@ License: MPL
  *
  * ***** END LICENSE BLOCK ***** */
 require_once('class.BugzillaStatisticsService.php');
+$bzstats_version = 2;
 
 $bugzilla_stats_options = get_option('bzstats_settings');
 $bugzilla_stats_service = false;
 if ($bugzilla_stats_options !== false) {
     $bugzilla_stats_service = new BugzillaStatisticsService(
         $bugzilla_stats_options['bugzilla_url'], array(
-            CURLOPT_TIMEOUT => 10,
+            CURLOPT_TIMEOUT => $bugzilla_stats_options['timeout'],
             CURLOPT_SSL_VERIFYPEER => false,
         )
     );
@@ -139,6 +140,34 @@ class BugzillaUserNotFoundException extends Exception { }
 
 add_action('admin_menu', 'bzstats_admin_menu');
 add_action('admin_init', 'bzstats_admin_init');
+add_action('plugins_loaded', 'bzstats_update');
+
+function bzstats_update() {
+    global $bzstats_version;
+
+    $version = get_option('bzstats_version');
+    if ($version === false || $version < $bzstats_version) {
+        $settings = get_option('bzstats_settings');
+        $defaults = array(
+            'bugzilla_url' => 'https://bugzilla.mozilla.com',
+            'delay' => 60 * 60 * 24,
+            'timeout' => 3
+        );
+
+        if ($settings === false) {
+            $settings = $defaults;
+        } else {
+            foreach ($defaults as $key => $value) {
+                if (!array_key_exists($key, $settings)) {
+                    $settings[$key] = $value;
+                }
+            }
+        }
+
+        update_option('bzstats_settings', $settings);
+        update_option('bzstats_version', $bzstats_version);
+    }
+}
 
 function bzstats_admin_menu() {
     add_options_page('Bugzilla Stats Settings', 'Bugzilla Stats',
@@ -155,12 +184,15 @@ function bzstats_admin_init() {
                        'bzstats_url_input', 'bzstats', 'bzstats_main');
     add_settings_field('bzstats_delay', 'Update Interval (seconds)',
                        'bzstats_delay_input', 'bzstats', 'bzstats_main');
+    add_settings_field('bzstats_timeout', 'Bugzilla Request Timeout (seconds)',
+                       'bzstats_timeout_input', 'bzstats', 'bzstats_main');
 }
 
 function bzstats_settings_validate($input) {
     $newinput = array();
     $newinput['bugzilla_url'] = esc_url_raw($input['bugzilla_url'], array('http', 'https'));
     $newinput['delay'] = (int) $input['delay'];
+    $newinput['timeout'] = (int) $input['timeout'];
 
     return $newinput;
 }
@@ -177,6 +209,13 @@ function bzstats_delay_input() {
     $settings = get_option('bzstats_settings');
 ?>
 <input id="bzstats_delay" name="bzstats_settings[delay]" size="8" type="text" value="<?php echo $settings['delay']; ?>" />
+<?php
+}
+
+function bzstats_timeout_input() {
+    $settings = get_option('bzstats_settings');
+?>
+<input id="bzstats_timeout" name="bzstats_settings[timeout]" size="8" type="text" value="<?php echo $settings['timeout']; ?>" />
 <?php
 }
 

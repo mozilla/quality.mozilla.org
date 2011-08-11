@@ -58,9 +58,6 @@
       
       <?php endif; ?>
 
-      <?php if ($stats) : ?><pre style="width:100%;max-height:300px;overflow:auto;border:1px solid green;"><?php print_r($stats); ?></pre><?php endif; ?>
-      <?php if ($e) : ?><pre style="width:100%;max-height:300px;overflow:auto;border:1px solid red;"><?php print_r($e); ?></pre><?php endif; ?>
-
   <?php endif; ?>
 
 				<?php do_action( 'bp_after_member_body' ) ?>
