@@ -1,9 +1,9 @@
 === TTC User Registration Bot Detector ===
-Contributors: Linda MacPhee-Cobb
+Contributors: Linda MacPhee-Cobb, Eric Celeste
 Tags: bot, bots, user, registration, block
 Requires at least: 2.5
-Tested up to: 2.5.1
-Stable tag: 2.4
+Tested up to: 3.2.1
+Stable tag: 3.0
 
 This plugin blocks and logs most bot user registrations.
 
@@ -18,5 +18,8 @@ The management page will also give you a list of all attempts at registration an
 Upload this plugin to your plugin directory and activate it.
 
 == Screenshots ==
-This is the management screen screenshot.jpg
+1. This is the management screen for blocking bots screenshot.jpg
+2. This is the screen for listing users screenshot2.jpg
+
+
 
