@@ -123,6 +123,8 @@ function get_bugzilla_stats_for_email($user_email) {
     $stats = array(
         'bug_count' => $service->get_user_bug_count($user_email),
         'recent_bug_count' => $service->get_user_recent_bug_count($user_email),
+        'bugs_verified_count' => $service->get_user_bugs_verified_count($user_email),
+        'bugs_confirmed_count' => $service->get_user_bugs_confirmed_count($user_email),
         'updated_at' => time()
     );
 
@@ -174,7 +176,8 @@ function bzstats_member_screen() {
   bp_core_load_template( apply_filters( 'bp_template_screen', 'members/single/metrics' ) );
 }
 
-/**
+
+/*
  * Admin Settings Page
  */
 

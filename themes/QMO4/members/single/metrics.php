@@ -36,9 +36,16 @@
           <dt>Total bugs opened</dt>
           <dd><a title="See this buglist" rel="external" href="<?php echo esc_html($bz_settings[bugzilla_url]); ?>/buglist.cgi?emailtype1=exact&emailreporter1=1&email1=<?php echo urlencode($user_email); ?>">
             <?php echo $stats['bug_count']; ?></a></dd>
+          
           <dt>Bugs opened in the last 30 days</dt> 
           <dd><a title="See this buglist" rel="external" href="<?php echo esc_html($bz_settings[bugzilla_url]); ?>/buglist.cgi?emailtype1=exact&emailreporter1=1&email1=<?php echo urlencode($user_email); ?>&chfield=[Bug%20creation]&chfieldto=Now&chfieldfrom=<?php echo urlencode(date('Y-m-d', strtotime('-30 days'))); ?>">
             <?php echo $stats['recent_bug_count']; ?></a></dd>
+          
+          <dt>Total bugs verified</dt>
+          <dd><?php echo $stats['bugs_verified_count']; ?></dd>
+          
+          <dt>Total bugs confirmed</dt>
+          <dd><?php echo $stats['bugs_confirmed_count']; ?></dd>
         </dl>
       
       <?php elseif ( $e->getCode() == '10' ) : ?>
@@ -55,7 +62,7 @@
         <p id="message" class="alert">Sorry, Bugzilla stats aren't available right now.</p>
       
       <?php endif; ?>
-
+      
 		  <?php do_action( 'bp_after_member_body' ) ?>
 
 			</div><!-- #item-body -->

@@ -114,6 +114,24 @@ class BugzillaStatisticsService {
         }
     }
 
+    public function get_user_bugs_verified_count($user_email) {
+        $search_params = array(
+            'names' => array($user_email),
+        );
+
+        $search_result = $this->bugzilla_call('BMO.getBugsVerifier', $search_params);
+        return count($search_result[$user_email]);
+    }
+
+    public function get_user_bugs_confirmed_count($user_email) {
+        $search_params = array(
+            'names' => array($user_email),
+        );
+
+        $search_result = $this->bugzilla_call('BMO.getBugsConfirmer', $search_params);
+        return count($search_result[$user_email]);
+    }
+
     /**
      * Calls a function in the Bugzilla XML-RPC API
      */
