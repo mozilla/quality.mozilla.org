@@ -10,7 +10,7 @@ form ul, form ol { list-style: none; margin: 0 0 1.4em; }
 a img { border: 0; }
 input, select, textarea { font-family: inherit; font-size: 100%; }
 
-html .mceContentBody { max-width: 690px; font: 13px/1.538 Georgia, Times, serif; color: #333; }
+html .mceContentBody { padding: 10px; max-width: 690px; font: 13px/1.538 Georgia, Times, serif; color: #333; }
 
 h1, h2, h3 { color: #390; font-weight: normal; }
 h1, h2, .entry-title { font-size: 1.69em; line-height: 1.2; margin-bottom: .5em; }
