@@ -2,8 +2,8 @@
 Contributors: mmuro
 Tags: restrict, admin, administration, cms, categories, category
 Requires at least: 3.0
-Tested up to: 3.1.2
-Stable tag: 2.2.2
+Tested up to: 3.2.1
+Stable tag: 2.3
 
 Restrict the categories that users can view, add, and edit in the admin panel.
 
@@ -42,6 +42,10 @@ Selecting categories for a user will <em>override</em> the categories you've sel
 
 In other words, Restrict Categories allows you complete control over groups of users while also allowing you to selectively change a setting for a single user.
 
+= Will categories be restricted if I use a mobile or remote application? =
+
+Yes! Using a mobile app (such as the WordPress iOS app) or remote publishing desktop app (MarsEdit, Microsoft Word) will restrict users as if they were logged into the website.
+
 == Screenshots ==
 
 1. Roles and Users with selected categories to restrict
@@ -49,6 +53,11 @@ In other words, Restrict Categories allows you complete control over groups of u
 3. The Categories selection on the Add New Post screen with restricted categories
 
 == Changelog ==
+
+**Version 2.3**
+
+* Fix bug where custom taxonomies were being hidden on the Add Post screen
+* Added support for WPML categories
 
 **Version 2.2.2**
 
@@ -130,6 +139,9 @@ In other words, Restrict Categories allows you complete control over groups of u
 
 == Upgrade Notice ==
 
+= 2.3 =
+Bug fix for hidden custom taxonomies on the Add Post screen. Added support for WPML users.
+
 = 2.2.2 =
 Recommended upgrade for XML-RPC users! Fixes bug that accidentally broke restriction for XML-RPC.
 
@@ -146,7 +158,7 @@ Recommended upgrade! Corrects error that prevented the tabbed interface from bei
 Improved the UI by separating the Roles and Users into their own tabs.
 
 = 1.9 =
-Added support for XML-RPC so categories are now restricted for mobile devices (i.e. WordPress iPhone app)
+Added support for XML-RPC so categories are now restricted for mobile devices (i.e. WordPress iPhone app).
 
 = 1.8 =
 Bug fix for WordPress 3.1 users that broke user restriction.

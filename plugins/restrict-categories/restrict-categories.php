@@ -3,7 +3,7 @@
 Plugin Name: Restrict Categories
 Description: Restrict the categories that users can view, add, and edit in the admin panel.
 Author: Matthew Muro
-Version: 2.2.2
+Version: 2.3
 */
 
 /*
@@ -32,14 +32,11 @@ class RestrictCategories{
 	public function __construct(){
 		/* Make sure we are in the admin before proceeding. */
 		if ( is_admin() ) {
-		
-			$post_type = ( isset($_GET['post_type']) ) ? $_GET['post_type'] : false;
+			$post_type = ( isset( $_GET['post_type'] ) ) ? $_GET['post_type'] : false;
 
-			/* If the page is the Posts screen, do our thing, otherwise chill */
-			if ( $post_type == false || $post_type == 'post' ) {
-				/* Where the magic happens */
+  			/* If the page is the Posts screen, do our thing, otherwise chill */
+			if ( $post_type == false || $post_type == 'post' )
 				add_action( 'admin_init', array( &$this, 'posts' ) );
-			}
 			
 			/* Build options and settings pages. */
 			add_action( 'admin_init', array( &$this, 'init' ) );
@@ -353,10 +350,16 @@ class RestrictCategories{
 
 		/* Selected categories for User overwrites Roles selection */
 		if ( is_array( $settings_user ) && !empty( $settings_user[ $user_login . '_user_cats' ] ) ) {
-				
+			
 			/* Build the category list */
 			foreach ( $settings_user[ $user_login . '_user_cats' ] as $category ) {
-				$this->cat_list .= get_term_by( 'slug', $category, 'category' )->term_id . ',';
+				$term_id = get_term_by( 'slug', $category, 'category' )->term_id;
+				
+				/* If WPML is installed, return the translated ID */
+				if ( function_exists( 'icl_object_id' ) )
+					$term_id = icl_object_id( $term_id, 'category', true );
+				
+				$this->cat_list .= $term_id . ',';
 			}
 
 			$this->cat_filters( $this->cat_list );
@@ -368,7 +371,13 @@ class RestrictCategories{
 					
 					/* Build the category list */
 					foreach ( $settings[ $key . '_cats' ] as $category ) {
-						$this->cat_list .= get_term_by( 'slug', $category, 'category' )->term_id . ',';
+						$term_id = get_term_by( 'slug', $category, 'category' )->term_id;
+						
+						/* If WPML is installed, return the translated ID */
+						if ( function_exists( 'icl_object_id' ) )
+							$term_id = icl_object_id( $term_id, 'category', true );
+						
+						$this->cat_list .= $term_id . ',';
 					}
 				}
 
@@ -435,7 +444,7 @@ class RestrictCategories{
 	 * @return $excluded string Appended clause on WHERE of get_taxonomy
 	 */
 	public function exclusions(){
-		$excluded = ' AND t.term_id IN (' . $this->cat_list . ')';
+		$excluded = " AND ( t.term_id IN ( $this->cat_list ) OR tt.taxonomy NOT IN ( 'category' ) )";
 		
 		return $excluded;
 	}
