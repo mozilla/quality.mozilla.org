@@ -27,7 +27,7 @@
         $user_email = $user->user_email;
         $bz_settings = get_option('bzstats_settings');
         
-        try {  $stats = get_bugzilla_stats_for_email($user->user_email);  } 
+        try {  $stats = get_bugzilla_stats_for_user($user);  } 
         catch (Exception $e) {  }
       ?>
 
