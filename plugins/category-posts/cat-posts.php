@@ -4,7 +4,7 @@ Plugin Name: Category Posts Widget
 Plugin URI: http://jameslao.com/2011/03/24/category-posts-widget-3-2/
 Description: Adds a widget that can display posts from a single category.
 Author: James Lao	
-Version: 3.2
+Version: 3.3
 Author URI: http://jameslao.com/
 */
 
@@ -42,7 +42,7 @@ function widget($args, $instance) {
 		$instance["title"] = $category_info->name;
   }
 
-  $valid_sort_orders = array('date', 'title', 'comment_count', 'random');
+  $valid_sort_orders = array('date', 'title', 'comment_count', 'rand');
   if ( in_array($instance['sort_by'], $valid_sort_orders) ) {
     $sort_by = $instance['sort_by'];
     $sort_order = (bool) $instance['asc_sort_order'] ? 'ASC' : 'DESC';
@@ -180,7 +180,7 @@ function form($instance) {
           <option value="date"<?php selected( $instance["sort_by"], "date" ); ?>>Date</option>
           <option value="title"<?php selected( $instance["sort_by"], "title" ); ?>>Title</option>
           <option value="comment_count"<?php selected( $instance["sort_by"], "comment_count" ); ?>>Number of comments</option>
-          <option value="random"<?php selected( $instance["sort_by"], "random" ); ?>>Random</option>
+          <option value="rand"<?php selected( $instance["sort_by"], "rand" ); ?>>Random</option>
         </select>
 			</label>
     </p>
