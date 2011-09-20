@@ -426,7 +426,11 @@ function bp_group_management_add_member_list( $id ) {
 		<h3><?php _e('Add members to group', 'bp-group-management') ?></h3>
 		<ul>
 		<?php
-			$query = "SELECT `ID` FROM {$wpdb->users} WHERE spam = 0";
+			$query = "SELECT `ID` FROM {$wpdb->users}";
+
+			if ( is_multisite() )
+				$query .= " WHERE spam = 0";
+
 			$members = $wpdb->get_results( $query, ARRAY_A );
 
 			foreach ( $members as $key => $m ) {

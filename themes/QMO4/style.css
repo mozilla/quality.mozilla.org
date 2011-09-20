@@ -128,9 +128,9 @@ input[type='button']:hover, input[type='button']:focus {
 }
 
 /*** @Headings *********/
-h1, h2, h3, h4 { color: #390; font-weight: normal; }
+h1, h2, h3, h4 { color: #390; font-weight: normal; line-height: 1.2; }
 h1 { font-size: 2.32em; }
-h2, .entry-content h1, .entry-title { font-size: 1.69em; line-height: 1.2; margin-bottom: .5em; }
+h2, .entry-content h1, .entry-title { font-size: 1.69em; margin-bottom: .5em; }
 h3 { font-size: 1.385em; }
 h4 { font-size: 1.2em; }
 h5, h6 { font-size: 1em; }
@@ -152,7 +152,7 @@ legend { color: #390; font-size: 1.2em; }
 #tagline { color: #999; font-size: 2.33em; }
 #tagline strong { color: #369; }
 #home-head ul.teams-list { list-style: none; margin: 1em -3% 1em 0; font-size: 1.231em; line-height: 1.2; overflow: hidden; }
-#home-head ul.teams-list li { width: 20%; margin-right: 5%; float: left; text-align: center; }
+#home-head ul.teams-list li { width: 15%; margin-right: 5%; float: left; text-align: center; }
 #home-head ul.teams-list a img { width: 70%; height: auto; text-decoration: none; display: block; margin: 0 auto .5em; }
 #home-head ul.teams-list a:hover img, #home-head ul.teams-list a:focus img, #home-head ul.teams-list a:active img { opacity: .85; }
 
