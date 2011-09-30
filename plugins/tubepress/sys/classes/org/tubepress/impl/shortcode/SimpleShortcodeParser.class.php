@@ -57,17 +57,22 @@ class org_tubepress_impl_shortcode_SimpleShortcodeParser implements org_tubepres
     {
         $ioc     = org_tubepress_impl_ioc_IocContainer::getInstance();
         $context = $ioc->get('org_tubepress_api_exec_ExecutionContext');
-        
-	/* what trigger word are we using? */
+
+        /* what trigger word are we using? */
         $keyword = $context->get(org_tubepress_api_const_options_names_Advanced::KEYWORD);
-        
-	if (!$this->somethingToParse($content, $keyword)) {
+
+        if (!$this->somethingToParse($content, $keyword)) {
             return;
         }
 
         $toReturn = array();
 
-        preg_match("/\[$keyword\b(.*)\]/", $content, $matches);
+        /* Match everything in square brackets after the trigger */
+        $regexp = "\[$keyword\b(.*)\]";
+
+        org_tubepress_impl_log_Log::log(self::LOG_PREFIX, 'Regular expression for content is %s', $regexp);
+
+        preg_match("/$regexp/", $content, $matches);
 
         if (sizeof($matches) === 0) {
             org_tubepress_impl_log_Log::log(self::LOG_PREFIX, 'No shortcodes detected in content');

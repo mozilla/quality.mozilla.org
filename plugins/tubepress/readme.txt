@@ -16,23 +16,6 @@ Displays gorgeous YouTube and Vimeo galleries in your posts, pages, and/or sideb
 
 == Changelog ==
 
-= 2.2.9 =
-* Allow for loading of user themes (regression fix)
-* Multiple shortcodes on a single page WordPress page work again (regression fix)
-* Graceful handling of "No videos found" error when using TubePress Pro in a standalone environment
-
-= 2.2.8 =
-* Auto-upgrade in WordPress no longer wipes out custom themes (closes issue 349)
-* Vimeo galleries are no longer affected by value of arg_separator.input INI setting (closes issue 307)
-* JS and CSS now load correctly under HTTPS (closes issue 371)
-* Options page in WordPress now loads correctly on web servers with mod_security and ASL ruleset loaded (closes issue 184)
-* Improved reliability of YouTube feed result count (closes issue 379)
-* Fatal error in PHP 5.3.7 or higher (closes issue 386)
-* Improved reliability of shortcode parsing in WordPress widget
-* IE9 support (closes issue 263)
-* Ajax pagination now works correctly when using multiple video sources in a single gallery (TubePress Pro only)
-* Improved reliability of Ajax search input (TubePress Pro only)
-
 = 2.2.7 =
 * Fixed bug that prevented Shadowbox from working in certain situations
 
@@ -65,7 +48,7 @@ Displays gorgeous YouTube and Vimeo galleries in your posts, pages, and/or sideb
 
 = 2.2.0 =
 * Interactive searching! (closes issue 138 )
-* YouTube iframe embedded player (closes issue 265 and issue 259 )
+* YouTube iframe embedded player (closes issue 265  and  issue 259 )
 * Improved inclusion of JS/CSS resources in WordPress environments (closes issue 191 )
 * Ability to restrict search-based galleries to videos from a specific YouTube/Vimeo user
 * New HTTP subsystem provides faster and more robust feed retrieval

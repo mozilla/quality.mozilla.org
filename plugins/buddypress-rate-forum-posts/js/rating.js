@@ -27,3 +27,23 @@ jQuery(document).ready( function() {
 		jQuery( '.rfp-show', this ).hide();	  // using a nice way to select children of this
 	});
 });
+
+
+
+
+
+
+//THIS CODE IS DEPRECEIATED IN BP VERSION 1.2.4+ AND POST RATING PLUGIN VERSION 1.4
+/*
+jQuery(document).ready( function() {
+	if ( typeof(rfp_alter_posts_legacy) != "undefined" ) {
+		jQuery.getJSON( blogUrl + "/wp-content/plugins/buddypress-rate-forum-posts/rate.php", { topic_id: topic_id }, function( json ){
+			if (json) { 
+				jQuery.each( json, function( post_id, rfp_class ){	
+					jQuery( '#post-'+post_id ).addClass( rfp_class ); // apply the css class
+				});
+			}
+		});
+	}
+});
+*/

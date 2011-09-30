@@ -313,10 +313,9 @@ class org_tubepress_impl_options_OptionsReference
 
             $ioc                           = org_tubepress_impl_ioc_IocContainer::getInstance();
             $fs                            = $ioc->get('org_tubepress_api_filesystem_Explorer');
-            $themeHandler                  = $ioc->get('org_tubepress_api_theme_ThemeHandler');
             $tubepressBaseInstallationPath = $fs->getTubePressBaseInstallationPath();
             $sysdir                        = "$tubepressBaseInstallationPath/sys/ui/themes";
-            $userdir                       = $themeHandler->getUserContentDirectory() . '/themes';
+            $userdir                       = "$tubepressBaseInstallationPath/content/themes";
             $result                        = array();
             $sysdirs                       = $fs->getDirectoriesInDirectory($sysdir, 'Options Reference');
             $userdirs                      = $fs->getDirectoriesInDirectory($userdir, 'Options Reference');

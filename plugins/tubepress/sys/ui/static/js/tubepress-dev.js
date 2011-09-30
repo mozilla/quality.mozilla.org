@@ -435,27 +435,12 @@ var TubePressCompat = (function () {
 
 }());
 
-var TubePressDepCheck = (function () {
-	
-	var init = function () {
-		
-		var version = jQuery.fn.jquery;
-
-		if (/1\.6|7|8|9\.[0-9]+/.test(version) === false) {
-
-			console.log("TubePress requires jQuery 1.6 or higher. This page is running version " + version);
-		}
-	};
-	
-	return { init : init };
-	
-}());
-
-var tubePressBoot = function () {
-	
+/**
+ * This is here for backwards compatability only.
+ */
+function safeTubePressInit() {
 	TubePressCompat.init();
-	TubePressDepCheck.init();
-};
+}
 
 /* append our init method to after all the other (potentially full of errors) ready blocks have 
  * run. http://stackoverflow.com/questions/1890512/handling-errors-in-jquerydocument-ready */
@@ -466,21 +451,15 @@ if (!jQuery.browser.msie) {
 	jQuery.ready = function () {
 	
 		try {
-			
 			oldReady.apply(this, arguments);
+		} catch (e) { }
 		
-		} catch (e) {
-			
-			console.log("Caught exception when booting TubePress: " + e);
-		}
-		
-		tubePressBoot();
+		TubePressCompat.init();
 	};
 	
 } else {
 	
 	jQuery(document).ready(function () {
-		
-		tubePressBoot();
+		TubePressCompat.init();
 	});
 }

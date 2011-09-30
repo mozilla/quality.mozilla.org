@@ -150,13 +150,11 @@ class org_tubepress_impl_options_FormHandler
             if ($optionName == org_tubepress_api_const_options_names_Display::THEME) {
 
                 $ioc                  = org_tubepress_impl_ioc_IocContainer::getInstance();
-                $themeHandler         = $ioc->get('org_tubepress_api_theme_ThemeHandler');
                 $fs                   = $ioc->get('org_tubepress_api_filesystem_Explorer');
-                $userContentDir       = $themeHandler->getUserContentDirectory();
                 $baseInstallationPath = $fs->getTubePressBaseInstallationPath();
 
                 $metaArray[org_tubepress_api_const_template_Variable::OPTIONS_PAGE_OPTIONS_DESC] = sprintf($messageService->_("options-desc-$optionName"),
-                     "$userContentDir/themes", "$baseInstallationPath/sys/ui/themes");
+                     "$baseInstallationPath/content/themes", "$baseInstallationPath/sys/ui/themes");
             } else {
                 $metaArray[org_tubepress_api_const_template_Variable::OPTIONS_PAGE_OPTIONS_DESC] = $messageService->_("options-desc-$optionName");
             }

@@ -1156,7 +1156,7 @@ function qmo_activity_filter( $a, $activities ) {
    * For example, the following will only filter them on the main activity page.
    * Member activity streams have their own loop where we're already excluding unwanted actions.
    */
-  if ( !bp_is_current_component( $bp->activity->slug ) )
+  if ( $bp->current_component != $bp->activity->slug )
     return $activities;
 
   /* Filter out unwanted actions */
