@@ -227,8 +227,6 @@ function bb_bozon( $user_id, $topic_id = 0 ) {
 		$topic = get_topic( $topic_id );
 		$user = bb_get_user( $user_id );
 
-		$bozo_topics_key = $bbdb->prefix . 'bozo_topics';
-
 		if ( isset($topic->bozos[$user_id]) )
 			$topic->bozos[$user_id]++;
 		elseif ( is_array($topic->bozos) )
@@ -237,13 +235,13 @@ function bb_bozon( $user_id, $topic_id = 0 ) {
 			$topic->bozos = array($user_id => 1);
 		bb_update_topicmeta( $topic_id, 'bozos', $topic->bozos );
 		
-		if ( isset($user->{$bozo_topics_key}[$topic_id]) )
-			$user->{$bozo_topics_key}[$topic_id]++;
+		if ( isset($user->bozo_topics[$topic_id]) )
+			$user->bozo_topics[$topic_id]++;
 		elseif ( is_array($user->bozo_topics) )
-			$user->{$bozo_topics_key}[$topic_id] = 1;
+			$user->bozo_topics[$topic_id] = 1;
 		else
-			$user->$bozo_topics_key = array($topic_id => 1);
-		bb_update_usermeta( $user_id, $bozo_topics_key, $user->$bozo_topics_key );
+			$user->bozo_topics = array($topic_id => 1);
+		bb_update_usermeta( $user_id, $bbdb->prefix . 'bozo_topics', $user->bozo_topics );
 	}
 }
 
@@ -258,16 +256,13 @@ function bb_fermion( $user_id, $topic_id = 0 ) {
 	else {
 		$topic = get_topic( $topic_id );
 		$user = bb_get_user( $user_id );
-
-		$bozo_topics_key = $bbdb->prefix . 'bozo_topics';
-
 		if ( --$topic->bozos[$user_id] < 1 )
 			unset($topic->bozos[$user_id]);
 		bb_update_topicmeta( $topic_id, 'bozos', $topic->bozos );
 		
-		if ( --$user->{$bozo_topics_key}[$topic_id] < 1 )
-			unset($user->{$bozo_topics_key}[$topic_id]);
-		bb_update_usermeta( $user_id, $bozo_topics_key, $user->$bozo_topics_key );
+		if ( --$user->bozo_topics[$topic_id] < 1 )
+			unset($user->bozo_topics[$topic_id]);
+		bb_update_usermeta( $user_id, $bbdb->prefix . 'bozo_topics', $user->bozo_topics );
 	}
 }
 

@@ -11,12 +11,12 @@ Template Name: Links
 
 		<?php do_action( 'bp_before_blog_links' ) ?>
 
-		<div class="page" id="blog-latest" role="main">
+		<div class="page" id="blog-latest">
 
 			<h2 class="pagetitle"><?php _e( 'Links', 'buddypress' ) ?></h2>
 
 			<ul id="links-list">
-				<?php wp_list_bookmarks(); ?>
+				<?php get_links_list(); ?>
 			</ul>
 
 		</div>

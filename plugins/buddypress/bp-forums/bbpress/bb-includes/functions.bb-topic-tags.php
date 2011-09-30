@@ -94,26 +94,18 @@ function bb_remove_topic_tag( $tt_id, $user_id, $topic_id ) {
 	$_tag = bb_get_tag( $tt_id );
 
 	do_action('bb_pre_tag_removed', $tt_id, $user_id, $topic_id);
-	$currents = $wp_taxonomy_object->get_object_terms( $topic_id, 'bb_topic_tag', array( 'user_id' => $user_id, 'fields' => 'all' ) );
-	if ( !is_array( $currents ) )
+	$current_tag_ids = $wp_taxonomy_object->get_object_terms( $topic_id, 'bb_topic_tag', array( 'user_id' => $user_id, 'fields' => 'tt_ids' ) );
+	if ( !is_array($current_tag_ids) )
 		return false;
 
-	$found_tag_to_remove = false;
-	$current_tag_term_ids = array();
-	foreach ( $currents as $current ) {
-		if ( $current->term_taxonomy_id == $tt_id ) {
-			$found_tag_to_remove = true;
-			continue;
-		}
-		$current_tag_term_ids[] = $current->term_id;
-	}
+	$current_tag_ids = array_map( 'intval', $current_tag_ids );
 
-	if ( !$found_tag_to_remove )
+	if ( false === $pos = array_search( $tt_id, $current_tag_ids ) )
 		return false;
 
-	$current_tag_term_ids = array_map( 'intval', $current_tag_term_ids );
+	unset($current_tag_ids[$pos]);
 
-	$tt_ids = $wp_taxonomy_object->set_object_terms( $topic_id, array_values($current_tag_term_ids), 'bb_topic_tag', array( 'user_id' => $user_id ) );
+	$tt_ids = $wp_taxonomy_object->set_object_terms( $topic_id, array_values($current_tag_ids), 'bb_topic_tag', array( 'user_id' => $user_id ) );
 	if ( is_array( $tt_ids ) ) {
 		global $bbdb;
 		$bbdb->query( $bbdb->prepare(
@@ -179,9 +171,6 @@ function bb_destroy_tag( $tt_id, $recount_topics = true ) {
 	$tt_id = (int) $tt_id;
 
 	if ( !$tag = bb_get_tag( $tt_id ) )
-		return false;
-
-	if ( is_wp_error($tag) )
 		return false;
 
 	$topic_ids = bb_get_tagged_topic_ids( $tag->term_id );
@@ -281,7 +270,7 @@ function bb_get_topic_tags( $topic_id = 0, $args = null ) {
 	$cache_id = $topic_id . serialize( $args );
 
 	$terms = wp_cache_get( $cache_id, 'bb_topic_tag_terms' );
-	if ( false === $terms ) {
+	if ( empty( $terms ) ) {
 		$terms = $wp_taxonomy_object->get_object_terms( (int) $topic->topic_id, 'bb_topic_tag', $args );
 		wp_cache_set( $cache_id, $terms, 'bb_topic_tag_terms' );
 	}
@@ -350,8 +339,7 @@ function bb_get_tagged_topic_ids( $tag_id ) {
 }
 
 function get_tagged_topics( $args ) {
-	global $tagged_topic_count;
-	$defaults = array( 'tag_id' => false, 'page' => 1, 'number' => false, 'count' => true );
+	$defaults = array( 'tag_id' => false, 'page' => 1, 'number' => false );
 	if ( is_numeric( $args ) )
 		$args = array( 'tag_id' => $args );
 	else
@@ -364,11 +352,9 @@ function get_tagged_topics( $args ) {
 	$args = wp_parse_args( $args, $defaults );
 	extract( $args, EXTR_SKIP );
 
-	$q = array('tag_id' => (int) $tag_id, 'page' => (int) $page, 'per_page' => (int) $number, 'count' => $count );
+	$q = array('tag_id' => (int) $tag_id, 'page' => (int) $page, 'per_page' => (int) $number);
 
 	$query = new BB_Query( 'topic', $q, 'get_tagged_topics' );
-	$tagged_topic_count = $query->found_rows;
-
 	return $query->results;
 }
 
@@ -409,33 +395,23 @@ function bb_get_top_tags( $args = null ) {
 	if ( is_wp_error( $terms ) )
 		return false;
 
-	foreach ( $terms as $term )
-	       	_bb_make_tag_compat( $term );
+	for ( $i = 0; isset($terms[$i]); $i++ )
+		_bb_make_tag_compat( $terms[$i] );
 
 	return $terms;
 }
 
-/**
- * Adds some back-compat properties/elements to a term.
- *
- * Casting $tag->term_taxonomy_id to an integer is important since
- * we check it against is_integer() in bb_get_tag()
- *
- * @internal
- */
 function _bb_make_tag_compat( &$tag ) {
 	if ( is_object($tag) && isset($tag->term_id) ) {
-		$tag->term_taxonomy_id = (int) $tag->term_taxonomy_id;
 		$tag->tag_id    =& $tag->term_taxonomy_id;
 		$tag->tag       =& $tag->slug;
 		$tag->raw_tag   =& $tag->name;
 		$tag->tag_count =& $tag->count;
 	} elseif ( is_array($tag) && isset($tag['term_id']) ) {
-		$tag['term_taxonomy_id'] = (int) $tag['term_taxonomy_id'];
-		$tag['tag_id']    =& $tag['term_taxonomy_id'];
-		$tag['tag']       =& $tag['slug'];
-		$tag['raw_tag']   =& $tag['name'];
-		$tag['tag_count'] =& $tag['count'];
+		$tag->tag_id    =& $tag['term_taxonomy_id'];
+		$tag->tag       =& $tag['slug'];
+		$tag->raw_tag   =& $tag['name'];
+		$tag->tag_count =& $tag['count'];
 	}
 }
 
