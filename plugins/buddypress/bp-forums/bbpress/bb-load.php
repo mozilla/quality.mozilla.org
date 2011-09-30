@@ -22,7 +22,8 @@ if ( version_compare( PHP_VERSION, '4.3', '<' ) ) {
 
 
 // Modify error reporting levels to exclude PHP notices
-error_reporting(E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING);
+error_reporting( E_ALL ^ E_NOTICE );
+
 
 
 /**
@@ -179,6 +180,3 @@ if ( file_exists( BB_PATH . 'bb-config.php') ) {
 	die();
 
 }
-
-if ( isset( $_GET['doit'] ) && 'bb-subscribe' == $_GET['doit'] )
-	require( BB_PATH . 'bb-includes/action.subscribe.php' );

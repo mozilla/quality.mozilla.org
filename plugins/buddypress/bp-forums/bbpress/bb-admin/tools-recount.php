@@ -9,61 +9,46 @@ if ( 'post' == strtolower( $_SERVER['REQUEST_METHOD'] ) ) {
 	$messages = array();
 
 	if ( !empty( $_POST['topic-posts'] ) ) {
-		$message = bb_recount_topic_posts();
-		$messages[] = $message[1];
+		$messages[] = bb_recount_topic_posts();
 	}
 
 	if ( !empty( $_POST['topic-voices'] ) ) {
-		$message = bb_recount_topic_voices();
-		$messages[] = $message[1];
+		$messages[] = bb_recount_topic_voices();
 	}
 
 	if ( !empty( $_POST['topic-deleted-posts'] ) ) {
-		$message = bb_recount_topic_deleted_posts();
-		$messages[] = $message[1];
+		$messages[] = bb_recount_topic_deleted_posts();
 	}
 
 	if ( !empty( $_POST['forums'] ) ) {
-		$message = bb_recount_forum_topics();
-		$messages[] = $message[1];
-		$message = bb_recount_forum_posts();
-		$messages[] = $message[1];
+		$messages[] = bb_recount_forum_topics();
+		$messages[] = bb_recount_forum_posts();
 	}
 
 	if ( !empty( $_POST['topics-replied'] ) ) {
-		$message = bb_recount_user_topics_replied();
-		$messages[] = $message[1];
+		$messages[] = bb_recount_user_topics_replied();
 	}
 
 	if ( !empty( $_POST['topic-tag-count'] ) ) {
-		$message = bb_recount_topic_tags();
-		$messages[] = $message[1];
+		$messages[] = bb_recount_topic_tags();
 	}
 
 	if ( !empty( $_POST['tags-tag-count'] ) ) {
-		$message = bb_recount_tag_topics();
-		$messages[] = $message[1];
+		$messages[] = bb_recount_tag_topics();
 	}
 
 	if ( !empty( $_POST['tags-delete-empty'] ) ) {
-		$message = bb_recount_tag_delete_empty();
-		$messages[] = $message[1];
+		$messages[] = bb_recount_tag_delete_empty();
 	}
 
 	if ( !empty( $_POST['clean-favorites'] ) ) {
-		$message = bb_recount_clean_favorites();
-		$messages[] = $message[1];
+		$messages[] = bb_recount_clean_favorites();
 	}
 
 	bb_recount_list();
 	foreach ( (array) $recount_list as $item ) {
 		if ( isset($item[2]) && isset($_POST[$item[0]]) && 1 == $_POST[$item[0]] && is_callable($item[2]) ) {
-			$message = call_user_func( $item[2] );
-			if ( is_array( $message ) ) {
-				$messages[] = $message[1];
-			} else {
-				$messages[] = $message;
-			}
+			$messages[] = call_user_func( $item[2] );
 		}
 	}
 

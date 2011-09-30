@@ -1,5 +1,5 @@
 <?php
-// Last sync [WP11537] - split out from wp-includes/classes.php
+// Last sync [WP11537]
 
 /**
  * Send XML response back to AJAX request.

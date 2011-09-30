@@ -25,8 +25,6 @@ function bb_current_user_can($capability) {
 
 	if ( empty($bb_current_user) ) {
 		$retvalue = false;
-		if ( ( $capability == 'write_topic' || $capability == 'write_topics' ) && !bb_is_login_required() )
-			$retvalue = true;
 	} else {
 		$retvalue = call_user_func_array(array(&$bb_current_user, 'has_cap'), $args);
 	}

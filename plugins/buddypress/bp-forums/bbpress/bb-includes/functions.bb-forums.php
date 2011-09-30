@@ -44,11 +44,9 @@ function _bb_get_cached_data( $keys, $group, $callback ) {
 	$return = array();
 	foreach ( $keys as $key ) {
 		// should use wp_cache_get_multi if available
-		if ( false === $value = wp_cache_get( $key, $group ) ) {
-			if ( !$value = call_user_func( $callback, $key ) ) {
+		if ( false === $value = wp_cache_get( $key, $group ) )
+			if ( !$value = call_user_func( $group, $key ) )
 				continue;
-			}
-		}
 		$return[$key] = $value;
 	}
 	return $return;
@@ -77,7 +75,7 @@ function bb_get_forums( $args = null ) {
 	$where = apply_filters( 'get_forums_where', $where );
 	$key = md5( serialize( $where . '|' . $order_by ) ); // The keys that change the SQL query
 	if ( false !== $forum_ids = wp_cache_get( $key, 'bb_forums' ) ) {
-		$forums = _bb_get_cached_data( $forum_ids, 'bb_forum', 'bb_get_forum' );
+		$forums = _bb_get_cached_data( $forum_ids, 'bb_forum', 'get_forum' );
 	} else {
 		$forum_ids = array();
 		$forums = array();
@@ -133,25 +131,27 @@ function bb_get_forum( $id ) {
 	}
 
 	// not else
-	if ( is_numeric($id) )
-		$sql = $bbdb->prepare( "forum_id = %d", $id );
+	if ( is_numeric($id) ) {
+		$id = (int) $id;
+		$sql = "forum_id = $id";
+	}
 
-	if ( 0 === $id || empty( $sql ) )
+	if ( 0 === $id || !$sql )
 		return false;
 
 	// $where is NOT bbdb:prepared
 	if ( $where = apply_filters( 'get_forum_where', '' ) ) {
-		$forum = $bbdb->get_row( "SELECT * FROM $bbdb->forums WHERE $sql $where" );
+		$forum = $bbdb->get_row( $bbdb->prepare( "SELECT * FROM $bbdb->forums WHERE forum_id = %d", $id ) . " $where" );
 		return bb_append_meta( $forum, 'forum' );
 	}
 
 	if ( is_numeric($id) && false !== $forum = wp_cache_get( $id, 'bb_forum' ) )
 		return $forum;
 
-	$forum = $bbdb->get_row( "SELECT * FROM $bbdb->forums WHERE $sql" );
+	$forum = $bbdb->get_row( $bbdb->prepare( "SELECT * FROM $bbdb->forums WHERE $sql", $id ) );
 	$forum = bb_append_meta( $forum, 'forum' );
 	wp_cache_set( $forum->forum_id, $forum, 'bb_forum' );
-	wp_cache_add( $forum->forum_slug, $forum->forum_id, 'bb_forum_slug' );
+	wp_cache_add( $forum->forum_slug, $forum, 'bb_forum_slug' );
 
 	return $forum;
 }

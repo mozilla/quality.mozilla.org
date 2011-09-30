@@ -24,20 +24,6 @@
 function bb_log_deprecated( $type, $name, $replacement = 'none' ) {
 	global $bb_log;
 	$bb_log->notice( sprintf( __( 'Using deprecated bbPress %1$s - %2$s - replace with - %3$s' ), $type, $name, $replacement ) );
-
-	if ( $bb_log->level & BP_LOG_DEBUG && $bb_log->level & BP_LOG_NOTICE ) { // Only compute the location if we're going to log it.
-		$backtrace = debug_backtrace();
-
-		$file = $backtrace[2]['file'];
-
-		if ( substr( $file, 0, strlen( BB_PATH ) - 1 ) == rtrim( BB_PATH, '\\/') )
-			$file = substr( $file, strlen( BB_PATH ) );
-
-		$file = str_replace( '\\', '/', $file );
-
-		// 0 = this function, 1 = the deprecated function
-		$bb_log->notice( '    ' . sprintf( __( 'on line %1$d of file %2$s' ), $backtrace[2]['line'], $file ) );
-	}
 }
 
 /**
@@ -781,13 +767,15 @@ function bb_repermalink() {
 			$permalink = get_favorites_link();
 			break;
 		case 'tag-page': // It's not an integer and tags.php pulls double duty.
-			$id = ( isset($_GET['tag']) ) ? $_GET['tag'] : false;
-			if ( ! $id || ! bb_get_tag( (string) $id ) )
+			if ( isset($_GET['tag']) )
+				$id = $_GET['tag'];
+			$_original_id = $id;
+			if ( !$id )
 				$permalink = bb_get_tag_page_link();
 			else {
 				global $tag, $tag_name;
 				$tag_name = $id;
-				$tag = bb_get_tag( (string) $id );
+				$tag = bb_get_tag( (string) $tag_name );
 				$permalink = bb_get_tag_link( 0, $page ); // 0 => grabs $tag from global.
 			}
 			break;
@@ -831,7 +819,7 @@ function bb_repermalink() {
 	$bb_log->debug($uri, 'bb_repermalink() ' . __('REQUEST_URI'));
 	$bb_log->debug($check, 'bb_repermalink() ' . __('should be'));
 	$bb_log->debug($permalink, 'bb_repermalink() ' . __('full permalink'));
-	$bb_log->debug(isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : null, 'bb_repermalink() ' . __('PATH_INFO'));
+	$bb_log->debug($_SERVER['PATH_INFO'], 'bb_repermalink() ' . __('PATH_INFO'));
 
 	if ( $check != $uri && $check != str_replace(urlencode($_original_id), $_original_id, $uri) ) {
 		if ( $issue_404 && rtrim( $check, " \t\n\r\0\x0B/" ) !== rtrim( $uri, " \t\n\r\0\x0B/" ) ) {
@@ -1215,7 +1203,7 @@ function bb_die( $message, $title = '', $header = 0 ) {
 			break;
 		endswitch;
 	} elseif ( is_string( $message ) ) {
-		$message = bb_autop( $message );
+		$message = "<p>$message</p>";
 	}
 
 	if ( empty($title) )
@@ -1223,7 +1211,7 @@ function bb_die( $message, $title = '', $header = 0 ) {
 	
 	bb_install_header( $title );
 ?>
-	<?php echo $message; ?>
+	<p><?php echo $message; ?></p>
 <?php
 	if ($uri = bb_get_uri()) {
 ?>

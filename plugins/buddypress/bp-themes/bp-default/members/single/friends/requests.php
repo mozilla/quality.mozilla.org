@@ -1,24 +1,8 @@
 <?php do_action( 'bp_before_member_friend_requests_content' ) ?>
 
-<?php if ( bp_has_members( 'include=' . bp_get_friendship_requests() ) ) : ?>
+<?php if ( bp_has_members( 'include=' . bp_get_friendship_requests() . '&per_page=0' ) ) : ?>
 
-	<div id="pag-top" class="pagination no-ajax">
-
-		<div class="pag-count" id="member-dir-count-top">
-
-			<?php bp_members_pagination_count(); ?>
-
-		</div>
-
-		<div class="pagination-links" id="member-dir-pag-top">
-
-			<?php bp_members_pagination_links(); ?>
-
-		</div>
-
-	</div>
-
-	<ul id="friend-list" class="item-list" role="main">
+	<ul id="friend-list" class="item-list">
 		<?php while ( bp_members() ) : bp_the_member(); ?>
 
 			<li id="friendship-<?php bp_friend_friendship_id() ?>">
@@ -45,22 +29,6 @@
 	</ul>
 
 	<?php do_action( 'bp_friend_requests_content' ) ?>
-
-	<div id="pag-bottom" class="pagination no-ajax">
-
-		<div class="pag-count" id="member-dir-count-bottom">
-
-			<?php bp_members_pagination_count(); ?>
-
-		</div>
-
-		<div class="pagination-links" id="member-dir-pag-bottom">
-
-			<?php bp_members_pagination_links(); ?>
-
-		</div>
-
-	</div>
 
 <?php else: ?>
 
