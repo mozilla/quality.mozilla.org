@@ -446,7 +446,10 @@ function cms_tpv_pages_page() {
 	?>
 	<div class="wrap">
 		<h2><?php echo ($post_type_object->labels->name); ?> Tree View</h2>
-
+		
+		<?php
+		/*
+		Not so much nagging, since I'm a nice guy.
 		<div class="bonny-plugins-inner-sidebar">
 			<h3>Support the author</h3>
 			<p>
@@ -484,6 +487,8 @@ function cms_tpv_pages_page() {
 			
 			
 		</div>
+		*/
+		?>
 
 		<?php
 		// cms_tpv_show_annoying_box();

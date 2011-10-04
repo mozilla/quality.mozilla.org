@@ -46,9 +46,7 @@ class org_tubepress_impl_environment_SimpleEnvironmentDetector implements org_tu
      */
     public function isWordPress()
     {
-        if (!defined('WP_PLUGIN_DIR')) define('WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins');
-        
-        return WP_PLUGIN_DIR !== false
+        return strpos(realpath(__FILE__), 'wp-content' . DIRECTORY_SEPARATOR . 'plugins') !== false
             || function_exists('wp_cron');
     }
 }

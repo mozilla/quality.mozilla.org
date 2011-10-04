@@ -3,10 +3,10 @@
 Plugin Name: BuddyPress Rate Forum Posts
 Plugin URI: http://wordpress.org/extend/plugins/buddypress-rate-forum-posts/
 Description: This plugin allows rating of BuddyPress forum posts and user karma. 
-Version: 1.6.2
-Revision Date: October 18, 2010
+Version: 1.6.5
+Revision Date: October 3, 2011
 Requires at least: WP 2.9.1, BuddyPress 1.2.4
-Tested up to: WP 3.0.1, BuddyPress 1.2.6
+Tested up to: WP 3.2.1, BuddyPress 1.5
 License: GNU General Public License 2.0 (GPL) http://www.gnu.org/licenses/gpl.html
 Author: Deryk Wenaus
 Author URI: http://www.bluemandala.com
@@ -38,12 +38,13 @@ register_activation_hook( __FILE__, 'rfp_activate' );
 // insert the javascript
 function rfp_init() {
 	global $bp;
-	
+
+	//if ( bp_is_group() && bp_is_action_variable('topic') ) { // the bp 1.5 way is not compat with the old way
 	if ( $bp->current_component == BP_GROUPS_SLUG && $bp->action_variables[0] == 'topic') {
-		wp_enqueue_script('rfp_rating_forum_posts', WP_PLUGIN_URL.'/buddypress-rate-forum-posts/js/rating.js');
+		wp_enqueue_script('rfp_rating_forum_posts', WP_PLUGIN_URL.'/buddypress-rate-forum-posts/js/rating.js', array('jquery') );
 	}
 }
-add_action('init', 'rfp_init');
+add_action('bp_init', 'rfp_init');
 
 
 //set up some globals, add css, and add a blogUrl variable
@@ -51,6 +52,7 @@ function rft_header() {
 	echo '<link rel="stylesheet" type="text/css" href="'.WP_PLUGIN_URL.'/buddypress-rate-forum-posts/css/rating.css" media="screen" />'."\n";	
 }
 add_action('wp_head', 'rft_header');
+add_action('admin_menu', 'rft_header');
 
 
 
@@ -65,7 +67,7 @@ function rfp_filter_rating_link( $post_text ) {
 	global $bp, $topic_template, $forum_template;
 	
 	// if the topic is closed, return just the rating number
-	if ( 0 == (int)$forum_template->topic->topic_open && !is_site_admin() )
+	if ( 0 == (int)$forum_template->topic->topic_open && !is_super_admin() )
 		return $post_text . '<div class="rfp-rate"><b>'.get_option( 'rfp_help_text_closed' ).'</b><span class="counter">' . rfp_get_post_rating_signed( $topic_template->post->post_id ) . '</span></div>';
 	
 	// only logged in users can rate - but you don't need to be a member of the group (too restrictive)
@@ -136,9 +138,9 @@ add_action( 'wp_ajax_rfp_rate', 'rfp_save_rating' );
 function rfp_update_user_rating_history( $rater, $post_id, $direction ) {
 	if ( !$rater || !$post_id ) 
 		return false;
-	$rating_history = get_usermeta( $rater, 'rfp_rating_history' );
+	$rating_history = get_user_meta( $rater, 'rfp_rating_history' );
 	$rating_history[ $post_id ] = $direction;
-	update_usermeta( $rater, 'rfp_rating_history', $rating_history ); 
+	update_user_meta( $rater, 'rfp_rating_history', $rating_history );
 }
 
 
@@ -151,7 +153,7 @@ function rfp_get_user_rated_post( $rater, $post_id ) {
 	
 	do_action( 'bbpress_init' );
 		
-	if ( is_site_admin() )
+	if ( is_super_admin() )
 		return false; // site admins can rate as much as they like
 	
 	//posters can't rate themselves.
@@ -159,7 +161,7 @@ function rfp_get_user_rated_post( $rater, $post_id ) {
 		return 'This is your post';	
 	
 	//see if it's already been rated
-	$rating_history = get_usermeta( $rater, 'rfp_rating_history' );
+	$rating_history = get_user_meta( $rater, 'rfp_rating_history' );
 	
 	if ( $rating_history[ $post_id ] )
 		return 'Already rated';
@@ -279,10 +281,10 @@ function rfp_update_post_author_karma( $post_id, $direction ) {
 	
 	do_action( 'bbpress_init' );
 	$poster_id = $wpdb->get_var( $wpdb->prepare( "SELECT poster_id FROM {$bbdb->posts} WHERE post_id = {$post_id}" ) );
-	$karma = get_usermeta( $poster_id, 'rfp_post_karma' );
-	if ( $direction == 'pos' ) $value = 1; // abstract this 
+	$karma = get_user_meta( $poster_id, 'rfp_post_karma', 1 );
+	if ( $direction == 'pos' ) $value = 1; // abstract this
 	elseif ( $direction == 'neg' ) $value = -1;
-	update_usermeta( $poster_id, 'rfp_post_karma', $karma + $value );
+	update_user_meta( $poster_id, 'rfp_post_karma', $karma + $value );
 }
 
 // get the poster's karma from the post id
@@ -290,10 +292,12 @@ function rfp_get_post_author_karma( $post_id ) {
 	if ( !$post_id ) 
 		return false;
 	global $wpdb, $bbdb;
-	
-	do_action( 'bbpress_init' );		
+
+	do_action( 'bbpress_init' );
 	$poster_id =  $wpdb->get_var( $wpdb->prepare( "SELECT poster_id FROM {$bbdb->posts} WHERE post_id = {$post_id}" ) );
-	return get_usermeta( $poster_id, 'rfp_post_karma' );
+	$karma = get_user_meta( $poster_id, 'rfp_post_karma', 1 );
+
+	return $karma;
 }
 
 
@@ -303,23 +307,22 @@ function rfp_filter_poster_karma( $poster_name_link ) {
 	
 	if ( get_option( 'rfp_karma_hide' ) )
 		return $poster_name_link;
-	
-	$karma = rfp_get_post_author_karma( $topic_template->post->post_id ); 
+	$karma = rfp_get_post_author_karma( $topic_template->post->post_id );
 	$relative_karma = rfp_calculate_relative_karma( $karma, $topic_template->post->poster_id );
 	$poster_name_link .= rfp_poster_karma( $relative_karma );
 	
 	return $poster_name_link;
 }
-add_filter( 'bp_get_the_topic_post_poster_name', 'rfp_filter_poster_karma', 3 ); 
+add_filter( 'bp_get_the_topic_post_poster_name', 'rfp_filter_poster_karma', 3 );
 
 
 // show the user's karma in their member page
 function rfp_show_poster_karma() {
 	global $bp;
 
-	$karma = get_usermeta( $bp->displayed_user->id, 'rfp_post_karma' );
+	$karma = get_user_meta( $bp->displayed_user->id, 'rfp_post_karma', 1 );
 	$relative_karma = rfp_calculate_relative_karma( $karma, $bp->displayed_user->id );
-	
+
 	if ( get_option( 'rfp_karma_hide' ) || $relative_karma == 0 || get_option( 'rfp_karma_never_minus' ) && $karma < 0 )
 		return;
 
@@ -383,12 +386,12 @@ function rfp_poster_karma( $karma ) {
 // setting for the admin page
 function rfp_add_admin_menu() {
 	global $bp;
-	if ( !$bp->loggedin_user->is_site_admin )
+	if ( !is_super_admin() )
 		return false;
 	require ( dirname( __FILE__ ) . '/admin.php' );
 	add_submenu_page( 'bp-general-settings', 'Rate Forum Posts', 'Rate Forum Posts', 'manage_options', 'rfp_admin', 'rfp_admin' );
 }
-add_action( 'admin_menu', 'rfp_add_admin_menu', 20 );
+add_action( is_multisite() ? 'network_admin_menu' : 'admin_menu', 'rfp_add_admin_menu', 20 );
 
 
 /*

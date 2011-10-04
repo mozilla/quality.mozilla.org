@@ -3,12 +3,12 @@ Contributors: dwenaus, boonebgorges
 Description: This powerful plugin allows people to receive email notifications of group activity, especially forum posts. Weekly or daily digests available.
 Tags: buddypress, bp, activities, activity, groups, group, emails, email, notifications, notification, subscribe, subscription, digest, summary
 Requires at least: 2.9.1 (BP 1.2)
-Tested up to: 3.2.1
-Stable tag: 2.9.2
+Tested up to: 3.2.1 (BP 1.5)
+Stable tag: 2.9.3
 
 == Description ==
 
-This powerful plugin allows people to receive email notifications of group activity, especially forum posts. Weekly or daily digests available. Each user can choose how they want to subscribe to their groups. The plugin works for hundreds of groups and users. Tested up to BuddyPress 1.5-beta-2.
+This powerful plugin allows people to receive email notifications of group activity, especially forum posts. Weekly or daily digests available. Each user can choose how they want to subscribe to their groups. The plugin works for hundreds of groups and users. Tested up to BuddyPress 1.5.
 
 EMAIL SUBSCRIPTION LEVELS
 There are 5 levels of email subscription options: 
@@ -50,7 +50,7 @@ The plugin is fully internationalized (thanks to chestnut_jp) Please send langua
 
 TRANSLATORS
 - japanese - http://buddypress.org/community/members/chestnut_jp/
-- spanish - Williams Castillo
+- spanish - Williams Castillo, Gregor Gimmy
 - italian - Stefano Russo
 - french - http://www.claudegagne-photo.com
 - brazilian portuguese - www.about.me/dennisaltermann (or www.congregacao.net)
@@ -85,6 +85,9 @@ Other supporters: bluedotproductions.com
 7. Admin Settings
 
 == Changelog ==
+
+= 2.9.3 =
+Added updated Spanish translation
 
 = 2.9.2 =
 Fixed some syntax errors that may have caused problems with digest formatting
