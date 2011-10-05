@@ -25,7 +25,7 @@ add_filter('upload_mimes', 'fc_add_mimes');
 * Customize the login screen
 */
 function fc_custom_login() { 
-  echo '<link rel="stylesheet" type="text/css" href="' . get_bloginfo('template_directory') . '/css/login.css" />'; 
+  echo '<link rel="stylesheet" type="text/css" href="' . get_bloginfo('template_directory') . '/css/login.css">'; 
 }
 add_action('login_head', 'fc_custom_login');
 
@@ -55,6 +55,12 @@ remove_action('wp_head', 'wp_generator');
 
 
 /*********
+ * Kill the WordPress admin bar (new in 3.1)
+ */
+add_filter( 'show_admin_bar', '__return_false' );
+
+
+/*********
 * Style the visual editor to match the theme styles
 */
 function my_editor_style($url) {
@@ -65,6 +71,7 @@ function my_editor_style($url) {
   return $url;
 }
 add_filter('mce_css', 'my_editor_style');
+
 
 /*********
 * Add more-links to excerpts
@@ -585,6 +592,10 @@ if ( !class_exists( 'BP_Core_User' ) ) :
   return false;
 endif;
 
+/*********
+ * Disable automatic links in member profiles
+ */
+remove_filter( 'bp_get_the_profile_field_value', 'xprofile_filter_link_profile_data', 9, 2 );
 
 /*********
  * Kill the BuddyPress admin bar
@@ -593,18 +604,12 @@ remove_action( 'wp_head', 'bp_core_admin_bar_css', 1 );
 remove_action( 'wp_footer', 'bp_core_admin_bar', 8 );
 
 /*********
- * Kill the WordPress admin bar (new in 3.1)
- */
-add_filter( 'show_admin_bar', '__return_false' );
-
-/*********
  * Hide the admin bar settings on profile page
  */
 function qmo_hide_admin_bar_settings() { ?>
 <style type="text/css">.show-admin-bar { display: none; }</style>
 <?php }
 add_action( 'admin_print_scripts-profile.php', 'qmo_hide_admin_bar_settings' );
-
 
 /*********
  * Load the AJAX functions for the theme
@@ -1071,13 +1076,6 @@ function qmo_page_title($sep = '&#124;', $display = true, $seplocation = '') {
     return $title;
 }
 
-
-/*********
- * Disable automatic links in member profiles
- */
-remove_filter( 'bp_get_the_profile_field_value', 'xprofile_filter_link_profile_data', 50 );
-
-
 /*********
  * Determine whether to show user meta box on member pages.
  * This is a bit of a hack.
@@ -1156,7 +1154,7 @@ function qmo_activity_filter( $a, $activities ) {
    * For example, the following will only filter them on the main activity page.
    * Member activity streams have their own loop where we're already excluding unwanted actions.
    */
-  if ( $bp->current_component != $bp->activity->slug )
+  if ( !bp_is_current_component( $bp->activity->slug ) )
     return $activities;
 
   /* Filter out unwanted actions */
