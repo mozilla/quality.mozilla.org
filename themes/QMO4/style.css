@@ -684,6 +684,9 @@ ul.wp-tag-cloud li { display: inline; }
 .item-list-tabs li.current, .item-list-tabs li.selected { font-weight: bold; }
 .item-list-tabs a:visited { color: #369; }
 
+.item-list-tabs li span:before { content: "("; }
+.item-list-tabs li span:after { content: ")"; }
+
 #object-nav.item-list-tabs ul { border-bottom: 1px solid #ccc; }
 #object-nav.item-list-tabs li { margin: 0 6px 0 0; float: left; background: #f8f8f8; margin: 0 10px -1px 0; border: 1px solid #ccc; -moz-border-radius: 3px 3px 0 0; -webkit-border-radius: 3px 3px 0 0; border-radius: 3px 3px 0 0; padding: .25em 12px; }
 #object-nav.item-list-tabs li.current, #object-nav.item-list-tabs li.selected { border-color: #ccc #ccc #fff; background: #fff; }
@@ -722,7 +725,7 @@ ul.wp-tag-cloud li { display: inline; }
 
 /* Powerful selectors to override the email subscription plugin's stylesheet */
 #content #content-main .group-subscription-div { font: .785em Verdana, Tahoma, sans-serif; }
-#content #content-main .group-subscription-options { position: absolute; font: .785em/1.4 Verdana, Tahoma, sans-serif; padding: 10px; background: #fff; border: 1px solid #ccc; -moz-box-shadow: 2px 2px 1px rgba(0,0,0,.1); -webkit-box-shadow: 2px 2px 1px rgba(0,0,0,.1); box-shadow: 2px 2px 1px rgba(0,0,0,.1); }
+#content #content-main .group-subscription-options { position: absolute; z-index: 10; font: .785em/1.4 Verdana, Tahoma, sans-serif; padding: 10px; background: #fff; border: 1px solid #ccc; -moz-box-shadow: 2px 2px 1px rgba(0,0,0,.1); -webkit-box-shadow: 2px 2px 1px rgba(0,0,0,.1); box-shadow: 2px 2px 1px rgba(0,0,0,.1); }
 #content #content-main .group-subscription-options a { color: #369; font-weight: bold; margin-right: 8px; cursor: pointer; }
 #content #content-main .group-subscription-options a:hover { text-decoration: underline; }
 #content #content-main .group-subscription-status-desc { display: inline; position: absolute; left: -999em; }

@@ -3,10 +3,10 @@
  * Contains functions to create notifications in the "BuddyBar" and send email notifications on specific user actions.
  *
  * @author Paul Gibbs <paul@byotos.com>
- * @package Achievements 
+ * @package Achievements
  * @subpackage notifications
  *
- * $Id: achievements-notifications.php 972 2011-04-03 10:09:47Z DJPaul $
+ * $Id: achievements-notifications.php 1018 2011-10-07 20:19:01Z DJPaul $
  */
 
 /**
@@ -24,27 +24,37 @@
  * @param int $secondary_item_id User ID
  * @param int $total_items Number of pending notifications of this type
  */
-function dpa_format_notifications( $action, $item_id, $secondary_item_id, $total_items ) {
+function dpa_format_notifications( $action, $item_id, $secondary_item_id, $total_items, $format = 'string' ) {
 	global $achievements_template, $bp, $wpdb;
 
-	do_action( 'dpa_format_notifications', $action, $item_id, $secondary_item_id, $total_items );
+	do_action( 'dpa_format_notifications', $action, $item_id, $secondary_item_id, $total_items, $format );
 
 	switch ( $action ) {
 		case 'new_achievement':
 			if ( 1 == $total_items ) {
 				$achievements_template->achievement = new DPA_Achievement( array( 'id' => $item_id, 'populate_extras' => false ) );
-				$link = '<a href="' . dpa_get_achievement_slug_permalink() . '">' . sprintf( __( 'Achievement unlocked: %s', 'dpa' ), dpa_get_achievement_name() ) . '</a>';
-				$achievements_template->achievement = none;
-
-				return apply_filters( 'dpa_new_achievement_notification', $link, $item_id, $secondary_item_id, $total_items );
+				$text = sprintf( __( 'Achievement unlocked: %s', 'dpa' ), dpa_get_achievement_name() );
+				$link = dpa_get_achievement_slug_permalink();
+				unset( $achievements_template->achievement );
 
 			} else {
-				return apply_filters( 'dpa_new_achievement_notification', '<a href="' . bp_core_get_user_domain( $secondary_item_id ) . DPA_SLUG . '/' . DPA_SLUG_MY_ACHIEVEMENTS . '">' . __( 'Achievements unlocked!', 'dpa' ) . '</a>', $secondary_item_id, $item_id );
+				$text = __( 'Achievements unlocked!', 'dpa' );
+				$link = bp_core_get_user_domain( $secondary_item_id ) . DPA_SLUG . '/' . DPA_SLUG_MY_ACHIEVEMENTS;
 			}
 		break;
 	}
 
-	return false;
+	if ( 'string' == $format ) {
+		return apply_filters( 'dpa_new_achievement_notification', '<a href="' . $link . '">' . $text . '</a>', $item_id, $secondary_item_id, $total_items );
+
+	} else {
+		$array = array(
+			'text' => $text,
+			'link' => $link
+		);
+
+		return apply_filters( 'dpa_new_achievement_notification', $array, $item_id, $secondary_item_id, $total_items );
+	}
 }
 
 /**
@@ -55,7 +65,6 @@ function dpa_format_notifications( $action, $item_id, $secondary_item_id, $total
  * @param int $achievement_id
  * @param int $user_id
  * @since 2.0
- * @todo Revise for BP 1.3 email class
  */
 function dpa_achievement_unlocked_notification( $achievement_id, $user_id ) {
 		global $achievements_template, $bp, $wpdb;
@@ -64,7 +73,7 @@ function dpa_achievement_unlocked_notification( $achievement_id, $user_id ) {
 			return;
 
 		$recipient     = get_userdata( $user_id );
-		$settings_link = bp_core_get_user_domain( $user_id ) . BP_SETTINGS_SLUG . '/notifications/';
+		$settings_link = bp_core_get_user_domain( $user_id ) . bp_get_settings_slug() . '/notifications/';
 		$achievements_link = bp_core_get_user_domain( $user_id ) . DPA_SLUG . '/';
 
 		$email_subject = sprintf( __( '[%1$s] Achievement unlocked: %2$s', 'dpa' ), wp_specialchars_decode( get_blog_option( BP_ROOT_BLOG, 'blogname' ), ENT_QUOTES ), dpa_get_achievement_name() );

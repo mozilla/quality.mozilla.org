@@ -48,6 +48,9 @@ Contact me at deryk@bluemandala.com for a quote. I'll usually get around to it i
 
 == Changelog ==
 
+= 1.6.6 =
+* compatible with BuddyPress 1.5, user rating history bug fix
+
 = 1.6.5 =
 * compatible with BuddyPress 1.5, fixed rating.js loading issue
 

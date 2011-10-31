@@ -6,7 +6,7 @@
  * @package Achievements
  * @subpackage classes
  *
- * $Id: achievements-classes.php 972 2011-04-03 10:09:47Z DJPaul $
+ * $Id: achievements-classes.php 1005 2011-10-04 20:19:19Z DJPaul $
  */
 
 /**
@@ -198,7 +198,7 @@ class DPA_Achievement {
 		else
 			$achievement = $this->get( array( 'type' => 'single', 'id' => $id, 'populate_extras' => $populate_extras, 'user_id' => $user_id ) );
 
-		if ( !$achievement )
+		if ( !$achievement || empty( $achievement['achievements'] ) )
 			return;
 
 		$achievement = $achievement['achievements'][0];
@@ -603,7 +603,7 @@ function dpa_points_get_high_scorers( $limit=5 ) {
 	global $wpdb;
 
 	if ( !$high_scorers = wp_cache_get( 'dpa_high_scorers_' . $limit, 'dpa' ) ) {
-		$high_scorers = $wpdb->get_results( $wpdb->prepare( "SELECT CAST(meta_value AS UNSIGNED INTEGER) as points, user_id as id FROM " . CUSTOM_USER_META_TABLE . " WHERE meta_key = %s ORDER BY points DESC LIMIT %d", 'achievements_points', $limit ) );
+		$high_scorers = $wpdb->get_results( $wpdb->prepare( "SELECT CAST(meta_value AS UNSIGNED INTEGER) as points, user_id as id FROM $wpdb->usermeta WHERE meta_key = %s ORDER BY points DESC LIMIT %d", 'achievements_points', $limit ) );
 		wp_cache_set( 'dpa_high_scorers_' . $limit, $high_scorers, 'dpa' );
 	}
 

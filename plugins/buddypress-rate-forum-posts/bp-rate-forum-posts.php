@@ -3,8 +3,8 @@
 Plugin Name: BuddyPress Rate Forum Posts
 Plugin URI: http://wordpress.org/extend/plugins/buddypress-rate-forum-posts/
 Description: This plugin allows rating of BuddyPress forum posts and user karma. 
-Version: 1.6.5
-Revision Date: October 3, 2011
+Version: 1.6.6
+Revision Date: October 11, 2011
 Requires at least: WP 2.9.1, BuddyPress 1.2.4
 Tested up to: WP 3.2.1, BuddyPress 1.5
 License: GNU General Public License 2.0 (GPL) http://www.gnu.org/licenses/gpl.html
@@ -52,7 +52,7 @@ function rft_header() {
 	echo '<link rel="stylesheet" type="text/css" href="'.WP_PLUGIN_URL.'/buddypress-rate-forum-posts/css/rating.css" media="screen" />'."\n";	
 }
 add_action('wp_head', 'rft_header');
-add_action('admin_menu', 'rft_header');
+add_action('admin_head', 'rft_header');
 
 
 
@@ -138,7 +138,7 @@ add_action( 'wp_ajax_rfp_rate', 'rfp_save_rating' );
 function rfp_update_user_rating_history( $rater, $post_id, $direction ) {
 	if ( !$rater || !$post_id ) 
 		return false;
-	$rating_history = get_user_meta( $rater, 'rfp_rating_history' );
+	$rating_history = get_user_meta( $rater, 'rfp_rating_history', true );
 	$rating_history[ $post_id ] = $direction;
 	update_user_meta( $rater, 'rfp_rating_history', $rating_history );
 }
@@ -161,7 +161,7 @@ function rfp_get_user_rated_post( $rater, $post_id ) {
 		return 'This is your post';	
 	
 	//see if it's already been rated
-	$rating_history = get_user_meta( $rater, 'rfp_rating_history' );
+	$rating_history = get_user_meta( $rater, 'rfp_rating_history', true );
 	
 	if ( $rating_history[ $post_id ] )
 		return 'Already rated';

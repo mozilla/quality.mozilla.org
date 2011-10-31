@@ -14,10 +14,10 @@
 
 			<div class="item-list-tabs">
 				<ul>
-					<li class="selected" id="achievements-all"><a href="<?php dpa_achievements_permalink() ?>"><?php printf( __( 'All Achievements (%s)', 'dpa' ), dpa_get_total_achievement_count() ) ?></a></li>
+					<li class="selected" id="achievements-all"><a href="<?php dpa_achievements_permalink() ?>"><?php printf( __( 'All Achievements <span>%s</span>', 'dpa' ), dpa_get_total_achievement_count() ) ?></a></li>
 
 					<?php if ( is_user_logged_in() ) : ?>
-						<li id="achievements-personal"><a href="<?php echo bp_loggedin_user_domain() . DPA_SLUG . '/' . DPA_SLUG_MY_ACHIEVEMENTS ?>"><?php printf( __( 'My Achievements (%s)', 'dpa' ), dpa_get_total_achievement_count_for_user() ) ?></a></li>
+						<li id="achievements-personal"><a href="<?php echo bp_loggedin_user_domain() . DPA_SLUG . '/' . DPA_SLUG_MY_ACHIEVEMENTS ?>"><?php printf( __( 'My Achievements <span>%s</span>', 'dpa' ), dpa_get_total_achievement_count_for_user() ) ?></a></li>
 					<?php endif; ?>
 
 					<?php do_action( 'dpa_achievements_directory_achievement_types' ) ?>

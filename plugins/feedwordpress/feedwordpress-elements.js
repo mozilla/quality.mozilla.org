@@ -368,6 +368,65 @@ $.fn.fwpList = function( settings ) {
 
 })(jQuery);
 
+/**
+ * Admin interface: Uses Username/Parameter UI for Feed Settings.
+ *
+ */
+function feedAuthenticationMethodPress (params) {
+	feedAuthenticationMethod({value: 'basic', node: jQuery(this)});
+	return false;
+}
+function feedAuthenticationMethodUnPress (params) {
+	feedAuthenticationMethod({value: '-', node: jQuery(this)});
+	return false;
+}
+function feedAuthenticationMethod (params) {
+	var s = jQuery.extend({}, {
+	init: false,
+	value: null,
+	node: jQuery(this)
+	}, params);
+	
+	var speed = (s.init ? 0 : 'slow');
+	
+	var elDiv = jQuery(s.node).closest('.link-rss-authentication');
+	var elTable = elDiv.find('table');
+	var elMethod = elTable.find('.link-rss-auth-method');
+	var elLink = elDiv.find('.link-rss-userpass-use');
+
+	console.log('--- ---');
+	console.log(s.node);
+	console.log(elDiv);
+	console.log(elTable);
+	console.log(elMethod);
+	console.log(elLink);
+	console.log(elMethod.val());
+	
+	// Set.
+	if (s.value != null) {
+		elMethod.val(s.value);
+	}
+	
+	if (elMethod.val()=='-') {
+		elTable.hide(speed, function () {
+			// Just in case. Make sure that we don't duplicate.
+			elLink.remove();
+			
+			jQuery('<a style="display: none" class="add-remove link-rss-userpass-use" href="#">+ Uses username/password</a>')
+				.insertAfter(elTable)
+				.click(feedAuthenticationMethodPress)
+				.show(speed);
+		});
+	} else {
+		elLink.hide(speed, function () { jQuery(this).remove(); } );
+		elTable.show(speed);
+	} /* if */
+} /* function feedAuthenticationMethod () */
+ 
+/**
+ * Admin interface: Live category and tag boxes 
+ */
+ 
 jQuery(document).ready( function($) {
 	// Category boxes
 	$('.feedwordpress-category-div').each( function () {

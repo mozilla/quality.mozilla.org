@@ -7,7 +7,7 @@
  * @subpackage admin
  * @see dpa_add_admin_menu()
  *
- * $Id: achievements-admin.php 972 2011-04-03 10:09:47Z DJPaul $
+ * $Id: achievements-admin.php 1016 2011-10-07 19:42:03Z DJPaul $
  */
 
 /**
@@ -269,7 +269,7 @@ function dpa_admin_screen_news( $settings ) {
 		$items = $rss->get_items( 0, $rss->get_item_quantity( 3 ) );
 
 		foreach ( $items as $item )
-			$content .= '<li><p><a href="' . clean_url( $item->get_permalink(), null, 'display' ) . '">' . apply_filters( 'dpa_admin_get_rss_feed', stripslashes( $item->get_title() ) ) . '</a></p></li>';
+			$content .= '<li><p><a href="' . esc_url( $item->get_permalink(), null, 'display' ) . '">' . apply_filters( 'dpa_admin_get_rss_feed', stripslashes( $item->get_title() ) ) . '</a></p></li>';
 
 		$content .= '<li class="rss"><p><a href="http://feeds.feedburner.com/achievements-for-buddypress">' . __( 'Subscribe with RSS', 'dpa' ) . '</a></p></li></ul>';
 		echo $content;
@@ -428,6 +428,7 @@ function dpa_admin_screen_contactform( $settings ) {
  * @since 2.0
  */
 function dpa_admin_screen_settings( $settings ) {
+	$keywords = !empty( $settings['mediakeywords'] ) ? $settings['mediakeywords'] : '';
 ?>
 	<div class="component">
 		<h5><?php _e( "Change Picture", 'dpa' ) ?></h5>
@@ -439,7 +440,7 @@ function dpa_admin_screen_settings( $settings ) {
 					<p><?php _e( "Enter keywords here to search for in your images' titles and descriptions:", 'dpa' ) ?></p>
 				</div>
 				<div class="settingvalue">
-					<input type="text" name="achievements[mediakeywords]" value="<?php echo esc_attr( apply_filters( 'dpa_admin_settings_mediakeywords', $settings['mediakeywords'] ) ) ?>" />
+					<input type="text" name="achievements[mediakeywords]" value="<?php echo esc_attr( apply_filters( 'dpa_admin_settings_mediakeywords', $keywords ) ); ?>" />
 				</div>
 				<div style="clear: left"></div>
 			</div>

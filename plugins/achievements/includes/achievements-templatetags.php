@@ -6,7 +6,7 @@
  * @package Achievements
  * @subpackage templatetags
  *
- * $Id: achievements-templatetags.php 993 2011-05-17 18:09:25Z DJPaul $
+ * $Id: achievements-templatetags.php 1012 2011-10-07 18:50:04Z DJPaul $
  */
 
 /**
@@ -819,6 +819,9 @@ function dpa_achievement_action_count() {
  */
 function dpa_is_achievement_unlocked() {
 	global $achievements_template;
+	
+	if ( !bp_loggedin_user_id() )
+		return;
 
 	return ( !is_null( $achievements_template->achievement->achieved_at ) );
 }
@@ -894,9 +897,11 @@ function dpa_achievement_counter() {
 			$user_id = $bp->displayed_user->id;
 		elseif ( !empty( $bp->loggedin_user->id ) )
 			$user_id = $bp->loggedin_user->id;
+		else
+			$user_id = 0;
 
 		$counters = get_user_meta( $user_id, 'achievements_counters', true );
-		return apply_filters( 'dpa_get_achievement_counter', $counters[dpa_get_achievement_id()] );
+		return apply_filters( 'dpa_get_achievement_counter', !empty( $counters[dpa_get_achievement_id()] ) ? $counters[dpa_get_achievement_id()] : 0 );
 	}
 
 /**
@@ -984,12 +989,18 @@ function dpa_addedit_value( $form_field ) {
 	function dpa_get_addedit_value( $form_field ) {
 		global $bp;
 
-		if ( 'is_active' == $form_field && $bp->achievements->current_achievement->is_active )
+		$value = '';
+
+		if ( 'is_active' == $form_field && $bp->achievements->current_achievement->is_active ) {
 			$value = 'checked="checked"';
-		elseif ( 'is_hidden' == $form_field && 2 == $bp->achievements->current_achievement->is_active )
-			$value = 'checked="checked"';
-		else
+
+		} elseif ( 'is_hidden' == $form_field ) {
+			if ( 2 == $bp->achievements->current_achievement->is_active )
+				$value = 'checked="checked"';
+
+		} else {
 			$value = $bp->achievements->current_achievement->{$form_field};
+		}
 
 		return apply_filters( 'dpa_get_addedit_value', $value );
 	}
@@ -1408,11 +1419,12 @@ function dpa_achievements_quickadmin() {
 	function dpa_get_achievements_quickadmin() {
 		global $bp;
 
+		$items = array();
+
 		if ( !dpa_is_directory_page() )
 			return apply_filters( 'dpa_get_achievements_quickadmin', '', $items );
 
 		$url = dpa_get_achievement_slug_permalink();
-		$items = array();
 
 		if ( dpa_permission_can_user_change_picture() )
     	$items[] = sprintf( '<a href="%1$s">%2$s</a>', $url . DPA_SLUG_ACHIEVEMENT_CHANGE_PICTURE, __( 'Change Picture', 'dpa' ) );
@@ -1449,7 +1461,9 @@ function dpa_achievements_permalink() {
 	 * @return string
 	 */
 	function dpa_get_achievements_permalink() {
-		return apply_filters( 'dpa_get_achievements_permalink', bp_get_root_domain() . '/' . DPA_SLUG );
+		global $bp;
+
+		return apply_filters( 'dpa_get_achievements_permalink', trailingslashit( bp_get_root_domain() ) . bp_get_root_slug( $bp->achievements->slug ) );
 	}
 
 /**
@@ -1690,7 +1704,7 @@ function dpa_achievement_activity_feed_link() {
 	function dpa_get_achievement_activity_feed_link() {
 		global $bp;
 
-		return apply_filters( 'dpa_get_achievement_activity_feed_link', site_url( DPA_SLUG . '/' . apply_filters( 'dpa_get_achievement_slug', $bp->achievements->current_achievement->slug ) . '/' . DPA_SLUG_ACHIEVEMENT_ACTIVITY_RSS . '/' ) );
+		return apply_filters( 'dpa_get_achievement_activity_feed_link', trailingslashit( bp_get_root_domain() ) . bp_get_root_slug( $bp->achievements->slug ) . '/' . apply_filters( 'dpa_get_achievement_slug', $bp->achievements->current_achievement->slug ) . '/' . DPA_SLUG_ACHIEVEMENT_ACTIVITY_RSS . '/' );
 	}
 
 /**
@@ -1733,7 +1747,7 @@ function dpa_member_achievements_link() {
 function dpa_is_achievement_change_picture_page() {
 	global $bp;
 
-	return apply_filters( 'dpa_is_achievement_change_picture_page', ( $bp->current_component == $bp->achievements->slug && $bp->current_action == DPA_SLUG_ACHIEVEMENT_CHANGE_PICTURE ) );
+	return apply_filters( 'dpa_is_achievement_change_picture_page', ( bp_is_current_component( $bp->achievements->slug ) && $bp->current_action == DPA_SLUG_ACHIEVEMENT_CHANGE_PICTURE ) );
 }
 
 /**
@@ -1746,7 +1760,7 @@ function dpa_is_achievement_change_picture_page() {
 function dpa_is_achievement_activity_page() {
 	global $bp;
 
-	return apply_filters( 'dpa_is_achievement_activity_page', ( $bp->current_component == $bp->achievements->slug && $bp->current_action == DPA_SLUG_ACHIEVEMENT_ACTIVITY ) );
+	return apply_filters( 'dpa_is_achievement_activity_page', ( bp_is_current_component( $bp->achievements->slug ) && $bp->current_action == DPA_SLUG_ACHIEVEMENT_ACTIVITY ) );
 }
 
 /**
@@ -1759,7 +1773,7 @@ function dpa_is_achievement_activity_page() {
 function dpa_is_achievement_unlocked_by_page() {
 	global $bp;
 
-	return apply_filters( 'dpa_is_achievement_unlocked_by_page', ( $bp->current_component == $bp->achievements->slug && $bp->current_action == DPA_SLUG_ACHIEVEMENT_UNLOCKED_BY ) );
+	return apply_filters( 'dpa_is_achievement_unlocked_by_page', ( bp_is_current_component( $bp->achievements->slug ) && $bp->current_action == DPA_SLUG_ACHIEVEMENT_UNLOCKED_BY ) );
 }
 
 /**
@@ -1772,7 +1786,7 @@ function dpa_is_achievement_unlocked_by_page() {
 function dpa_is_achievement_delete_page() {
 	global $bp;
 
-	return apply_filters( 'dpa_is_achievement_delete_page', ( $bp->current_component == $bp->achievements->slug && $bp->current_action == DPA_SLUG_ACHIEVEMENT_DELETE ) );
+	return apply_filters( 'dpa_is_achievement_delete_page', ( bp_is_current_component( $bp->achievements->slug ) && $bp->current_action == DPA_SLUG_ACHIEVEMENT_DELETE ) );
 }
 
 /**
@@ -1785,7 +1799,7 @@ function dpa_is_achievement_delete_page() {
 function dpa_is_achievement_edit_page() {
 	global $bp;
 
-	return apply_filters( 'dpa_is_achievement_edit_page', ( $bp->current_component == $bp->achievements->slug && $bp->current_action == DPA_SLUG_ACHIEVEMENT_EDIT ) );
+	return apply_filters( 'dpa_is_achievement_edit_page', ( bp_is_current_component( $bp->achievements->slug ) && $bp->current_action == DPA_SLUG_ACHIEVEMENT_EDIT ) );
 }
 
 /**
@@ -1798,7 +1812,7 @@ function dpa_is_achievement_edit_page() {
 function dpa_is_achievement_grant_page() {
 	global $bp;
 
-	return apply_filters( 'dpa_is_achievement_grant_page', ( $bp->current_component == $bp->achievements->slug && $bp->current_action == DPA_SLUG_ACHIEVEMENT_GRANT ) );
+	return apply_filters( 'dpa_is_achievement_grant_page', ( bp_is_current_component( $bp->achievements->slug ) && $bp->current_action == DPA_SLUG_ACHIEVEMENT_GRANT ) );
 }
 
 /**
@@ -1811,7 +1825,7 @@ function dpa_is_achievement_grant_page() {
 function dpa_is_create_achievement_page() {
 	global $bp;
 
-	return apply_filters( 'dpa_is_create_achievement_page', ( $bp->current_component == $bp->achievements->slug && $bp->current_action == DPA_SLUG_CREATE ) );
+	return apply_filters( 'dpa_is_create_achievement_page', ( bp_is_current_component( $bp->achievements->slug ) && $bp->current_action == DPA_SLUG_CREATE ) );
 }
 
 /**
@@ -1824,7 +1838,7 @@ function dpa_is_create_achievement_page() {
 function dpa_is_member_my_achievements_page() {
 	global $bp;
 
-	return apply_filters( 'dpa_is_member_my_achievements_page', ( $bp->current_component == $bp->achievements->slug && $bp->current_action == DPA_SLUG_MY_ACHIEVEMENTS ) );
+	return apply_filters( 'dpa_is_member_my_achievements_page', ( bp_is_current_component( $bp->achievements->slug ) && $bp->current_action == DPA_SLUG_MY_ACHIEVEMENTS ) );
 }
 
 /**
@@ -1838,7 +1852,7 @@ function dpa_is_member_my_achievements_page() {
 function dpa_is_directory_page() {
 	global $bp, $is_member_page;
 
-	return apply_filters( 'dpa_is_directory_page', ( $bp->current_component == $bp->achievements->slug && ( $bp->is_directory || ( $bp->current_component == $bp->achievements->slug && !$bp->current_action && !$bp->current_item && !$is_member_page ) ) ) );
+	return apply_filters( 'dpa_is_directory_page', ( bp_is_current_component( $bp->achievements->slug ) && ( bp_is_directory() || ( bp_is_current_component( $bp->achievements->slug ) && !$bp->current_action && !$bp->current_item && !$is_member_page ) ) ) );
 }
 
 /**
@@ -1851,7 +1865,7 @@ function dpa_is_directory_page() {
 function dpa_is_achievements_component() {
 	global $bp;
 
-	return apply_filters( 'dpa_is_achievements_component', ( $bp->current_component == $bp->achievements->slug ) );
+	return apply_filters( 'dpa_is_achievements_component', bp_is_current_component( $bp->achievements->slug ) );
 }
 
 /**
@@ -1864,7 +1878,7 @@ function dpa_is_achievements_component() {
 function dpa_is_achievement_single() {
 	global $bp;
 
-	return apply_filters( 'dpa_is_achievement_single', ( $bp->current_component == $bp->achievements->slug && $bp->is_single_item ) );
+	return apply_filters( 'dpa_is_achievement_single', ( bp_is_current_component( $bp->achievements->slug ) && $bp->is_single_item ) );
 }
 
 

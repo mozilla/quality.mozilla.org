@@ -6,7 +6,7 @@
  * @package Achievements
  * @subpackage ajax
  *
- * $Id: achievements-ajax.php 972 2011-04-03 10:09:47Z DJPaul $
+ * $Id: achievements-ajax.php 1008 2011-10-04 20:34:45Z DJPaul $
  */
 
 /**
@@ -46,7 +46,7 @@ add_action( 'wp_ajax_unlockedby_filter', 'dpa_filter_achievement_unlockedby_temp
  */
 function dpa_dtheme_achievements_activity_template_loader() {
 	dpa_setup_globals();
-	dpa_achievement_activity_filter();
+	dpa_achievement_activity_il8n_filter();
 
 	$result = array();
 	//$feed_url = dpa_get_achievement_activity_feed_link();

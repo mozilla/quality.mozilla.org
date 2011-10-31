@@ -6,7 +6,7 @@
  * @package Achievements for BuddyPress
  * @subpackage core
  *
- * $Id: achievements-core.php 975 2011-04-03 11:58:24Z DJPaul $
+ * $Id: achievements-core.php 1020 2011-10-07 22:56:17Z DJPaul $
  */
 
 /**
@@ -56,8 +56,12 @@ function dpa_setup_globals() {
 	$bp->achievements->table_achievements = $bp->table_prefix . 'achievements';
 	$bp->achievements->table_unlocked = $bp->table_prefix . 'achievements_unlocked';
 	$bp->achievements->table_actions = $bp->table_prefix . 'achievements_actions';
-	$bp->achievements->format_notification_function = 'dpa_format_notifications';
 	$bp->active_components[$bp->achievements->slug] = $bp->achievements->id;
+
+	// For BuddyPress 1.5
+	$bp->achievements->root_slug = isset( $bp->pages->achievements->slug ) ? $bp->pages->achievements->slug : DPA_SLUG;
+	$bp->achievements->name = __( 'Achievements', 'dpa' );
+	$bp->achievements->notification_callback = 'dpa_format_notifications';
 }
 add_action( 'bp_setup_globals', 'dpa_setup_globals' );
 
@@ -84,7 +88,7 @@ function dpa_setup_nav() {
 
 	$url = dpa_get_achievements_permalink() . '/';
 
-	if ( $bp->current_component == $bp->achievements->slug && $bp->achievements->current_achievement = new DPA_Achievement( array( 'type' => 'single', 'slug' => apply_filters( 'dpa_get_achievement_slug', $bp->current_action ) ) ) ) {
+	if ( bp_is_current_component( $bp->achievements->slug ) && $bp->achievements->current_achievement = new DPA_Achievement( array( 'type' => 'single', 'slug' => apply_filters( 'dpa_get_achievement_slug', $bp->current_action ) ) ) ) {
 		if ( isset( $bp->achievements->current_achievement->is_active ) && !$bp->achievements->current_achievement->is_active && !dpa_permission_can_user_edit() ) {
 			// Require edit permission to view an inactive Achievement's pages
 			bp_core_redirect( dpa_get_achievements_permalink() );
@@ -101,12 +105,13 @@ function dpa_setup_nav() {
 	}
 
 	// Add 'Achievements' to the main navigation
-	bp_core_new_nav_item( array( 'name' => sprintf( __( 'Achievements <span>(%s)</span>', 'dpa' ), dpa_get_total_achievement_count_for_user() ), 'slug' => $bp->achievements->slug, 'position' => 80, 'screen_function' => 'dpa_screen_my_achievements', 'default_subnav_slug' => DPA_SLUG_MY_ACHIEVEMENTS, 'item_css_id' => $bp->achievements->id ) );
+	bp_core_new_nav_item( array( 'name' => sprintf( __( 'Achievements <span>%s</span>', 'dpa' ), dpa_get_total_achievement_count_for_user() ), 'slug' => $bp->achievements->slug, 'position' => 80, 'screen_function' => 'dpa_screen_my_achievements', 'default_subnav_slug' => DPA_SLUG_MY_ACHIEVEMENTS, 'item_css_id' => $bp->achievements->id ) );
+
 
 	$subnav_url = $bp->loggedin_user->domain . DPA_SLUG . '/';
-	bp_core_new_subnav_item( array( 'name' => sprintf( __( 'My Achievements <span>(%s)</span>', 'dpa' ), dpa_get_total_achievement_count_for_user() ), 'slug' => DPA_SLUG_MY_ACHIEVEMENTS, 'parent_url' => $subnav_url, 'parent_slug' => $bp->achievements->slug, 'screen_function' => 'dpa_screen_my_achievements', 'position' => 10, 'item_css_id' => 'achievements_my' ) );
+	bp_core_new_subnav_item( array( 'name' => sprintf( __( 'My Achievements <span>%s</span>', 'dpa' ), dpa_get_total_achievement_count_for_user() ), 'slug' => DPA_SLUG_MY_ACHIEVEMENTS, 'parent_url' => $subnav_url, 'parent_slug' => $bp->achievements->slug, 'screen_function' => 'dpa_screen_my_achievements', 'position' => 10, 'item_css_id' => 'achievements_my' ) );
 
- 	if ( $bp->current_component == $bp->achievements->slug ) {
+ 	if ( bp_is_current_component( $bp->achievements->slug ) ) {
 		if ( bp_is_my_profile() && !$bp->is_single_item ) {
 			$bp->bp_options_title = __( 'My Achievements', 'dpa' );
 
@@ -115,6 +120,7 @@ function dpa_setup_nav() {
 
 		} elseif ( $bp->is_single_item ) {
 			// When in a single listing, the first action is bumped down one because of the listing ID, so we need to adjust this and set the listing name to current_item.
+
 			$bp->current_item = $bp->current_action;
 
 			if ( isset( $bp->action_variables[0] ) )
@@ -125,49 +131,144 @@ function dpa_setup_nav() {
 			array_shift( $bp->action_variables );
 
 			$bp->bp_options_title = apply_filters( 'dpa_get_achievement_name', $bp->achievements->current_achievement->name );
-			$achievement_link = $url . $bp->achievements->current_achievement->slug . '/';
+			$achievement_link     = $url . $bp->achievements->current_achievement->slug . '/';
+			$parent_slug          = $bp->achievements->current_achievement->slug;
 
-			// Reset the existing subnav items
-			bp_core_reset_subnav_items( $bp->achievements->slug );
+			// Add to the main navigation
+			$main_nav = array(
+				'name'                => __( 'Home', 'dpa' ),
+				'slug'                => $bp->achievements->current_achievement->slug,
+				'position'            => -1, // Do not show in BuddyBar
+				'screen_function'     => 'dpa_screen_achievement_activity',
+				'default_subnav_slug' => DPA_SLUG_ACHIEVEMENT_ACTIVITY,
+				'item_css_id'         => $bp->achievements->id
+			);
+			bp_core_new_nav_item( $main_nav );
 
-			// Add a new default subnav item for when the Achievements nav is selected
-			bp_core_new_nav_default( array( 'parent_slug' => $bp->achievements->slug, 'screen_function' => 'dpa_screen_achievement_activity', 'subnav_slug' => DPA_SLUG_ACHIEVEMENT_ACTIVITY ) );
+			/**
+			 * Setup the subnav items
+			 */
+			// Add the "Home" subnav item, as this will always be present
+			$sub_nav[] = array(
+				'name'            =>  __( 'Home', 'dpa' ),
+				'slug'            => DPA_SLUG_ACHIEVEMENT_ACTIVITY,
+				'parent_url'      => $achievement_link,
+				'parent_slug'     => $parent_slug,
+				'screen_function' => 'dpa_screen_achievement_activity',
+				'position'        => 20,
+				'item_css_id'     => 'achievements_activity'
+			);
 
-			// Add the subnav items which will always appear
-			bp_core_new_subnav_item( array( 'name' => __( 'Home', 'dpa' ), 'slug' => DPA_SLUG_ACHIEVEMENT_ACTIVITY, 'parent_url' => $achievement_link, 'parent_slug' => $bp->achievements->slug, 'screen_function' => 'dpa_screen_achievement_activity', 'position' => 20, 'item_css_id' => 'achievements_activity' ) );
-			bp_core_new_subnav_item( array( 'name' => sprintf( __( 'Unlocked By (%s)', 'dpa' ), dpa_get_achievement_unlocked_count( $bp->achievements->current_achievement->id ) ), 'slug' => DPA_SLUG_ACHIEVEMENT_UNLOCKED_BY, 'parent_url' => $achievement_link, 'parent_slug' => $bp->achievements->slug, 'screen_function' => 'dpa_screen_achievement_unlocked_by', 'position' => 40, 'item_css_id' => 'unlockedby' ) );
+			$sub_nav[] = array(
+				'name'            => sprintf( __( 'Unlocked By <span>%s</span>', 'dpa' ), dpa_get_achievement_unlocked_count( $bp->achievements->current_achievement->id ) ),
+				'slug'            => DPA_SLUG_ACHIEVEMENT_UNLOCKED_BY,
+				'parent_url'      => $achievement_link,
+				'parent_slug'     => $parent_slug,
+				'screen_function' => 'dpa_screen_achievement_unlocked_by',
+				'position'        => 40,
+				'item_css_id'     => 'achievements_unlockedby'
+			);
 
-			if ( dpa_permission_can_user_change_picture() )
-		  	bp_core_new_subnav_item( array( 'name' => __( 'Change Picture', 'dpa' ), 'slug' => DPA_SLUG_ACHIEVEMENT_CHANGE_PICTURE, 'parent_url' => $achievement_link, 'parent_slug' => $bp->achievements->slug, 'screen_function' => 'dpa_screen_achievement_change_picture', 'position' => 50, 'user_has_access' => ( dpa_permission_can_user_change_picture() ), 'item_css_id' => 'achievements_changepicture' ) );
+			if ( dpa_permission_can_user_change_picture() ) {
+				$sub_nav[] = array(
+					'name'            =>  __( 'Change Picture', 'dpa' ),
+					'slug'            => DPA_SLUG_ACHIEVEMENT_CHANGE_PICTURE,
+					'parent_url'      => $achievement_link,
+					'parent_slug'     => $parent_slug,
+					'screen_function' => 'dpa_screen_achievement_change_picture',
+					'position'        => 50,
+					'item_css_id'     => 'achievements_changepicture'
+				);
+			}
 
-			if ( dpa_permission_can_user_delete() )
-		  	bp_core_new_subnav_item( array( 'name' => __( 'Delete', 'dpa' ), 'slug' => DPA_SLUG_ACHIEVEMENT_DELETE, 'parent_url' => $achievement_link, 'parent_slug' => $bp->achievements->slug, 'screen_function' => 'dpa_screen_achievement_delete', 'position' => 50, 'user_has_access' => ( dpa_permission_can_user_delete() ), 'item_css_id' => 'achievements_delete' ) );
+			if ( dpa_permission_can_user_delete() ) {
+				$sub_nav[] = array(
+					'name'            =>  __( 'Delete', 'dpa' ),
+					'slug'            => DPA_SLUG_ACHIEVEMENT_DELETE,
+					'parent_url'      => $achievement_link,
+					'parent_slug'     => $parent_slug,
+					'screen_function' => 'dpa_screen_achievement_delete',
+					'position'        => 50,
+					'user_has_access' => dpa_permission_can_user_delete(),
+					'item_css_id'     => 'achievements_delete'
+				);
+			}
 
-			if ( dpa_permission_can_user_edit() )
-		  	bp_core_new_subnav_item( array( 'name' => __( 'Edit', 'dpa' ), 'slug' => DPA_SLUG_ACHIEVEMENT_EDIT, 'parent_url' => $achievement_link, 'parent_slug' => $bp->achievements->slug, 'screen_function' => 'dpa_screen_achievement_edit', 'position' => 60, 'user_has_access' => ( dpa_permission_can_user_edit() ), 'item_css_id' => 'achievements_edit' ) );
+			if ( dpa_permission_can_user_delete() ) {
+				$sub_nav[] = array(
+					'name'            =>  __( 'Edit', 'dpa' ),
+					'slug'            => DPA_SLUG_ACHIEVEMENT_EDIT,
+					'parent_url'      => $achievement_link,
+					'parent_slug'     => $parent_slug,
+					'screen_function' => 'dpa_screen_achievement_edit',
+					'position'        => 60,
+					'user_has_access' => dpa_permission_can_user_edit(),
+					'item_css_id'     => 'achievements_edit'
+				);
+			}
 
-			if ( dpa_permission_can_user_grant() )
-		  	bp_core_new_subnav_item( array( 'name' => __( 'Give', 'dpa' ), 'slug' => DPA_SLUG_ACHIEVEMENT_GRANT, 'parent_url' => $achievement_link, 'parent_slug' => $bp->achievements->slug, 'screen_function' => 'dpa_screen_achievement_grant', 'position' => 70, 'user_has_access' => ( dpa_permission_can_user_grant() ), 'item_css_id' => 'achievements_grant' ) );
+			if ( dpa_permission_can_user_grant() ) {
+				$sub_nav[] = array(
+					'name'            =>  __( 'Grant', 'dpa' ),
+					'slug'            => DPA_SLUG_ACHIEVEMENT_GRANT,
+					'parent_url'      => $achievement_link,
+					'parent_slug'     => $parent_slug,
+					'screen_function' => 'dpa_screen_achievement_grant',
+					'position'        => 70,
+					'user_has_access' => dpa_permission_can_user_grant(),
+					'item_css_id'     => 'achievements_grant'
+				);
+			}
+
+			// initialize the subnav items
+			foreach( $sub_nav as $nav )
+				bp_core_new_subnav_item( $nav );
 		}
 	}
 }
 add_action( 'bp_setup_nav', 'dpa_setup_nav' );
 
 /**
- * Adds an item to the site's main navigation
+ * Add WP Admin Bar support
  *
  * @global object $bp BuddyPress global settings
- * @since 2.0
+ * @global object $wp_admin_bar WP Admin Bar object
+ * @since 2.1
  */
-function dpa_add_to_site_nav() {
-	global $bp;
-?>
-	<li<?php if ( bp_is_page( $bp->achievements->slug ) ) : ?> class="selected"<?php endif; ?>>
-		<a href="<?php echo site_url() ?>/<?php echo $bp->achievements->slug ?>/"><?php _e( 'Achievements', 'dpa' ) ?></a>
-	</li>
-<?php
+function dpa_setup_admin_bar() {
+	global $bp, $wp_admin_bar;
+
+	// Prevent debug notices
+	$wp_admin_nav = array();
+
+	// Menus for logged in user
+	if ( is_user_logged_in() ) {
+
+		// Setup the logged in user variables
+		$user_domain   = $bp->loggedin_user->domain;
+		$link = trailingslashit( $user_domain . $bp->achievements->slug );
+
+		// Add the "Achievements" sub menu
+		$wp_admin_nav[] = array(
+			'parent' => $bp->my_account_menu_id,
+			'id'     => 'my-account-' . $bp->achievements->id,
+			'title'  => __( 'Achievements', 'dpa' ),
+			'href'   => trailingslashit( $link )
+		);
+
+		// My Achievements
+		$wp_admin_nav[] = array(
+			'parent' => 'my-account-' . $bp->achievements->id,
+			'title'  => __( 'My Achievements', 'dpa' ),
+			'href'   => trailingslashit( $link . DPA_SLUG_MY_ACHIEVEMENTS )
+		);
+
+		foreach( $wp_admin_nav as $admin_menu )
+			$wp_admin_bar->add_menu( $admin_menu );
+
+	}
 }
-add_action( 'bp_nav_items', 'dpa_add_to_site_nav' );
+add_action( 'bp_setup_admin_bar', 'dpa_setup_admin_bar' );
 
 /**
  * Add "show achievement unlocks" filter to sitewide and member activity streams
@@ -176,12 +277,11 @@ add_action( 'bp_nav_items', 'dpa_add_to_site_nav' );
  */
 function dpa_add_sitewide_activity_filter() {
 ?>
-	<option value="new_achievement"><?php _e( 'Show Achievements', 'dpa' ) ?></option>
+	<option value="new_achievement"><?php _e( 'Achievements', 'dpa' ); ?></option>
 <?php
 }
 add_action( 'bp_activity_filter_options', 'dpa_add_sitewide_activity_filter' );
 add_action( 'bp_member_activity_filter_options', 'dpa_add_sitewide_activity_filter' );
-
 
 /**
  * Adds RSS links to page <head> section
@@ -236,7 +336,7 @@ add_action( is_multisite() ? 'network_admin_menu' : 'admin_menu', 'dpa_add_admin
 function dpa_load_template_filter( $found_template, $templates ) {
 	global $bp;
 
-	if ( $bp->current_component != $bp->achievements->slug || $found_template )
+	if ( !bp_is_current_component( $bp->achievements->slug ) || $found_template )
 		return $found_template;
 
 	$filtered_templates = array();
@@ -301,7 +401,7 @@ function dpa_load_template( $templates ) {
 			$uri = array_merge( $uri, array() );  // Reset the keys by merging with an empty array
 		}
 
-		if ( !in_array( $uri[0], $bp->root_components ) || 'single' != $uri[1] )
+		if ( !bp_is_current_component( $uri[0] ) || 'single' != $uri[1] )
 			continue;
 
 		if ( $bp->current_item )
@@ -350,7 +450,7 @@ function dpa_get_active_actions() {
 	global $bp, $wpdb;
 
 	if ( !$actions = wp_cache_get( 'dpa_active_actions', 'dpa' ) ) {
-		$actions = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT action.name FROM {$bp->achievements->table_achievements} as achievement, {$bp->achievements->table_actions} as action WHERE achievement.action_id = action.id AND achievement.action_id != -1 AND (achievement.is_active = 1 OR achievement.is_active = 2)" ) );	
+		$actions = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT action.name FROM {$bp->achievements->table_achievements} as achievement, {$bp->achievements->table_actions} as action WHERE achievement.action_id = action.id AND achievement.action_id != -1 AND (achievement.is_active = 1 OR achievement.is_active = 2)" ) );
 		wp_cache_set( 'dpa_active_actions', $actions, 'dpa' );
 	}
 	return apply_filters( 'dpa_get_active_actions', (array)$actions );
@@ -405,7 +505,7 @@ function dpa_achievement_modification_update_meta( $new_achievement, $old_achiev
 	global $bp, $wpdb;
 
 	// Achievement picture has changed, clear picture url cache.
-	if ( $new_achievement->picture_id != $old_achievement->picture_id ) 
+	if ( $new_achievement->picture_id != $old_achievement->picture_id )
 		wp_cache_delete( 'dpa_achievement_picture_urls', 'dpa' );
 
 	// Achievement type has changed, clear user count meta.
@@ -518,7 +618,8 @@ function dpa_delete_highscore_cache() {
 		if ( empty( $widget ) )
 			continue;
 
-		wp_cache_delete( 'dpa_high_scorers_' . apply_filters( 'dpa_widget_limit', $widget->limit ), 'dpa' );
+		if ( !empty( $widget->limit ) )
+			wp_cache_delete( 'dpa_high_scorers_' . apply_filters( 'dpa_widget_limit', $widget->limit ), 'dpa' );
 	}
 }
 
@@ -543,6 +644,7 @@ add_action( 'dpa_achievement_unlocked', 'dpa_achievement_unlocked_update_meta', 
  * Restores BuddyPress Groups global settings after the activity stream loop on the Achievment's page.
  * Or, in other words, tidies up after a hack. Ahem.
  *
+ * @deprecated 2.1 Not used any more
  * @global object $bp BuddyPress global settings
  * @see dpa_achievement_activity_filter
  * @see dpa_screen_achievement_activity
@@ -551,6 +653,7 @@ add_action( 'dpa_achievement_unlocked', 'dpa_achievement_unlocked_update_meta', 
 function dpa_activity_screen_restore_settings() {
 	global $bp;
 
+	_deprecated_function( __FUNCTION__, '2.1' );
 	$bp->groups->id = $bp->achievements->old_groups_id;
 
 	if ( bp_is_active( 'groups' ) && isset( $bp->achievements->old_current_group_id ) ) {
@@ -590,33 +693,31 @@ function dpa_override_i18n( $find, $replace ) {
 }
 
 /**
- * Loads an Achievement's home (or activity stream) page and configures its variables for our infernal purposes.
+ * Changes the 'no activity' message on an achievement's activity page.
  *
- * @global object $bp BuddyPress global settings
- * @see dpa_activity_screen_restore_settings()
  * @since 2.0
  */
-function dpa_achievement_activity_filter() {
-	global $bp;
-
-	$bp->achievements->old_groups_id = $bp->groups->id;
-
-	if ( bp_is_active( 'groups' ) && isset( $bp->groups->current_group ) ) {
-		$bp->achievements->old_current_group_id = $bp->groups->current_group->id;
-		$bp->achievements->old_current_group_status = $bp->groups->current_group->status;
-	}
-
-	$bp->groups->id = $bp->achievements->id;
-	$bp->groups->current_group->id = $bp->achievements->current_achievement->id;
-	$bp->groups->current_group->status = 'public';
-
-	// Revert the above variable changes after the activity loop
-	add_action( 'bp_after_activity_loop', 'dpa_activity_screen_restore_settings' );
-
+function dpa_achievement_activity_il8n_filter() {
 	$find = __( 'Sorry, there was no activity found. Please try a different filter.', 'buddypress' );  // Intentionally uses BuddyPress' text domain.
 	$replace = __( 'Sorry, there was no activity found.', 'dpa' );
 	dpa_override_i18n( $find, $replace );
 }
+
+/**
+ * Hijacks the activity stream on an achievement's activity page so only achievement items are displayed.
+ *
+ * @global object $bp BuddyPress global settings
+ * @since 2.1
+ */
+function dpa_achievement_activity_filter( $query_string ) {
+	global $bp;
+
+	if ( bp_is_current_component( $bp->achievements->slug ) && !empty( $bp->current_action ) )
+		$query_string = 'object=achievements&primary_id=' . $bp->achievements->current_achievement->id;
+
+	return $query_string;
+}
+add_filter( 'bp_dtheme_ajax_querystring', 'dpa_achievement_activity_filter' );
 
 
 /********************************************************************************
@@ -655,7 +756,7 @@ function dpa_setup_achievements() {
 	foreach ( $actions as $action )
 		add_action( $action->name, 'dpa_handle_action_' . $action->name, 10, 10 );
 }
-add_action( 'bp_init', 'dpa_setup_achievements' );
+add_action( 'bp_init', 'dpa_setup_achievements', 9 );
 
 /**
  * Implements the Achievement actions, and unlocks if criteria met.
@@ -804,7 +905,7 @@ function dpa_maybe_unlock_achievement( $user_id, $skip_validation='' ) {
  * @global DPA_Achievement_Template $achievements_template Achievements template tag object
  * @global object $bp BuddyPress global settings
  * @param int $user_id Optional
- * @param string $achievement_slug Optional; defaults to the Achievement currently being viewed 
+ * @param string $achievement_slug Optional; defaults to the Achievement currently being viewed
  * @since 2.0
  * @uses DPA_Achievement
  */
@@ -817,8 +918,11 @@ function dpa_force_unlock_achievement( $user_id=0, $achievement_slug='' ) {
 	if ( !$achievement_slug )
 		$achievement_slug = apply_filters( 'dpa_get_achievement_slug', $bp->current_item );
 
-	$original_achievement                = $achievements_template->achievement;
-	$original_achievements               = $achievements_template->achievements;
+	if ( !empty( $achievements_template->achievement ) )
+		$original_achievement = $achievements_template->achievement;
+
+	if ( !empty( $achievements_template->achievements ) )
+		$original_achievements = $achievements_template->achievements;
 
   // Can't use $bp->achievements_current_achievement as that achievement's populate_extras meta is for the logged-in user (or doesn't exist).
 	$achievements_template->achievement  = new DPA_Achievement( array( 'type' => 'single', 'slug' => $achievement_slug, 'user_id' => $user_id ) );
@@ -826,8 +930,11 @@ function dpa_force_unlock_achievement( $user_id=0, $achievement_slug='' ) {
 
 	dpa_maybe_unlock_achievement( $user_id, 'force' );
 
-	$achievements_template->achievements = $original_achievements;
-	$achievements_template->achievement  = $original_achievement;
+	if ( isset( $original_achievements ) )
+		$achievements_template->achievements = $original_achievements;
+
+	if ( isset( $original_achievement ) )
+		$achievements_template->achievement = $original_achievement;
 }
 
 /**
@@ -1504,12 +1611,12 @@ function dpa_is_group_achievement_valid( $action_name, $func_args, $user_id ) {
 function dpa_action_achievement_feed() {
 	global $bp;
 
-	if ( $bp->current_component != $bp->achievements->slug || !$bp->loggedin_user->id || !$bp->is_single_item || DPA_SLUG_ACHIEVEMENT_ACTIVITY_RSS != $bp->current_action )
+	if ( !bp_is_current_component( $bp->achievements->slug ) || !$bp->loggedin_user->id || !$bp->is_single_item || DPA_SLUG_ACHIEVEMENT_ACTIVITY_RSS != $bp->current_action )
 		return;
 
 	$wp_query->is_404 = false;
 	status_header( 200 );
-	dpa_achievement_activity_filter();
+	dpa_achievement_activity_il8n_filter();
 
 	include_once( 'feeds/dpa-myachievements-feed.php' );
 	die;
@@ -1526,11 +1633,11 @@ add_action( 'bp_setup_nav', 'dpa_action_achievement_feed', 11 );
 function dpa_setup_nav_directory() {
 	global $bp, $is_member_page;
 
-	if ( $bp->current_component == $bp->achievements->slug && !$bp->current_action && !$bp->current_item && !$is_member_page ) {
+	if ( bp_is_current_component( $bp->achievements->slug ) && !$bp->current_action && !$bp->current_item && !$is_member_page ) {
 		$bp->is_directory = true;
 
 		if ( $bp->loggedin_user->id )
-			bp_core_delete_notifications_for_user_by_type( $bp->loggedin_user->id, $bp->achievements->id, 'new_achievement' );
+			bp_core_delete_notifications_by_type( $bp->loggedin_user->id, $bp->achievements->id, 'new_achievement' );
 
 		do_action( 'dpa_setup_nav_directory' );
 		bp_core_load_template( apply_filters( 'achievements_template_directory', 'achievements/index' ) );
@@ -1549,7 +1656,7 @@ function dpa_screen_my_achievements() {
 	global $bp;
 
 	if ( $bp->loggedin_user->id )
-		bp_core_delete_notifications_for_user_by_item_id( $bp->loggedin_user->id, $bp->achievements->current_achievement->id, $bp->achievements->id, 'new_achievement' );
+		bp_core_delete_notifications_by_item_id( $bp->loggedin_user->id, $bp->achievements->current_achievement->id, $bp->achievements->id, 'new_achievement' );
 
 	do_action( 'dpa_screen_my_achievements' );
 	bp_core_load_template( apply_filters( 'dpa_screen_my_achievements_template', 'members/single/achievements' ) );
@@ -1565,10 +1672,9 @@ function dpa_screen_achievement_activity() {
 	global $bp;
 
 	if ( $bp->loggedin_user->id )
-		bp_core_delete_notifications_for_user_by_item_id( $bp->loggedin_user->id, $bp->achievements->current_achievement->id, $bp->achievements->id, 'new_achievement' );
+		bp_core_delete_notifications_by_item_id( $bp->loggedin_user->id, $bp->achievements->current_achievement->id, $bp->achievements->id, 'new_achievement' );
 
 	do_action( 'dpa_screen_achievement_activity' );
-	dpa_achievement_activity_filter();
 	bp_core_load_template( apply_filters( 'dpa_screen_achievement_activity_template', 'achievements/single/home' ) );
 }
 
@@ -1587,7 +1693,7 @@ function dpa_screen_achievement_unlocked_by() {
 	add_action( 'bp_after_members_loop', 'dpa_remove_filters_after_members_loop' );
 
 	do_action( 'dpa_screen_achievement_unlocked_by' );
-	bp_core_load_template( apply_filters( 'dpa_screen_achievement_details_template', 'achievements/single/home' ) );	
+	bp_core_load_template( apply_filters( 'dpa_screen_achievement_details_template', 'achievements/single/home' ) );
 }
 
 /**
@@ -1798,7 +1904,7 @@ function dpa_screen_achievement_delete() {
 function dpa_screen_achievement_create() {
 	global $achievements_template, $achievements_errors, $bp, $current_blog;
 
-	if ( $bp->current_component != $bp->achievements->slug || DPA_SLUG_CREATE != $bp->current_action || !dpa_permission_can_user_create() )
+	if ( !bp_is_current_component( $bp->achievements->slug ) || DPA_SLUG_CREATE != $bp->current_action || !dpa_permission_can_user_create() )
 		return;
 
 	$bp->achievements->current_achievement = new DPA_Achievement;
@@ -1809,7 +1915,7 @@ function dpa_screen_achievement_create() {
 		$achievement->points       = '';
 		$achievement->action_count = 1;
 		$achievement->is_active    = 1;
-
+//die(var_dump( $bp->achievements->current_achievement ));
 		do_action( 'dpa_screen_achievement_create', $achievement );
 		bp_core_load_template( apply_filters( 'dpa_screen_achievement_create_template', 'achievements/create' ) );
 		return;

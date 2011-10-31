@@ -9,7 +9,8 @@
  *
  * $Id$
  */
-
+global $bp;
+$slug = function_exists( 'bp_get_root_slug' ) ? bp_get_root_slug( $bp->achievements->slug ) : $bp->achievements->slug;
 header( 'Content-Type: text/xml; charset=' . get_option( 'blog_charset' ), true );
 header( 'Status: 200 OK' );
 ?>
@@ -24,16 +25,16 @@ header( 'Status: 200 OK' );
 >
 
 <channel>
-	<title><?php echo bp_site_name() ?> | <?php echo $bp->displayed_user->fullname; ?> | <?php _e( 'My Achievements', 'dpa' ) ?></title>
+	<title><?php printf( __( "%s's Achievement Feed", 'dpa' ), $bp->achievements->current_achievement->name ); ?> | <?php echo bp_site_name() ?></title>
 	<atom:link href="<?php self_link(); ?>" rel="self" type="application/rss+xml" />
-	<link><?php echo site_url( DPA_SLUG . '/' . DPA_SLUG_MY_ACHIEVEMENTS ) ?></link>
-	<description><?php echo $bp->displayed_user->fullname ?> - <?php _e( 'My Achievements', 'dpa' ) ?></description>
+	<link><?php echo trailingslashit( bp_get_root_domain() ) . $slug . '/' . $bp->achievements->current_achievement->slug . '/'; ?></link>
+	<description><?php printf( __( "Activity feed for the achievement, %s", 'dpa' ), $bp->achievements->current_achievement->name ); ?></description>
 	<pubDate><?php echo mysql2date( 'D, d M Y H:i:s O', bp_activity_get_last_updated(), false ) ?></pubDate>
 	<generator>http://buddypress.org/community/groups/achievements/?v=<?php echo ACHIEVEMENTS_VERSION ?>-<?php echo BP_VERSION ?></generator>
 	<language><?php echo get_option( 'rss_language' ) ?></language>
 	<?php do_action( 'dpa_myachievements_feed_head' ) ?>
 
-	<?php if ( bp_has_activities() ) : ?>
+	<?php if ( bp_has_activities( bp_ajax_querystring( 'activity' ) ) ) : ?>
 		<?php while ( bp_activities() ) : bp_the_activity(); ?>
 			<item>
 				<guid><?php bp_activity_thread_permalink() ?></guid>

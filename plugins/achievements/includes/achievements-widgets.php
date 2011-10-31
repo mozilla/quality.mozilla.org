@@ -6,7 +6,7 @@
  * @package Achievements
  * @subpackage widgets
  *
- * $Id: achievements-widgets.php 985 2011-05-04 22:16:16Z DJPaul $
+ * $Id: achievements-widgets.php 1003 2011-10-04 20:15:19Z DJPaul $
  */
 
 /**
@@ -211,7 +211,7 @@ class DPA_Member_Achievements extends WP_Widget {
 
 		extract( $args, EXTR_SKIP );
 
-		if ( dpa_has_achievements( array( 'user_id' => $bp->loggedin_user->id, 'max' => $instance['limit'], 'populate_extras' => false, 'type' => 'unlocked' ) ) ) :
+		if ( dpa_has_achievements( array( 'user_id' => $user_id, 'max' => $instance['limit'], 'populate_extras' => false, 'type' => 'unlocked' ) ) ) :
 			echo $before_widget;
 
 			if ( $instance['title'] ) {
@@ -265,7 +265,7 @@ class DPA_Member_Achievements extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, array( 'title' => __( "Your Recent Achievements", 'dpa' ), 'limit' => 12 ) );
 		$title = apply_filters( 'dpa_widget_title', $instance['title'] );
 		$limit = apply_filters( 'dpa_widget_limit', $instance['limit'] );
-		$loggedin_user = apply_filters( 'dpa_widget_loggedin_user', $instance['loggedin_user'] );
+		$loggedin_user = apply_filters( 'dpa_widget_loggedin_user', !empty( $instance['loggedin_user'] ) ? $instance['loggedin_user'] : false );
 
 		$checked = '';
 		if ( $loggedin_user )
@@ -390,7 +390,7 @@ class DPA_Available_Achievements_Widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, array( 'title' => __( 'All Available Achievements', 'dpa' ), 'limit' => 12 ) );
 		$title = apply_filters( 'dpa_widget_title', $instance['title'] );
 		$limit = apply_filters( 'dpa_widget_limit', $instance['limit'] );
-		$showsitewide = apply_filters( 'dpa_widget_showsitewide', $instance['showsitewide'] );
+		$showsitewide = apply_filters( 'dpa_widget_showsitewide', !empty( $instance['showsitewide'] ) ? $instance['showsitewide'] : false );
 
 		$checked = '';
 		if ( $showsitewide )
@@ -575,7 +575,7 @@ class DPA_Member_Achievements_Available extends WP_Widget {
 
 		extract( $args, EXTR_SKIP );
 
-		if ( dpa_has_achievements( array( 'user_id' => $bp->loggedin_user->id, 'max' => $instance['limit'], 'populate_extras' => false, 'type' => 'locked' ) ) ) :
+		if ( dpa_has_achievements( array( 'user_id' => $user_id, 'max' => $instance['limit'], 'populate_extras' => false, 'type' => 'locked' ) ) ) :
 			echo $before_widget;
 
 			if ( $instance['title'] ) {
@@ -627,7 +627,7 @@ class DPA_Member_Achievements_Available extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, array( 'title' => __( "Unlock These Achievements", 'dpa' ), 'limit' => 12 ) );
 		$title = apply_filters( 'dpa_widget_title', $instance['title'] );
 		$limit = apply_filters( 'dpa_widget_limit', $instance['limit'] );
-		$loggedin_user = apply_filters( 'dpa_widget_loggedin_user', $instance['loggedin_user'] );
+		$loggedin_user = apply_filters( 'dpa_widget_loggedin_user', !empty( $instance['loggedin_user'] ) ? $instance['loggedin_user'] : false );
 
 		$checked = '';
 		if ( $loggedin_user )

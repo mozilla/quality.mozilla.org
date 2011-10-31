@@ -6,17 +6,17 @@
  * @package Achievements for BuddyPress
  * @subpackage loader
  *
- * $Id: loader.php 982 2011-05-04 20:32:30Z DJPaul $
+ * $Id: loader.php 1011 2011-10-07 18:28:03Z DJPaul $
  */
 
 /*
 Plugin Name: Achievements
 Plugin URI: http://achievementsapp.com/
 Description: Achievements gives your BuddyPress community fresh impetus by promoting and rewarding social interaction with challenges, badges and points.
-Version: 2.0.8
-Requires at least: WP 3.0.1, BuddyPress 1.2.8
-Tested up to: WP 3.1, BuddyPress 1.2.8
-License: General Public License version 2
+Version: 2.1
+Requires at least: WP 3.0.1, BuddyPress 1.5
+Tested up to: WP 3.2.1, BuddyPress 1.5
+License: General Public License version 3
 Author: Paul Gibbs
 Author URI: http://byotos.com/
 Network: true
@@ -106,8 +106,7 @@ function dpa_install_and_upgrade() {
 		$version = 0;
 
 	$charset_collate = ( !empty( $wpdb->charset ) ) ? "DEFAULT CHARACTER SET $wpdb->charset" : '';
-	if ( !$table_prefix = $bp->table_prefix )
-		$table_prefix = apply_filters( 'bp_core_get_table_prefix', $wpdb->base_prefix );
+	$table_prefix = bp_core_get_table_prefix();
 
 	if ( $version != ACHIEVEMENTS_DB_VERSION ) {
 		for ( $i=$version; $i<ACHIEVEMENTS_DB_VERSION; $i++ ) {

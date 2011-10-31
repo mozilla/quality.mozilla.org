@@ -3,7 +3,7 @@
 Plugin Name: FeedWordPress
 Plugin URI: http://feedwordpress.radgeek.com/
 Description: simple and flexible Atom/RSS syndication for WordPress
-Version: 2011.0721
+Version: 2011.1019
 Author: Charles Johnson
 Author URI: http://radgeek.com/
 License: GPL
@@ -11,7 +11,7 @@ License: GPL
 
 /**
  * @package FeedWordPress
- * @version 2011.0721
+ * @version 2011.1019
  */
 
 # This uses code derived from:
@@ -34,7 +34,7 @@ License: GPL
 
 # -- Don't change these unless you know what you're doing...
 
-define ('FEEDWORDPRESS_VERSION', '2011.0721');
+define ('FEEDWORDPRESS_VERSION', '2011.1019');
 define ('FEEDWORDPRESS_AUTHOR_CONTACT', 'http://radgeek.com/contact');
 
 if (!defined('FEEDWORDPRESS_BLEG')) :
@@ -122,6 +122,7 @@ require_once("${dir}/syndicationdataqueries.class.php");
 require_once("${dir}/feedwordpress_file.class.php");
 require_once("${dir}/feedwordpress_parser.class.php");
 require_once("${dir}/feedwordpressrpc.class.php");
+require_once("${dir}/feedwordpresshttpauthenticator.class.php");
 
 // Magic quotes are just about the stupidest thing ever.
 if (is_array($_POST)) :
@@ -142,24 +143,6 @@ if (isset($ref[1])) :
 	$fwp_path = $ref[1];
 else : // Something went wrong. Let's just guess.
 	$fwp_path = 'feedwordpress';
-endif;
-
-// If this is a FeedWordPress admin page, queue up scripts for AJAX functions that FWP uses
-// If it is a display page or a non-FeedWordPress admin page, don't.
-wp_register_style('feedwordpress-elements', WP_PLUGIN_URL.'/'.$fwp_path.'/feedwordpress-elements.css');
-if (FeedWordPressSettingsUI::is_admin()) :
-	// For JavaScript that needs to be generated dynamically
-	add_action('admin_print_scripts', array('FeedWordPressSettingsUI', 'admin_scripts'));
-
-	// For CSS that needs to be generated dynamically.
-	add_action('admin_print_styles', array('FeedWordPressSettingsUI', 'admin_styles'));
-
-	wp_enqueue_style('dashboard');
-	wp_enqueue_style('feedwordpress-elements');
-
-	if (function_exists('wp_admin_css')) :
-		wp_admin_css('css/dashboard');
-	endif;
 endif;
 
 if (!FeedWordPress::needs_upgrade()) : // only work if the conditions are safe!
@@ -915,6 +898,7 @@ class FeedWordPress {
 
 	var $feeds = NULL;
 
+	var $httpauth = NULL;
 	# function FeedWordPress (): Contructor; retrieve a list of feeds 
 	function FeedWordPress () {
 		$this->feeds = array ();
@@ -922,6 +906,8 @@ class FeedWordPress {
 		if ($links): foreach ($links as $link):
 			$this->feeds[] = new SyndicatedLink($link);
 		endforeach; endif;
+		
+		$this->httpauth = new FeedWordPressHTTPAuthenticator;
 	} // FeedWordPress::FeedWordPress ()
 
 	# function update (): polls for updates on one or more Contributor feeds
@@ -998,12 +984,21 @@ class FeedWordPress {
 		if (is_null($crash_ts)) :
 			$crash_ts = $this->crash_ts();
 		endif;
-
-		$max_polls = apply_filters('feedwordpress_polls_per_update', get_option('feedwordpress_polls_per_update', 10), $uri);
 		
 		// Randomize order for load balancing purposes
 		$feed_set = $this->feeds;
 		shuffle($feed_set);
+
+		$updateWindow = (int) get_option('feedwordpress_update_window', DEFAULT_UPDATE_PERIOD) * 60 /* sec/min */;
+		$interval = (int) get_option('feedwordpress_freshness', FEEDWORDPRESS_FRESHNESS_INTERVAL);
+		$portion = max(
+			(int) ceil(count($feed_set) / ($updateWindow / $interval)),
+			10
+		);
+
+		$max_polls = apply_filters('feedwordpress_polls_per_update', get_option(
+			'feedwordpress_polls_per_update',	$portion
+		), $uri);
 
 		$feed_set = apply_filters('feedwordpress_update_feeds', $feed_set, $uri);
 
@@ -1163,6 +1158,27 @@ class FeedWordPress {
 	} // FeedWordPress::stale()
 
 	function init () {
+		global $fwp_path;
+		
+		// If this is a FeedWordPress admin page, queue up scripts for AJAX
+		// functions that FWP uses. If it is a display page or a non-FWP admin
+		// page, don't.
+		wp_register_style('feedwordpress-elements', WP_PLUGIN_URL.'/'.$fwp_path.'/feedwordpress-elements.css');
+		if (FeedWordPressSettingsUI::is_admin()) :
+			// For JavaScript that needs to be generated dynamically
+			add_action('admin_print_scripts', array('FeedWordPressSettingsUI', 'admin_scripts'));
+		
+			// For CSS that needs to be generated dynamically.
+			add_action('admin_print_styles', array('FeedWordPressSettingsUI', 'admin_styles'));
+		
+			wp_enqueue_style('dashboard');
+			wp_enqueue_style('feedwordpress-elements');
+		
+			if (function_exists('wp_admin_css')) :
+				wp_admin_css('css/dashboard');
+			endif;
+		endif;
+
 		$this->clear_cache_magic_url();
 		$this->update_magic_url();
 	} /* FeedWordPress::init() */
@@ -1566,6 +1582,11 @@ class FeedWordPress {
 	}
 	
 	/*static*/ function fetch ($url, $params = array()) {
+		if (is_wp_error($url)) :
+			// Let's bounce.
+			return $url;
+		endif;
+		
 		$force_feed = true; // Default
 
 		// Allow user to change default feed-fetch timeout with a global setting. Props Erigami Scholey-Fuller <http://www.piepalace.ca/blog/2010/11/feedwordpress-broke-my-heart.html>			'timeout' => 
@@ -1574,7 +1595,7 @@ class FeedWordPress {
 		if (!is_array($params)) :
 			$force_feed = $params;
 		else : // Parameter array
-			$args = shortcode_atts(array(
+			$args = wp_parse_args(array(
 			'force_feed' => $force_feed,
 			'timeout' => $timeout
 			), $params);

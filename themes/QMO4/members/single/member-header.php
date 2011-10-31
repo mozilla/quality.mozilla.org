@@ -1,4 +1,6 @@
 <?php global $bp; 
+$user = get_userdata($bp->displayed_user->id);
+$user_email = $user->user_email;
 do_action( 'bp_before_member_header' ); ?>
 <div id="member-head" class="hcard">
   <div class="member-info">
@@ -6,8 +8,7 @@ do_action( 'bp_before_member_header' ); ?>
     <?php if (bp_get_profile_field_data('field=IRC Nickname') != "") : ?>
     <h2 class="nickname"><?php bp_profile_field_data( 'field=IRC Nickname' ); ?></h2>
     <?php endif; ?>
-
-   <p class="activity"><?php bp_last_activity( bp_displayed_user_id() ); ?></p>
+    <p class="activity"><?php bp_last_activity( bp_displayed_user_id() ); ?></p>
   </div>
 
   <?php if ( qmo_show_user_meta() ) : ?>
@@ -17,10 +18,9 @@ do_action( 'bp_before_member_header' ); ?>
   </div>
   <?php endif; ?>
   
-  <?php 
-    if ( is_super_admin() ) :
-  ?>
+  <?php if ( is_super_admin() ) : ?>
 		<ul class="admin-links">
+		  <li><?php echo $user_email; ?></li>
 			<li><a href="<?php echo $bp->displayed_user->domain . $bp->profile->slug ?>/edit/"><?php _e( "Edit Profile", 'qmo' ); ?></a></li>
 			<li><a href="<?php echo $bp->displayed_user->domain . $bp->profile->slug ?>/change-avatar/"><?php _e( "Change Avatar", 'qmo' ); ?></a></li>
 			<?php if ( !bp_core_is_user_spammer( $bp->displayed_user->id ) ) : ?>

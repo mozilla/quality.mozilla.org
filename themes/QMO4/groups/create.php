@@ -231,7 +231,7 @@
 
           <?php /* Create Button */ ?>
           <?php if ( bp_is_first_group_creation_step() ) : ?>
-            <button type="submit" id="group-creation-create" name="save"><?php _e('Create Group and Continue', 'buddypress') ?> &rarr;</button>
+            <button type="submit" id="group-creation-create" name="save"><?php _e('Create Team and Continue', 'buddypress') ?> &rarr;</button>
           <?php endif; ?>
 
           <?php /* Finish Button */ ?>
