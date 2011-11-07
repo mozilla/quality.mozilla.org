@@ -20,14 +20,14 @@ get_header(); ?>
 
 <?php if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
 
-  <div id="post-<?php the_ID(); ?>" <?php post_class('syndicated'); ?> role="article">
-    <h3 class="entry-title <?php if ( function_exists('is_event') && is_event() ) : echo 'summary'; endif; ?>"><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent link to &#8220;<?php the_title_attribute(); ?>&#8221;" <?php if ( function_exists('is_event') && is_event() ) : echo 'class="url"'; endif; ?>><?php the_title(); ?></a></h3>
+  <article id="post-<?php the_ID(); ?>" <?php post_class('syndicated'); ?> role="article">
+    <h1 class="entry-title <?php if ( function_exists('is_event') && is_event() ) : echo 'summary'; endif; ?>"><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent link to &#8220;<?php the_title_attribute(); ?>&#8221;" <?php if ( function_exists('is_event') && is_event() ) : echo 'class="url"'; endif; ?>><?php the_title(); ?></a></h1>
     <div class="entry-meta">
       <p class="entry-posted">
         <a class="posted-month" href="<?php echo get_month_link(get_the_time('Y'), get_the_time('m')); ?>" title="See all posts from <?php echo get_the_time('F, Y'); ?>"><?php the_time('M'); ?></a>
         <span class="posted-date"><?php the_time('j'); ?></span>
         <span class="posted-year"><?php the_time('Y'); ?></span>
-        <abbr class="updated" title="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></abbr>
+        <time class="updated" pubdate datetime="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></time>
       </p>
       <p>Syndicated from <a href="<?php the_syndication_source_link(); ?>" rel="nofollow external"><?php the_syndication_source(); ?></a></p>
     </div>
@@ -53,7 +53,7 @@ get_header(); ?>
     <?php endif; ?>
     </ul>
   <?php endif; ?>
-  </div><!-- /post -->
+  </article><!-- /post -->
 
 <?php endwhile; ?>
 

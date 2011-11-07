@@ -18,10 +18,10 @@
 
 <?php if ( have_comments() || comments_open() ) : // If there are comments OR comments are open ?>
 <section id="comments">
-  <div class="comments-head">
-    <h3><?php comments_number(__('No comments yet','qmo'), __('One comment','qmo'), __('% comments','qmo') );?></h3>
+  <header class="comments-head">
+    <h1><?php comments_number(__('No comments yet','qmo'), __('One comment','qmo'), __('% comments','qmo') );?></h1>
     <?php if ( comments_open() && $comment_count['approved'] > 3 ) { ?><a class="cmt-post" href="#respond"><?php _e('Post a comment','qmo'); ?></a><?php } ?>
-  </div>
+  </header>
 
 <?php if ( have_comments() ) : // If there are comments ?>
   <ol id="comment-list" class="hfeed <?php if (get_option('show_avatars')) echo 'av'; // provides a style hook when avatars are enabled ?>">

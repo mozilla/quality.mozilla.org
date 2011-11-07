@@ -44,7 +44,7 @@ input, select, textarea { font-family: inherit; font-size: 100%; }
 
 /* @General elements *********/
 html { background: #fff url("img/bg-canvas.png") 0 -80px repeat-x; }
-body { position: relative; min-width: 840px; font: 13px/1.538 Georgia, Times, serif; color: #333; }
+body { position: relative; min-width: 840px; font: 13px/1.538 Georgia, Times, serif; color: #333; padding-top: 0 !important; }
 
 /*** @Links *********/
 :link { text-decoration: none; color: #369; }
@@ -405,7 +405,7 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 #header a.mozilla { position: relative; z-index: 99; float: right; height: 49px; width: 118px; background: url("img/moz-tab.png") 0 0 no-repeat; text-indent: -200px; overflow: hidden; }
 
 /*** @User status *********/
-#user-state { margin: 0 0 1em; overflow: hidden; font: .923em Verdana, Tahoma, sans-serif; padding-bottom: 20px; background: url("img/pencil-line.png") left bottom repeat-x; }
+#user-state { margin: 0 0 1em; overflow: hidden; font: .923em Verdana, Tahoma, sans-serif; padding-bottom: 20px; min-height: 50px; background: url("img/pencil-line.png") left bottom repeat-x; }
 #user-state .howdy { list-style: none; text-align: right; position: relative; padding: 0 0 0 60px; }
 #user-state .howdy li { display: inline; margin-right: 5px; padding-right: 8px; border-right: 1px solid; }
 #user-state .howdy li:last-child { border: 0; margin-right: 0; padding-right: 0; }
@@ -437,7 +437,7 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 .fm-search fieldset { width: 22%; float: right; position: relative; top: 2.65em; }
 .fm-search p { margin: 0; }
 .fm-search legend { height: 0; text-indent: -999em; overflow: hidden; }
-.fm-search #s { width: 80%; margin-right: 35px; border: 1px solid #999; font: .923em/1 Verdana, Tahoma, sans-serif; padding: .2em 2px; background: #fff; background: rgba(255,255,255,.75); }
+.fm-search #s { width: 80%; margin-right: 35px; border: 1px solid #999; font: .923em/1 Verdana, Tahoma, sans-serif; padding: .2em 2px; border-radius: 0; -webkit-appearance: textfield; background: #fff; background: rgba(255,255,255,.75); }
 .fm-search #s:hover { border-color: #666; background: #fff; }
 .fm-search #s:focus { border-color: #369; background: #fff; }
 .fm-search button { float: right; margin-top: -22px; width: 14%; padding: 0; height: 22px; text-indent: -999em; overflow: hidden; border: 1px outset #fff; background: #e0e0e0 url("img/btn-search.png") 50% 50% no-repeat; }

@@ -20,11 +20,11 @@ get_header(); ?>
 
 <?php if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
 
-  <div id="post-<?php the_ID(); ?>" <?php post_class('tweet'); ?> role="article">
+  <article id="post-<?php the_ID(); ?>" <?php post_class('tweet'); ?> role="article">
     <p class="tweet-flag">Tweet</p>
     <div class="entry-content <?php if ( function_exists('is_event') && is_event() ) : echo 'description'; endif; ?>">
       <?php the_content(); ?>
-      <p class="tweet-meta">Posted on <?php the_time($date_format); ?> at <abbr class="updated" title="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></abbr>.</p>
+      <p class="tweet-meta">Posted on <?php the_time($date_format); ?> at <time class="updated" pubdate datetime="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></time>.</p>
     </div>
 
     <?php if (get_the_tags()) : ?>
@@ -42,7 +42,7 @@ get_header(); ?>
     <?php endif; ?>
     </ul>
   <?php endif; ?>
-  </div><!-- /post -->
+  </article><!-- /post -->
 
   <?php endwhile; ?>
   

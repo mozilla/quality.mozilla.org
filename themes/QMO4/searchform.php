@@ -5,6 +5,6 @@
 <?php } else { ?>
   <legend>Search</legend>
 <?php } ?>
-  <p><input type="text" value="<?php the_search_query(); ?>" name="s" id="s" placeholder="<?php _e( 'Search QMO', 'qmo' ); ?>"> <button type="submit">Search</button></p>
+  <p><input type="search" value="<?php the_search_query(); ?>" name="s" id="s" placeholder="<?php _e( 'Search QMO', 'qmo' ); ?>"> <button type="submit">Search</button></p>
 </fieldset>
 </form>

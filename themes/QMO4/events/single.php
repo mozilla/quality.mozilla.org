@@ -10,12 +10,12 @@ get_header();
 ?>
 <section id="content-main" class="hfeed vcalendar" role="main">
 <?php the_post(); global $post; global $authordata; ?>
-  <div id="post-<?php the_ID() ?>" <?php post_class('vevent') ?> role="article">
+  <article id="post-<?php the_ID() ?>" <?php post_class('vevent') ?> role="article">
     <h1 class="entry-title summary"><?php the_title() ?></h1>
     <div class="entry-meta">
       <p class="event-flag">Event</p>
       <p class="vcard">Posted by <a class="fn url author" title="See all <?php the_author_posts() ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a> 
-      on <?php the_time(get_option('date_format')); ?> at <abbr class="updated" title="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></abbr>.
+      on <?php the_time(get_option('date_format')); ?> at <time class="updated" pubdate datetime="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></time>.
       <?php if ( current_user_can( 'edit_page', $post->ID ) ) : ?><span class="edit"><?php edit_post_link('Edit', '', ''); ?></span><?php endif; ?>
       </p>
     </div>
@@ -31,20 +31,20 @@ get_header();
       if ( get_post_meta( $post->ID, '_EventAllDay' ) && 
            (the_event_start_date($post->ID) == the_event_end_date($post->ID)) ) : ?>
         <dt><?php _e('Date:','qmo'); ?></dt>
-        <dd><abbr class="dtstart" title="<?php echo the_event_start_date( $post->ID, false, 'Y-m-d' ); ?>"><?php echo the_event_start_date( $post->ID, false, $date_format ); ?></abbr></dd>
+        <dd><time class="dtstart" datetime="<?php echo the_event_start_date( $post->ID, false, 'Y-m-d' ); ?>"><?php echo the_event_start_date( $post->ID, false, $date_format ); ?></time></dd>
     <?php // All day, multiple days
       elseif ( get_post_meta( $post->ID, '_EventAllDay' ) && 
                (the_event_start_date($post->ID) != the_event_end_date($post->ID)) ) : ?>
         <dt><?php _e('Start:','qmo'); ?></dt>
-        <dd><abbr class="dtstart" title="<?php echo the_event_start_date( $post->ID, false, 'Y-m-d' ); ?>"><?php echo the_event_start_date( $post->ID, false, $date_format ); ?></abbr></dd>
+        <dd><time class="dtstart" datetime="<?php echo the_event_start_date( $post->ID, false, 'Y-m-d' ); ?>"><?php echo the_event_start_date( $post->ID, false, $date_format ); ?></time></dd>
         <dt><?php _e('End:','qmo'); ?></dt>
-        <dd><abbr class="dtend" title="<?php echo the_event_end_date( $post->ID, false, 'Y-m-d' ); ?>"><?php echo the_event_end_date( $post->ID, false, $date_format ); ?></abbr></dd>
+        <dd><time class="dtend" datetime="<?php echo the_event_end_date( $post->ID, false, 'Y-m-d' ); ?>"><?php echo the_event_end_date( $post->ID, false, $date_format ); ?></time></dd>
     <?php // Standard event shows start and end, date and time
       else : ?>
         <dt><?php _e('Start:','qmo'); ?></dt>
-        <dd><abbr class="dtstart" title="<?php echo the_event_start_date( $post->ID, false, 'Y-m-d\TH:i:s' ); ?>"><?php echo the_event_start_date( $post->ID, false, $date_format ).'<br>'.the_event_start_date( $post->ID, false, $time_format ); ?></abbr></dd>
+        <dd><time class="dtstart" datetime="<?php echo the_event_start_date( $post->ID, false, 'Y-m-d\TH:i:s' ); ?>"><?php echo the_event_start_date( $post->ID, false, $date_format ).'<br>'.the_event_start_date( $post->ID, false, $time_format ); ?></time></dd>
         <dt><?php _e('End:','qmo'); ?></dt>
-        <dd><abbr class="dtend" title="<?php echo the_event_end_date( $post->ID, false, 'Y-m-d\TH:i:s' ); ?>"><?php echo the_event_end_date( $post->ID, false, $date_format ).'<br>'.the_event_end_date( $post->ID, false, $time_format ); ?></abbr></dd>
+        <dd><time class="dtend" datetime="<?php echo the_event_end_date( $post->ID, false, 'Y-m-d\TH:i:s' ); ?>"><?php echo the_event_end_date( $post->ID, false, $date_format ).'<br>'.the_event_end_date( $post->ID, false, $time_format ); ?></time></dd>
     <?php endif; ?>
     <?php if ( the_event_cost() ) : ?>
         <dt><?php _e('Cost:', $spEvents->pluginDomain) ?></dt>
@@ -82,7 +82,7 @@ get_header();
   <?php if (get_the_tags()) : ?>
     <?php the_tags('<p class="entry-tags"><strong>'.__('Tags:','qmo').'</strong> ',', ',''); ?>
   <?php endif; ?>
-  </div><!-- /post -->
+  </article><!-- /post -->
 
 <?php if(eventsGetOptionValue('showComments','no') == 'yes'){ comments_template(); } ?>
 

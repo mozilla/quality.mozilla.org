@@ -227,28 +227,28 @@ function qmo_comment($comment, $args, $depth) {
 
  <li id="comment-<?php comment_ID(); ?>" <?php comment_class('hentry'); ?>>
   <?php if ( $comment_type == 'trackback' ) : ?>
-    <h5 class="entry-title"><?php _e( 'Trackback from ', 'qmo' ); ?> <cite><?php comment_author_link(); ?></cite>
-      <span class="comment-meta">on <a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ); ?>" rel="bookmark" title=" <?php _e('Permanent link to this comment by ','qmo'); comment_author(); ?>"><abbr class="published" title="<?php comment_date('Y-m-d'); ?>"><?php comment_date('F jS, Y'); ?></abbr> at <?php comment_time(); ?></a>:</span>
-    </h5>
+    <h2 class="entry-title"><?php _e( 'Trackback from ', 'qmo' ); ?> <cite><?php comment_author_link(); ?></cite>
+      <span class="comment-meta">on <a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ); ?>" rel="bookmark" title=" <?php _e('Permanent link to this comment by ','qmo'); comment_author(); ?>"><time class="published" pubdate datetime="<?php comment_date('Y-m-d'); ?>"><?php comment_date('F jS, Y'); ?></time> at <?php comment_time(); ?></a>:</span>
+    </h2>
   <?php elseif ( $comment_type == 'pingback' ) : ?>
-    <h5 class="entry-title"><?php _e( 'Pingback from ', 'qmo' ); ?> <cite><?php comment_author_link(); ?></cite>
-      <span class="comment-meta">on <a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ); ?>" rel="bookmark" title="<?php _e('Permanent link to this comment by ','qmo'); comment_author(); ?>"><abbr class="published" title="<?php comment_date('Y-m-d'); ?>"><?php comment_date('F jS, Y'); ?></abbr> at <?php comment_time(); ?></a>:</span>
-    </h5>
+    <h2 class="entry-title"><?php _e( 'Pingback from ', 'qmo' ); ?> <cite><?php comment_author_link(); ?></cite>
+      <span class="comment-meta">on <a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ); ?>" rel="bookmark" title="<?php _e('Permanent link to this comment by ','qmo'); comment_author(); ?>"><time class="published" pubdate datetime="<?php comment_date('Y-m-d'); ?>"><?php comment_date('F jS, Y'); ?></time> at <?php comment_time(); ?></a>:</span>
+    </h2>
   <?php else : ?>
     <?php if ( ( $comment->comment_author_url != "http://" ) && ( $comment->comment_author_url != "" ) ) : // if author has a link ?>
-     <h5 class="entry-title vcard">
+     <h2 class="entry-title vcard">
        <a href="<?php comment_author_url(); ?>" class="url" rel="nofollow external" title="<?php comment_author_url(); ?>">
          <?php if (function_exists('get_avatar')) : echo ('<span class="photo">'.get_avatar( $comment, 48 ).'</span>'); endif; ?>
          <cite class="author fn"><?php comment_author(); ?></cite>
        </a>
-       <span class="comment-meta">wrote on <a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ); ?>" rel="bookmark" title="<?php _e('Permanent link to this comment by ','qmo'); comment_author(); ?>"><abbr class="published" title="<?php comment_date('Y-m-d'); ?>"><?php comment_date('F jS, Y'); ?></abbr> at <?php comment_time(); ?></a>:</span>
-     </h5>
+       <span class="comment-meta">wrote on <a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ); ?>" rel="bookmark" title="<?php _e('Permanent link to this comment by ','qmo'); comment_author(); ?>"><time class="published" pubdate datetime="<?php comment_date('Y-m-d'); ?>"><?php comment_date('F jS, Y'); ?></time> at <?php comment_time(); ?></a>:</span>
+     </h2>
     <?php else : // author has no link ?>
-      <h5 class="entry-title vcard">
+      <h2 class="entry-title vcard">
         <?php if (function_exists('get_avatar')) : echo ('<span class="photo">'.get_avatar( $comment, 48 ).'</span>'); endif; ?>
         <cite class="author fn"><?php comment_author(); ?></cite>
-        <span class="comment-meta">wrote on <a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ); ?>" rel="bookmark" title="<?php _e('Permanent link to this comment by ','qmo'); comment_author(); ?>"><abbr class="published" title="<?php comment_date('Y-m-d'); ?>"><?php comment_date('F jS, Y'); ?></abbr> at <?php comment_time(); ?></a>:</span>
-      </h5>
+        <span class="comment-meta">wrote on <a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ); ?>" rel="bookmark" title="<?php _e('Permanent link to this comment by ','qmo'); comment_author(); ?>"><time class="published" pubdate datetime="<?php comment_date('Y-m-d'); ?>"><?php comment_date('F jS, Y'); ?></time> at <?php comment_time(); ?></a>:</span>
+      </h2>
     <?php endif; ?>
   <?php endif; ?>
 
@@ -1040,18 +1040,12 @@ function qmo_page_title($sep = '&#124;', $display = true, $seplocation = '') {
   else if ( $bp->is_single_item ) {
     $title = $bp->bp_options_title . " $sep " . ucwords( $bp->current_component ) . " $sep ";
   } 
-  else if ( $bp->is_directory ) {
-    if ( !$bp->current_component )
-      $title = ucwords( BP_MEMBERS_SLUG ) . " $sep ";
-    else
-      $title = ucwords( $bp->current_component ) . " $sep ";
-  } 
   else if ( bp_is_register_page() ) {
     $title = __( 'Create an Account', 'qmo' ) . " $sep ";
   } 
   else if ( bp_is_activation_page() ) {
     $title = __( 'Activate Your Account', 'qmo' ) . " $sep ";
-  } 
+  }
   else if ( bp_is_group_create() ) {
     $title = __( 'Create a Team', 'qmo' ) . " $sep ";
   } 

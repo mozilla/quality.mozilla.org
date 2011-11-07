@@ -28,13 +28,13 @@ get_header(); ?>
   </h1>
 
 <?php while (have_posts()) : the_post(); ?>
-  <div id="post-<?php the_ID(); ?>"
+  <article id="post-<?php the_ID(); ?>"
     <?php if ( function_exists('is_event') && is_event() ) : post_class('vevent');
       elseif (in_category('twitter')) : post_class('tweet');
       elseif ( function_exists('is_syndicated') && is_syndicated() ) : post_class('syndicated');
       else : post_class(); endif; ?> role="article">
   <?php if (!in_category('twitter')) : ?>
-    <h3 class="entry-title <?php if ( function_exists('is_event') && is_event() ) : echo 'summary'; endif; ?>"><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent link to &#8220;<?php the_title_attribute(); ?>&#8221;" <?php if ( function_exists('is_event') && is_event() ) : echo 'class="url"'; endif; ?>><?php the_title(); ?></a></h3>
+    <h1 class="entry-title <?php if ( function_exists('is_event') && is_event() ) : echo 'summary'; endif; ?>"><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent link to &#8220;<?php the_title_attribute(); ?>&#8221;" <?php if ( function_exists('is_event') && is_event() ) : echo 'class="url"'; endif; ?>><?php the_title(); ?></a></h1>
   <?php endif; ?>
   <?php if ( ( function_exists('is_event') && is_event() ) || in_category('events') ) : ?>
     <div class="entry-meta">
@@ -56,7 +56,7 @@ get_header(); ?>
         <a class="posted-month" href="<?php echo get_month_link(get_the_time('Y'), get_the_time('m')); ?>" title="See all posts from <?php echo get_the_time('F, Y'); ?>"><?php the_time('M'); ?></a>
         <span class="posted-date"><?php the_time('j'); ?></span>
         <span class="posted-year"><?php the_time('Y'); ?></span>
-        <abbr class="updated" title="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></abbr>
+        <time class="updated" pubdate datetime="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></time>
       </p>
       <p>Syndicated from <a href="<?php the_syndication_source_link(); ?>" rel="nofollow external"><?php the_syndication_source(); ?></a></p>
     </div>
@@ -92,7 +92,7 @@ get_header(); ?>
     <?php if (get_the_tags()) : ?>
       <?php the_tags('<p class="entry-tags"><strong>'.__('Tags:','qmo').'</strong> ',', ',''); ?>
     <?php endif; ?>
-  </div><!-- /post -->
+  </article><!-- /post -->
 
 <?php endwhile; ?>
 

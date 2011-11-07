@@ -7,9 +7,11 @@ get_header(); ?>
 <section id="content-main" class="hfeed vcalendar" role="main">
 <?php if ( is_front_page() && ($paged < 1) && $home_intro ) :
   fc_get_post($home_intro); ?>
-  <div id="home-head">
-    <h2 id="tagline"><?php _e('The home of <strong>Mozilla QA</strong>', 'qmo'); ?></h2>
-    <h3 class="section-title"><?php the_title(); ?></h3>
+  <header id="home-head">
+   <hgroup>
+    <h1 id="tagline"><?php _e('The home of <strong>Mozilla QA</strong>', 'qmo'); ?></h1>
+    <h2 class="section-title"><?php the_title(); ?></h2>
+   </hgroup>
 
   <?php if ( function_exists('bp_is_active') && bp_is_active( 'groups' ) && bp_has_groups( bp_ajax_querystring( 'groups' ) ) ) : ?>
     <ul class="teams-list">
@@ -25,7 +27,7 @@ get_header(); ?>
   <?php endif; ?>
 
     <?php the_content(); ?>
-  </div>
+  </header>
 
   <h2 class="section-title">Latest News</h2>
 <?php endif; ?>
@@ -33,14 +35,14 @@ get_header(); ?>
 <?php $wp_query->query('cat='.$news_cat.','.$events_cat.'&posts_per_page=4&paged='.$paged); // Only show news and events on the home page
 if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
 
-  <div id="post-<?php the_ID(); ?>" <?php if ( function_exists('is_event') && is_event() ) : post_class('vevent'); else : post_class(); endif; ?> role="article">
-    <h3 class="entry-title <?php if ( function_exists('is_event') && is_event() ) : echo 'summary'; endif; ?>"><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent link to &#8220;<?php the_title_attribute(); ?>&#8221;" <?php if ( function_exists('is_event') && is_event() ) : echo 'class="url"'; endif; ?>><?php the_title(); ?></a></h3>
+  <article id="post-<?php the_ID(); ?>" <?php if ( function_exists('is_event') && is_event() ) : post_class('vevent'); else : post_class(); endif; ?> role="article">
+    <h1 class="entry-title <?php if ( function_exists('is_event') && is_event() ) : echo 'summary'; endif; ?>"><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent link to &#8220;<?php the_title_attribute(); ?>&#8221;" <?php if ( function_exists('is_event') && is_event() ) : echo 'class="url"'; endif; ?>><?php the_title(); ?></a></h1>
 
   <?php if ( ( function_exists('is_event') && is_event() ) || in_category('events') ) : ?>
     <div class="entry-meta">
       <p class="event-flag">Event</p>
       <p class="vcard">Posted by <a class="fn url author" title="See all <?php the_author_posts() ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a> 
-      on <?php the_time(get_option('date_format')); ?> at <abbr class="updated" title="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></abbr>.
+      on <?php the_time(get_option('date_format')); ?> at <time class="updated" pubdate datetime="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></time>.
       <?php if ( current_user_can( 'edit_page', $post->ID ) ) : ?><span class="edit"><?php edit_post_link('Edit', '', ''); ?></span><?php endif; ?>
       </p>
     </div>
@@ -54,7 +56,7 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
         <a class="posted-month" href="<?php echo get_month_link(get_the_time('Y'), get_the_time('m')); ?>" title="See all posts from <?php echo get_the_time('F, Y'); ?>"><?php the_time('M'); ?></a>
         <span class="posted-date"><?php the_time('j'); ?></span>
         <span class="posted-year"><?php the_time('Y'); ?></span>
-        <abbr class="updated" title="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></abbr>
+        <time class="updated" pubdate datetime="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></time>
       </p>
       <p class="vcard"><?php _e('Posted by','qmo') ?> <a class="fn url author" title="See all <?php the_author_posts(); ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a> 
       in <?php the_category(', ', ''); ?>.
@@ -87,7 +89,7 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
     <?php endif; ?>
     </ul>
   <?php endif; ?>
-  </div><!-- /post -->
+  </article><!-- /post -->
 
   <?php endwhile; ?>
 

@@ -28,7 +28,7 @@
       <div class="entry-meta">
         <p class="vcard">Last modified by <a class="fn url author" title="See all <?php the_author_posts() ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a>
         on <?php the_modified_time(get_option('date_format')); ?>
-        at <abbr class="updated" title="<?php the_modified_time('Y-m-d\TH:i:sP'); ?>"><?php the_modified_time(); ?></abbr>.
+        at <time class="updated" pubdate datetime="<?php the_modified_time('Y-m-d\TH:i:sP'); ?>"><?php the_modified_time(); ?></time>.
         <?php if ( current_user_can( 'edit_page', $post->ID ) ) : ?><span class="edit"><?php edit_post_link('Edit', '', ''); ?></span><?php endif; ?>
         </p>
       </div>

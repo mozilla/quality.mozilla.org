@@ -17,16 +17,14 @@ $parent = $ancestors[$root]; // Top parent is the last in the array
   <li><a href="<?php echo bloginfo('url'); ?>" rel="home">Home</a></li>
 <?php endif; ?>
 
-<?php // Teams 
-  if ( function_exists('bp_is_active') && bp_is_active( 'groups' ) ) :
-    if ( bp_is_page(BP_GROUPS_SLUG) && bp_is_directory() ) : ?>
-  <li class="current" title="This is the current page"><em>Teams</em></li>
-<?php elseif ( bp_is_groups_component() && bp_is_single_item() ) : ?>
-  <li class="current"><a href="<?php echo site_url(); ?>/<?php echo BP_GROUPS_SLUG ?>/">Teams</a></li>
-<?php else : ?>
-  <li><a href="<?php echo site_url(); ?>/<?php echo BP_GROUPS_SLUG ?>/">Teams</a></li>
-<?php endif; 
-  endif; ?>
+<?php // Teams
+if ( function_exists('bp_is_active') && bp_is_active( 'groups' ) ) :
+  if ( bp_is_page('groups') && bp_is_directory() ) : ?>  
+  <li class="current"><a href="<?php echo get_permalink(get_page_by_path('teams')->ID); ?>">Teams</a></li>
+  <?php else : ?>
+  <li><a href="<?php echo get_permalink(get_page_by_path('teams')->ID); ?>">Teams</a></li>
+  <?php endif; ?>
+<?php endif; ?>
 
 <?php // Community
 if ( function_exists('bp_is_active') && bp_is_active( 'activity' ) ) :
@@ -46,9 +44,9 @@ if ( function_exists('bp_is_active') && bp_is_active( 'activity' ) ) :
 <?php // Forums
 if ( function_exists('bp_is_active') && bp_is_active( 'forums' ) ) :
   if ( bp_is_page('forums') && bp_is_directory() ) : ?>  
-  <li class="current"><a href="<?php echo site_url(); ?>/forums/">Forums</a></li>
+  <li class="current"><a href="<?php echo get_permalink(get_page_by_path('forums')->ID); ?>">Forums</a></li>
   <?php else : ?>
-  <li><a href="<?php echo site_url(); ?>/forums/">Forums</a></li>
+  <li><a href="<?php echo get_permalink(get_page_by_path('forums')->ID); ?>">Forums</a></li>
   <?php endif; ?>
 <?php endif; ?>
 

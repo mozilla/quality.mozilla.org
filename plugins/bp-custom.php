@@ -6,14 +6,16 @@
 define( 'BPLANG', 'qmo' );
 
 // For Buddypress
-if ( file_exists( BP_PLUGIN_DIR . '/bp-languages/buddypress-' . BPLANG . '.mo' ) ) {
-    load_textdomain( 'buddypress', BP_PLUGIN_DIR . '/bp-languages/buddypress-' . BPLANG . '.mo' );
+if ( file_exists( WP_LANG_DIR . '/buddypress-' . BPLANG . '.mo' ) ) {
+    load_textdomain( 'buddypress', WP_LANG_DIR . '/buddypress-' . BPLANG . '.mo' );
 }
 
+
 // For BP Group Email Subscription
-if ( file_exists( WP_PLUGIN_DIR . '/buddypress-group-email-subscription/languages/bp-ass-'.BPLANG.'.mo' ) ) {
-    load_textdomain( 'bp-ass', WP_PLUGIN_DIR . '/buddypress-group-email-subscription/languages/bp-ass-'.BPLANG.'.mo' );
+if ( file_exists( WP_LANG_DIR . 'bp-ass-'.BPLANG.'.mo' ) ) {
+    load_textdomain( 'bp-ass', WP_LANG_DIR . '/bp-ass-'.BPLANG.'.mo' );
 }
+
 
 /*********
  * Change the profile tab order so "Profile" comes first and "Settings" comes last.

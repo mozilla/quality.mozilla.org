@@ -8,10 +8,10 @@ $EventState   = get_post_meta( $post->ID, '_EventState', true );
 $EventProvince  = get_post_meta( $post->ID, '_EventProvince', true );
 ?>
 <li class="vevent <?php echo $alt_text ?>">
-  <abbr class="dtstart" title="<?php echo date('Y-m-j', $start_time); ?>">
+  <time class="dtstart" datetime="<?php echo date('Y-m-j', $start_time); ?>">
     <span class="month"><?php echo date('M', $start_time); ?></span>
     <span class="date"><?php echo date('j', $start_time); ?></span>
-  </abbr>
+  </time>
   <div class="summary"><a class="url" href="<?php echo get_permalink($post->ID) ?>"><?php echo $post->post_title ?></a></div>
   <div class="location"><?php
     $space = false;
