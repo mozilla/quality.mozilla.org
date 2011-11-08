@@ -28,10 +28,10 @@ if ( function_exists('bp_is_active') && bp_is_active( 'groups' ) ) :
 
 <?php // Community
 if ( function_exists('bp_is_active') && bp_is_active( 'activity' ) ) :
-  if ( bp_is_page(BP_ACTIVITY_SLUG) && bp_is_directory() ) : ?>  
-  <li class="current"><a href="<?php echo site_url(); ?>/<?php echo BP_ACTIVITY_SLUG ?>/">Community</a></li>
+  if ( bp_is_page('community') && bp_is_directory() ) : ?>  
+  <li class="current"><a href="<?php echo get_permalink(get_page_by_path('community')->ID); ?>">Community</a></li>
   <?php else : ?>
-  <li><a href="<?php echo site_url(); ?>/<?php echo BP_ACTIVITY_SLUG ?>/">Community</a></li>
+  <li><a href="<?php echo get_permalink(get_page_by_path('community')->ID); ?>">Community</a></li>
   <?php endif; ?>
 <?php else : // If activity is disabled, link to the blog page ?>
   <?php if ( is_page('blog') || is_category('syndicated') || is_category('twitter') ) : ?>
