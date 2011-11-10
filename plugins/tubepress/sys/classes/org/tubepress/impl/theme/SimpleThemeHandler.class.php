@@ -113,7 +113,7 @@ class org_tubepress_impl_theme_SimpleThemeHandler implements org_tubepress_api_t
     
         if ($envDetector->isWordPress()) {
     
-            return ABSPATH . 'wp-content/tubepress-content';
+            return ABSPATH . 'qmo_content/tubepress-content';
     
         } else {
     

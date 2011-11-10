@@ -45,9 +45,9 @@ class org_tubepress_impl_plugin_listeners_SkeletonExistsListener
         if ($ed->isWordPress()) {
         	
 	        /* add the content directory if it's not already there */
-	        if (!is_dir(ABSPATH . 'wp-content/tubepress-content')) {
+	        if (!is_dir(ABSPATH . 'qmo_content/tubepress-content')) {
 	        	
-	        	$fse->copyDirectory($fse->getTubePressBaseInstallationPath() . '/sys/skel/tubepress-content', ABSPATH . 'wp-content');
+	        	$fse->copyDirectory($fse->getTubePressBaseInstallationPath() . '/sys/skel/tubepress-content', ABSPATH . 'qmo_content');
 	        }
 	        
         } else {
