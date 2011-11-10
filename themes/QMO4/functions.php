@@ -1078,7 +1078,7 @@ function qmo_show_user_meta() {
   global $bp;
   
   // If BuddyPress Member Profile Stats is turned on
-  if ( function_exists('bp_member_profile_stats_header_meta') )
+  if ( function_exists('etivite_bp_member_profile_stats_header_meta') )
     return true;
   
   // If BuddyPress Rate Forum Posts is turned on

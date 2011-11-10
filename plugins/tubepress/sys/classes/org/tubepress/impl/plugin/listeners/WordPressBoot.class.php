@@ -52,7 +52,12 @@ class org_tubepress_impl_plugin_listeners_WordPressBoot
         $baseName = $fse->getTubePressInstallationDirectoryBaseName();
 
         /* set the tubepress_base_url global */
-        $tubepress_base_url = site_url()  . "/wp-content/plugins/$baseName";
+        if (!defined('WP_CONTENT_URL')) define('WP_CONTENT_URL', get_option( 'siteurl' ) . '/wp-content');
+        if (!defined('WP_CONTENT_DIR')) define('WP_CONTENT_DIR', ABSPATH . 'wp-content');
+        if (!defined('WP_PLUGIN_URL')) define('WP_PLUGIN_URL', WP_CONTENT_URL. '/plugins');
+        if (!defined('WP_PLUGIN_DIR')) define('WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins');
+ 	
+        $tubepress_base_url = WP_PLUGIN_URL . "/$baseName";
 
         /* register the plugin's message bundles */
         load_plugin_textdomain('tubepress', false, "$baseName/sys/i18n");
