@@ -10,7 +10,7 @@
   <?php if (get_page_by_path('about')) : ?>
     <p><a href="<?php echo get_permalink(get_page_by_path('about')->ID); ?>"><?php echo get_page_by_path('about')->post_title; ?></a></p>
   <?php endif; ?>
-  </footer>
+  </footer>  
 
 <?php do_action( 'bp_footer' ); ?>
 <?php do_action( 'bp_after_footer' ); ?>

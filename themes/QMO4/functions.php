@@ -5,7 +5,7 @@
 function fc_add_jquery() {
   wp_enqueue_script('jquery');
 }
-add_action( 'init', 'fc_add_jquery' );
+add_action('wp_enqueue_scripts', 'fc_add_jquery');
 
 
 /*********
@@ -1137,47 +1137,18 @@ function qmo_group_list_mods( $group = false ) {
 <?php
 }
 
-
 /*********
- * Exclude certain types of activities from showing up in streams
+ * Show only blog posts, forum topics, and forum replies in activities stream (Community page)
  */
-function qmo_activity_filter( $a, $activities ) {
-  global $bp; 
-
-  /* Only run the filter on activity streams where you want blog comments filtered out. 
-   * For example, the following will only filter them on the main activity page.
-   * Member activity streams have their own loop where we're already excluding unwanted actions.
-   */
-//  if ( $bp->current_component != $bp->activity->slug )
-  if ( !bp_is_current_component( $bp->activity->slug ) )
-    return $activities;
-
-  /* Filter out unwanted actions */
-  foreach( $activities->activities as $key => $activity ) {
-  /* HACK: Checking types might be better as an array. So many ORs seems sloppy. */
-    if ( 
-          $activity->type === 'joined_group' 
-          || $activity->type === 'created_group'
-          || $activity->type === 'new_blog_comment'
-          || $activity->type === 'new_status'
-          || $activity->type === 'new_wire_post'
-          || $activity->type === 'friendship_created'
-          || $activity->type === 'new_member'
-          || $activity->type === 'new_achievement'
-          || $activity->type === 'achievement_created'
-        ) {
-      unset( $activities->activities[$key] );
-      $activities->total_activity_count = $activities->total_activity_count - 1;
-      $activities->activity_count = $activities->activity_count - 1;
-    }
+function qmo_activity_filter( $qs ) {
+  if ( empty( $qs ) && empty( $_POST['action'] ) ) {
+    $qs = 'action=new_blog_post,new_forum_topic,new_forum_post';
   }
-
-  /* Renumber the array keys to account for missing items */
-  $activities_new = array_values( $activities->activities );
-  $activities->activities = $activities_new;
-  return $activities;
+  return $qs;
 }
-add_action( 'bp_has_activities', 'qmo_activity_filter', 10, 2 );
+
+add_filter( 'bp_ajax_querystring', 'qmo_activity_filter', 999 );
+
 
 /*********
  * Turn off all achievement notification emails

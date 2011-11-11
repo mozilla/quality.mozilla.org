@@ -1,5 +1,6 @@
 <?php get_header(); ?>
 <section id="content-main" class="hfeed" role="main">
+
 <?php if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
 
     <?php if (fc_is_subpage()) : ?>

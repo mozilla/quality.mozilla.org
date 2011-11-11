@@ -1,6 +1,6 @@
 /*
 Theme Name: QMO 4
-Theme URI: https://quality.mozilla.org/
+Theme URI: http://quality.mozilla.org/
 Description: Theme for QMO (quality.mozilla.org) version 4. Copyright Mozilla Corporation, all rights reserved.
 Author: Craig Cook
 Author URI: http://www.focalcurve.com/
@@ -128,7 +128,7 @@ input[type='button']:hover, input[type='button']:focus {
 }
 
 /*** @Headings *********/
-h1, h2, h3, h4 { color: #390; font-weight: normal; line-height: 1.2; }
+h1, h2, h3, h4 { color: #390; font-weight: normal; line-height: 1.2; margin: 0 0 .25em; }
 h1 { font-size: 2.32em; }
 h2, .entry-content h1, .entry-title { font-size: 1.69em; margin-bottom: .5em; }
 h3 { font-size: 1.385em; }

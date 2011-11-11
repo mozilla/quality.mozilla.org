@@ -604,14 +604,14 @@ jq(document).ready( function() {
 	/**** New Forum Directory Post **************************************/
 
 	/* Hit the "New Topic" button on the forums directory page */
-	jq('a.show-hide-new').click( function() {
+	jq('a#new-topic-button').click( function() {
 		if ( !jq('div#new-topic-post').length )
 			return false;
 
 		if ( jq('div#new-topic-post').is(":visible") )
 			jq('div#new-topic-post').slideUp(200);
 		else
-			jq('div#new-topic-post').slideDown(200, function() { jq('#topic_title').focus(); } );
+			jq('div#new-topic-post').slideDown(400, function() { jq('#topic_title').focus(); } );
 
 		return false;
 	});
