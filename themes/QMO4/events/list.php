@@ -63,7 +63,7 @@ get_header();
       </div>
       <p><a class="more-link" href="<?php echo get_permalink($post->ID) ?>"><?php _e('Event details','qmo'); ?></a></p>
 
-    </div> <!-- End post -->
+    </article> <!-- End post -->
   <?php endwhile; // posts ?>
   </div><!-- #tec-events-loop -->
 
