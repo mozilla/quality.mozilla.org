@@ -6,7 +6,7 @@ Description: Extend restricting group creation with mappings to WordPress Capabi
 Author: rich @etivite
 Author URI: http://etivite.com
 License: GNU GENERAL PUBLIC LICENSE 3.0 http://www.gnu.org/licenses/gpl.txt
-Version: 0.5.1
+Version: 0.5.2
 Text Domain: bp-restrictgroups
 Network: true
 */

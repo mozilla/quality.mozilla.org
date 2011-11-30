@@ -1,0 +1,36 @@
+
+	.vimeo_gallery {
+		text-align: center;
+		padding: 25px auto;
+		position: relative;
+	}
+	
+	.vimeo_gallery_divider {
+		clear: both;
+	}
+	
+	.vimeo_gallery div {
+		float: left;
+		width: 135px !important;
+		text-align: center;
+		margin-bottom: 10px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	
+	.vimeo_gallery_item p {
+		text-align: center;
+		margin: auto;
+	}
+	
+	.vimeo_gallery_item img {
+		background: #eee;
+		padding: 3px;
+		border: 1px solid #999;
+		margin: 3px;
+		width: 120px;
+	}
+
+	.vimeo_gallery_item img:hover {
+		border-color: #333;
+	}

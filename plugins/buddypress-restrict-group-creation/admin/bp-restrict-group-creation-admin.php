@@ -255,6 +255,10 @@ function etivite_bp_restrictgroups_admin() {
 			$error[] = '<div id="message" class="updated fade"><p>User capability was left blank - this is required.</p></div>';
 		}
 	}
+	
+	// Get the proper URL for submitting the settings form. (Settings API workaround) - boone
+	$url_base = function_exists( 'is_network_admin' ) && is_network_admin() ? network_admin_url( 'admin.php?page=bp-restrictgroups-settings' ) : admin_url( 'admin.php?page=bp-restrictgroups-settings' );
+	
 ?>	
 	<div class="wrap">
 		<h2><?php _e( 'Restrict Group Creation', 'bp-restrictgroups' ); ?></h2>
@@ -268,7 +272,7 @@ function etivite_bp_restrictgroups_admin() {
 		}
 		if ( bp_get_option( 'bp_restrict_group_creation', '0' ) == 0 ) : echo "<div id='error' class='error fade'><p>Warning: Please enable the \"Restrict group creation to Site Admins?\" <a href=\"". network_admin_url('/admin.php?page=bp-settings') ."\">setting</a>; otherwise the options below will be ignored.</p></div>"; endif; ?>
 
-		<form action="<?php echo network_admin_url('/admin.php?page=bp-restrictgroups-settings') ?>" name="restrictgroups-rules-form" id="restrictgroups-rules-form" method="post">
+		<form action="<?php echo $url_base ?>" name="restrictgroups-rules-form" id="restrictgroups-rules-form" method="post">
 
 			<div class="tablenav">
 				<div class="alignleft actions">
@@ -313,7 +317,7 @@ function etivite_bp_restrictgroups_admin() {
 							echo "<p>Max Groups Created: ", ($value['bp_restrictgroups_created_count'][enabled] ? '<span style="color:green">enabled</span>' : '<span style="color:red">disabled</span>') ," : ". $value['bp_restrictgroups_created_count'][count] ."</p>";
 
 							//if achievements is installed
-							if ( ACHIEVEMENTS_IS_INSTALLED == 1 ) {
+							if ( defined('ACHIEVEMENTS_IS_INSTALLED') && ACHIEVEMENTS_IS_INSTALLED == 1 ) {
 								echo "<p>Achievement Count: ", ($value['bp_restrictgroups_dpa_count'][enabled] ? '<span style="color:green">enabled</span>' : '<span style="color:red">disabled</span>') ," : ". $value['bp_restrictgroups_dpa_count'][count] ."</p>";
 								
 								echo "<p>Achievement Score: ", ($value['bp_restrictgroups_dpa_score'][enabled] ? '<span style="color:green">enabled</span>' : '<span style="color:red">disabled</span>') ," : ". $value['bp_restrictgroups_dpa_score'][count] ."</p>";

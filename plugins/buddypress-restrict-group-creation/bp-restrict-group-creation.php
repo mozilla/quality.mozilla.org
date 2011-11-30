@@ -80,7 +80,7 @@ if ( $rule['display_error'] ) bp_core_add_message( __( 'Sorry, you are not allow
 	}
 
 	//if achievements is installed
-	if ( ACHIEVEMENTS_IS_INSTALLED == 1 ) {
+	if ( defined('ACHIEVEMENTS_IS_INSTALLED') && ACHIEVEMENTS_IS_INSTALLED == 1 ) {
 
 		if ($rule['bp_restrictgroups_dpa_count']['enabled'] ) {
 			if ( dpa_get_total_achievement_count_for_user() < $rule['bp_restrictgroups_dpa_count']['count'] ) {
