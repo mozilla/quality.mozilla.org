@@ -1,7 +1,7 @@
 <?php
 /*
 Page Tagger wordpress plugin
-Copyright (C) 2009-2010 Ramesh Nair
+Copyright (C) 2009-2012 Ramesh Nair
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -155,18 +155,47 @@ class PageTagger
 	/**
 	 * Custom version of the Wordpress taxonomy 'update term count' callback method.
 	 * 
-	 * This will update term count pased on posts AS WELL AS pages.
+	 * This will update term count pased on posts, pages and on custom post types.
 	 * @param array $terms List of Term taxonomy IDs
 	 */
 	function _update_post_term_count( $terms )
 	{
 		global $wpdb;
+
+        $cptSql = '' . implode(' OR ', $this->_get_custom_post_types_sql());
+        if (0 < strlen($cptSql))
+            $cptSql = ' OR ' . $cptSql;
+
 		foreach ( (array) $terms as $term ) {
-			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->term_relationships, $wpdb->posts WHERE $wpdb->posts.ID = $wpdb->term_relationships.object_id AND (post_type = 'post' OR post_type = 'page') AND term_taxonomy_id = %d", $term ) );
+			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->term_relationships, $wpdb->posts WHERE $wpdb->posts.ID = $wpdb->term_relationships.object_id AND (post_type = 'post' OR post_type = 'page' $cptSql) AND term_taxonomy_id = %d", $term ) );
 			$wpdb->update( $wpdb->term_taxonomy, compact( 'count' ), array( 'term_taxonomy_id' => $term ) );
 		}
 	}	
-	
+
+
+    /** Helper to  _update_post_term_count() which retrieves all custom post types which use the post_tag taxonomy */
+    function _get_custom_post_types_sql() {
+        static $cpt = null;
+
+        if (is_null($cpt)) {
+            $cpt = array();
+
+            $args = array(
+                'public'   => true,
+                '_builtin' => false,
+            );
+
+            $post_types = get_post_types($args, 'names');
+            foreach ($post_types as $post_type ) {
+                if (is_object_in_taxonomy($post_type, 'post_tag')) {
+                    $cpt[] = "post_type = '$post_type'";
+                }
+            }
+        }
+
+        return $cpt;
+    }
+
 }
 
 

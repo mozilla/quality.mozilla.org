@@ -1,6 +1,6 @@
 /*
 Page Tagger wordpress plugin
-Copyright (C) 2009-2010 Ramesh Nair
+Copyright (C) 2009-2012 Ramesh Nair
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 Plugin Name: Page Tagger
 Plugin URI: http://www.hiddentao.com/code/wordpress-page-tagger-plugin/
 Description: Enables tagging for pages. PHP 5 required.
-Version: 0.3.6
+Version: 0.3.7
 Author: Ramesh Nair
 Author URI: http://www.hiddentao.com/
 */
