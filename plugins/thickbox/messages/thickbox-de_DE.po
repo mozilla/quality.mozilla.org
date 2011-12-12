@@ -1,0 +1,192 @@
+# German translations for WordPress ThickBox plugin
+# Copyright (C) 2009 Christian Schenk
+# This file is distributed under the same license as the WordPress ThickBox plugin.
+# Christian Schenk <schenk@christianschenk.org>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: WordPress ThickBox plugin\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-12-01 16:57+0100\n"
+"PO-Revision-Date: 2009-12-01 17:01+0100\n"
+"Last-Translator: Christian Schenk <schenk@christianschenk.org>\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../thickbox.php:331
+msgid "Options saved."
+msgstr "Einstellungen gespeichert."
+
+#: ../thickbox.php:339
+msgid "Variant"
+msgstr "Variante"
+
+#: ../thickbox.php:340
+msgid "Help on variant"
+msgstr "Hilfe zu Variante"
+
+#: ../thickbox.php:340
+#: ../thickbox.php:351
+#: ../thickbox.php:356
+#: ../thickbox.php:361
+#: ../thickbox.php:369
+#: ../thickbox.php:374
+#: ../thickbox.php:379
+#: ../thickbox.php:387
+#: ../thickbox.php:392
+msgid "Help..."
+msgstr "Hilfe..."
+
+#: ../thickbox.php:344
+msgid "Default"
+msgstr "Standard"
+
+#: ../thickbox.php:350
+msgid "Expert mode"
+msgstr "Experten-Modus"
+
+#: ../thickbox.php:351
+msgid "Help on expert mode"
+msgstr "Hilfe zum Experten-Modus"
+
+#: ../thickbox.php:355
+msgid "Use script and style bundled with WordPress"
+msgstr "Benutze Script und Style von WordPress"
+
+#: ../thickbox.php:356
+msgid "Help on using script and style bundled with WordPress"
+msgstr "Hilfe zu Benutze Script und Style von WordPress"
+
+#: ../thickbox.php:360
+msgid "Add necessary class to gallery shortcode"
+msgstr "Benötigte \"class\" zum Gallery Shortcode hinzufügen"
+
+#: ../thickbox.php:361
+msgid "Help on Add necessary class to gallery shortcode"
+msgstr "Hilfe zu Benötigte \"class\" zum Gallery Shortcode hinzufügen"
+
+#: ../thickbox.php:365
+msgid "Include JavaScript and CSS"
+msgstr "Einbinden von JavaScript und CSS"
+
+#: ../thickbox.php:368
+msgid "Include ThickBox JavaScript"
+msgstr "ThickBox JavaScript einbinden"
+
+#: ../thickbox.php:369
+#: ../thickbox.php:374
+#: ../thickbox.php:379
+msgid "Help on ThickBox JavaScript, CSS and jQuery"
+msgstr "Hilfe zu ThickBox JavaScript, CSS und jQuery"
+
+#: ../thickbox.php:373
+msgid "Include ThickBox CSS"
+msgstr "ThickBox CSS einbinden"
+
+#: ../thickbox.php:378
+msgid "Include jQuery"
+msgstr "jQuery einbinden"
+
+#: ../thickbox.php:386
+msgid "Use SmoothBox instead of ThickBox"
+msgstr "Benutze SmoothBox an Stelle von ThickBox"
+
+#: ../thickbox.php:387
+msgid "Help on SmoothBox"
+msgstr "Hilfe zu SmoothBox"
+
+#: ../thickbox.php:391
+msgid "Include Mootools"
+msgstr "Mootools einbinden"
+
+#: ../thickbox.php:392
+msgid "Help on Mootools"
+msgstr "Hilfe zu Mootools"
+
+#: ../thickbox.php:397
+msgid "Update"
+msgstr "Speichern"
+
+#: ../thickbox.php:401
+msgid "Help and support"
+msgstr "Hilfe und Unterstützung"
+
+#: ../thickbox.php:402
+msgid "Do you need help with this plugin? Do not hesitate to leave a <a href=\"http://www.christianschenk.org/projects/wordpress-thickbox-plugin/#respond\" onclick=\"window.open(this.href,'_blank'); return false;\">comment</a> on the plugin's page or <a href=\"http://www.christianschenk.org/contact/\" onclick=\"window.open(this.href,'_blank'); return false;\">contact</a> the author."
+msgstr "Brauchst du Hilfe bei diesem Plugin? Zögere nicht einen <a href=\"http://www.christianschenk.org/de/projects/wordpress-thickbox-plugin/#respond\" onclick=\"window.open(this.href,'_blank'); return false;\">Kommentar</a> auf der Webseite des Plugins einzutragen oder den Autor zu <a href=\"http://www.christianschenk.org/de/contact/\" onclick=\"window.open(this.href,'_blank'); return false;\">kontaktieren</a>."
+
+#: ../thickbox.php:403
+msgid "Do you like the plugin and want to <a href=\"http://www.christianschenk.org/donation/\" onclick=\"window.open(this.href,'_blank'); return false;\">support</a> it? It's much appreciated!"
+msgstr "Gefällt dir dieser Plugin und möchtest du ihn <a href=\"http://www.christianschenk.org/de/donation/\" onclick=\"window.open(this.href,'_blank'); return false;\">unterstützen</a>? Ich weiß das sehr zu schätzen!"
+
+#: ../thickbox.php:407
+msgid "This option helps you to choose between variants of the JavaScript and CSS that have been placed in the plugins directory under either <code>thickbox</code> or <code>smoothbox</code>. With this possibility it is easy to manage different styles with this single plugin."
+msgstr "Diese Option hilft dabei zwischen verschiedenen Varianten des JavaScripts und CSS auszuwählen, die in dem Verzeichnis des Plugins entweder unter <code>thickbox</code> oder <code>smoothbox</code> abgelegt wurden. Mit dieser Möglichkeit ist es einfach verschiedene Stile mit diesem Plugin zu verwalten."
+
+#: ../thickbox.php:408
+msgid "If you would like to add your own variant, say, because you would like to translate the JavaScript to french or tweak the stylesheet it is a easy as this:"
+msgstr "Falls du deine eigene Variante hinzufügen möchtest, weil du das JavaScript beispielsweise auf französisch übersetzen oder etwas an dem Stylesheet ändern möchtest, ist nichts leichter als das:"
+
+#: ../thickbox.php:410
+msgid "Place your modified files under <code>wp-content/plugins/thickbox</code> either into the directory <code>thickbox</code> or <code>smoothbox</code>, depending on the fact whether you are using ThickBox or SmoothBox."
+msgstr "Lege deine veränderten Dateien unter <code>wp-content/plugins/thickbox</code> entweder im Verzeichnis <code>thickbox</code> oder <code>smoothbox</code> ab, je nachdem ob du ThickBox oder SmoothBox verwendest."
+
+#: ../thickbox.php:411
+msgid "Name the files according to this schema: <pre>   (thickbox|smoothbox)(.[a-zA-Z0-9_-]*)?.(js|css)</pre> If you can not read this RegEx, filenames like the following are okay: thickbox.js, thickbox.my_special_style.css, smoothbox.test.js.<br/>Simply add the name of your variant in front of the file extension (<code>js</code> or <code>css</code>) surrounded by two dots, consisting of letters, numbers, a dash or an underscore sign."
+msgstr "Benenne die Dateien nach diesem Schema: <pre>   (thickbox|smoothbox)(.[a-zA-Z0-9_-]*)?.(js|css)</pre> Falls du den RegEx nicht lesen kannst: Dateinamen wie thickbox.js, thickbox.my_special_style.css, smoothbox.test.js sind okay.<br/>Kurz gesagt, füge einfach den Namen deiner Variante vor der Dateiendung (<code>js</code> or <code>css</code>) umgeben von zwei Punkten ein, wobei im Namen nur Buchstaben, Zahlen, ein Binde- sowie Unterstrich vorkommen dürfen."
+
+#: ../thickbox.php:412
+msgid "Add the name of your variant - e.g. <em>my_special_style</em> - to the array inside the function <code>get_thickbox_available_variant</code> right at the top of the file <code>thickbox.php</code>."
+msgstr "Trage den Namen deiner Variante - z.B. <em>mein_spezieller_stil</em> - in das Array innerhalb der Funktion <code>get_thickbox_available_variant</code> ein, direkt am Anfang der Datei <code>thickbox.php</code>."
+
+#: ../thickbox.php:413
+msgid "Finally you can enable you own variant via the options page."
+msgstr "Letztlich kann deine eigene Variante über die Einstellungs-Seite aktiviert werden."
+
+#: ../thickbox.php:416
+msgid "Note that if the plugin can not find the file for a given variant it will fall back to the default."
+msgstr "Sollte der Plugin die entsprechende Datei für eine bestimmte Variante nicht finden, wird er die Standarddatei nutzen."
+
+#: ../thickbox.php:420
+msgid "By default this plugin includes the JavaScript and CSS for ThickBox or SmoothBox on each and every page of your website. If you would like to save some bandwidth or perfrom better in Yahoo's <a href=\"http://developer.yahoo.com/yslow/\" onclick=\"window.open(this.href,'_blank'); return false;\">YSlow</a> or Google's <a href=\"http://code.google.com/speed/page-speed/\" onclick=\"window.open(this.href,'_blank'); return false;\">Page Speed</a> you may want to advise the plugin to load the JavaScript/CSS only on those pages that you are using a ThickBox/SmoothBox on."
+msgstr "Standardmäßig bindet der Plugin das JavaScript und CSS für ThickBox oder SmoothBox auf jeder Seite deiner Webseite ein. Falls du etwas Bandbreite sparen möchtest oder in Yahoos <a href=\"http://developer.yahoo.com/yslow/\" onclick=\"window.open(this.href,'_blank'); return false;\">YSlow</a> oder Googles <a href=\"http://code.google.com/speed/page-speed/\" onclick=\"window.open(this.href,'_blank'); return false;\">Page Speed</a> besser abschneiden möchtest, solltest du dem Plugin anweisen das JavaScript/CSS nur auf den Seiten zu laden, auf denen tatsächlich eine ThickBox/SmoothBox verwendet wird."
+
+#: ../thickbox.php:421
+msgid "Once you have enabled the <em>expert mode</em> the plugin won't include the JavaScript or CSS by default. You will have to add a custom field called <code>thickbox</code> to the page where you would like to use ThickBox/SmoothBox; set the value to anything you like, e.g. \"On\"."
+msgstr "Sobald du den <em>Expertenmodus</em> aktiviert hast, wird der Plugin das JavaScript oder CSS nicht mehr in jeder Seite einbinden. Du must zu den Seiten, auf denen ThickBox/SmoothBox verwendet werden soll, ein benutzerdefiniertes Feld mit dem Namen <code>thickbox</code> hinzufügen; den Wert des Feldes kannst du beliebig wählen, z.B. \"An\"."
+
+#: ../thickbox.php:425
+msgid "If you would like to use the script and style for ThickBox that comes with WordPress you can tick this option. Note that any changes you make to the variant will be ignored because the plugin will not use them anymore."
+msgstr "Falls du das Script und den Stylesheet für ThickBox nutzen möchtest, der bei WordPress dabei ist, kannst du diese Option aktivieren. Denke aber daran, dass Änderungen an der Variante nun ignoriert werden, da der Plugin sie fortan nicht mehr nutzt."
+
+#: ../thickbox.php:426
+msgid "In case you are a developer you may be interested in the fact that the plugin uses two functions that come with WordPress: <ul><li><code>wp_enqueue_script</code></li><li><code>wp_enqueue_style</code></li></ul>"
+msgstr "Sofern du ein Entwickler bist, interessiert es dich vielleicht, dass der Plugin zwei Funktionien nutzt, die von WordPress stammen:<ul><li>wp_enqueue_script<li><li>wp_enqueue_style</li></ul>"
+
+#: ../thickbox.php:427
+msgid "This way you will not end up including the JavaScript and CSS more than once."
+msgstr "Somit kann vermieden werden, dass JavaScript und CSS mehrfach eingebunden wird."
+
+#: ../thickbox.php:431
+msgid "Enabling this option lets the plugin add the class <code>thickbox</code> or <code>smoothbox</code> to the links generated by the gallery shortcode that comes with WordPress. Make sure that you advice the gallery shortcode to link to the images and not the attachment pages; it should look like this: <code>[gallery link=\"file\"]</code>."
+msgstr "Wenn diese Option aktiviert ist fügt der Plugin die Klassen <code>thickbox</code> oder <code>smoothbox</code> in die Links ein, die vom Gallery Shortcoder erzeugt werden, der bei WordPress dabei ist. Stelle sicher, dass der Gallery Shortcode Links zu den Bildern und nicht zu den Seiten der Anhänge erstellt; er sollte so aussehen: <code>[gallery link=\"file\"]</code>."
+
+#: ../thickbox.php:435
+msgid "With this setting you are able to fine tune the inclusion of ThickBox's JavaScript, CSS and jQuery which is used by ThickBox. Say, jQuery is already included in your theme's header you may want to disable it here; this way it won't show up twice in your site's content."
+msgstr "Mit diesen Optionen lässt sich einstellen, ob das JavaScript, CSS oder jQuery eingebunden werden soll, die von ThickBox genutzt werden. Sollte jQuery beispielsweise im Header deines Themes eingebunden werden, sollte man es hier deaktivieren; somit wird es im Inhalt der Seite nicht zweimal auftauchen."
+
+#: ../thickbox.php:436
+msgid "Note that if you deactivate the JavaScript as well as the CSS for ThickBox this plugin is quite pointless. In this case you should think about the reason why you wanted to use the plugin in the first place."
+msgstr "Recht witzlos wird der Plugin, wenn sowohl das JavaScript als auch das CSS für ThickBox deaktiviert werden. In dem Fall solltest du darüber nachdenken, warum du den Plugin überhaupt einsetzen wolltest."
+
+#: ../thickbox.php:440
+msgid "If you have to deliver valid HTML or CSS SmoothBox might be a nice replacement for ThickBox. Once you have activated this option the plugin will use SmoothBox instead of ThickBox."
+msgstr "Falls du valides HTML oder CSS ausliefern musst, stellt SmoothBox eine schöne Alternative zu ThickBox dar. Sobald du diese Option aktiviert hast, wird der Plugin SmoothBox an Stelle von ThickBox verwenden."
+
+#: ../thickbox.php:444
+msgid "If you are using SmoothBox and your theme already includes Mootools you can deactivate it here; this way it won't show up twice in your site's content."
+msgstr "Sofern du SmoothBox verwendest, dein Theme aber bereits Mootools einbindet, kannst du es hier deaktivieren; somit wird es nicht zweimal in deine Seite eingebunden."
+
