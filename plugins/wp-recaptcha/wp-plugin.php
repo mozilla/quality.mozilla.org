@@ -2,7 +2,7 @@
 
 // just making sure the constant is defined
 if (!defined('WP_CONTENT_DIR'))
-    define('WP_CONTENT_DIR', ABSPATH . 'qmo_content');
+    define('WP_CONTENT_DIR', ABSPATH . 'wp-content');
  
 
 if (!class_exists('Environment')) {
@@ -60,9 +60,9 @@ if (!class_exists('WPPlugin')) {
         
         static function plugins_url() {
            if (WPPlugin::determine_environment() == Environment::WordPressMU)
-               return get_option('siteurl') . '/qmo_content/mu-plugins';
+               return get_option('siteurl') . '/wp-content/mu-plugins';
            else
-               return get_option('siteurl') . '/qmo_content/plugins';
+               return get_option('siteurl') . '/wp-content/plugins';
         }
         
         static function path_to_plugin_directory() {
