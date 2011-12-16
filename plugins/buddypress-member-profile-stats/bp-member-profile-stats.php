@@ -44,7 +44,7 @@ function etivite_bp_member_profile_stats_member_since() {
 	echo etivite_bp_member_profile_stats_get_member_since();
 }
 	function etivite_bp_member_profile_stats_get_member_since() {
-		return '<div><em>'. bp_get_displayed_user_username() .'</em>'. __( ' has been a member for ', 'bp-member-profile-stats' ) .'<span class="member-since profile-count">'. etivite_bp_member_profile_stats_get_member_registered() .'.</span></div>';
+		return '<div><em>'. bp_get_displayed_user_username() .'</em>'. __( ' joined ', 'bp-member-profile-stats' ) .'<span class="member-since profile-count">'. etivite_bp_member_profile_stats_get_member_registered() .'.</span></div>';
 	}
 
 

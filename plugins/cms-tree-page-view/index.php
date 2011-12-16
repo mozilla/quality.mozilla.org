@@ -3,7 +3,7 @@
 Plugin Name: CMS Tree Page View
 Plugin URI: http://eskapism.se/code-playground/cms-tree-page-view/
 Description: Adds a CMS-like tree view of all your pages, like the view often found in a page-focused CMS. Use the tree view to edit, view, add pages and search pages (very useful if you have many pages). And with drag and drop you can rearrange the order of your pages. Page management won't get any easier than this!
-Version: 0.8.3
+Version: 0.8.4
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -28,9 +28,26 @@ License: GPL2
 #require("functions.php");
 require(dirname(__FILE__)."/functions.php");
 
-define( "CMS_TPV_VERSION", "0.8.2");
-define( "CMS_TPV_URL", WP_PLUGIN_URL . '/cms-tree-page-view/');
+define( "CMS_TPV_VERSION", "0.8.4");
 define( "CMS_TPV_NAME", "CMS Tree Page View");
+
+// This gives the full URL including http. Apparently is does not work with https (gives http-link instead)
+// On my system it will be: http://localhost/wp/wp-content/plugins/cms-tree-page-view/
+// define( "CMS_TPV_URL", WP_PLUGIN_URL . '/cms-tree-page-view/');
+
+// Define path to this plugin. This needs to be done in a kinda wierd way because of the fact that I use symblinks on my system.
+$plugin_dir_url = plugin_dir_url( __FILE__ ); // Gives wrong path on my system
+$arr_authors_wierd_local_paths = array(
+	"/Users/bonny/Dropbox/Webb/"
+);
+$plugin_dir_url = str_replace($arr_authors_wierd_local_paths, "/", $plugin_dir_url);
+
+// Now we have http://localhost/wp/wp-content/pluginscms-tree-page-view/trunk/
+// So replace last /trunk/ part
+$plugin_dir_url = preg_replace("/\/trunk\/$/", "/", $plugin_dir_url);
+
+// There! Now we should have it.
+define( "CMS_TPV_URL", $plugin_dir_url);
 
 // on admin init: add styles and scripts
 add_action( 'admin_init', 'cms_tpv_admin_init' );

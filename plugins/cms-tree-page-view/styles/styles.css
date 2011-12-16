@@ -280,6 +280,7 @@ p.cms_tpv_annoying_little_box_close {
 	font-size: 11px;
 }
 .cms_tpv_page_actions dl dd {
+	margin: 0;
 }
 .cms_tpv_page_actions dl dt {
 	color: #999;

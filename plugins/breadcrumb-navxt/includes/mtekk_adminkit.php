@@ -16,8 +16,9 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-abstract class mtekk_admin
+abstract class mtekk_adminKit
 {
+	private $__version = '1.0';
 	protected $version;
 	protected $full_name;
 	protected $short_name;
@@ -27,16 +28,9 @@ abstract class mtekk_admin
 	protected $unique_prefix;
 	protected $opt = array();
 	protected $message;
-	/**
-	 * whether or not this administration page has contextual help
-	 * 
-	 * @var bool
-	 */
-	protected $_has_contextual_help = false;
+	protected $support_url;
 	function __construct()
 	{
-		//We set the plugin basename here, could manually set it
-		$this->plugin_basename = plugin_basename(__FILE__);
 		//Admin Init Hook
 		add_action('admin_init', array($this, 'init'));
 		//WordPress Admin interface hook
@@ -46,37 +40,64 @@ abstract class mtekk_admin
 		add_action('activate_' . $this->plugin_basename, array($this, 'install'));
 		//Initilizes l10n domain
 		$this->local();
+		//Register Help Output
+		//add_action('add_screen_help_and_options', array($this, 'help'));
 	}
+	/**
+	 * Returns the internal mtekk_admin_class version
+	 */
+	function get_admin_class_version()
+	{
+		return $__version;
+	}
+	/**
+	 * Return the URL of the settings page for the plugin
+	 */
 	function admin_url()
 	{
 		return admin_url('options-general.php?page=' . $this->identifier);
 	}
-	function undo_anchor($title = '')
+	/**
+	 * A wrapper for nonced_anchor returns a nonced anchor for admin pages
+	 * 
+	 * @param string $mode The nonce "mode", a unique string at the end of the standardized nonce identifier
+	 * @param string $title (optional) The text to use in the title portion of the anchor
+	 * @param string $text (optional) The text that will be surrounded by the anchor tags
+	 * @return string the assembled anchor
+	 */
+	function admin_anchor($mode, $title = '', $text = '')
 	{
-		//Assemble our url, nonce and all
-		$url = wp_nonce_url($this->admin_url() . '&' . $this->unique_prefix . '_admin_undo=true', $this->unique_prefix . '_admin_undo');
-		//Return a valid Undo anchor
-		return ' <a title="' . $title . '" href="' . $url . '">' . __('Undo', $this->identifier) . '</a>';
+		return $this->nonced_anchor($this->admin_url(), 'admin_' . $mode, 'true', $title, $text);
 	}
-	function upgrade_anchor($title = '', $text = '')
+	/**
+	 * Returns a properly formed nonced anchor to the specified URI
+	 * 
+	 * @param string $uri The URI that the anchor should be for
+	 * @param string $mode The nonce "mode", a unique string at the end of the standardized nonce identifier
+	 * @param mixed $value (optional) The value to place in the query string 
+	 * @param string $title (optional) The text to use in the title portion of the anchor
+	 * @param string $text (optional) The text that will be surrounded by the anchor tags
+	 * @param string $extras (optional) This text is placed within the opening anchor tag, good for adding id, classe, rel field
+	 * @return string the assembled anchor
+	 */
+	function nonced_anchor($uri, $mode, $value = 'true', $title = '', $text = '', $extras = '')
 	{
 		//Assemble our url, nonce and all
-		$url = wp_nonce_url($this->admin_url() . '&' . $this->unique_prefix . '_admin_upgrade=true', $this->unique_prefix . '_admin_upgrade');
-		if($text == '')
-		{
-			$text = __('Migrate now.', $this->identifier);
-		}
-		//Return a valid Undo anchor
-		return ' <a title="' . $title . '" href="' . $url . '">' . $text . '</a>';
+		$url = wp_nonce_url($uri . '&' . $this->unique_prefix . '_' . $mode . '=' . $value, $this->unique_prefix . '_' . $mode);
+		//Return a valid anchor
+		return ' <a title="' . $title . '" href="' . $url . '" '. $extras . '>' . $text . '</a>';
+	}
+	/**
+	 * Abstracts the check_admin_referer so that all the end user has to supply is the mode
+	 * 
+	 * @param string $mode The specific nonce "mode" (see nonced_anchor) that is being checked
+	 */
+	function check_nonce($mode)
+	{
+		check_admin_referer($this->unique_prefix . '_' . $mode);
 	}
 	function init()
 	{
-		//Admin Options update hook
-		if(isset($_POST[$this->unique_prefix . '_admin_options']))
-		{
-			//Temporarily add update function on init if form has been submitted
-			$this->opts_update();
-		}
 		//Admin Options reset hook
 		if(isset($_POST[$this->unique_prefix . '_admin_reset']))
 		{
@@ -101,20 +122,32 @@ abstract class mtekk_admin
 			//Run the rollback function on init if undo button has been pressed
 			$this->opts_undo();
 		}
-		//Admin Options rollback hook
+		//Admin Options upgrade hook
 		else if(isset($_GET[$this->unique_prefix . '_admin_upgrade']))
 		{
-			//Run the rollback function on init if undo button has been pressed
+			//Run the upgrade function on init if upgrade button has been pressed
+			$this->opts_upgrade_wrapper();
+		}
+		//Admin Options fix hook
+		else if(isset($_GET[$this->unique_prefix . '_admin_fix']))
+		{
+			//Run the options fix function on init if fix button has been pressed
 			$this->opts_upgrade_wrapper();
 		}
 		//Add in the nice "settings" link to the plugins page
 		add_filter('plugin_action_links', array($this, 'filter_plugin_actions'), 10, 2);
+		//Register JS for tabs
+		wp_register_script('mtekk_adminkit_tabs', plugins_url('/mtekk_adminkit_tabs.js', dirname(__FILE__) . '/mtekk_adminkit_tabs.js'));
+		//Register CSS for tabs
+		wp_register_style('mtekk_adminkit_tabs', plugins_url('/mtekk_adminkit_tabs.css', dirname(__FILE__) . '/mtekk_adminkit_tabs.css'));
 		//Register options
 		register_setting($this->unique_prefix . '_options', $this->unique_prefix . '_options', '');
+		//Synchronize up our settings with the database as we're done modifying them now
+		$this->opt = $this->parse_args(get_option($this->unique_prefix . '_options'), $this->opt);
 	}
 	/**
 	 * Adds the adminpage the menue and the nice little settings link
-	 *
+	 * TODO: make this more generic for easier extension
 	 */
 	function add_page()
 	{
@@ -124,9 +157,13 @@ abstract class mtekk_admin
 		if(current_user_can($this->access_level))
 		{
 			//Register admin_head-$hookname callback
-			add_action('admin_head-' . $hookname, array($this, 'admin_head'));			
+			add_action('admin_head-' . $hookname, array($this, 'admin_head'));
+			//Register admin_print_styles-$hookname callback
+			add_action('admin_print_styles-' . $hookname, array($this, 'admin_styles'));
+			//Register admin_print_scripts-$hookname callback
+			add_action('admin_print_scripts-' . $hookname, array($this, 'admin_scripts'));
 			//Register Help Output
-			add_action('contextual_help', array($this, 'contextual_help'), 10, 2);
+			add_action('load-' . $hookname, array($this, 'help'));
 		}
 	}
 	/**
@@ -166,8 +203,50 @@ abstract class mtekk_admin
 		return $links;
 	}
 	/**
-	 * uninstall
-	 * 
+	 * Checks to see if the plugin has been fully installed
+	 *
+	 * @return bool whether or not the plugin has been installed
+	 */
+	function is_installed()
+	{
+		
+	}
+	/** 
+	 * This sets up and upgrades the database settings, runs on every activation
+	 */
+	function install()
+	{
+		//Call our little security function
+		$this->security();
+		//Try retrieving the options from the database
+		$opts = get_option($this->unique_prefix . '_options');
+		//If there are no settings, copy over the default settings
+		if(!is_array($opts))
+		{
+			//Grab defaults from the object
+			$opts = $this->opt;
+			//Add the options
+			add_option($this->unique_prefix . '_options', $opts);
+			add_option($this->unique_prefix . '_options_bk', $opts, '', 'no');
+			//Add the version, no need to autoload the db version
+			add_option($this->unique_prefix . '_version', $this->version, '', 'no');
+		}
+		else
+		{
+			//Retrieve the database version
+			$db_version = get_option($this->unique_prefix . '_version');
+			if($this->version !== $db_version)
+			{
+				//Run the settings update script
+				$this->opts_upgrade($opts, $db_version);
+				//Always have to update the version
+				update_option($this->unique_prefix . '_version', $this->version);
+				//Store the options
+				update_option($this->unique_prefix . '_options', $this->opt);
+			}
+		}
+	}
+	/**
 	 * This removes database settings upon deletion of the plugin from WordPress
 	 */
 	function uninstall()
@@ -181,6 +260,7 @@ abstract class mtekk_admin
 	}
 	/**
 	 * Compares the supplided version with the internal version, places an upgrade warning if there is a missmatch
+	 * TODO: change this to being auto called in admin_init action
 	 */
 	function version_check($version)
 	{
@@ -188,7 +268,7 @@ abstract class mtekk_admin
 		if(version_compare($version, $this->version, '<') && is_array($this->opt))
 		{
 			//Throw an error since the DB version is out of date
-			$this->message['error'][] = __('Your settings are out of date.', $this->identifier) . $this->upgrade_anchor(__('Migrate the settings now.', $this->identifier), __('Migrate now.', $this->identifier));
+			$this->message['error'][] = __('Your settings are out of date.', $this->identifier) . $this->admin_anchor('upgrade', __('Migrate the settings now.', $this->identifier), __('Migrate now.', $this->identifier));
 			//Output any messages that there may be
 			$this->message();
 			return false;
@@ -196,12 +276,33 @@ abstract class mtekk_admin
 		else if(!is_array($this->opt))
 		{
 			//Throw an error since it appears the options were never registered
-			$this->message['error'][] = __('Your plugin install is incomplete.', $this->identifier) . $this->upgrade_anchor(__('Load default settings now.', $this->identifier), __('Complete now.', $this->identifier));
+			$this->message['error'][] = __('Your plugin install is incomplete.', $this->identifier) . $this->admin_anchor('upgrade', __('Load default settings now.', $this->identifier), __('Complete now.', $this->identifier));
+			//Output any messages that there may be
+			$this->message();
+			return false;
+		}
+		else if(!$this->opts_validate($this->opt))
+		{
+			//Throw an error since it appears the options contain invalid data
+			$this->message['error'][] = __('Your plugin settings are invalid.', $this->identifier) . $this->admin_anchor('fix', __('Attempt to fix settings now.', $this->identifier), __('Fix now.', $this->identifier));
 			//Output any messages that there may be
 			$this->message();
 			return false;
 		}
 		return true;
+	}
+	/**
+	 * A prototype function. End user should override if they need this feature.
+	 */
+	function opts_validate(&$opts)
+	{
+		return true;
+	}
+	/**
+	 * A prototype function. End user should override if they need this feature.
+	 */
+	function opts_fix()
+	{
 	}
 	/**
 	 * Synchronizes the backup options entry with the current options entry
@@ -212,10 +313,167 @@ abstract class mtekk_admin
 		update_option($this->unique_prefix . '_options_bk', get_option($this->unique_prefix . '_options'));
 	}
 	/**
-	 * Function prototype to prevent errors
+	 * Runs recursivly through the opts array, sanitizing and merging in updates from the $input array
+	 * 
+	 * @param array $opts good, clean array
+	 * @param array $input unsanitzed input array, not trusted at all
+	 */
+	protected function opts_update_loop(&$opts, $input)
+	{
+		//Loop through all of the existing options (avoids random setting injection)
+		foreach($opts as $option => $value)
+		{
+			//If we have an array, dive into another recursive loop
+			if(isset($input[$option]) && is_array($value))
+			{
+				$this->opts_update_loop($opts[$option], $input[$option]);
+			}
+			//We must check for unset settings, but booleans are ok to be unset
+			else if(isset($input[$option]) || $option[0] == 'b')
+			{
+				switch($option[0])
+				{
+					//Handle the boolean options
+					case 'b':
+						$opts[$option] = isset($input[$option]);
+						break;
+					//Handle the integer options
+					case 'i':
+						$opts[$option] = (int) $input[$option];
+						break;
+					//Handle the absolute integer options
+					case 'a':
+						$opts[$option] = absint($input[$option]);
+						break;
+					//Handle the floating point options
+					case 'f':
+						$opts[$option] = (float) $input[$option];
+						break;
+					//Handle the HTML options
+					case 'h':
+						//May be better to use wp_kses here
+						$opts[$option] = stripslashes($input[$option]);
+						break;
+					//Handle the HTML options that must not be null
+					case 'H':
+						if(isset($input[$option]))
+						{
+							$opts[$option] = stripslashes($input[$option]);
+						}
+						break;
+					//Handle the text options that must not be null
+					case 'S':
+						if(isset($input[$option]))
+						{
+							$opts[$option] = esc_html($input[$option]);
+						}
+						break;
+					//Treat everything else as a normal string
+					case 's':
+					default:
+						$opts[$option] = esc_html($input[$option]);
+				}
+			}
+		}
+	}
+	/**
+	 * A better version of parse_args, will recrusivly follow arrays
+	 * 
+	 * @param mixed $args The arguments to be parsed
+	 * @param mixed $defaults (optional) The default values to validate against
+	 * @return mixed
+	 */
+	function parse_args($args, $defaults = '')
+	{
+		if(is_object($args))
+		{
+			$r = get_object_vars($args);
+		}
+		else if(is_array($args))
+		{
+			$r =& $args;
+		}
+		else
+		{
+			wp_parse_str($args, $r);	
+		}
+		if(is_array($defaults))
+		{
+			return $this->array_merge_recursive($defaults, $r);
+		}
+		return $r;
+	}
+	/**
+	 * An alternate version of array_merge_recursive, less flexible
+	 * still recursive, ~2x faster than the more flexible version
+	 * 
+	 * @param array $arg1 first array
+	 * @param array $arg2 second array to merge into $arg1
+	 * @return array
+	 */
+	function array_merge_recursive($arg1, $arg2)
+	{
+		foreach($arg2 as $key => $value)
+		{
+			if(array_key_exists($key, $arg1) && is_array($value))
+			{
+				$arg1[$key] = $this->array_merge_recursive($arg1[$key], $value);
+			}
+			else
+			{
+				$arg1[$key] = $value;
+			}
+		}
+		return $arg1;
+	}
+	/**
+	 * An action that fires just before the options backup, use to add in dynamically detected options
+	 * 
+	 * @param array $opts the options array, passed in by reference
+	 * @return null
+	 */
+	function opts_update_prebk(&$opts)
+	{
+		//Just a prototype function
+	}
+	/**
+	 * Updates the database settings from the webform
 	 */
 	function opts_update()
 	{
+		//Do some security related thigns as we are not using the normal WP settings API
+		$this->security();
+		//Do a nonce check, prevent malicious link/form problems
+		check_admin_referer($this->unique_prefix . '_options-options');
+		//Update local options from database
+		$this->opt = $this->parse_args(get_option($this->unique_prefix . '_options'), $this->opt);
+		$this->opts_update_prebk($this->opt);
+		//Update our backup options
+		update_option($this->unique_prefix . '_options_bk', $this->opt);
+		//Grab our incomming array (the data is dirty)
+		$input = $_POST[$this->unique_prefix . '_options'];
+		//Run the update loop
+		$this->opts_update_loop($this->opt, $input);
+		//Commit the option changes
+		update_option($this->unique_prefix . '_options', $this->opt);
+		//Check if known settings match attempted save
+		if(count(array_diff_key($input, $this->opt)) == 0)
+		{
+			//Let the user know everything went ok
+			$this->message['updated fade'][] = __('Settings successfully saved.', $this->identifier) . $this->admin_anchor('undo', __('Undo the options save.', $this->identifier), __('Undo', $this->identifier));
+		}
+		else
+		{
+			//Let the user know the following were not saved
+			$this->message['updated fade'][] = __('Some settings were not saved.', $this->identifier) . $this->admin_anchor('undo', __('Undo the options save.', $this->identifier), __('Undo', $this->identifier));
+			$temp = __('The following settings were not saved:', $this->identifier);
+			foreach(array_diff_key($input, $this->opt) as $setting => $value)
+			{
+				$temp .= '<br />' . $setting;
+			}
+			$this->message['updated fade'][] = $temp . '<br />' . sprintf(__('Please include this message in your %sbug report%s.', $this->identifier),'<a title="' . sprintf(__('Go to the %s support post for your version.', $this->identifier), $this->short_name) . '" href="' . $this->support_url . $this->version . '/#respond">', '</a>');
+		}
+		add_action('admin_notices', array($this, 'message'));
 	}
 	/**
 	 * Exports a XML options document
@@ -307,11 +565,12 @@ abstract class mtekk_admin
 					}
 				}
 			}
+			//Make sure we safely import and upgrade settings if needed
 			$this->opts_upgrade($opts_temp, $version);
 			//Commit the loaded options to the database
 			update_option($this->unique_prefix . '_options', $this->opt);
 			//Everything was successful, let the user know
-			$this->message['updated fade'][] = __('Settings successfully imported from the uploaded file.', $this->identifier) . $this->undo_anchor(__('Undo the options import.', $this->identifier));
+			$this->message['updated fade'][] = __('Settings successfully imported from the uploaded file.', $this->identifier) . $this->admin_anchor('undo', __('Undo the options import.', $this->identifier), __('Undo', $this->identifier));
 		}
 		else
 		{
@@ -335,7 +594,7 @@ abstract class mtekk_admin
 		//Load in the hard coded default option values
 		update_option($this->unique_prefix . '_options', $this->opt);
 		//Reset successful, let the user know
-		$this->message['updated fade'][] = __('Settings successfully reset to the default values.', $this->identifier) . $this->undo_anchor(__('Undo the options reset.', $this->identifier));
+		$this->message['updated fade'][] = __('Settings successfully reset to the default values.', $this->identifier) . $this->admin_anchor('undo', __('Undo the options reset.', $this->identifier), __('Undo', $this->identifier));
 		add_action('admin_notices', array($this, 'message'));
 	}
 	/**
@@ -352,7 +611,7 @@ abstract class mtekk_admin
 		//Set the backup options to the undid options
 		update_option($this->unique_prefix . '_options_bk', $opt);
 		//Send the success/undo message
-		$this->message['updated fade'][] = __('Settings successfully undid the last operation.', $this->identifier) . $this->undo_anchor(__('Undo the last undo operation.', $this->identifier));
+		$this->message['updated fade'][] = __('Settings successfully undid the last operation.', $this->identifier) . $this->admin_anchor('undo', __('Undo the last undo operation.', $this->identifier), __('Undo', $this->identifier));
 		add_action('admin_notices', array($this, 'message'));
 	}
 	/**
@@ -399,47 +658,35 @@ abstract class mtekk_admin
 		add_action('admin_notices', array($this, 'message'));
 	}
 	/**
-	 * contextual_help action hook function
+	 * help action hook function, meant to be overridden
 	 * 
-	 * @param  string $contextual_help
-	 * @param  string $screen_id
 	 * @return string
+	 * 
 	 */
-	function contextual_help($contextual_help, $screen_id)
+	function help()
 	{
+		$screen = get_current_screen();
 		//Add contextual help on current screen
-		if($screen_id == 'settings_page_' . $this->identifier)
+		if($screen->id == 'settings_page_' . $this->identifier)
 		{
-			$contextual_help = $this->_get_contextual_help();
-			$this->_has_contextual_help = true;
+			
 		}
-		return $contextual_help;
-	}
-	/**
-	 * get contextual help
-	 * 
-	 * @return string
-	 */
-	protected function _get_contextual_help()
-	{
-		$t = $this->_get_help_text();	
-		$t = sprintf('<div class="metabox-prefs">%s</div>', $t);	
-		$title = __($this->full_name, $this->identifier);	
-		$t = sprintf('<h5>%s</h5>%s', sprintf(__('Get help with "%s"'), $title), $t);
-		return $t;
 	}
 	/**
 	 * Prints to screen all of the messages stored in the message member variable
 	 */
 	function message()
 	{
-		//Loop through our message classes
-		foreach($this->message as $key => $class)
+		if(count($this->message))
 		{
-			//Loop through the messages in the current class
-			foreach($class as $message)
+			//Loop through our message classes
+			foreach($this->message as $key => $class)
 			{
-				printf('<div class="%s"><p>%s</p></div>', $key, $message);	
+				//Loop through the messages in the current class
+				foreach($class as $message)
+				{
+					printf('<div class="%s"><p>%s</p></div>', $key, $message);	
+				}
 			}
 		}
 		$this->message = array();
@@ -447,9 +694,16 @@ abstract class mtekk_admin
 	/**
 	 * Function prototype to prevent errors
 	 */
-	function install()
+	function admin_styles()
 	{
-		
+
+	}
+	/**
+	 * Function prototype to prevent errors
+	 */
+	function admin_scripts()
+	{
+	
 	}
 	/**
 	 * Function prototype to prevent errors
@@ -463,7 +717,12 @@ abstract class mtekk_admin
 	 */
 	function admin_page()
 	{
-		
+		//Admin Options update hook
+		if(isset($_POST[$this->unique_prefix . '_admin_options']))
+		{
+			//Temporarily add update function on init if form has been submitted
+			$this->opts_update();
+		}
 	}
 	/**
 	 * Function prototype to prevent errors
@@ -491,23 +750,23 @@ abstract class mtekk_admin
 	}
 	function import_form()
 	{
-		printf('<div id="%s_import_export_relocate">', $this->unique_prefix);
-		printf('<form action="options-general.php?page=%s" method="post" enctype="multipart/form-data" id="%s_admin_upload">', $this->identifier, $this->unique_prefix);
-		wp_nonce_field($this->unique_prefix . '_admin_import_export');
-		printf('<fieldset id="import_export" class="%s_options">', $this->unique_prefix);
-		echo '<h3>' . __('Import/Export/Reset Settings', $this->identifier) . '</h3>';
-		echo '<p>' . __('Import settings from a XML file, export the current settings to a XML file, or reset to the default settings.', $this->identifier) . '</p>';
-		echo '<table class="form-table"><tr valign="top"><th scope="row">';
-		printf('<label for="%s_admin_import_file">', $this->unique_prefix);
-		_e('Settings File', $this->identifier);
-		echo '</label></th><td>';
-		printf('<input type="file" name="%s_admin_import_file" id="%s_admin_import_file" size="32" /><br /><span class="setting-description">', $this->unique_prefix, $this->unique_prefix);
-		_e('Select a XML settings file to upload and import settings from.', 'breadcrumb_navxt');
-		echo '</span></td></tr></table><p class="submit">';
-		printf('<input type="submit" class="button" name="%s_admin_import" value="' . __('Import', $this->identifier) . '"/>', $this->unique_prefix, $this->unique_prefix);
-		printf('<input type="submit" class="button" name="%s_admin_export" value="' . __('Export', $this->identifier) . '"/>', $this->unique_prefix);
-		printf('<input type="submit" class="button" name="%s_admin_reset" value="' . __('Reset', $this->identifier) . '"/>', $this->unique_prefix, $this->unique_prefix);
-		echo '</p></fieldset></form></div>';
+		$form = '<div id="mtekk_admin_import_export_relocate">';
+		$form .= sprintf('<form action="options-general.php?page=%s" method="post" enctype="multipart/form-data" id="%s_admin_upload">', $this->identifier, $this->unique_prefix);
+		$form .= wp_nonce_field($this->unique_prefix . '_admin_import_export', '_wpnonce', true, false);
+		$form .= sprintf('<fieldset id="import_export" class="%s_options">', $this->unique_prefix);
+		$form .= '<p>' . __('Import settings from a XML file, export the current settings to a XML file, or reset to the default settings.', $this->identifier) . '</p>';
+		$form .= '<table class="form-table"><tr valign="top"><th scope="row">';
+		$form .= sprintf('<label for="%s_admin_import_file">', $this->unique_prefix);
+		$form .= __('Settings File', $this->identifier);
+		$form .= '</label></th><td>';
+		$form .= sprintf('<input type="file" name="%s_admin_import_file" id="%s_admin_import_file" size="32" /><br /><span class="setting-description">', $this->unique_prefix, $this->unique_prefix);
+		$form .= __('Select a XML settings file to upload and import settings from.', 'breadcrumb_navxt');
+		$form .= '</span></td></tr></table><p class="submit">';
+		$form .= sprintf('<input type="submit" class="button" name="%s_admin_import" value="' . __('Import', $this->identifier) . '"/>', $this->unique_prefix, $this->unique_prefix);
+		$form .= sprintf('<input type="submit" class="button" name="%s_admin_export" value="' . __('Export', $this->identifier) . '"/>', $this->unique_prefix);
+		$form .= sprintf('<input type="submit" class="button" name="%s_admin_reset" value="' . __('Reset', $this->identifier) . '"/>', $this->unique_prefix, $this->unique_prefix);
+		$form .= '</p></fieldset></form></div>';
+		return $form;
 	}
 	/**
 	 * This will output a well formed hidden option
@@ -624,16 +883,16 @@ abstract class mtekk_admin
 	/**
 	 * This will output a singular radio type form input field
 	 * 
-	 * @param string $label
 	 * @param string $option
+	 * @param string $value
 	 * @param string $instruction
 	 * @param object $disable [optional]
 	 * @return 
 	 */
-	function input_radio($option, $value, $instruction, $disable = false, $type = 'radio')
+	function input_radio($option, $value, $instruction, $disable = false)
 	{?>
 		<label>
-			<input name="<?php echo $this->unique_prefix . '_options[' . $option;?>]" type="<?php echo $type;?>" <?php if($disable){echo 'disabled="disabled" class="disabled togx"';}else{echo 'class="togx"';}?> value="<?php echo $value;?>" <?php checked($value, $this->opt[$option]);?> />
+			<input name="<?php echo $this->unique_prefix . '_options[' . $option;?>]" type="radio" <?php if($disable){echo 'disabled="disabled" class="disabled togx"';}else{echo 'class="togx"';}?> value="<?php echo $value;?>" <?php checked($value, $this->opt[$option]);?> />
 			<?php echo $instruction; ?>
 		</label><br/>
 	<?php
