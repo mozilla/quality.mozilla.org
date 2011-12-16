@@ -1047,3 +1047,9 @@ dl.tubepress_meta_group dd.tubepress_meta_title { font-family: Georgia, Times, s
 
 #content .tubepress_container div.pagination a { padding: .1em .5em; border: 1px solid #d6e4e5; text-decoration: none; color: #369; background: #fff; border-radius: 0; }
 #content .tubepress_container div.pagination a:hover { background: #dfe9f2; text-decoration: none; color: #333; box-shadow: none; }
+
+/* @Vimeo @Simplegallery *********/
+.vimeo_gallery { width: 100%; margin: 0 !important; }
+.vimeo_gallery_item { float: left; width: 18%; margin: 0 1% 1em; }
+.vimeo_gallery_item:nth-child(5n+3) { clear: left; }
+.vimeo_gallery_item img { margin-left: -3px; }
