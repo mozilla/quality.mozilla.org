@@ -321,7 +321,7 @@ function vimeo_gallery_css(){
 global $vimeo_gallery_ID;
 $vimeooptions = get_option('vimeo_gallery_option');
 if($vimeooptions['css'] == 'usecss')
-	echo("\n".'<link rel="stylesheet" href="'.get_bloginfo('home').'/wp-content/plugins/vimeo-simplegallery/vimeo_simplegallery.css" type="text/css" media="screen" />');
+	echo("\n".'<link rel="stylesheet" href="'.get_bloginfo('home').'/qmo_content/plugins/vimeo-simplegallery/vimeo_simplegallery.css" type="text/css" media="screen" />');
 ?>
 
 <script type="text/javascript"> 

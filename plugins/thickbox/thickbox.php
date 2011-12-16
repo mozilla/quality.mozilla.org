@@ -38,7 +38,7 @@ define('SMOOTHBOX_JS', dirname(__FILE__).'/smoothbox/smoothbox.js');
 # SmoothBox CSS file
 define('SMOOTHBOX_CSS', dirname(__FILE__).'/smoothbox/smoothbox.css');
 # Path to this plugin
-define('THICKBOX_URL', '/wp-content/plugins/thickbox');
+define('THICKBOX_URL', '/qmo_content/plugins/thickbox');
 
 /**
  * Available variants. Add your own variants to the array as you see fit.
@@ -121,7 +121,7 @@ if (!empty($_REQUEST[THICKBOX_ACTION])) {
 function thickbox_init() {
 	// i18n
 	if (function_exists('load_plugin_textdomain')) {
-		load_plugin_textdomain('thickbox', 'wp-content/plugins/thickbox/messages');
+		load_plugin_textdomain('thickbox', 'qmo_content/plugins/thickbox/messages');
 	}
 
 	/*
