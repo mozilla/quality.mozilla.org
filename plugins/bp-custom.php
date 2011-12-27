@@ -11,12 +11,6 @@ if ( file_exists( WP_LANG_DIR . '/buddypress-' . BPLANG . '.mo' ) ) {
 }
 
 
-// For BP Group Email Subscription
-if ( file_exists( WP_LANG_DIR . 'bp-ass-'.BPLANG.'.mo' ) ) {
-    load_textdomain( 'bp-ass', WP_LANG_DIR . '/bp-ass-'.BPLANG.'.mo' );
-}
-
-
 /*********
  * Change the profile tab order so "Profile" comes first and "Settings" comes last.
  */
