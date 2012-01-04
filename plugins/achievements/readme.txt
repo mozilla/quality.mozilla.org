@@ -4,15 +4,15 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=P3K7Z
 Tags: buddypress,achievement,cubepoints,reward,points,score,rank,social,gaming,tokens,status,badge,WoW,Warcraft,games,challenges
 License: General Public License version 3
 Requires at least: WP 3.0.1, BuddyPress 1.5
-Tested up to: WP 3.2.1, BuddyPress 1.5
-Stable tag: 2.1
+Tested up to: WP 3.3, BuddyPress 1.5.2
+Stable tag: 2.2
 
 Achievements gives your BuddyPress community fresh impetus by promoting and rewarding social interaction with challenges, badges and points.
 
 == Description ==
 Inspired by [video game achievement systems](http://en.wikipedia.org/wiki/Achievement_(video_gaming)), Achievements for BuddyPress gives your community fresh impetus by promoting and rewarding social interaction with challenges, badges and points. For example, reward users for commenting on a blog post or uploading a picture to their profile.
 
-For information, support, premium enhancements and developer documentation, visit http://achievementsapp.com/.
+For information, support, premium enhancements and developer documentation, visit http://achievementsapp.wordpress.com/.
 
 [vimeo http://vimeo.com/15782949]
 
@@ -25,6 +25,9 @@ For information, support, premium enhancements and developer documentation, visi
 1. To get started, visit your site, and select the "Achievements" in the main navigation.
 
 == Changelog ==
+= 2.2 =
+* Fix error when unlocking achievement when not using any of achievements' widgets, and include up-to-date .pot file.
+
 = 2.1 =
 * Requires BuddyPress 1.5. Compatibility release. Huge thanks to r-a-y for contributing 99% of the work.
 
@@ -76,7 +79,7 @@ For information, support, premium enhancements and developer documentation, visi
 * Fix "mystery man" avatar activity stream size.
 
 = 2.0 =
-* Everything is brand new for BuddyPress 1.2.6. For information, support, premium enhancements and developer documentation, visit http://achievementsapp.com/.
+* Everything is brand new for BuddyPress 1.2.6. For information, support, premium enhancements and developer documentation, visit http://achievementsapp.wordpress.com/.
 
 = Pre-2.0 =
 * The historical release history has been moved to a better place.
@@ -89,11 +92,11 @@ BuddyPress 1.5+ compatibility release. Requires BuddyPress 1.5.
 Fixes several bugs with the bundled widgets.
 
 == Frequently Asked Questions ==
-For information, support, premium enhancements and developer documentation, visit http://achievementsapp.com/.
+For information, support, and developer documentation, visit http://achievementsapp.wordpress.com/.
 
 == License ==
 "Achievements for BuddyPress"
-Copyright (C) 2009-11 Paul Gibbs
+Copyright (C) 2009-12 Paul Gibbs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License version 2 as published by
@@ -109,5 +112,5 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 == Screenshots ==
 1. Achievement detail page
-2. A few of the many Achievement action types
+2. A few of the many Achievement action types 
 3. Part of the create/edit Achievement page

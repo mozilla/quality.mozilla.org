@@ -614,7 +614,7 @@ add_action( 'bp_core_action_set_spammer_status', 'dpa_user_marked_as_spammer', 1
  */
 function dpa_delete_highscore_cache() {
 	$sitewide_widget_options = get_option( 'widget_achievements-sitewide' );
-	foreach ( $sitewide_widget_options as $widget ) {
+	foreach ( (array) $sitewide_widget_options as $widget ) {
 		if ( empty( $widget ) )
 			continue;
 
@@ -641,7 +641,7 @@ function dpa_achievement_unlocked_update_meta( $achievement_id, $user_id ) {
 add_action( 'dpa_achievement_unlocked', 'dpa_achievement_unlocked_update_meta', 5, 2 );
 
 /**
- * Restores BuddyPress Groups global settings after the activity stream loop on the Achievment's page.
+ * Restores BuddyPress Groups global settings after the activity stream loop on the Achievement's page.
  * Or, in other words, tidies up after a hack. Ahem.
  *
  * @deprecated 2.1 Not used any more
@@ -723,7 +723,8 @@ add_filter( 'bp_dtheme_ajax_querystring', 'dpa_achievement_activity_filter' );
 /********************************************************************************
  * Achievements
  *
- * These functions implement the main logic. */
+ * These functions implement the main logic.
+ */
 
 /**
  * We have to (always) register some actions early due to the BuddyPress load order.
@@ -737,6 +738,7 @@ add_filter( 'bp_dtheme_ajax_querystring', 'dpa_achievement_activity_filter' );
  * @since 2.0
  */
 function dpa_setup_achievements_early() {
+	// v2.2 - bp_core_activated_user doesn't work because the user is not logged in when we get to the handling functions
 	$actions = apply_filters( 'dpa_setup_achievements_early', array( 'bp_core_activated_user', 'pending_to_publish' ) );
 	foreach ( $actions as $action )
 		add_action( $action, 'dpa_handle_action_' . $action, 10, 10 );
@@ -837,7 +839,7 @@ function dpa_handle_action( $name, $func_args=null, $type='' ) {
 }
 
 /**
- * Checks if an Achievement's critera has been met, and if it has, unlock the Achievement.
+ * Checks if an Achievement's criteria has been met, and if it has, unlock the Achievement.
  * Achievements with an action count of 0 are, effectively, unlocked each time but only
  * the points are added to user's total.
  *
@@ -1915,7 +1917,7 @@ function dpa_screen_achievement_create() {
 		$achievement->points       = '';
 		$achievement->action_count = 1;
 		$achievement->is_active    = 1;
-//die(var_dump( $bp->achievements->current_achievement ));
+
 		do_action( 'dpa_screen_achievement_create', $achievement );
 		bp_core_load_template( apply_filters( 'dpa_screen_achievement_create_template', 'achievements/create' ) );
 		return;

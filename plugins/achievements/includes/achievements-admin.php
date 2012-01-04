@@ -182,7 +182,7 @@ function dpa_admin_screen() {
 
 			<div class="dpa-spacer">
 				<?php if ( !$is_support_tab ) : ?>
-					<p><?php _e( "Achievements gives your BuddyPress community fresh impetus by promoting and rewarding social interaction with challenges, badges and points. For information, support, premium enhancements and developer documentation, visit <a href='http://achievementsapp.com/'>our website</a>.", 'dpa' ) ?></p>
+					<p><?php _e( "Achievements gives your BuddyPress community fresh impetus by promoting and rewarding social interaction with challenges, badges and points. For information, support, premium enhancements and developer documentation, visit <a href='http://achievementsapp.wordpress.com/'>our website</a>.", 'dpa' ) ?></p>
 					<p><?php printf( __( "To create and manage Achievements, visit the <a href='%s'>Achievements Directory</a>.", 'dpa' ), dpa_get_achievements_permalink() ) ?></p>
 				<?php else : ?>
 					<p><?php printf( __( "Have you found a bug or do you have a great idea for the next release? Please make a report on <a href='%s'>BuddyPress.org</a>, or use the form below to get in contact. We're listening.", 'dpa' ), 'http://buddypress.org/community/groups/achievements/forum/' ) ?></p>

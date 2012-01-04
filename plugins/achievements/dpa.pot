@@ -1,312 +1,311 @@
 # Translation source file for Paul Gibbs' (paul@byotos.com) WordPress plugin, "Achievements for BuddyPress".
-# Achievements is copyright (C) 2009-11 Paul Gibbs.
+# Achievements is copyright (C) 2009-12 Paul Gibbs.
 # This file is distributed under the same license as the "Achievements" package.
-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://buddypress.org/community/groups/achievements/\n"
-"POT-Creation-Date: 2010-12-16 22:02+0000\n"
-"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"POT-Creation-Date: 2012-01-02 13:45:07+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2012-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: includes/achievements-admin.php:33
-#, php-format
+#: includes/achievements-filters.php:83 includes/achievements-filters.php:106
+msgid "Viewing member %1$s to %2$s (of %3$s active members)"
+msgstr ""
+
+#: includes/achievements-filters.php:84 includes/achievements-filters.php:105
+msgid ""
+"Viewing member %1$s to %2$s (of %3$s members) who have unlocked this "
+"Achievement"
+msgstr ""
+
+#: includes/achievements-filters.php:123
+msgid "Unlocked %s ago"
+msgstr ""
+
+#: includes/achievements-admin.php:32
 msgid ""
 "<strong>Achievements is almost ready</strong>. Have you just upgraded to a "
 "new version? <a href=\"%s\">Go to the Plugins page</a> and re-activate the "
 "plugin."
 msgstr ""
 
-#: includes/achievements-admin.php:50 includes/achievements-admin.php:108
+#: includes/achievements-admin.php:49 includes/achievements-admin.php:107
 msgid "Settings"
 msgstr ""
 
-#: includes/achievements-admin.php:106 includes/achievements-admin.php:113
+#: includes/achievements-admin.php:105 includes/achievements-admin.php:112
 msgid "Like this plugin?"
 msgstr ""
 
-#: includes/achievements-admin.php:107 includes/achievements-admin.php:114
+#: includes/achievements-admin.php:106 includes/achievements-admin.php:113
 msgid "Latest news from the author"
 msgstr ""
 
-#: includes/achievements-admin.php:111
+#: includes/achievements-admin.php:110
 msgid "Contact us"
 msgstr ""
 
-#: includes/achievements-admin.php:112
+#: includes/achievements-admin.php:111
 msgid "Help us help you"
 msgstr ""
 
-#: includes/achievements-admin.php:161
+#: includes/achievements-admin.php:160
 msgid "BuddyPress"
 msgstr ""
 
-#: includes/achievements-admin.php:162 includes/achievements-core.php:167
-#: includes/achievements-core.php:221 includes/achievements-core.php:1854
+#: includes/achievements-admin.php:161 includes/achievements-core.php:63
+#: includes/achievements-core.php:255 includes/achievements-core.php:280
+#: includes/achievements-core.php:320 includes/achievements-core.php:2005
 msgid "Achievements"
 msgstr ""
 
-#: includes/achievements-admin.php:167
+#: includes/achievements-admin.php:166
 msgid "Configure"
 msgstr ""
 
-#: includes/achievements-admin.php:168
+#: includes/achievements-admin.php:167
 msgid "Support"
 msgstr ""
 
-#: includes/achievements-admin.php:174
+#: includes/achievements-admin.php:173
 msgid "Your Achievements settings have been saved."
 msgstr ""
 
-#: includes/achievements-admin.php:180
+#: includes/achievements-admin.php:179
 msgid ""
 "Thanks, we've recieved your message and have emailed you a copy for your "
 "records. We'll be in touch soon!"
 msgstr ""
 
-#: includes/achievements-admin.php:186
+#: includes/achievements-admin.php:185
 msgid ""
 "Achievements gives your BuddyPress community fresh impetus by promoting and "
 "rewarding social interaction with challenges, badges and points. For "
 "information, support, premium enhancements and developer documentation, "
-"visit <a href='http://achievementsapp.com/'>our website</a>."
+"visit <a href='http://achievementsapp.wordpress.com/'>our website</a>."
 msgstr ""
 
-#: includes/achievements-admin.php:187
-#, php-format
+#: includes/achievements-admin.php:186
 msgid ""
 "To create and manage Achievements, visit the <a href='%s'>Achievements "
 "Directory</a>."
 msgstr ""
 
-#: includes/achievements-admin.php:189
-#, php-format
+#: includes/achievements-admin.php:188
 msgid ""
 "Have you found a bug or do you have a great idea for the next release? "
 "Please make a report on <a href='%s'>BuddyPress.org</a>, or use the form "
 "below to get in contact. We're listening."
 msgstr ""
 
-#: includes/achievements-admin.php:220
+#: includes/achievements-admin.php:219
 msgid "Save Settings"
 msgstr ""
 
-#: includes/achievements-admin.php:242
+#: includes/achievements-admin.php:241
 msgid "Why not do any or all of the following:"
 msgstr ""
 
-#: includes/achievements-admin.php:244
+#: includes/achievements-admin.php:243
 msgid "Tell your friends!"
 msgstr ""
 
-#: includes/achievements-admin.php:245
+#: includes/achievements-admin.php:244
 msgid "Give it a good rating on WordPress.org"
 msgstr ""
 
-#: includes/achievements-admin.php:246
+#: includes/achievements-admin.php:245
 msgid "Write a review on BuddyPress.org"
 msgstr ""
 
-#: includes/achievements-admin.php:247
+#: includes/achievements-admin.php:246
 msgid "Thank me by donating towards future development"
 msgstr ""
 
-#: includes/achievements-admin.php:248
+#: includes/achievements-admin.php:247
 msgid "Hire me to create a custom plugin for your site."
 msgstr ""
 
-#: includes/achievements-admin.php:250
+#: includes/achievements-admin.php:249
 msgid "Or share on one of these social networks:"
 msgstr ""
 
-#: includes/achievements-admin.php:252
+#: includes/achievements-admin.php:251
 msgid "Twitter"
 msgstr ""
 
-#: includes/achievements-admin.php:253
+#: includes/achievements-admin.php:252
 msgid "Facebook"
 msgstr ""
 
-#: includes/achievements-admin.php:254
+#: includes/achievements-admin.php:253
 msgid "Delicious - social bookmarking"
 msgstr ""
 
-#: includes/achievements-admin.php:255
+#: includes/achievements-admin.php:254
 msgid "Stumble Upon"
 msgstr ""
 
-#: includes/achievements-admin.php:275
+#: includes/achievements-admin.php:274
 msgid "Subscribe with RSS"
 msgstr ""
 
-#: includes/achievements-admin.php:278
+#: includes/achievements-admin.php:277
 msgid "No news!"
 msgstr ""
 
-#: includes/achievements-admin.php:289
+#: includes/achievements-admin.php:288
 msgid "Support Forums"
 msgstr ""
 
-#: includes/achievements-admin.php:315
+#: includes/achievements-admin.php:314
 msgid "No other plugins are active"
 msgstr ""
 
-#: includes/achievements-admin.php:319
+#: includes/achievements-admin.php:318
 msgid "subdomain"
 msgstr ""
 
-#: includes/achievements-admin.php:321
+#: includes/achievements-admin.php:320
 msgid "subdirectory"
 msgstr ""
 
-#: includes/achievements-admin.php:323 includes/achievements-admin.php:331
+#: includes/achievements-admin.php:322 includes/achievements-admin.php:330
 msgid "no"
 msgstr ""
 
-#: includes/achievements-admin.php:327
+#: includes/achievements-admin.php:326
 msgid "standard"
 msgstr ""
 
-#: includes/achievements-admin.php:329
+#: includes/achievements-admin.php:328
 msgid "non-standard"
 msgstr ""
 
-#: includes/achievements-admin.php:335
+#: includes/achievements-admin.php:334
 msgid "yes"
 msgstr ""
 
-#: includes/achievements-admin.php:338
+#: includes/achievements-admin.php:337
 msgid "n/a"
 msgstr ""
 
-#: includes/achievements-admin.php:341
+#: includes/achievements-admin.php:340
 msgid "default"
 msgstr ""
 
-#: includes/achievements-admin.php:344
+#: includes/achievements-admin.php:343
 msgid "almost"
 msgstr ""
 
-#: includes/achievements-admin.php:346
+#: includes/achievements-admin.php:345
 msgid "custom"
 msgstr ""
 
-#: includes/achievements-admin.php:348
+#: includes/achievements-admin.php:347
 msgid ""
 "If you're submitting a support request, some information about your "
 "WordPress site really helps us to diagnose the problem."
 msgstr ""
 
-#: includes/achievements-admin.php:349
+#: includes/achievements-admin.php:348
 msgid ""
 "It's entirely optional, but if you include the information below in your "
 "support request, it really will help. Thank you!"
 msgstr ""
 
-#: includes/achievements-admin.php:351
+#: includes/achievements-admin.php:350
 msgid "Versions"
 msgstr ""
 
-#: includes/achievements-admin.php:353
-#, php-format
+#: includes/achievements-admin.php:352
 msgid "Achievements: %s"
 msgstr ""
 
-#: includes/achievements-admin.php:354
-#, php-format
+#: includes/achievements-admin.php:353
 msgid "BuddyPress: %s"
 msgstr ""
 
-#: includes/achievements-admin.php:355
-#, php-format
+#: includes/achievements-admin.php:354
 msgid "BP_ROOT_BLOG: %s"
 msgstr ""
 
-#: includes/achievements-admin.php:356
-#, php-format
+#: includes/achievements-admin.php:355
 msgid "MySQL: %s"
 msgstr ""
 
-#: includes/achievements-admin.php:357
-#, php-format
+#: includes/achievements-admin.php:356
 msgid "Permalinks: %s"
 msgstr ""
 
-#: includes/achievements-admin.php:358
-#, php-format
+#: includes/achievements-admin.php:357
 msgid "PHP: %s"
 msgstr ""
 
-#: includes/achievements-admin.php:359
-#, php-format
+#: includes/achievements-admin.php:358
 msgid "WordPress: %s"
 msgstr ""
 
-#: includes/achievements-admin.php:360
-#, php-format
+#: includes/achievements-admin.php:359
 msgid "WordPress multisite: %s"
 msgstr ""
 
-#: includes/achievements-admin.php:363
+#: includes/achievements-admin.php:362
 msgid "Theme"
 msgstr ""
 
-#: includes/achievements-admin.php:365
-#, php-format
+#: includes/achievements-admin.php:364
 msgid "BP-Default child theme: %s"
 msgstr ""
 
-#: includes/achievements-admin.php:366
-#, php-format
+#: includes/achievements-admin.php:365
 msgid "Current theme: %s"
 msgstr ""
 
-#: includes/achievements-admin.php:369
+#: includes/achievements-admin.php:368
 msgid "Active Plugins"
 msgstr ""
 
-#: includes/achievements-admin.php:389
+#: includes/achievements-admin.php:388
 msgid "Hello, how can we help?"
 msgstr ""
 
-#: includes/achievements-admin.php:399
+#: includes/achievements-admin.php:398
 msgid "What type of request do you have?"
 msgstr ""
 
-#: includes/achievements-admin.php:403
+#: includes/achievements-admin.php:402
 msgid "Bug report"
 msgstr ""
 
-#: includes/achievements-admin.php:404
+#: includes/achievements-admin.php:403
 msgid "Idea"
 msgstr ""
 
-#: includes/achievements-admin.php:405
+#: includes/achievements-admin.php:404
 msgid "Other support request"
 msgstr ""
 
-#: includes/achievements-admin.php:413
+#: includes/achievements-admin.php:412
 msgid "What's your email address?"
 msgstr ""
 
-#: includes/achievements-admin.php:420
+#: includes/achievements-admin.php:419
 msgid "Send"
 msgstr ""
 
-#: includes/achievements-admin.php:434 includes/achievements-core.php:142
-#: includes/achievements-templatetags.php:1420
+#: includes/achievements-admin.php:434
+#: includes/achievements-templatetags.php:1430
+#: includes/achievements-core.php:174
 msgid "Change Picture"
 msgstr ""
 
 #: includes/achievements-admin.php:439
-#, php-format
 msgid ""
 "If your <a href='%s'>WordPress Media Library</a> contains a lot of content, "
 "it may be hard to find the images which you want to use for your "
@@ -318,503 +317,308 @@ msgid ""
 "Enter keywords here to search for in your images' titles and descriptions:"
 msgstr ""
 
-#: includes/achievements-classes.php:302
-msgid "This can't be zero."
-msgstr ""
-
-#: includes/achievements-classes.php:304
-msgid "This can't be blank."
-msgstr ""
-
-#: includes/achievements-classes.php:313
-msgid "Choose an event."
-msgstr ""
-
-#: includes/achievements-classes.php:316
-msgid "This needs to be at least one."
-msgstr ""
-
-#: includes/achievements-classes.php:319 includes/achievements-classes.php:328
-msgid "This needs to be less than two hundred characters long."
-msgstr ""
-
-#: includes/achievements-classes.php:322
-msgid "The Achievement's name must be unique; this one is already in use."
-msgstr ""
-
-#: includes/achievements-classes.php:325
-msgid "Missing Achievement description."
-msgstr ""
-
-#: includes/achievements-classes.php:332
-msgid "This slug conflicts with something important; please try another."
-msgstr ""
-
-#: includes/achievements-classes.php:335
-msgid "The slug must be unique; this one is already in use."
-msgstr ""
-
-#: includes/achievements-core.php:105
-#, php-format
-msgid "Achievements <span>(%s)</span>"
-msgstr ""
-
-#: includes/achievements-core.php:108
-#, php-format
-msgid "My Achievements <span>(%s)</span>"
-msgstr ""
-
-#: includes/achievements-core.php:112
-#: includes/feeds/dpa-myachievements-feed.php:27
-#: includes/feeds/dpa-myachievements-feed.php:30
-msgid "My Achievements"
-msgstr ""
-
-#: includes/achievements-core.php:138
-msgid "Home"
-msgstr ""
-
-#: includes/achievements-core.php:139
-#, php-format
-msgid "Unlocked By (%s)"
-msgstr ""
-
-#: includes/achievements-core.php:145
-#: includes/achievements-templatetags.php:1423
-msgid "Delete"
-msgstr ""
-
-#: includes/achievements-core.php:148
-#: includes/achievements-templatetags.php:1426
-msgid "Edit"
-msgstr ""
-
-#: includes/achievements-core.php:151
-#: includes/achievements-templatetags.php:1429
-msgid "Give"
-msgstr ""
-
-#: includes/achievements-core.php:180
-msgid "Show Achievements"
-msgstr ""
-
-#: includes/achievements-core.php:198
-msgid "Achievement RSS Feed"
-msgstr ""
-
-#: includes/achievements-core.php:611
-msgid "Sorry, there was no activity found. Please try a different filter."
-msgstr ""
-
-#: includes/achievements-core.php:612
-msgid "Sorry, there was no activity found."
-msgstr ""
-
-#: includes/achievements-core.php:1577
-msgid "The Achievement's picture has been updated."
-msgstr ""
-
-#: includes/achievements-core.php:1582
-msgid ""
-"There was an error changing the Achievement's picture, please try again."
-msgstr ""
-
-#: includes/achievements-core.php:1651
-msgid "The Achievement's details have been updated."
-msgstr ""
-
-#: includes/achievements-core.php:1662
-msgid ""
-"An error has occurred and the Achievement's details have not been updated. "
-"See below for details."
-msgstr ""
-
-#: includes/achievements-core.php:1685
-msgid "You need to select at least one person to give this Achievement to!"
-msgstr ""
-
-#: includes/achievements-core.php:1702
-msgid "The specified members have successfully received this Achievement."
-msgstr ""
-
-#: includes/achievements-core.php:1731
-msgid "There was an error deleting the Achievement, please try again."
-msgstr ""
-
-#: includes/achievements-core.php:1740
-msgid "The Achievement was deleted successfully."
-msgstr ""
-
-#: includes/achievements-core.php:1818
-msgid "Achievement created succesfully!"
-msgstr ""
-
-#: includes/achievements-core.php:1834
-msgid ""
-"An error has occurred and the Achievement has not been created. See below "
-"for details."
-msgstr ""
-
-#: includes/achievements-core.php:1855
-msgid "Yes"
-msgstr ""
-
-#: includes/achievements-core.php:1856
-msgid "No"
-msgstr ""
-
-#: includes/achievements-core.php:1863
-msgid "You unlock an achievement"
-msgstr ""
-
-#: includes/achievements-core.php:1895
-msgid "Achievement unlocked"
-msgstr ""
-
-#: includes/achievements-core.php:1924
-#, php-format
-msgid "%1$s unlocked %2$s"
-msgstr ""
-
-#: includes/achievements-core.php:1935
-#, php-format
-msgid "%1$s created the Achievement %2$s"
-msgstr ""
-
-#: includes/achievements-filters.php:84 includes/achievements-filters.php:107
-#, php-format
-msgid "Viewing member %1$s to %2$s (of %3$s active members)"
-msgstr ""
-
-#: includes/achievements-filters.php:85 includes/achievements-filters.php:106
-#, php-format
-msgid ""
-"Viewing member %1$s to %2$s (of %3$s members) who have unlocked this "
-"Achievement"
-msgstr ""
-
-#: includes/achievements-filters.php:124
-#, php-format
-msgid "Unlocked %s ago"
-msgstr ""
-
-#: includes/achievements-notifications.php:37
-#, php-format
-msgid "Achievement unlocked: %s"
-msgstr ""
-
-#: includes/achievements-notifications.php:43
-msgid "Achievements unlocked!"
-msgstr ""
-
-#: includes/achievements-notifications.php:71
-#, php-format
-msgid "[%1$s] Achievement unlocked: %2$s"
-msgstr ""
-
-#: includes/achievements-notifications.php:73
-#, php-format
-msgid ""
-"\n"
-"You have unlocked an Achievement: %1$s\n"
-"\n"
-"To review this and see all of your Achievements, go to %2$s\n"
-"\n"
-"---------------------\n"
-"To disable these notifications please log in and go to: %3$s"
-msgstr ""
-
-#: includes/achievements-templatetags.php:379
-#, php-format
+#: includes/achievements-templatetags.php:378
 msgid "Viewing Achievements %1$s to %2$s (of %3$s Achievements)"
 msgstr ""
 
-#: includes/achievements-templatetags.php:382
-#, php-format
+#: includes/achievements-templatetags.php:381
 msgid " matching &ldquo;%s&rdquo;"
 msgstr ""
 
-#: includes/achievements-templatetags.php:789
-#, php-format
+#: includes/achievements-templatetags.php:788
 msgid " %s ago"
 msgstr ""
 
-#: includes/achievements-templatetags.php:859
+#: includes/achievements-templatetags.php:861
 msgid "Award, hidden"
 msgstr ""
 
-#: includes/achievements-templatetags.php:861
-#: includes/achievements-templatetags.php:1037
+#: includes/achievements-templatetags.php:863
+#: includes/achievements-templatetags.php:1047
 #: includes/templates/achievements/single/achievement-header.php:21
 msgid "Award"
 msgstr ""
 
-#: includes/achievements-templatetags.php:865
+#: includes/achievements-templatetags.php:867
 msgid "Event, hidden"
 msgstr ""
 
-#: includes/achievements-templatetags.php:867
-#: includes/achievements-templatetags.php:1038
+#: includes/achievements-templatetags.php:869
+#: includes/achievements-templatetags.php:1048
 #: includes/templates/achievements/_addedit.php:18
 msgid "Event"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1099
+#: includes/achievements-templatetags.php:1109
 msgid "(All groups)"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1165
+#: includes/achievements-templatetags.php:1177
 msgid "(All sites)"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1213
+#: includes/achievements-templatetags.php:1222
 msgid "----"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1220
+#: includes/achievements-templatetags.php:1229
 msgid "Activity Streams"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1225
+#: includes/achievements-templatetags.php:1234
 msgid "Site"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1229
+#: includes/achievements-templatetags.php:1238
 msgid "Forums"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1234
+#: includes/achievements-templatetags.php:1243
 msgid "Groups"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1239
+#: includes/achievements-templatetags.php:1248
 msgid "Members"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1244
+#: includes/achievements-templatetags.php:1253
 msgid "Private Messaging"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1249
+#: includes/achievements-templatetags.php:1258
 msgid "WordPress Multisite"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1254
+#: includes/achievements-templatetags.php:1263
 msgid "Profile &amp; Account"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1260
+#: includes/achievements-templatetags.php:1269
 msgid "Plugin: Achievements"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1266
+#: includes/achievements-templatetags.php:1275
 msgid "Plugin: BuddyPress Moderation"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1270
+#: includes/achievements-templatetags.php:1279
 msgid "Plugin: BP-Privacy"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1275
+#: includes/achievements-templatetags.php:1284
 msgid "Plugin: BuddyPress Links"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1280
+#: includes/achievements-templatetags.php:1289
 msgid "Plugin: BuddyStream"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1285
+#: includes/achievements-templatetags.php:1294
 msgid "Plugin: Invite Anyone"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1290
+#: includes/achievements-templatetags.php:1299
 msgid "Plugin: EventPress"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1295
+#: includes/achievements-templatetags.php:1304
 msgid "Plugin: Jet Event System for BuddyPress"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1300
+#: includes/achievements-templatetags.php:1309
 msgid "Other"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1498
+#: includes/achievements-templatetags.php:1433
+#: includes/achievements-core.php:186
+msgid "Delete"
+msgstr ""
+
+#: includes/achievements-templatetags.php:1436
+#: includes/achievements-core.php:199
+msgid "Edit"
+msgstr ""
+
+#: includes/achievements-templatetags.php:1439
+msgid "Give"
+msgstr ""
+
+#: includes/achievements-templatetags.php:1510
 msgid "Search Achievements"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1499
+#: includes/achievements-templatetags.php:1511
 msgid "Search"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1557
+#: includes/achievements-templatetags.php:1569
 msgid "You've unlocked this Achievement! Way to go!"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1569
+#: includes/achievements-templatetags.php:1581
 msgid "You've very nearly unlocked this Achievement, keep going!"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1571
-#, php-format
+#: includes/achievements-templatetags.php:1583
 msgid ""
 "You're about %d%% of the way towards unlocking this Achievement, keep going!"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1593
-#, php-format
+#: includes/achievements-templatetags.php:1605
 msgid "Viewing picture %1$s to %2$s (of %3$s pictures)"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1720
+#: includes/achievements-templatetags.php:1732
 msgid "View Achievements"
 msgstr ""
 
-#: includes/achievements-widgets.php:28
-msgid "Sitewide leaderboard"
+#: includes/templates/achievements/achievements-loop.php:23
+msgid "This Achievement is worth %s points."
 msgstr ""
 
-#: includes/achievements-widgets.php:29
-msgid "Achievements Leaderboard"
+#: includes/templates/achievements/achievements-loop.php:29
+msgid "Unlocked %s"
 msgstr ""
 
-#: includes/achievements-widgets.php:74
-msgid "Position"
+#: includes/templates/achievements/achievements-loop.php:42
+msgid "Inactive"
 msgstr ""
 
-#. translators: column heading, indicating numerical position in a list
-#: includes/achievements-widgets.php:74
-msgid "#"
+#: includes/templates/achievements/achievements-loop.php:79
+msgid "There were no Achievements found matching &ldquo;%s.&rdquo;"
 msgstr ""
 
-#: includes/achievements-widgets.php:75
-msgid "Member"
+#: includes/templates/achievements/achievements-loop.php:81
+msgid "You haven't unlocked any Achievements yet"
 msgstr ""
 
-#: includes/achievements-widgets.php:76
-msgid "Score"
+#: includes/templates/achievements/achievements-loop.php:83
+msgid "%s hasn't unlocked any Achievements yet"
 msgstr ""
 
-#: includes/achievements-widgets.php:132
-msgid "Achievement Leaderboard"
+#: includes/templates/achievements/achievements-loop.php:85
+msgid "Oops, no Achievements were found!"
 msgstr ""
 
-#: includes/achievements-widgets.php:138 includes/achievements-widgets.php:265
-#: includes/achievements-widgets.php:365 includes/achievements-widgets.php:470
-#: includes/achievements-widgets.php:587 includes/achievements-widgets.php:687
-msgid "Title"
+#: includes/templates/achievements/single/achievement-header.php:24
+msgid "%s point"
+msgid_plural "%s points"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/templates/achievements/single/achievement-header.php:27
+msgid "Inactive Achievement"
 msgstr ""
 
-#: includes/achievements-widgets.php:142
-msgid "Limit to this many results"
+#: includes/templates/achievements/single/achievement-header.php:30
+msgid "Only %s person has unlocked this Achievement"
+msgid_plural "%s people have unlocked this Achievement"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/templates/achievements/single/grant.php:13
+msgid "Select people to give this Achievement to."
 msgstr ""
 
-#: includes/achievements-widgets.php:146
-msgid "Appearance"
+#: includes/templates/achievements/single/grant.php:22
+msgid "Give Achievement"
 msgstr ""
 
-#: includes/achievements-widgets.php:170
-msgid "League table"
-msgstr ""
-
-#: includes/achievements-widgets.php:170
-msgid "Modern"
-msgstr ""
-
-#: includes/achievements-widgets.php:189
-msgid "A photo grid of a member's unlocked Achievements"
-msgstr ""
-
-#: includes/achievements-widgets.php:190
-msgid "Achievements, Unlocked"
-msgstr ""
-
-#: includes/achievements-widgets.php:227 includes/achievements-widgets.php:327
-msgid "Show All"
-msgstr ""
-
-#: includes/achievements-widgets.php:260
-msgid "Your Recent Achievements"
-msgstr ""
-
-#: includes/achievements-widgets.php:269 includes/achievements-widgets.php:591
-msgid "Limit to this many Achievements"
-msgstr ""
-
-#: includes/achievements-widgets.php:291
+#: includes/templates/achievements/single/delete.php:4
 msgid ""
-"A photo grid of all the Achievements available on this site; intended for "
-"multisite"
+"WARNING: Any members who have unlocked this Achievement will have it "
+"removed. There is no way back, please be careful with this option."
 msgstr ""
 
-#: includes/achievements-widgets.php:292
-msgid "Achievements, All"
+#: includes/templates/achievements/single/delete.php:7
+msgid "I understand the consequences of deleting this Achievement."
 msgstr ""
 
-#: includes/achievements-widgets.php:360
-msgid "All Available Achievements"
+#: includes/templates/achievements/single/delete.php:10
+msgid "Delete Achievement"
 msgstr ""
 
-#: includes/achievements-widgets.php:369
-msgid "Show this many Achievements"
+#: includes/templates/achievements/single/edit.php:4
+#: includes/templates/achievements/create.php:28
+msgid ""
+"Some of the Action options below may not be relevant to the type or event of "
+"the Achievement."
 msgstr ""
 
-#: includes/achievements-widgets.php:391
-msgid "Displays a single Achievement in detail"
+#: includes/templates/achievements/single/change-picture.php:17
+msgid ""
+"We've noticed that you've got a lot of pictures to choose from. <a href='%"
+"s'>Set a filter</a> to restrict which images are retrieved from your <a "
+"href='%s'>WordPress Media Library</a>."
 msgstr ""
 
-#: includes/achievements-widgets.php:392
-msgid "Achievements, Featured"
+#: includes/templates/achievements/single/change-picture.php:28
+msgid "Update Picture"
 msgstr ""
 
-#: includes/achievements-widgets.php:424
-#, php-format
-msgid "%s points"
+#: includes/templates/achievements/single/change-picture.php:46
+msgid ""
+"Before you can choose a picture, you need to upload an image to the <a "
+"href='%s'>WordPress Media Library</a>."
 msgstr ""
 
-#: includes/achievements-widgets.php:431
-msgid "Show More"
+#: includes/templates/achievements/single/change-picture.php:50
+msgid ""
+"Unfortunately, there aren't any pictures to choose from. You'll need to ask "
+"an Administrator to upload some to the WordPress Media Library for you."
 msgstr ""
 
-#: includes/achievements-widgets.php:464
-msgid "Featured Achievement"
+#: includes/templates/achievements/index.php:7
+#: includes/templates/achievements/create.php:10
+msgid "Achievements Directory"
 msgstr ""
 
-#: includes/achievements-widgets.php:474
-msgid "Achievement"
+#: includes/templates/achievements/index.php:7
+msgid "Create an Achievement"
 msgstr ""
 
-#: includes/achievements-widgets.php:513
-msgid "A photo grid of Achievements which the member is yet to unlock"
+#: includes/templates/achievements/index.php:17
+msgid "All Achievements <span>%s</span>"
 msgstr ""
 
-#: includes/achievements-widgets.php:514
-msgid "Achievements, Locked"
+#: includes/templates/achievements/index.php:20
+#: includes/achievements-core.php:112
+msgid "My Achievements <span>%s</span>"
 msgstr ""
 
-#: includes/achievements-widgets.php:582
-msgid "Unlock These Achievements"
+#: includes/templates/achievements/index.php:27
+#: includes/templates/members/single/achievements/unlocked.php:9
+msgid "Order By:"
 msgstr ""
 
-#: includes/achievements-widgets.php:614
-msgid "Displays a member's Achievement score"
+#: includes/templates/achievements/index.php:29
+#: includes/templates/members/single/achievements/unlocked.php:12
+msgid "Alphabetical"
 msgstr ""
 
-#: includes/achievements-widgets.php:615
-msgid "Achievements, Member's Score"
+#: includes/templates/achievements/index.php:30
+#: includes/templates/members/single/achievements/unlocked.php:13
+msgid "Event Count"
 msgstr ""
 
-#: includes/achievements-widgets.php:677
-msgid "Achievement Score"
+#: includes/templates/achievements/index.php:31
+msgid "Newest"
 msgstr ""
 
-#: includes/achievements-widgets.php:691
-msgid "Force display of logged in member's score"
+#: includes/templates/achievements/index.php:32
+#: includes/templates/achievements/_addedit.php:74
+#: includes/templates/members/single/achievements/unlocked.php:14
+msgid "Points"
 msgstr ""
 
-#: includes/feeds/dpa-myachievements-feed.php:49
-#, php-format
-msgid "Comments: %s"
+#: includes/templates/achievements/create.php:10
+#: includes/templates/achievements/_addedit.php:114
+msgid "Create Achievement"
+msgstr ""
+
+#: includes/templates/achievements/create.php:30
+msgid ""
+"After you create the Achievement, you'll be able to choose a picture for it."
 msgstr ""
 
 #: includes/templates/achievements/_addedit.php:6
@@ -859,12 +663,6 @@ msgstr ""
 msgid "Explain how to unlock this Achievement."
 msgstr ""
 
-#: includes/templates/achievements/_addedit.php:74
-#: includes/templates/achievements/index.php:32
-#: includes/templates/members/single/achievements/unlocked.php:14
-msgid "Points"
-msgstr ""
-
 #: includes/templates/achievements/_addedit.php:75
 msgid ""
 "Points are awarded when Achievements are unlocked. They are used as a "
@@ -903,426 +701,596 @@ msgstr ""
 msgid "Update Achievement"
 msgstr ""
 
-#: includes/templates/achievements/_addedit.php:114
-#: includes/templates/achievements/create.php:10
-msgid "Create Achievement"
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:23
-#, php-format
-msgid "This Achievement is worth %s points."
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:29
-#, php-format
-msgid "Unlocked %s"
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:42
-msgid "Inactive"
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:79
-#, php-format
-msgid "There were no Achievements found matching &ldquo;%s.&rdquo;"
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:81
-msgid "You haven't unlocked any Achievements yet"
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:83
-#, php-format
-msgid "%s hasn't unlocked any Achievements yet"
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:85
-msgid "Oops, no Achievements were found!"
-msgstr ""
-
-#: includes/templates/achievements/create.php:10
-#: includes/templates/achievements/index.php:7
-msgid "Achievements Directory"
-msgstr ""
-
-#: includes/templates/achievements/create.php:28
-#: includes/templates/achievements/single/edit.php:4
-msgid ""
-"Some of the Action options below may not be relevant to the type or event of "
-"the Achievement."
-msgstr ""
-
-#: includes/templates/achievements/create.php:30
-msgid ""
-"After you create the Achievement, you'll be able to choose a picture for it."
-msgstr ""
-
-#: includes/templates/achievements/index.php:7
-msgid "Create an Achievement"
-msgstr ""
-
-#: includes/templates/achievements/index.php:17
-#, php-format
-msgid "All Achievements (%s)"
-msgstr ""
-
-#: includes/templates/achievements/index.php:20
-#, php-format
-msgid "My Achievements (%s)"
-msgstr ""
-
-#: includes/templates/achievements/index.php:27
-#: includes/templates/members/single/achievements/unlocked.php:9
-msgid "Order By:"
-msgstr ""
-
-#: includes/templates/achievements/index.php:29
-#: includes/templates/members/single/achievements/unlocked.php:12
-msgid "Alphabetical"
-msgstr ""
-
-#: includes/templates/achievements/index.php:30
-#: includes/templates/members/single/achievements/unlocked.php:13
-msgid "Event Count"
-msgstr ""
-
-#: includes/templates/achievements/index.php:31
-msgid "Newest"
-msgstr ""
-
-#: includes/templates/achievements/single/achievement-header.php:24
-#, php-format
-msgid "%s point"
-msgid_plural "%s points"
-msgstr[0] ""
-msgstr[1] ""
-
-#: includes/templates/achievements/single/achievement-header.php:27
-msgid "Inactive Achievement"
-msgstr ""
-
-#: includes/templates/achievements/single/achievement-header.php:30
-#, php-format
-msgid "Only %s person has unlocked this Achievement"
-msgid_plural "%s people have unlocked this Achievement"
-msgstr[0] ""
-msgstr[1] ""
-
-#: includes/templates/achievements/single/change-picture.php:17
-#, php-format
-msgid ""
-"We've noticed that you've got a lot of pictures to choose from. <a href='%"
-"s'>Set a filter</a> to restrict which images are retrieved from your <a "
-"href='%s'>WordPress Media Library</a>."
-msgstr ""
-
-#: includes/templates/achievements/single/change-picture.php:28
-msgid "Update Picture"
-msgstr ""
-
-#: includes/templates/achievements/single/change-picture.php:46
-#, php-format
-msgid ""
-"Before you can choose a picture, you need to upload an image to the <a "
-"href='%s'>WordPress Media Library</a>."
-msgstr ""
-
-#: includes/templates/achievements/single/change-picture.php:50
-msgid ""
-"Unfortunately, there aren't any pictures to choose from. You'll need to ask "
-"an Administrator to upload some to the WordPress Media Library for you."
-msgstr ""
-
-#: includes/templates/achievements/single/delete.php:4
-msgid ""
-"WARNING: Any members who have unlocked this Achievement will have it "
-"removed. There is no way back, please be careful with this option."
-msgstr ""
-
-#: includes/templates/achievements/single/delete.php:7
-msgid "I understand the consequences of deleting this Achievement."
-msgstr ""
-
-#: includes/templates/achievements/single/delete.php:10
-msgid "Delete Achievement"
-msgstr ""
-
-#: includes/templates/achievements/single/grant.php:13
-msgid "Select people to give this Achievement to."
-msgstr ""
-
-#: includes/templates/achievements/single/grant.php:22
-msgid "Give Achievement"
-msgstr ""
-
 #: includes/templates/members/single/achievements/unlocked.php:11
 msgid "Recently Unlocked"
 msgstr ""
 
-#: loader.php:47
+#: includes/achievements-classes.php:301
+msgid "This can't be zero."
+msgstr ""
+
+#: includes/achievements-classes.php:303
+msgid "This can't be blank."
+msgstr ""
+
+#: includes/achievements-classes.php:312
+msgid "Choose an event."
+msgstr ""
+
+#: includes/achievements-classes.php:315
+msgid "This needs to be at least one."
+msgstr ""
+
+#: includes/achievements-classes.php:318 includes/achievements-classes.php:327
+msgid "This needs to be less than two hundred characters long."
+msgstr ""
+
+#: includes/achievements-classes.php:321
+msgid "The Achievement's name must be unique; this one is already in use."
+msgstr ""
+
+#: includes/achievements-classes.php:324
+msgid "Missing Achievement description."
+msgstr ""
+
+#: includes/achievements-classes.php:331
+msgid "This slug conflicts with something important; please try another."
+msgstr ""
+
+#: includes/achievements-classes.php:334
+msgid "The slug must be unique; this one is already in use."
+msgstr ""
+
+#: includes/feeds/dpa-myachievements-feed.php:28
+msgid "%s's Achievement Feed"
+msgstr ""
+
+#: includes/feeds/dpa-myachievements-feed.php:31
+msgid "Activity feed for the achievement, %s"
+msgstr ""
+
+#: includes/feeds/dpa-myachievements-feed.php:50
+msgid "Comments: %s"
+msgstr ""
+
+#: includes/achievements-notifications.php:36
+msgid "Achievement unlocked: %s"
+msgstr ""
+
+#: includes/achievements-notifications.php:41
+msgid "Achievements unlocked!"
+msgstr ""
+
+#: includes/achievements-notifications.php:79
+msgid "[%1$s] Achievement unlocked: %2$s"
+msgstr ""
+
+#: includes/achievements-notifications.php:80
+msgid ""
+"\n"
+"You have unlocked an Achievement: %1$s\n"
+"\n"
+"To review this and see all of your Achievements, go to %2$s\n"
+"\n"
+"---------------------\n"
+"To disable these notifications please log in and go to: %3$s"
+msgstr ""
+
+#: includes/achievements-core.php:108
+msgid "Achievements <span>%s</span>"
+msgstr ""
+
+#: includes/achievements-core.php:116 includes/achievements-core.php:262
+msgid "My Achievements"
+msgstr ""
+
+#: includes/achievements-core.php:139 includes/achievements-core.php:153
+msgid "Home"
+msgstr ""
+
+#: includes/achievements-core.php:163
+msgid "Unlocked By <span>%s</span>"
+msgstr ""
+
+#: includes/achievements-core.php:212
+msgid "Grant"
+msgstr ""
+
+#: includes/achievements-core.php:297
+msgid "Achievement RSS Feed"
+msgstr ""
+
+#: includes/achievements-core.php:701
+msgid "Sorry, there was no activity found. Please try a different filter."
+msgstr ""
+
+#: includes/achievements-core.php:702
+msgid "Sorry, there was no activity found."
+msgstr ""
+
+#: includes/achievements-core.php:1729
+msgid "The Achievement's picture has been updated."
+msgstr ""
+
+#: includes/achievements-core.php:1734
+msgid ""
+"There was an error changing the Achievement's picture, please try again."
+msgstr ""
+
+#: includes/achievements-core.php:1803
+msgid "The Achievement's details have been updated."
+msgstr ""
+
+#: includes/achievements-core.php:1814
+msgid ""
+"An error has occurred and the Achievement's details have not been updated. "
+"See below for details."
+msgstr ""
+
+#: includes/achievements-core.php:1837
+msgid "You need to select at least one person to give this Achievement to!"
+msgstr ""
+
+#: includes/achievements-core.php:1854
+msgid "The specified members have successfully received this Achievement."
+msgstr ""
+
+#: includes/achievements-core.php:1883
+msgid "There was an error deleting the Achievement, please try again."
+msgstr ""
+
+#: includes/achievements-core.php:1892
+msgid "The Achievement was deleted successfully."
+msgstr ""
+
+#: includes/achievements-core.php:1970
+msgid "Achievement created succesfully!"
+msgstr ""
+
+#: includes/achievements-core.php:1986
+msgid ""
+"An error has occurred and the Achievement has not been created. See below "
+"for details."
+msgstr ""
+
+#: includes/achievements-core.php:2006
+msgid "Yes"
+msgstr ""
+
+#: includes/achievements-core.php:2007
+msgid "No"
+msgstr ""
+
+#: includes/achievements-core.php:2014
+msgid "You unlock an achievement"
+msgstr ""
+
+#: includes/achievements-core.php:2046
+msgid "Achievement unlocked"
+msgstr ""
+
+#: includes/achievements-core.php:2075
+msgid "%1$s unlocked %2$s"
+msgstr ""
+
+#: includes/achievements-core.php:2086
+msgid "%1$s created the Achievement %2$s"
+msgstr ""
+
+#: includes/achievements-widgets.php:27
+msgid "Sitewide leaderboard"
+msgstr ""
+
+#: includes/achievements-widgets.php:28
+msgid "Achievements Leaderboard"
+msgstr ""
+
+#: includes/achievements-widgets.php:73
+msgid "Position"
+msgstr ""
+
+#. translators: column heading, indicating numerical position in a list
+#: includes/achievements-widgets.php:73
+msgid "#"
+msgstr ""
+
+#: includes/achievements-widgets.php:74
+msgid "Member"
+msgstr ""
+
+#: includes/achievements-widgets.php:75
+msgid "Score"
+msgstr ""
+
+#: includes/achievements-widgets.php:131
+msgid "Achievement Leaderboard"
+msgstr ""
+
+#: includes/achievements-widgets.php:137 includes/achievements-widgets.php:276
+#: includes/achievements-widgets.php:400 includes/achievements-widgets.php:509
+#: includes/achievements-widgets.php:638 includes/achievements-widgets.php:743
+msgid "Title"
+msgstr ""
+
+#: includes/achievements-widgets.php:141
+msgid "Limit to this many results"
+msgstr ""
+
+#: includes/achievements-widgets.php:145
+msgid "Appearance"
+msgstr ""
+
+#: includes/achievements-widgets.php:169
+msgid "League table"
+msgstr ""
+
+#: includes/achievements-widgets.php:169
+msgid "Modern"
+msgstr ""
+
+#: includes/achievements-widgets.php:188
+msgid "A photo grid of a member's unlocked Achievements"
+msgstr ""
+
+#: includes/achievements-widgets.php:189
+msgid "Achievements, Unlocked"
+msgstr ""
+
+#: includes/achievements-widgets.php:231 includes/achievements-widgets.php:356
+msgid "Show All"
+msgstr ""
+
+#: includes/achievements-widgets.php:265
+msgid "Your Recent Achievements"
+msgstr ""
+
+#: includes/achievements-widgets.php:280 includes/achievements-widgets.php:642
+msgid "Limit to this many Achievements"
+msgstr ""
+
+#: includes/achievements-widgets.php:284 includes/achievements-widgets.php:646
+#: includes/achievements-widgets.php:747
+msgid "Always show as logged in member"
+msgstr ""
+
+#: includes/achievements-widgets.php:307
+msgid ""
+"A photo grid of all the Achievements available on this site; intended for "
+"multisite"
+msgstr ""
+
+#: includes/achievements-widgets.php:308
+msgid "Achievements, All"
+msgstr ""
+
+#: includes/achievements-widgets.php:390
+msgid "All Available Achievements"
+msgstr ""
+
+#: includes/achievements-widgets.php:404
+msgid "Show this many Achievements"
+msgstr ""
+
+#: includes/achievements-widgets.php:408
+msgid "Always show non site-specific Achievements"
+msgstr ""
+
+#: includes/achievements-widgets.php:430
+msgid "Displays a single Achievement in detail"
+msgstr ""
+
+#: includes/achievements-widgets.php:431
+msgid "Achievements, Featured"
+msgstr ""
+
+#: includes/achievements-widgets.php:463
+msgid "%s points"
+msgstr ""
+
+#: includes/achievements-widgets.php:470
+msgid "Show More"
+msgstr ""
+
+#: includes/achievements-widgets.php:503
+msgid "Featured Achievement"
+msgstr ""
+
+#: includes/achievements-widgets.php:513
+msgid "Achievement"
+msgstr ""
+
+#: includes/achievements-widgets.php:552
+msgid "A photo grid of Achievements which the member is yet to unlock"
+msgstr ""
+
+#: includes/achievements-widgets.php:553
+msgid "Achievements, Locked"
+msgstr ""
+
+#: includes/achievements-widgets.php:627
+msgid "Unlock These Achievements"
+msgstr ""
+
+#: includes/achievements-widgets.php:670
+msgid "Displays a member's Achievement score"
+msgstr ""
+
+#: includes/achievements-widgets.php:671
+msgid "Achievements, Member's Score"
+msgstr ""
+
+#: includes/achievements-widgets.php:733
+msgid "Achievement Score"
+msgstr ""
+
+#: loader.php:46
 msgid "achievements"
 msgstr ""
 
-#: loader.php:50
+#: loader.php:49
 msgid "create"
 msgstr ""
 
-#: loader.php:53
+#: loader.php:52
 msgid "unlocked"
 msgstr ""
 
-#: loader.php:56
+#: loader.php:55
 msgid "edit"
 msgstr ""
 
-#: loader.php:59
+#: loader.php:58
 msgid "delete"
 msgstr ""
 
-#: loader.php:62
+#: loader.php:61
 msgid "give"
 msgstr ""
 
-#: loader.php:65
+#: loader.php:64
 msgid "change-picture"
 msgstr ""
 
-#: loader.php:68
+#: loader.php:67
 msgid "unlocked-by"
 msgstr ""
 
-#: loader.php:71
+#: loader.php:70
 msgid "home"
 msgstr ""
 
-#: loader.php:74
+#: loader.php:73
 msgid "feed"
 msgstr ""
 
-#: loader.php:77
+#: loader.php:76
 msgid "support"
 msgstr ""
 
-#: loader.php:153
+#: loader.php:151
 msgid "The user writes a comment on a post or page."
 msgstr ""
 
-#: loader.php:154
+#: loader.php:152
 msgid "The user publishes a post or page."
 msgstr ""
 
-#: loader.php:155
+#: loader.php:153
 msgid "The user sends a friendship request to someone."
 msgstr ""
 
-#: loader.php:156
+#: loader.php:154
 msgid "The user invites someone to join a group."
 msgstr ""
 
-#: loader.php:157
+#: loader.php:155
 msgid "The user joins a group."
 msgstr ""
 
-#: loader.php:158
+#: loader.php:156
 msgid "The user promotes a group member to a moderator or administrator."
 msgstr ""
 
-#: loader.php:159
+#: loader.php:157
 msgid "The user sends or replies to a private message."
 msgstr ""
 
-#: loader.php:160
+#: loader.php:158
 msgid "The user updates their profile."
 msgstr ""
 
-#: loader.php:161 loader.php:326
+#: loader.php:159 loader.php:324
 msgid "A new user activates their account."
 msgstr ""
 
-#: loader.php:177
+#: loader.php:175
 msgid "The user changes their profile's avatar."
 msgstr ""
 
-#: loader.php:178
+#: loader.php:176
 msgid "The user accepts a friendship request from someone."
 msgstr ""
 
-#: loader.php:179
+#: loader.php:177
 msgid "The user rejects a friendship request from someone."
 msgstr ""
 
-#: loader.php:180
+#: loader.php:178
 msgid "The user trashes a post or page."
 msgstr ""
 
-#: loader.php:181
+#: loader.php:179
 msgid "The user deletes a private message."
 msgstr ""
 
-#: loader.php:182
+#: loader.php:180
 msgid "The user cancels a friendship."
 msgstr ""
 
-#: loader.php:183
+#: loader.php:181
 msgid "The user creates a group."
 msgstr ""
 
-#: loader.php:184
+#: loader.php:182
 msgid "The user leaves a group."
 msgstr ""
 
-#: loader.php:185
+#: loader.php:183
 msgid "The user deletes a group."
 msgstr ""
 
-#: loader.php:186
+#: loader.php:184
 msgid "The user creates a new group forum topic."
 msgstr ""
 
-#: loader.php:187
+#: loader.php:185
 msgid "The user replies to a group forum topic."
 msgstr ""
 
-#: loader.php:188
+#: loader.php:186
 msgid "The user deletes a group forum post."
 msgstr ""
 
-#: loader.php:189
+#: loader.php:187
 msgid "The user deletes a group forum topic."
 msgstr ""
 
-#: loader.php:190
+#: loader.php:188
 msgid "The user modifies a group forum post."
 msgstr ""
 
-#: loader.php:191
+#: loader.php:189
 msgid "The user modifies a group forum topic."
 msgstr ""
 
-#: loader.php:192
+#: loader.php:190
 msgid "The user writes a message in a group's activity stream."
 msgstr ""
 
-#: loader.php:193
+#: loader.php:191
 msgid "The user writes a message in their activity stream."
 msgstr ""
 
-#: loader.php:202
+#: loader.php:200
 msgid "The user replies to any item in any activity stream."
 msgstr ""
 
-#: loader.php:203
+#: loader.php:201
 msgid "The user creates a new site."
 msgstr ""
 
-#: loader.php:228
+#: loader.php:226
 msgid "The user is awarded points by unlocking an Achievement."
 msgstr ""
 
-#: loader.php:229
+#: loader.php:227
 msgid "The user unlocks an Achievement."
 msgstr ""
 
-#: loader.php:238
+#: loader.php:236
 msgid "The user publishes an event."
 msgstr ""
 
-#: loader.php:239 loader.php:342
+#: loader.php:237 loader.php:340
 msgid "The user registers to attend an event."
 msgstr ""
 
-#: loader.php:258
+#: loader.php:256
 msgid "When the reported content is moderated by an administrator"
 msgstr ""
 
-#: loader.php:285
+#: loader.php:283
 msgid "The user updates their privacy settings."
 msgstr ""
 
-#: loader.php:289
+#: loader.php:287
 msgid "The user marks any item in any activity stream as a favourite."
 msgstr ""
 
-#: loader.php:290
+#: loader.php:288
 msgid "The user removes a favourited item from any activity stream."
 msgstr ""
 
-#: loader.php:294
+#: loader.php:292
 msgid "The user flags any content as inappropiate."
 msgstr ""
 
-#: loader.php:295
+#: loader.php:293
 msgid "The user unflags content that was previously marked as inappropiate."
 msgstr ""
 
-#: loader.php:303
+#: loader.php:301
 msgid "The user demotes a group member from a moderator or administrator."
 msgstr ""
 
-#: loader.php:304
+#: loader.php:302
 msgid "The user bans a member from a group."
 msgstr ""
 
-#: loader.php:305
+#: loader.php:303
 msgid "The user unbans a member from a group."
 msgstr ""
 
-#: loader.php:306
+#: loader.php:304
 msgid "The user receives a promotion to group moderator or administrator."
 msgstr ""
 
-#: loader.php:307
+#: loader.php:305
 msgid "The user receives a demotion from group moderator or administrator."
 msgstr ""
 
-#: loader.php:315
+#: loader.php:313
 msgid "The user succesfully authorises and connects to their Twitter account."
 msgstr ""
 
-#: loader.php:316
+#: loader.php:314
 msgid "The user succesfully authorises and connects to their Facebook account."
 msgstr ""
 
-#: loader.php:320
+#: loader.php:318
 msgid "The user connects to their Last.fm account."
 msgstr ""
 
-#: loader.php:321
+#: loader.php:319
 msgid "The user connects to their YouTube account."
 msgstr ""
 
-#: loader.php:322
+#: loader.php:320
 msgid "The user connects to their Flickr account."
 msgstr ""
 
-#: loader.php:327
+#: loader.php:325
 msgid "The user invites someone to join the site."
 msgstr ""
 
-#: loader.php:331
+#: loader.php:329
 msgid "The user votes on a link."
 msgstr ""
 
-#: loader.php:332
+#: loader.php:330
 msgid "The user deletes a link."
 msgstr ""
 
-#: loader.php:333
+#: loader.php:331
 msgid "The user writes a comment on a link."
 msgstr ""
 
-#: loader.php:337
+#: loader.php:335
 msgid "The user creates a link."
 msgstr ""
 
-#: loader.php:341
+#: loader.php:339
 msgid "The user creates an event."
 msgstr ""
 
-#: loader.php:343
+#: loader.php:341
 msgid "The user cancels their registration to an event."
 msgstr ""
 
-#: loader.php:344
+#: loader.php:342
 msgid "The user deletes an event."
+msgstr ""
+
+#: loader.php:346
+msgid "The user logs in to the site."
 msgstr ""
