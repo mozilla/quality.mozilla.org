@@ -60,9 +60,9 @@ if (!class_exists('WPPlugin')) {
         
         static function plugins_url() {
            if (WPPlugin::determine_environment() == Environment::WordPressMU)
-               return get_option('siteurl') . '/wp-content/mu-plugins';
+               return get_option('siteurl') . WP_CONTENT_DIR . '/mu-plugins';
            else
-               return get_option('siteurl') . '/wp-content/plugins';
+               return get_option('siteurl') . WP_CONTENT_DIR . '/plugins';
         }
         
         static function path_to_plugin_directory() {
