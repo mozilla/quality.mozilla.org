@@ -3,6 +3,8 @@
 // just making sure the constant is defined
 if (!defined('WP_CONTENT_DIR'))
     define('WP_CONTENT_DIR', ABSPATH . 'wp-content');
+if (!defined('WP_PLUGIN_URL')) 
+    define('WP_PLUGIN_URL', WP_CONTENT_URL. '/plugins');
  
 
 if (!class_exists('Environment')) {
@@ -60,9 +62,9 @@ if (!class_exists('WPPlugin')) {
         
         static function plugins_url() {
            if (WPPlugin::determine_environment() == Environment::WordPressMU)
-               return get_option('siteurl') . WP_CONTENT_DIR . '/mu-plugins';
+               return get_option('siteurl') . WP_CONTENT_URL . '/mu-plugins';
            else
-               return get_option('siteurl') . WP_CONTENT_DIR . '/plugins';
+               return get_option('siteurl') . WP_CONTENT_URL . '/plugins';
         }
         
         static function path_to_plugin_directory() {
