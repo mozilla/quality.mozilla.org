@@ -3,7 +3,7 @@
 Plugin Name: Restrict Categories
 Description: Restrict the categories that users can view, add, and edit in the admin panel.
 Author: Matthew Muro
-Version: 2.3
+Version: 2.4
 */
 
 /*
@@ -44,6 +44,7 @@ class RestrictCategories{
 			
 			/* Adds a Settings link to the Plugins page */
 			add_filter( 'plugin_action_links', array( &$this, 'rc_plugin_action_links' ), 10, 2 );
+			add_filter( 'screen_settings', array( &$this, 'add_screen_options' ) );
 		}
 		
 		/* Make sure XML-RPC requests are filtered to match settings */
@@ -194,7 +195,51 @@ class RestrictCategories{
 			update_option( 'RestrictCats_options', array() );
 			
 		if ( !$user_options )
-			update_option( 'RestrictCats_user_options', array() );	
+			update_option( 'RestrictCats_user_options', array() );
+		
+		$screen_options = get_option( 'RestrictCats-screen-options' );
+		
+		/* Default is 20 per page */
+		$defaults = array(
+			'roles_per_page' => 20,
+			'users_per_page' => 20
+		);
+		
+		/* If the option doesn't exist, add it with defaults */
+		if ( !$screen_options )
+			update_option( 'RestrictCats-screen-options', $defaults );
+		
+		/* If the user has saved the Screen Options, update */
+		if ( isset( $_REQUEST['restrict-categories-screen-options-apply'] ) && in_array( $_REQUEST['restrict-categories-screen-options-apply'], array( 'Apply', 'apply' ) ) ) {
+			$roles_per_page = absint( $_REQUEST['RestrictCats-screen-options']['roles_per_page'] );
+			$users_per_page = absint( $_REQUEST['RestrictCats-screen-options']['users_per_page'] );
+			
+			$updated_options = array(
+				'roles_per_page' => $roles_per_page,
+				'users_per_page' => $users_per_page
+			);
+			update_option( 'RestrictCats-screen-options', $updated_options );
+		}
+	}
+	
+	/**
+	 * Adds the Screen Options tab
+	 * 
+	 * @since 2.4
+	 */
+	public function add_screen_options($current){
+		global $current_screen;
+
+		$options = get_option( 'RestrictCats-screen-options' );
+		
+		if ( $current_screen->id == 'settings_page_restrict-categories' ){
+			$current = '<h5>Show on screen</h5>
+					<input type="text" value="' . $options['roles_per_page'] . '" maxlength="3" id="restrict-categories-roles-per-page" name="RestrictCats-screen-options[roles_per_page]" class="screen-per-page"> <label for="restrict-categories-roles-per-page">Roles</label>
+					<input type="text" value="' . $options['users_per_page'] . '" maxlength="3" id="restrict-categories-users-per-page" name="RestrictCats-screen-options[users_per_page]" class="screen-per-page"> <label for="restrict-categories-users-per-page">Users</label>
+					<input type="submit" value="Apply" class="button" id="restrict-categories-screen-options-apply" name="restrict-categories-screen-options-apply">';
+		}
+		
+		return $current;
 	}
 	
 	/**
@@ -457,15 +502,51 @@ class RestrictCategories{
  */
 class RestrictCats_User_Role_Boxes {
 	
+	/**
+	 * Various information needed for displaying the pagination
+	 *
+	 * @since 2.4
+	 * @var array
+	 */
+	var $_pagination_args = array();
+	
 	public function start_box($settings, $options, $options_name){
 			
 			/* Create a new instance of our custom walker class */
 			$walker = new RestrictCats_Walker_Category_Checklist();
 			
-			/* Loop through each role and build the checkboxes */
-			foreach ( $options as $value ) : 
-				$id = $value['id'];
+			
+			/* Get screen options from the wp_options table */
+			$screen_options = get_option( 'RestrictCats-screen-options' );
+			
+			/* How many to show per page */
+			$per_page = ( 'RestrictCats_options' == $options_name  ) ? $screen_options['roles_per_page'] : $screen_options['users_per_page'];
 
+			/* What page are we looking at? */
+			$current_page = $this->get_pagenum();
+	
+			/* How many do we have? */
+			$total_items = count( $options );
+			
+			/* Calculate pagination */
+			$options = array_slice( $options, ( ( $current_page - 1 ) * $per_page ), $per_page );
+			
+			/* Register our pagination */
+			$this->set_pagination_args( array(
+				'total_items' => $total_items,
+				'per_page'    => $per_page,
+				'total_pages' => ceil( $total_items / $per_page )
+			) );
+			
+			/* Display pagination */
+			echo '<div class="tablenav">';
+				$this->pagination( 'top' );
+			echo '<br class="clear" /></div>';
+			
+			/* Loop through each role and build the checkboxes */
+			foreach ( $options as $key => $value ) : 
+				
+				$id = $value['id'];
 				/* Get selected categories from database, if available */
 				if ( is_array( $settings[ $id ] ) )
 					$selected = $settings[ $id ];
@@ -544,6 +625,146 @@ class RestrictCats_User_Role_Boxes {
 				</div>
 			<?php 
 			endforeach;	
+	}
+	
+	/**
+	 * Get the current page number
+	 *
+	 * @since 2.4
+	 * @access protected
+	 *
+	 * @return int
+	 */
+	protected function get_pagenum() {
+		$pagenum = isset( $_REQUEST['paged'] ) ? absint( $_REQUEST['paged'] ) : 0;
+
+		if( isset( $this->_pagination_args['total_pages'] ) && $pagenum > $this->_pagination_args['total_pages'] )
+			$pagenum = $this->_pagination_args['total_pages'];
+
+		return max( 1, $pagenum );
+	}
+
+	/**
+	 * Get number of items to display on a single page
+	 *
+	 * @since 2.4
+	 * @access protected
+	 *
+	 * @return int
+	 */
+	protected function get_items_per_page( $option, $default = 20 ) {
+		$per_page = (int) get_user_option( $option );
+		if ( empty( $per_page ) || $per_page < 1 )
+			$per_page = $default;
+
+		return (int) apply_filters( $option, $per_page );
+	}
+
+	/**
+	 * Display the pagination.
+	 *
+	 * @since 2.4
+	 * @access protected
+	 */
+	protected function pagination( $which ) {
+		if ( empty( $this->_pagination_args ) )
+			return;
+
+		extract( $this->_pagination_args );
+
+		$output = '<span class="displaying-num">' . sprintf( _n( '1 item', '%s items', $total_items ), number_format_i18n( $total_items ) ) . '</span>';
+
+		$current = $this->get_pagenum();
+
+		$current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
+		$current_url = remove_query_arg( array( 'hotkeys_highlight_last', 'hotkeys_highlight_first' ), $current_url );
+
+		$page_links = array();
+
+		$disable_first = $disable_last = '';
+		if ( $current == 1 )
+			$disable_first = ' disabled';
+		if ( $current == $total_pages )
+			$disable_last = ' disabled';
+
+		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s'>%s</a>",
+			'first-page' . $disable_first,
+			esc_attr__( 'Go to the first page' ),
+			esc_url( remove_query_arg( 'paged', $current_url ) ),
+			'&laquo;'
+		);
+
+		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s'>%s</a>",
+			'prev-page' . $disable_first,
+			esc_attr__( 'Go to the previous page' ),
+			esc_url( add_query_arg( 'paged', max( 1, $current-1 ), $current_url ) ),
+			'&lsaquo;'
+		);
+
+		if ( 'bottom' == $which )
+			$html_current_page = $current;
+		else
+			$html_current_page = sprintf( "<input class='current-page' title='%s' type='text' name='%s' value='%s' size='%d' />",
+				esc_attr__( 'Current page' ),
+				esc_attr( 'paged' ),
+				$current,
+				strlen( $total_pages )
+			);
+
+		$html_total_pages = sprintf( "<span class='total-pages'>%s</span>", number_format_i18n( $total_pages ) );
+		$page_links[] = '<span class="paging-input">' . sprintf( _x( '%1$s of %2$s', 'paging' ), $html_current_page, $html_total_pages ) . '</span>';
+
+		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s'>%s</a>",
+			'next-page' . $disable_last,
+			esc_attr__( 'Go to the next page' ),
+			esc_url( add_query_arg( 'paged', min( $total_pages, $current+1 ), $current_url ) ),
+			'&rsaquo;'
+		);
+
+		$page_links[] = sprintf( "<a class='%s' title='%s' href='%s'>%s</a>",
+			'last-page' . $disable_last,
+			esc_attr__( 'Go to the last page' ),
+			esc_url( add_query_arg( 'paged', $total_pages, $current_url ) ),
+			'&raquo;'
+		);
+
+		$output .= "\n<span class='pagination-links'>" . join( "\n", $page_links ) . '</span>';
+
+		if ( $total_pages )
+			$page_class = $total_pages < 2 ? ' one-page' : '';
+		else
+			$page_class = ' no-pages';
+
+		$this->_pagination = "<div class='tablenav-pages{$page_class}'>$output</div>";
+
+		echo $this->_pagination;
+	}
+	
+	/**
+	 * An internal method that sets all the necessary pagination arguments
+	 *
+	 * @since 2.4
+	 * @param array $args An associative array with information about the pagination
+	 * @access protected
+	 */
+	protected function set_pagination_args( $args ) {
+		$args = wp_parse_args( $args, array(
+			'total_items' => 0,
+			'total_pages' => 0,
+			'per_page' => 0,
+		) );
+
+		if ( !$args['total_pages'] && $args['per_page'] > 0 )
+			$args['total_pages'] = ceil( $args['total_items'] / $args['per_page'] );
+
+		// redirect if page number is invalid and headers are not already sent
+		if ( ! headers_sent() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) && $args['total_pages'] > 0 && $this->get_pagenum() > $args['total_pages'] ) {
+			wp_redirect( add_query_arg( 'paged', $args['total_pages'] ) );
+			exit;
+		}
+
+		$this->_pagination_args = $args;
 	}
 }
 

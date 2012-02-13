@@ -205,6 +205,7 @@ body.page .page { padding: 0; background-image: none; }
 .entry-content thead th { font-size: 90%; text-align: left; font-weight: normal; }
 .entry-content tbody th { text-align: left; }
 .entry-content code { font-size: 1.17em; color: #360; }
+.entry-content pre { overflow: auto; }
 
 hr { clear: both; margin: 0; visibility: hidden; }
 ins { text-decoration: none; background: #cde1ef; }

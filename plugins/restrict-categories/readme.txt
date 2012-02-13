@@ -1,9 +1,10 @@
 === Restrict Categories ===
 Contributors: mmuro
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Restrict%20Categories&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Tags: restrict, admin, administration, cms, categories, category
 Requires at least: 3.0
-Tested up to: 3.2.1
-Stable tag: 2.3
+Tested up to: 3.3.1
+Stable tag: 2.4
 
 Restrict the categories that users can view, add, and edit in the admin panel.
 
@@ -42,10 +43,6 @@ Selecting categories for a user will <em>override</em> the categories you've sel
 
 In other words, Restrict Categories allows you complete control over groups of users while also allowing you to selectively change a setting for a single user.
 
-= Will categories be restricted if I use a mobile or remote application? =
-
-Yes! Using a mobile app (such as the WordPress iOS app) or remote publishing desktop app (MarsEdit, Microsoft Word) will restrict users as if they were logged into the website.
-
 == Screenshots ==
 
 1. Roles and Users with selected categories to restrict
@@ -54,10 +51,13 @@ Yes! Using a mobile app (such as the WordPress iOS app) or remote publishing des
 
 == Changelog ==
 
+**Version 2.4**
+
+* Add pagination controls for Roles and Users. Customize number displayed using the Screen Options tab
+
 **Version 2.3**
 
 * Fix bug where custom taxonomies were being hidden on the Add Post screen
-* Added support for WPML categories
 
 **Version 2.2.2**
 
@@ -139,8 +139,11 @@ Yes! Using a mobile app (such as the WordPress iOS app) or remote publishing des
 
 == Upgrade Notice ==
 
+= 2.4 =
+Added pagination controls for Roles and Users. Customize number displayed using the Screen Options tab.
+
 = 2.3 =
-Bug fix for hidden custom taxonomies on the Add Post screen. Added support for WPML users.
+Bug fix for hidden custom taxonomies on the Add Post screen.
 
 = 2.2.2 =
 Recommended upgrade for XML-RPC users! Fixes bug that accidentally broke restriction for XML-RPC.
