@@ -1,3 +1,7 @@
+<?php 
+$events_cat = get_category_by_slug('events')->cat_ID;
+$news_cat = get_category_by_slug('qmo-news')->cat_ID;
+?>
 <div id="user-state">
 <?php if ( is_user_logged_in() ) : 
 global $current_user; 

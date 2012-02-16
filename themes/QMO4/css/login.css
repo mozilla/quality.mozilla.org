@@ -1,9 +1,9 @@
 html { padding: 0; background: #fff url("../img/bg-canvas.png") 0 0 repeat-x !important; }
 body.login { border: 0; min-width: 960px; padding-top: 5.5em; font: .812em/1.538 Georgia, Times, serif; color: #333; }
 
-#login { margin-top: 0; }
+#login { padding: 0; margin-top: 0; }
 
-h1 { background: url("../img/logo-login.png") center top no-repeat; width: 310px; height: 200px; margin: 0 0 .5em 8px; overflow: hidden; }
+h1 { background: url("../img/logo-login.png") center top no-repeat; width: 310px; height: 215px; margin: 0; overflow: hidden; }
 h1 a { position: absolute; left: -999em; }
 
 .login #backtoblog { position: absolute; top: 0; left: 0; width: 100%; height: 3em; background: rgba(100,150,200,.1); border: 0; margin: 0; padding: 0; }

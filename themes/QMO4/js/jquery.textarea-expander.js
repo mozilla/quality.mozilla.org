@@ -85,11 +85,11 @@
 
 		return this;
 	};
+	
+// initialize all expanding textareas
+$(document).ready(function() {
+	$("textarea[class*=expand]").TextAreaExpander();
+});
+
 
 })(jQuery);
-
-
-// initialize all expanding textareas
-jQuery(document).ready(function() {
-	jQuery("textarea[class*=expand]").TextAreaExpander();
-});

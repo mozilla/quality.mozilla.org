@@ -35,6 +35,9 @@
 
       <?php elseif ( bp_is_user_groups() ) : ?>
         <?php locate_template( array( 'members/single/groups.php' ), true ) ?>
+        
+      <?php elseif ( bp_is_user_forums() ) : ?>
+				<?php	locate_template( array( 'members/single/forums.php'    ), true ); ?>
 
       <?php elseif ( bp_is_user_messages() ) : ?>
         <?php locate_template( array( 'members/single/messages.php' ), true ) ?>

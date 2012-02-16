@@ -19,12 +19,12 @@
         <li>
           <label for="signup_username"><?php _e( 'Username', 'buddypress' ) ?> <?php _e( '(required)', 'buddypress' ) ?></label>
           <?php do_action( 'bp_signup_username_errors' ) ?>
-          <input type="text" name="signup_username" id="signup_username" value="<?php bp_signup_username_value() ?>">
+          <input type="text" name="signup_username" id="signup_username" value="<?php htmlspecialchars(bp_signup_username_value()); ?>">
         </li>
         <li>
           <label for="signup_email"><?php _e( 'Email Address', 'buddypress' ) ?> <?php _e( '(required)', 'buddypress' ) ?></label>
           <?php do_action( 'bp_signup_email_errors' ) ?>
-          <input type="text" name="signup_email" id="signup_email" value="<?php bp_signup_email_value() ?>">
+          <input type="text" name="signup_email" id="signup_email" value="<?php htmlspecialchars(bp_signup_email_value()); ?>">
           <p class="note">This should be the same address you use for Bugzilla. Not signed up with Bugzilla? <a href="https://bugzilla.mozilla.org/createaccount.cgi">Register now!</a></p>
         </li>
         <li>
@@ -58,13 +58,13 @@
           <?php if ( 'textbox' == bp_get_the_profile_field_type() ) : ?>
             <label for="<?php bp_the_profile_field_input_name() ?>"><?php bp_the_profile_field_name() ?> <?php if ( bp_get_the_profile_field_is_required() ) : ?><?php _e( '(required)', 'buddypress' ) ?><?php endif; ?></label>
             <?php do_action( 'bp_' . bp_get_the_profile_field_input_name() . '_errors' ) ?>
-            <input type="text" name="<?php bp_the_profile_field_input_name() ?>" id="<?php bp_the_profile_field_input_name() ?>" value="<?php bp_the_profile_field_edit_value() ?>">
+            <input type="text" name="<?php bp_the_profile_field_input_name() ?>" id="<?php bp_the_profile_field_input_name() ?>" value="<?php htmlspecialchars(bp_the_profile_field_edit_value()) ?>">
           <?php endif; ?>
 
           <?php if ( 'textarea' == bp_get_the_profile_field_type() ) : ?>
             <label for="<?php bp_the_profile_field_input_name() ?>"><?php bp_the_profile_field_name() ?> <?php if ( bp_get_the_profile_field_is_required() ) : ?><?php _e( '(required)', 'buddypress' ) ?><?php endif; ?></label>
             <?php do_action( 'bp_' . bp_get_the_profile_field_input_name() . '_errors' ) ?>
-            <textarea rows="8" cols="40" name="<?php bp_the_profile_field_input_name() ?>" id="<?php bp_the_profile_field_input_name() ?>"><?php bp_the_profile_field_edit_value() ?></textarea>
+            <textarea rows="8" cols="40" name="<?php bp_the_profile_field_input_name() ?>" id="<?php bp_the_profile_field_input_name() ?>"><?php htmlspecialchars(bp_the_profile_field_edit_value()) ?></textarea>
           <?php endif; ?>
 
           <?php if ( 'selectbox' == bp_get_the_profile_field_type() ) : ?>

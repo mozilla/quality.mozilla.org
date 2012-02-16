@@ -14,6 +14,7 @@
 
 <?php do_action( 'bp_footer' ); ?>
 <?php do_action( 'bp_after_footer' ); ?>
+
 <?php wp_footer(); ?>
 
 <!-- START OF SmartSource Data Collector TAG -->

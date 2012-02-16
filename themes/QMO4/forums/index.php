@@ -10,7 +10,7 @@
         <?php bp_directory_forums_search_form(); ?>
       </div>
       <?php if ( is_user_logged_in() ) : ?> 
-       <p id="new-button" class="create"><a class="button" href="#new-topic" id="new-topic-button"><?php _e( 'New Topic', 'buddypress' ) ?></a></p>
+       <p id="new-button" class="create"><a class="button" href="#new-topic-post" id="new-topic-button"><?php _e( 'New Topic', 'buddypress' ) ?></a></p>
       <?php endif; ?>
     </form>
 
@@ -67,10 +67,10 @@
 
       <div class="item-list-tabs" id="subnav">
         <ul>
-          <li class="selected" id="forums-all"><a href="<?php bp_root_domain() ?>"><?php printf( __( 'All Topics (%s)', 'buddypress' ), bp_get_forum_topic_count() ) ?></a></li>
+          <li class="selected" id="forums-all"><a href="<?php echo get_permalink(get_page_by_path('forums')->ID); ?>"><?php printf( __( 'All Topics (%s)', 'buddypress' ), bp_get_forum_topic_count() ) ?></a></li>
 
           <?php if ( is_user_logged_in() && bp_get_forum_topic_count_for_user( bp_loggedin_user_id() ) ) : ?>
-            <li id="forums-personal"><a href="<?php echo bp_loggedin_user_domain() . BP_GROUPS_SLUG . '/' ?>"><?php printf( __( 'My Topics (%s)', 'buddypress' ), bp_get_forum_topic_count_for_user( bp_loggedin_user_id() ) ) ?></a></li>
+            <li id="forums-personal"><a href="<?php echo bp_loggedin_user_domain() . BP_FORUMS_SLUG . '/' ?>"><?php printf( __( 'My Topics (%s)', 'buddypress' ), bp_get_forum_topic_count_for_user( bp_loggedin_user_id() ) ) ?></a></li>
           <?php endif; ?>
 
           <?php do_action( 'bp_forums_directory_group_types' ) ?>

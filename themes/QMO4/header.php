@@ -14,6 +14,19 @@
   <![endif]-->
   <meta name="Rating" content="General">
   <meta name="MSSmartTagsPreventParsing" content="true">
+  
+  <meta name="viewport" content="width=device-width">
+  
+  <!-- For Facebook -->
+  <meta property="og:site_name" content="<?php bloginfo('name'); ?>">
+  <meta property="og:title" content="<?php if (is_singular()) : single_post_title(); else : bloginfo('name'); endif; ?>">
+  <meta property="og:url" content="<?php if (is_singular()) : the_permalink(); else : bloginfo('url'); endif; ?>">
+  <meta property="og:description" content="<?php fc_meta_desc(); ?>">
+  <meta property="og:image" content="<?php bloginfo('stylesheet_directory'); ?>/img/Q.png">
+  
+  <meta name="title" content="<?php if (is_singular()) : single_post_title(); echo ' | '; endif; bloginfo('name'); ?>">
+  <meta name="description" content="<?php fc_meta_desc(); ?>">
+  
   <link rel="profile" href="http://gmpg.org/xfn/11">
   <link rel="shortcut icon" type="image/ico" href="<?php bloginfo('stylesheet_directory'); ?>/favicon.ico">
   <link rel="alternate" type="application/rss+xml" title="<?php bloginfo('name'); ?> News and Events Feed" href="<?php bloginfo('rss2_url'); echo '?cat='.$news_cat.','.$events_cat; ?>">
