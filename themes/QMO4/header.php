@@ -47,6 +47,8 @@
   <!--[if lte IE 7]><link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo('stylesheet_directory'); ?>/css/ie7.css"><![endif]-->
   <!--[if lte IE 6]><link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo('stylesheet_directory'); ?>/css/ie6.css"><![endif]-->
   <link rel="stylesheet" type="text/css" media="print,handheld" href="<?php bloginfo('stylesheet_directory'); ?>/css/print.css">
+  <link href="//www.mozilla.org/tabzilla/media/css/tabzilla.css" rel="stylesheet" />
+  <script src="//www.mozilla.org/tabzilla/media/js/tabzilla.js"></script>
 
   <?php if (is_singular()) wp_enqueue_script( 'comment-reply' ); ?>
   <?php if (is_singular()) : ?><link rel="canonical" href="<?php echo the_permalink(); ?>"><?php endif; ?>
@@ -76,7 +78,7 @@
   <header id="masthead" class="section">
   
     <div id="header">
-      <a href="http://www.mozilla.org/" class="mozilla" title="The Mozilla Foundation">visit <span>Mozilla</span></a>
+      <a href="http://www.mozilla.org/" class="tabzilla" title="The Mozilla Foundation">visit <span>Mozilla</span></a>
     </div><!-- end #header -->
 
     <div id="branding" role="banner">
