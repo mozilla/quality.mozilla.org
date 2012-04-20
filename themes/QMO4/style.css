@@ -29,7 +29,7 @@ Font sizes -
 */
 
 /* @Reset defaults */
-header, hgroup, nav, section, article, aside, footer { display: block; }
+header, hgroup, nav, section, article, aside, footer, figure, details, summary { display: block; }
 html, body, form, fieldset, legend,
 h1, h2, h3, h4, h5, h6, dd { margin: 0; padding: 0; }
 p, pre, blockquote, ul, ol, dl, table { margin: 0 0 1.4em; padding: 0; }
@@ -43,8 +43,8 @@ input, select, textarea { font-family: inherit; font-size: 100%; }
 .dtstart, .dtend, .published, .updated { border: 0; }
 
 /* @General elements *********/
-html { background: #fff url("img/bg-canvas.png") 0 -80px repeat-x; }
-body { position: relative; min-width: 840px; font: 13px/1.538 Georgia, Times, serif; color: #333; padding-top: 0 !important; }
+body { background: #fff; font: 13px/1.538 Georgia, Times, serif; color: #333; padding-top: 0 !important; }
+.wrapper { position: relative; min-width: 840px; border-top: 2px solid #fff; background: #fff url("img/bg-canvas.png") 0 -80px repeat-x; }
 
 /*** @Links *********/
 :link { text-decoration: none; color: #369; }
@@ -367,9 +367,9 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 .crumbs { list-style: none; font: .846em/1.1 Verdana, Tahoma, sans-serif; }
 
 /* @Access @Navigation *********/
-#nav-access { position: absolute; top: -10em; list-style: none; width: 90%; margin: 0 auto; }
+#nav-access { position: absolute; top: -50em; list-style: none; width: 90%; margin: 0 auto; }
 #nav-access li { display: inline; }
-#nav-access a:focus, #nav-access a:active { display: block; position: absolute; top: 14.5em; left: 5%; outline: 0; border: 1px solid #c0dae9; padding: 2px 10px; background: #fff; background: rgba(255,255,255,.25); text-decoration: none; }
+#nav-access a:focus, #nav-access a:active { display: block; position: absolute; top: 54.5em; left: 5%; outline: 0; border: 1px solid #c0dae9; padding: 2px 10px; background: #fff; background: rgba(255,255,255,.25); text-decoration: none; }
 
 /* @Main @Navigation *********/
 #site-nav { position: absolute; top: 0; left: 0; width: 100%; min-width: 840px; }
@@ -417,7 +417,8 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 /*** @Branding *********/
 #branding { height: 56px; width: 155px; }
 #logo { position: relative; z-index: 99; top: 6px; }
-#header a.mozilla { position: relative; z-index: 99; float: right; height: 49px; width: 118px; background: url("img/moz-tab.png") 0 0 no-repeat; text-indent: -200px; overflow: hidden; }
+
+#tabzilla { position: relative; z-index: 99; float: right; }
 
 /*** @User status *********/
 #user-state { margin: 0 0 1em; overflow: hidden; font: .923em Verdana, Tahoma, sans-serif; padding-bottom: 20px; min-height: 50px; background: url("img/pencil-line.png") left bottom repeat-x; }
