@@ -1,1 +1,0 @@
-var TubePressVimeoPlayer=(function(){var c=TubePressEvents,b="vimeo",a=function(i,h,g,f,d){window.location="http://www.vimeo.com/"+h};jQuery(document).bind(c.PLAYER_INVOKE+b,a)}());
