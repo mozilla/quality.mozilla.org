@@ -3,8 +3,8 @@ Contributors: eskapism, MarsApril
 Donate link: http://eskapism.se/sida/donate/
 Tags: page, pages, posts, custom posts, tree, cms, dashboard, overview, drag-and-drop, rearrange, management, manage, admin
 Requires at least: 3.0
-Tested up to: 3.3
-Stable tag: 0.8.4
+Tested up to: 3.3.1
+Stable tag: 0.8.11
 
 Adds a tree of all your pages or custom posts. Use drag & drop to reorder your pages, and edit, view, add, and search your pages.
 
@@ -51,6 +51,7 @@ This plugin is available in the following languages:
 * Norwegian
 * Polish
 * Greek
+* Danish
 
 #### Making the tree available for your vistors
 If you're looking for a version of this page tree that the vistors of your site can use, then check out
@@ -84,6 +85,32 @@ Now the tree with the pages will be visible both on the dashboard and in the men
 7. Users of WPML can find all their languages in the tree
 
 == Changelog ==
+
+= 0.8.11 =
+- Changed the way to find the plugin url. Hopefully works better now. Thanks https://twitter.com/windyjonas for the patch.
+
+= 0.8.10 =
+- Updated Polish translation, including .mo-file
+
+= 0.8.9 =
+- Added Belarusian translation. thanks Web Geek Science  (<a href="http://webhostinggeeks.com/">Web Hosting Geeks</a>)
+- Fixed XSS vulnerability as described here: https://www.htbridge.com/advisory/HTB23083
+
+= 0.8.8 =
+- Fix for tree not remembering state
+- Fix for tree not opening on first click
+
+= 0.8.7 =
+- Updated German translation
+- Fixed PHP notice messages
+- Updated swedish translation
+- Changed the way scripts and styles load, so it won't add scripts and styles to pages it shouldn't add scripts and styles to
+
+= 0.8.6 =
+- Ops, forgot the .mo-file for the Danish translation. Hopefully I did it correct this time...
+
+= 0.8.5 =
+- Added Danish translation
 
 = 0.8.4 =
 - Hopefully fixed so scripts and styles can be loaded over https, if WP is accessed over https.

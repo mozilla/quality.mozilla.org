@@ -6,16 +6,16 @@
  * @package Achievements for BuddyPress
  * @subpackage loader
  *
- * $Id: loader.php 1011 2011-10-07 18:28:03Z DJPaul $
+ * $Id: loader.php 1026 2012-04-01 12:23:14Z DJPaul $
  */
 
 /*
 Plugin Name: Achievements
-Plugin URI: http://achievementsapp.wordpress.com/
+Plugin URI: http://achievementsapp.com/
 Description: Achievements gives your BuddyPress community fresh impetus by promoting and rewarding social interaction with challenges, badges and points.
-Version: 2.2
+Version: 2.3
 Requires at least: WP 3.0.1, BuddyPress 1.5
-Tested up to: WP 3.3, BuddyPress 1.5.2
+Tested up to: WP 3.3.1, BuddyPress 1.6
 License: General Public License version 3
 Author: Paul Gibbs
 Author URI: http://byotos.com/

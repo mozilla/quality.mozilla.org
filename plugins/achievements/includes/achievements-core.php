@@ -6,7 +6,7 @@
  * @package Achievements for BuddyPress
  * @subpackage core
  *
- * $Id: achievements-core.php 1020 2011-10-07 22:56:17Z DJPaul $
+ * $Id: achievements-core.php 1024 2012-01-02 13:53:50Z DJPaul $
  */
 
 /**

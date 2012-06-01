@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9
 Tags: restrict, admin, administration, cms, categories, category
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 2.4
+Stable tag: 2.5
 
 Restrict the categories that users can view, add, and edit in the admin panel.
 
@@ -50,6 +50,10 @@ In other words, Restrict Categories allows you complete control over groups of u
 3. The Categories selection on the Add New Post screen with restricted categories
 
 == Changelog ==
+
+**Version 2.5**
+
+* Fix bug for saving with pagination
 
 **Version 2.4**
 
@@ -138,6 +142,9 @@ In other words, Restrict Categories allows you complete control over groups of u
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.5 =
+Bug fix for saving with pagination
 
 = 2.4 =
 Added pagination controls for Roles and Users. Customize number displayed using the Screen Options tab.

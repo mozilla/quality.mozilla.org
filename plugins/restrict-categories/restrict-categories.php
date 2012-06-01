@@ -3,7 +3,7 @@
 Plugin Name: Restrict Categories
 Description: Restrict the categories that users can view, add, and edit in the admin panel.
 Author: Matthew Muro
-Version: 2.4
+Version: 2.5
 */
 
 /*
@@ -187,15 +187,8 @@ class RestrictCategories{
 		register_setting( 'RestrictCats_user_options_group', 'RestrictCats_user_options', array( &$this, 'options_sanitize' ) );
 				
 		/* Set the options to a variable */
-		$options = get_option( 'RestrictCats_options' );
-		$user_options = get_option( 'RestrictCats_user_options' );
-		
-		/* If the options are empty, add the defaults */
-		if ( !$options )
-			update_option( 'RestrictCats_options', array() );
-			
-		if ( !$user_options )
-			update_option( 'RestrictCats_user_options', array() );
+		add_option( 'RestrictCats_options' );
+		add_option( 'RestrictCats_user_options' );
 		
 		$screen_options = get_option( 'RestrictCats-screen-options' );
 		
@@ -249,8 +242,15 @@ class RestrictCategories{
 	 * @return $input array Returns array of input if available
 	 */
 	public function options_sanitize( $input ){
-		if ( is_array( $input ) )
-			return $input;
+		$options =  ( 'RestrictCats_user_options_group' == $_REQUEST['option_page'] ) ? get_option( 'RestrictCats_user_options' ) : get_option( 'RestrictCats_options' );
+
+		if ( is_array( $input ) ) {
+			foreach( $input as $k => $v ) {
+				$options[ $k ] = $v;
+			}
+		}
+		
+		return $options;
 	}
 	
 	/**
@@ -304,7 +304,7 @@ class RestrictCategories{
 		/* Set variables if the Users tab is selected */
 		if ( isset( $_GET['type'] ) && $_GET['type'] == 'users' )
 			$tab = 'users';
-            
+
 		/* Setup links for Roles/Users tabs */
 		$roles_tab = esc_url( admin_url( 'options-general.php?page=restrict-categories' ) );
 		$users_tab = add_query_arg( 'type', 'users', $roles_tab );
@@ -347,7 +347,7 @@ class RestrictCategories{
                 <?php endif; ?>
                 
                 <p class="submit">
-                    <input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />
+                    <input type="submit" name="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />
                 </p>
 			</form>
             
@@ -395,6 +395,8 @@ class RestrictCategories{
 
 		/* Selected categories for User overwrites Roles selection */
 		if ( is_array( $settings_user ) && !empty( $settings_user[ $user_login . '_user_cats' ] ) ) {
+			/* Strip out the placeholder category, which is only used to make sure the checkboxes work */
+			$settings_user[ $user_login . '_user_cats' ] = array_values( array_diff( $settings_user[ $user_login . '_user_cats' ], array( 'RestrictCategoriesDefault' ) ) );
 			
 			/* Build the category list */
 			foreach ( $settings_user[ $user_login . '_user_cats' ] as $category ) {
@@ -413,6 +415,8 @@ class RestrictCategories{
 			foreach ( $user_cap as $key ) {
 				/* Make sure the settings from the DB isn't empty before building the category list */
 				if ( is_array( $settings ) && !empty( $settings[ $key . '_cats' ] ) ) {
+					/* Strip out the placeholder category, which is only used to make sure the checkboxes work */
+					$settings[ $key . '_cats' ] = array_values( array_diff( $settings[ $key . '_cats' ], array( 'RestrictCategoriesDefault' ) ) );
 					
 					/* Build the category list */
 					foreach ( $settings[ $key . '_cats' ] as $category ) {
@@ -542,16 +546,19 @@ class RestrictCats_User_Role_Boxes {
 			echo '<div class="tablenav">';
 				$this->pagination( 'top' );
 			echo '<br class="clear" /></div>';
-			
+
 			/* Loop through each role and build the checkboxes */
 			foreach ( $options as $key => $value ) : 
 				
 				$id = $value['id'];
+				
 				/* Get selected categories from database, if available */
 				if ( is_array( $settings[ $id ] ) )
 					$selected = $settings[ $id ];
 				else
 					$selected = array();
+				
+				
 				
 				/* Setup links for Roles/Users tabs in this class */
 				$roles_tab = esc_url( admin_url( 'options-general.php?page=restrict-categories' ) );
@@ -561,6 +568,12 @@ class RestrictCats_User_Role_Boxes {
 				if ( isset( $_REQUEST['type'] ) && $_REQUEST['type'] == 'users' ) {
 					$roles_tab = add_query_arg( array( 'type' => 'users', $id . '-tab' => 'all' ), $roles_tab );
 					$users_tab = add_query_arg( array( 'type' => 'users', $id . '-tab' => 'popular' ), $roles_tab );
+				}
+				
+				/* Make sure View All and Most Used tabs work when paging */
+				if ( isset( $_REQUEST['paged'] ) ) {
+					$roles_tab = add_query_arg( array( 'paged' => absint( $_REQUEST['paged'] ) ), $roles_tab );
+					$users_tab = add_query_arg( array( 'paged' => absint( $_REQUEST['paged'] ) ), $users_tab );
 				}
 				
 				/* View All tab is default */
@@ -594,7 +607,10 @@ class RestrictCats_User_Role_Boxes {
 											'walker' => $walker
 											)
 										);
+									
+										$disable_checkbox = ( 'all' == $current_tab ) ? '' : 'disabled="disabled"';
 									?>
+                                    <input style="display:none;" <?php echo $disable_checkbox; ?> type="checkbox" value="RestrictCategoriesDefault" checked="checked" name="<?php echo $options_name; ?>[<?php echo $id; ?>][]">
 									</ul>
 								</div>
                                 <div id="<?php echo $id; ?>-popular" class="tabs-panel <?php echo ( 'popular' == $current_tab ? 'tabs-panel-active' : 'tabs-panel-inactive' ); ?>">
@@ -613,11 +629,18 @@ class RestrictCats_User_Role_Boxes {
 											'walker' => $walker
 											)
 										);
+										
+										$disable_checkbox = ( 'popular' == $current_tab ) ? '' : 'disabled="disabled"';
 									?>
+                                    <input style="display:none;" <?php echo $disable_checkbox; ?> type="checkbox" value="RestrictCategoriesDefault" checked="checked" name="<?php echo $options_name; ?>[<?php echo $id; ?>][]">
 									</ul>
 								</div>
 							</div>
 							
+                            <?php
+								$shift_default = array_diff( $selected, array( 'RestrictCategoriesDefault' ) );
+								$selected = array_values( $shift_default );
+							?>
 							<p style="padding-left:10px;"><strong><?php echo count( $selected ); ?></strong> <?php echo ( count( $selected ) > 1 || count( $selected ) == 0 ) ? 'categories' : 'category'; ?> selected</p>
 							
 						</div>

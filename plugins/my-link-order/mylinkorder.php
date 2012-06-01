@@ -3,7 +3,7 @@
 Plugin Name: My Link Order
 Plugin URI: http://www.geekyweekly.com/mylinkorder
 Description: My Link Order allows you to set the order in which links and link categories will appear in the sidebar. Uses a drag and drop interface for ordering. Adds a widget with additional options for easy installation on widgetized themes.
-Version: 3.1.4
+Version: 3.3.2
 Author: Andrew Charlton
 Author URI: http://www.geekyweekly.com
 Author Email: froman118@gmail.com
@@ -56,9 +56,6 @@ function mylinkorder()
 
 	if (isset($_POST['btnReturnParent']))
 		$catID = 0;
-
-	if(isset($_GET['hideNote']))
-		update_option('mylinkorder_hideNote', '1');
 	
 	$wpdb->show_errors();
 	
@@ -79,7 +76,7 @@ function mylinkorder()
 		for($i = 0; $i <= $result; $i++)
 		{
 			$str = str_replace("id_", "", $catIDs[$i]);
-			$wpdb->query("UPDATE $wpdb->terms SET term_order = '$i' WHERE term_id ='$str'");
+			$wpdb->query( $wpdb->prepare("UPDATE $wpdb->terms SET term_order = %d WHERE term_id = %d", $i, $str) );
 		}
 			
 		$success = '<div id="message" class="updated fade"><p>'. __('Link Categories updated successfully.', 'mylinkorder').'</p></div>';
@@ -92,7 +89,7 @@ function mylinkorder()
 		for($i = 0; $i <= $result; $i++)
 		{
 			$str = str_replace("id_", "", $linkIDs[$i]);
-			$wpdb->query("UPDATE $wpdb->links SET link_order = '$i' WHERE link_id ='$str'");
+			$wpdb->query($wpdb->prepare("UPDATE $wpdb->links SET link_order = %d WHERE link_id =%d ", $i, $str));
 		}
 		
 		$success = '<div id="message" class="updated fade"><p>'. __('Links updated successfully.', 'mylinkorder').'</p></div>';
@@ -105,18 +102,10 @@ function mylinkorder()
 		<?php
 		echo $success; 
 		
-		if (get_option("mylinkorder_hideNote") != "1")
-		{	?>
-			<div class="updated">
-				<strong><p><?php _e('If you like my plugin please consider donating. Every little bit helps me provide support and continue development.','mylinkorder'); ?> <a href="http://geekyweekly.com/gifts-and-donations"><?php _e('Donate', 'mylinkorder'); ?></a>&nbsp;&nbsp;<small><a href="<?php echo mylinkorder_getTarget(); ?>&hideNote=true"><?php _e('No thanks, hide this', 'mylinkorder'); ?></a></small></p></strong>
-			</div>
-		<?php
-		}
-		
 	if($catID != 0)
 	{
-		$results=$wpdb->get_results("SELECT * FROM $wpdb->links l inner join $wpdb->term_relationships tr on l.link_id = tr.object_id inner join $wpdb->term_taxonomy tt on tt.term_taxonomy_id = tr.term_taxonomy_id inner join $wpdb->terms t on t.term_id = tt.term_id WHERE t.term_id = $catID ORDER BY link_order ASC");
-		$cat_name = $wpdb->get_var("SELECT name FROM $wpdb->terms WHERE term_id=$catID");
+		$results=$wpdb->get_results($wpdb->prepare("SELECT * FROM $wpdb->links l inner join $wpdb->term_relationships tr on l.link_id = tr.object_id inner join $wpdb->term_taxonomy tt on tt.term_taxonomy_id = tr.term_taxonomy_id inner join $wpdb->terms t on t.term_id = tt.term_id WHERE t.term_id = %d ORDER BY link_order ASC", $catID));
+		$cat_name = $wpdb->get_var($wpdb->prepare("SELECT name FROM $wpdb->terms WHERE term_id= %d", $catID));
 	?>
 		<h3><?php _e('Order Links for', 'mylinkorder') ?> <?php _e($cat_name) ?></h3>
 
@@ -308,7 +297,7 @@ class mylinkorder_Widget extends WP_Widget {
 			$instance['category_order'] = 'asc';
 		}
 		
-		if ( in_array( $new_instance['orderby'], array( 'order', 'name', 'rand', 'ID', 'description', 'length', 'notes', 'owner', 'rel', 'rss', 'target', 'updated', 'url' ) ) ) {
+		if ( in_array( $new_instance['orderby'], array( 'order', 'name', 'rand', 'link_id', 'description', 'length', 'notes', 'owner', 'rel', 'rss', 'target', 'updated', 'url' ) ) ) {
 			$instance['orderby'] = $new_instance['orderby'];
 		} else {
 			$instance['orderby'] = 'order';
@@ -390,7 +379,7 @@ class mylinkorder_Widget extends WP_Widget {
 				<option value="rand"<?php selected( $instance['orderby'], 'rand' ); ?>><?php _e( 'Random', 'mylinkorder' ); ?></option>
 				<option value="description"<?php selected( $instance['orderby'], 'description' ); ?>><?php _e( 'Description' ); ?></option>
 				<option value="length"<?php selected( $instance['orderby'], 'length' ); ?>><?php _e( 'Length', 'mylinkorder' ); ?></option>
-				<option value="ID"<?php selected( $instance['orderby'], 'ID' ); ?>><?php _e( 'ID' ); ?></option>
+				<option value="link_id"<?php selected( $instance['orderby'], 'link_id' ); ?>><?php _e( 'ID' ); ?></option>
 				<option value="notes"<?php selected( $instance['orderby'], 'notes' ); ?>><?php _e( 'Notes', 'mylinkorder' ); ?></option>
 				<option value="owner"<?php selected( $instance['orderby'], 'owner' ); ?>><?php _e( 'Owner', 'mylinkorder' ); ?></option>
 				<option value="rel"<?php selected( $instance['orderby'], 'rel' ); ?>><?php _e( 'Relationship (XFN)', 'mylinkorder' ); ?></option>
@@ -674,7 +663,7 @@ function mylinkorder_get_bookmarks($args = '') {
 	if ($limit != -1)
 		$query .= " LIMIT $limit";
 
-	$results = $wpdb->get_results($query);
+	$results = $wpdb->get_results($wpdb->prepare($query));
 
 	$cache[ $key ] = $results;
 	wp_cache_set( 'get_bookmarks', $cache, 'bookmark' );

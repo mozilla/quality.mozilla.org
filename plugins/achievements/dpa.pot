@@ -87,7 +87,7 @@ msgid ""
 "Achievements gives your BuddyPress community fresh impetus by promoting and "
 "rewarding social interaction with challenges, badges and points. For "
 "information, support, premium enhancements and developer documentation, "
-"visit <a href='http://achievementsapp.wordpress.com/'>our website</a>."
+"visit <a href='http://achievementsapp.com/'>our website</a>."
 msgstr ""
 
 #: includes/achievements-admin.php:186

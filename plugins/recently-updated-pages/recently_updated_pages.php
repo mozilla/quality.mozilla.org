@@ -4,11 +4,12 @@
      *
      * Plugin name:     Recently Updated Pages
      * Description:     Purpose of this plugin is to display the list of pages (and optionally posts) on
-     *                  Wordpress blog those have been recently updated.
-     * Version:         1.0.2
+     *                  Wordpress blog those have been recently updated. It also lets you use WP's shortcodes to
+	 *					display last update date of the page or blog posts.
+     * Version:         1.0.3
      * Plugin URI:      http://resource.bdwebwork.com/WordpressPlugins/RecentlyUpdatedPages/
      * Author:          Ehsanul Haque
-     * Author URI:      http://ehsan.bdwebwork.com/
+     * Author URI:      http://ehsanIs.me/
      *
      */
     
@@ -41,15 +42,17 @@
             $title              = apply_filters('widget_title', $instance['title']);
             $totalPagesToShow   = (int) $instance['totalPagesToShow'];
             $showListWithPosts  = (int) $instance['showListWithPosts'];
-	    $displayDate	= (int) $instance['displayDate'];
-	    $dateFormat		= apply_filters('dateFormat', $instance['dateFormat']);
+	        $displayDate	    = (int) $instance['displayDate'];
+	        $dateFormat		    = apply_filters('dateFormat', $instance['dateFormat']);
+	        $scDateFormat	    = apply_filters('scDateFormat', $instance['scDateFormat']);
 
             $defaults           = array (
                                         'title'             => 'Recently Updated Pages',
                                         'totalPagesToShow'  => 3,
                                         'showListWithPosts' => 0,
                                         'displayDate'       => 1,
-                                        'dateFormat'        => "jS F'y"
+                                        'dateFormat'        => 'jS F\'y',
+                                        'scDateFormat'      => 'jS F\'y \a\t g:ia'
                                         );
                                     
             echo $before_widget;
@@ -88,7 +91,8 @@
             $instance['showListWithPosts']  = strip_tags($new_instance['showListWithPosts']);
             $instance['displayDate']        = strip_tags($new_instance['displayDate']);
             $instance['dateFormat']         = strip_tags($new_instance['dateFormat']);
-
+            $instance['scDateFormat']       = strip_tags($new_instance['scDateFormat']);
+            update_option('rup_date_format', $instance['scDateFormat']);
             return $instance;
         }
 
@@ -100,7 +104,8 @@
                                     'totalPagesToShow'  => 3,
                                     'showListWithPosts' => 0,
                                     'displayDate'       => 1,
-                                    'dateFormat'        => "jS F'y"
+                                    'dateFormat'        => 'jS F\'y',
+                                    'scDateFormat'      => 'jS F\'y \a\t g:ia'
                                     );
                                     
             $instance       = wp_parse_args((array) $instance, $defaults);
@@ -117,7 +122,7 @@
 
                 <p>
                         <label for="<?php echo $this->get_field_id('dateFormat'); ?>">Date Format:</label>
-                        <input id="<?php echo $this->get_field_id('dateFormat'); ?>" name="<?php echo $this->get_field_name('dateFormat'); ?>" value="<?php echo $instance['dateFormat']; ?>" size="15" />
+                        <input id="<?php echo $this->get_field_id('dateFormat'); ?>" name="<?php echo $this->get_field_name('dateFormat'); ?>" value="<?php echo ($instance['dateFormat'] != "") ? $instance['dateFormat'] : $defaults['dateFormat']; ?>" size="15" />
                 </p>
 
                 <p>
@@ -145,6 +150,10 @@
                    />
 		</p>
                 <p>
+                        <label for="<?php echo $this->get_field_id('scDateFormat'); ?>">Date Format for Short Code:</label>
+                        <input id="<?php echo $this->get_field_id('scDateFormat'); ?>" name="<?php echo $this->get_field_name('scDateFormat'); ?>" value="<?php echo ($instance['scDateFormat'] != "") ? $instance['scDateFormat'] : $defaults['scDateFormat']; ?>" size="15" />
+                </p>
+                <p>
 <hr/>
 <b>Information on Date Format</b>
 <hr/><small>
@@ -160,6 +169,15 @@ g - 12-hour format of an hour without leading zeros (1 through 12)<br/>
 i - Minutes with leading zeros (00 to 59)<br/>
 s - Seconds, with leading zeros (00 through 59)<br/>
 <a href="http://www.php.net/date" target="_blank" title="More information on Date Format">More Info on Date Format</a></small>
+</p>
+<p>
+<hr/>
+<b>How to Use Shortcodes</b>
+<hr/><small>
+In your PHP template file place the following code:<br/>
+<code>&lt;&#63;php<br/>echo do_shortcode('[rup_display_update_date]');<br/>&#63;&gt;</code><br/>
+To display the last update date within the content of your blog articles or pages use the shortcode like:<br/>
+<code>[rup_display_update_date]</code>
 </p>
 <?php
         }
@@ -194,5 +212,11 @@ s - Seconds, with leading zeros (00 through 59)<br/>
 
     // Adding the functions to the WP widget
     add_action('widgets_init', 'recently_updated_pages');
-    
+
+    function rupDisplayPageUpdateDate() {
+        global $post;
+        $dateFormat = (get_option('rup_date_format')) ? get_option('rup_date_format') : "jS F'y";
+        return date($dateFormat, strtotime($post->post_modified));
+    }
+    add_shortcode('rup_display_update_date', 'rupDisplayPageUpdateDate');
 ?>

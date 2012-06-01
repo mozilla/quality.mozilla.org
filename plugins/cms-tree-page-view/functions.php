@@ -8,7 +8,7 @@ function cms_tpv_admin_head() {
 
 	global $cms_tpv_view;
 	if (isset($_GET["cms_tpv_view"])) {
-		$cms_tpv_view = $_GET["cms_tpv_view"];
+		$cms_tpv_view = htmlspecialchars($_GET["cms_tpv_view"]);
 	} else {
 		$cms_tpv_view = "all";
 	}
@@ -34,23 +34,21 @@ function cms_tpv_admin_head() {
 	<?php
 }
 
-function cms_tpv_admin_init() {
+function cms_admin_enqueue_scripts() {
 
-	// @todo: only load these when we do show a tree, ie. on the dashboard or showing the tree for a post type
-	// see: http://devpress.com/blog/how-to-load-javascript-in-the-wordpress-admin/
-	wp_enqueue_style( "cms_tpv_styles", CMS_TPV_URL . "styles/styles.css", false, CMS_TPV_VERSION );
-	wp_enqueue_style( "jquery-alerts", CMS_TPV_URL . "styles/jquery.alerts.css", false, CMS_TPV_VERSION );
 	wp_enqueue_script( "jquery-cookie", CMS_TPV_URL . "scripts/jquery.biscuit.js", array("jquery")); // renamed from cookie to fix problems with mod_security
 	wp_enqueue_script( "jquery-jstree", CMS_TPV_URL . "scripts/jquery.jstree.js", false, CMS_TPV_VERSION);
 	wp_enqueue_script( "jquery-alerts", CMS_TPV_URL . "scripts/jquery.alerts.js", false, CMS_TPV_VERSION);
 	wp_enqueue_script( "jquery-hoverintent", CMS_TPV_URL . "scripts/jquery.hoverIntent.minified.js", false, CMS_TPV_VERSION);
 	#wp_enqueue_script( "jquery-ui-dialog", CMS_TPV_URL . "scripts/jquery.ui.dialog.min.js", false, CMS_TPV_VERSION);
-	wp_enqueue_script( "cms_tree_page_view", CMS_TPV_URL . "scripts/cms_tree_page_view.js", false, CMS_TPV_VERSION);
-	
-	// DEBUG
-	//wp_enqueue_script( "jquery-hotkeys" );
+	wp_enqueue_script( "cms_tree_page_view", CMS_TPV_URL . "scripts/cms_tree_page_view.js", false, CMS_TPV_VERSION);	
 
-	load_plugin_textdomain('cms-tree-page-view', WP_CONTENT_DIR . "/plugins/languages", "/cms-tree-page-view/languages");
+	// @todo: only load these when we do show a tree, ie. on the dashboard or showing the tree for a post type
+	// see: http://devpress.com/blog/how-to-load-javascript-in-the-wordpress-admin/
+	// admin_enqueue_scripts-hook?
+	wp_enqueue_style( "cms_tpv_styles", CMS_TPV_URL . "styles/styles.css", false, CMS_TPV_VERSION );
+	wp_enqueue_style( "jquery-alerts", CMS_TPV_URL . "styles/jquery.alerts.css", false, CMS_TPV_VERSION );
+
 	$oLocale = array(
 		"Enter_title_of_new_page" => __("Enter title of new page", 'cms-tree-page-view'),
 		"child_pages"  => __("child pages", 'cms-tree-page-view'),
@@ -76,6 +74,17 @@ function cms_tpv_admin_init() {
 		"Adding_page" => __("Adding page...", 'cms-tree-page-view'),
 	);
 	wp_localize_script( "cms_tree_page_view", 'cmstpv_l10n', $oLocale);
+
+
+}
+
+
+function cms_tpv_admin_init() {
+	
+	// DEBUG
+	//wp_enqueue_script( "jquery-hotkeys" );
+
+	load_plugin_textdomain('cms-tree-page-view', WP_CONTENT_DIR . "/plugins/languages", "/cms-tree-page-view/languages");
 
 }
 
@@ -612,7 +621,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 				$arrChildPages = cms_tpv_get_pages("parent={$onePage->ID}&view=$view&post_type=$post_type");
 			}
 
-			if ($arrChildPages) {
+			if ( isset( $arrChildPages ) ) {
 				$hasChildren = true;
 			}
 			// if no children, output no state
@@ -718,7 +727,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 					"post_type": "<?php echo $onePage->post_type ?>",
 					"post_status": "<?php echo $onePage->post_status ?>",
 					"rel": "<?php echo $rel ?>",
-					"childCount": <?php echo sizeof($arrChildPages) ?>,
+					"childCount": <?php echo ( isset( $arrChildPages ) ) ? sizeof( $arrChildPages ) : 0 ; ?>,
 					"permalink": "<?php echo htmlspecialchars_decode(get_permalink($onePage->ID)) ?>",
 					"editlink": "<?php echo htmlspecialchars_decode($editLink) ?>",
 					"modified_time": "<?php echo $post_modified_time ?>",

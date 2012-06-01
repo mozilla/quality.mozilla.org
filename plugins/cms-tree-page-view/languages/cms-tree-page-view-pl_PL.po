@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: CMS Tree Page View\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/cms-tree-page-view\n"
 "POT-Creation-Date: 2010-08-28 21:55+0000\n"
-"PO-Revision-Date: 2011-08-08 15:28+0100\n"
+"PO-Revision-Date: 2011-08-08 15:18+0100\n"
 "Last-Translator: Michał Księżuk <michal@ksiezuk.pl>\n"
 "Language-Team: gadjukin.net <georgij@gadjukin.net>\n"
 "MIME-Version: 1.0\n"
@@ -164,7 +164,7 @@ msgstr "Strona chroniona hasłem"
 #@ cms-tree-page-view
 #: functions.php:342
 msgid "Public"
-msgstr "Publiczne"
+msgstr "Publiczny"
 
 #@ cms-tree-page-view
 #: functions.php:219
@@ -316,5 +316,5 @@ msgstr "<strong>Dziękuję za używanie tej wtyczki!</strong> Jeśli potrzebujes
 #@ cms-tree-page-view
 #: functions.php:1015
 msgid "If you like this plugin, please <a href=\"http://eskapism.se/sida/donate/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox\">support my work by donating</a> - or at least say something nice about this plugin in a blog post or tweet."
-msgstr "Jeśli spodobała się Tobie ta wtyczka, proszę <a href=\\\"http://eskapism.se/sida/donate/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox\\\">wesprzyj moją pracę</a> - albo przynajmniej napisz coś miłego o tej wtyczce na swoim blogu lub Tweeterze."
+msgstr "Pokud se vám tento plugin líbí, prosím podpořte mou práci <a href=\\\"http://eskapism.se/sida/donate/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox\\\">malým darem</a> - nebo alespoň řekněte něco pěkného o tomto pluginu v blogu."
 
