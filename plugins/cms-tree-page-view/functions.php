@@ -609,6 +609,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 			$tmpPost = $post;
 			$post = $onePage;
 			$page_id = $onePage->ID;
+			$arrChildPages = NULL;
 
 			$editLink = get_edit_post_link($onePage->ID, 'notDisplay');
 			$content = esc_html($onePage->post_content);
@@ -621,7 +622,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 				$arrChildPages = cms_tpv_get_pages("parent={$onePage->ID}&view=$view&post_type=$post_type");
 			}
 
-			if ( isset( $arrChildPages ) ) {
+			if ( !empty($arrChildPages) ) {
 				$hasChildren = true;
 			}
 			// if no children, output no state
@@ -727,7 +728,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 					"post_type": "<?php echo $onePage->post_type ?>",
 					"post_status": "<?php echo $onePage->post_status ?>",
 					"rel": "<?php echo $rel ?>",
-					"childCount": <?php echo ( isset( $arrChildPages ) ) ? sizeof( $arrChildPages ) : 0 ; ?>,
+					"childCount": <?php echo ( !empty( $arrChildPages ) ) ? sizeof( $arrChildPages ) : 0 ; ?>,
 					"permalink": "<?php echo htmlspecialchars_decode(get_permalink($onePage->ID)) ?>",
 					"editlink": "<?php echo htmlspecialchars_decode($editLink) ?>",
 					"modified_time": "<?php echo $post_modified_time ?>",

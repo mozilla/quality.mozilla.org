@@ -3,7 +3,7 @@
 Plugin Name: Breadcrumb NavXT
 Plugin URI: http://mtekk.us/code/breadcrumb-navxt/
 Description: Adds a breadcrumb navigation showing the visitor&#39;s path to their current location. For details on how to use this plugin visit <a href="http://mtekk.us/code/breadcrumb-navxt/">Breadcrumb NavXT</a>. 
-Version: 4.0.1
+Version: 4.0.2
 Author: John Havlik
 Author URI: http://mtekk.us/
 License: GPL2
@@ -61,7 +61,7 @@ if(!class_exists('mtekk_adminKit'))
  */
 class bcn_admin extends mtekk_adminKit
 {
-	protected $version = '4.0.1';
+	protected $version = '4.0.2';
 	protected $full_name = 'Breadcrumb NavXT Settings';
 	protected $short_name = 'Breadcrumb NavXT';
 	protected $access_level = 'manage_options';
@@ -684,7 +684,7 @@ class bcn_admin extends mtekk_adminKit
 	function display($return = false, $linked = true, $reverse = false)
 	{
 		//Grab the current settings from the db
-		$this->breadcrumb_trail->opt = wp_parse_args(get_option('bcn_options'), $this->breadcrumb_trail->opt);
+		$this->breadcrumb_trail->opt = wp_parse_args(get_option('bcn_options'), $this->opt);
 		//Generate the breadcrumb trail
 		$this->breadcrumb_trail->fill();
 		return $this->breadcrumb_trail->display($return, $linked, $reverse);
@@ -700,7 +700,7 @@ class bcn_admin extends mtekk_adminKit
 	function display_list($return = false, $linked = true, $reverse = false)
 	{
 		//Grab the current settings from the db
-		$this->breadcrumb_trail->opt = wp_parse_args(get_option('bcn_options'), $this->breadcrumb_trail->opt);
+		$this->breadcrumb_trail->opt = wp_parse_args(get_option('bcn_options'), $this->opt);
 		//Generate the breadcrumb trail
 		$this->breadcrumb_trail->fill();
 		return $this->breadcrumb_trail->display_list($return, $linked, $reverse);

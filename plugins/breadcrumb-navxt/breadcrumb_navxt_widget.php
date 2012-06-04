@@ -54,18 +54,11 @@ class bcn_widget extends WP_Widget
 			bcn_display_list(false, $instance['linked'], $instance['reverse']);
 			echo '</ol>';
 		}
-		else if($instance['type'] == 'rdfa')
+		else if($instance['type'] == 'microdata')
 		{
-			//Display the list output breadcrumb
-			echo '<div class="breadcrumbs" xmlns:v="http://rdf.data-vocabulary.org/#">';
-			bcn_display_nested(false, $instance['linked'], 'span', 'rdfa');
-			echo '</div>';
-		}
-		else if($instance['type'] == 'microformat')
-		{
-			//Display the list output breadcrumb
-			echo '<div class="breadcrumbs" itemscope itemtype="http://data-vocabulary.org/Breadcrumb">';
-			bcn_display_nested(false, $instance['linked'], 'span', 'microformat');
+			echo '<div class="breadcrumbs" itemprop="breadcrumbs">';
+			//Display the regular output breadcrumb
+			bcn_display(false, $instance['linked'], $instance['reverse']);
 			echo '</div>';
 		}
 		else
@@ -97,8 +90,7 @@ class bcn_widget extends WP_Widget
 			<label for="<?php echo $this->get_field_id('type'); ?>"> <?php _e('Output trail as:', 'breadcrumb_navxt'); ?></label>
 			<select name="<?php echo $this->get_field_name('type'); ?>" id="<?php echo $this->get_field_id('type'); ?>">
 				<option value="list" <?php selected('list', $instance['type']);?>><?php _e('List', 'breadcrumb_navxt'); ?></option>
-				<option value="rdfa" <?php selected('rdfa', $instance['type']);?>><?php _e('RDFa', 'breadcrumb_navxt'); ?></option>
-				<option value="microformat" <?php selected('microformat', $instance['type']);?>><?php _e('Microformat', 'breadcrumb_navxt'); ?></option>
+				<option value="microdata" <?php selected('microdata', $instance['type']);?>><?php _e('Schema.org', 'breadcrumb_navxt'); ?></option>
 				<option value="plain" <?php selected('plain', $instance['type']);?>><?php _e('Plain', 'breadcrumb_navxt'); ?></option>
 			</select>
 		</p>
