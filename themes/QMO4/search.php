@@ -8,18 +8,11 @@ $events_cat = get_category_by_slug('events')->cat_ID;
 $synd_cat = get_category_by_slug('syndicated')->cat_ID;
 $twitter_cat = get_category_by_slug('twitter')->cat_ID;
 
-// Count search results
-$search_count = 0;
-$search = new WP_Query("s=$s & showposts=-1");
-if($search->have_posts()) : while($search->have_posts()) : $search->the_post();
-$search_count++;
-endwhile; endif;
-
 get_header(); ?>
 <section id="content-main" class="hfeed vcalendar" role="main">
 <?php if (have_posts()) : ?>
 
-  <h1 class="section-title">We found <?php echo $wp_query->found_posts; ?> result<?php if($wp_query->found_posts > 1) { ?>s<?php } ?> for &#8220;<?php the_search_query(); ?>&#8221;</h1>
+  <h1 class="section-title">Search results for &#8220;<?php the_search_query(); ?>&#8221;</h1>
 
 <?php while (have_posts()) : the_post(); ?>
   <article id="post-<?php the_ID(); ?>" 
