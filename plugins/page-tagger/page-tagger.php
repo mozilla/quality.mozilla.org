@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 Plugin Name: Page Tagger
 Plugin URI: http://www.hiddentao.com/code/wordpress-page-tagger-plugin/
 Description: Enables tagging for pages. PHP 5 required.
-Version: 0.3.7
+Version: 0.4
 Author: Ramesh Nair
 Author URI: http://www.hiddentao.com/
 */
@@ -47,8 +47,49 @@ if (5 > intval(phpversion()))
 }
 else
 {
-	require_once('page-tagger-class.php');
-	add_action('plugins_loaded',array('PageTagger','init'));
+  // if we're at version 3 or above then we can keep it simple using WP hooks:
+  $wp_version = floatval(get_bloginfo('version'));
+  if (3 <= $wp_version)
+  {
+    // Based on code by Bjorn Wijers at https://github.com/BjornW/tag-pages
+
+    /**
+     * Add the 'post_tag' taxonomy, which is the name of the existing taxonomy
+     * used for tags to the Post type page. Normally in WordPress Pages cannot
+     * be tagged, but this let's WordPress treat Pages just like Posts
+     * and enables the tags metabox so you can add tags to a Page.
+     * NB: This uses the register_taxonomy_for_object_type() function which is only
+     * in WordPress 3 and higher!
+     */
+    if( ! function_exists('page_tagger_register_taxonomy') ){
+        function page_tagger_register_taxonomy()
+        {
+            register_taxonomy_for_object_type('post_tag', 'page');
+        }
+        add_action('admin_init', 'page_tagger_register_taxonomy');
+    }
+
+    /**
+     * Display all post_types on the tags archive page. This forces WordPress to
+     * show tagged Pages together with tagged Posts.
+     */
+    if( ! function_exists('page_tagger_display_tagged_pages_archive') ){
+        function page_tagger_display_tagged_pages_archive(&$query)
+        {
+            if ( $query->is_archive && $query->is_tag ) {
+                $q = &$query->query_vars;
+                $q['post_type'] = 'any';
+            }
+        }
+        add_action('pre_get_posts', 'page_tagger_display_tagged_pages_archive');
+    }
+  }
+  // if we're before version 3
+  else
+  {
+    require_once('page-tagger-class.php');
+   	add_action('plugins_loaded',array('PageTagger','init'));
+  }
 }
 
 

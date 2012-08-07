@@ -3,14 +3,14 @@
 Plugin Name: ThickBox
 Plugin URI: http://www.christianschenk.org/projects/wordpress-thickbox-plugin/
 Description: Embed ThickBox into your posts and pages.
-Version: 1.5
+Version: 1.6
 Author: Christian Schenk
 Author URI: http://www.christianschenk.org/
 */
 
 #
 # WordPress ThickBox plugin
-# Copyright (C) 2008-2009 Christian Schenk
+# Copyright (C) 2008-2012 Christian Schenk
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -38,7 +38,7 @@ define('SMOOTHBOX_JS', dirname(__FILE__).'/smoothbox/smoothbox.js');
 # SmoothBox CSS file
 define('SMOOTHBOX_CSS', dirname(__FILE__).'/smoothbox/smoothbox.css');
 # Path to this plugin
-define('THICKBOX_URL', '/qmo_content/plugins/thickbox');
+define('THICKBOX_URL', '/wp-content/plugins/thickbox');
 
 /**
  * Available variants. Add your own variants to the array as you see fit.
@@ -121,7 +121,7 @@ if (!empty($_REQUEST[THICKBOX_ACTION])) {
 function thickbox_init() {
 	// i18n
 	if (function_exists('load_plugin_textdomain')) {
-		load_plugin_textdomain('thickbox', 'qmo_content/plugins/thickbox/messages');
+		load_plugin_textdomain('thickbox', 'wp-content/plugins/thickbox/messages');
 	}
 
 	/*
@@ -524,4 +524,5 @@ function thickbox_get_option($identifier) {
 	}
 }
 
-?>
+
+// FILE ENDS HERE
