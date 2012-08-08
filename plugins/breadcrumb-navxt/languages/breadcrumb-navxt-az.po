@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Breadcrumb NavXT package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2012-02-17 14:53:19+0000\n"
+"PO-Revision-Date: 2012-06-06 01:29:25+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,700 +10,513 @@ msgstr ""
 "X-Generator: GlotPress/0.1\n"
 "Project-Id-Version: Breadcrumb NavXT\n"
 
-#: breadcrumb_navxt_widget.php:32
-msgid "Adds a breadcrumb trail to your sidebar"
-msgstr "Sizin sidebara breadcrumb zolağı əlavə edir."
-
 #: breadcrumb_navxt_widget.php:93
+msgid "Text to show before the trail:"
+msgstr ""
+
+#: breadcrumb_navxt_widget.php:100
+msgid "Schema.org"
+msgstr ""
+
+#: breadcrumb_navxt_admin.php:227
+msgid "Go to the Breadcrumb NavXT translation project."
+msgstr ""
+
+#: breadcrumb_navxt_admin.php:36
+msgid "Your PHP version is too old, please upgrade to a newer version. Your version is %1$s, Breadcrumb NavXT requires %2$s"
+msgstr ""
+
+#: breadcrumb_navxt_widget.php:89
 msgid "Title:"
 msgstr "Başlıq:"
 
-#: breadcrumb_navxt_widget.php:97
-msgid "Output trail as:"
-msgstr "Zolağı bu cür xaric et:"
-
-#: breadcrumb_navxt_widget.php:99
-msgid "List"
-msgstr "Siyahı"
-
-#: breadcrumb_navxt_widget.php:100
-msgid "RDFa"
-msgstr "RDFa"
-
 #: breadcrumb_navxt_widget.php:101
-msgid "Microformat"
-msgstr "Mikroformat"
-
-#: breadcrumb_navxt_widget.php:102
 msgid "Plain"
 msgstr "Düz"
 
-#: breadcrumb_navxt_widget.php:107
+#: breadcrumb_navxt_widget.php:106
 msgid "Link the breadcrumbs"
 msgstr "Breadcrumblar linki"
 
-#: breadcrumb_navxt_widget.php:109
+#: breadcrumb_navxt_widget.php:108
 msgid "Reverse the order of the trail"
 msgstr "Zolağın sıralanmasını əksinə çevirin."
 
-#: breadcrumb_navxt_widget.php:111
+#: breadcrumb_navxt_widget.php:110
 msgid "Hide the trail on the front page"
 msgstr "Ana səhifədə zolağı gizlədin"
 
-#: breadcrumb_navxt_admin.php:36
-msgid "Your PHP version is too old, please upgrade to a newer version. Your version is %s, Breadcrumb NavXT requires %s"
-msgstr "Sizin PHP versiya çox köhnədir, zəhmət olmasa yeni versiyaya güncəlləyin. Sizin versiya %s, Breadcrumb NavXT tələb edir %s"
-
-#: breadcrumb_navxt_admin.php:113
+#: breadcrumb_navxt_admin.php:118
 msgid "Insufficient privileges to proceed."
 msgstr "Davam etmək üçün kifayət qədər icazə yoxdur."
 
-#: breadcrumb_navxt_admin.php:204
+#: breadcrumb_navxt_admin.php:220
 msgid "Tips for the settings are located below select options."
 msgstr "Tənzimləmər üçün tiplər seçim tənzimləmələrinin aşağısında yerləşdirilib."
 
-#: breadcrumb_navxt_admin.php:205
+#: breadcrumb_navxt_admin.php:221
 msgid "Resources"
 msgstr "Resurslar"
 
-#: breadcrumb_navxt_admin.php:206
+#: breadcrumb_navxt_admin.php:222
 msgid "%sTutorials and How Tos%s: There are several guides, tutorials, and how tos available on the author's website."
 msgstr "%s Dərsliklər və İzahlar %s: Müəllifin web saytında çoxlu dərsliklər, izahlar və necə etmək barədə yazılar mövcuddur."
 
-#: breadcrumb_navxt_admin.php:206
+#: breadcrumb_navxt_admin.php:222
 msgid "Go to the Breadcrumb NavXT tag archive."
 msgstr "Breadcrumb NavXT tag arxivinə gedin"
 
-#: breadcrumb_navxt_admin.php:207
+#: breadcrumb_navxt_admin.php:223
 msgid "%sOnline Documentation%s: Check out the documentation for more indepth technical information."
 msgstr "%s Online Dokumentasiya%s: Çoxlu texniki məlumat zənginliyi üçün dokumentasiyanı yoxlayın."
 
-#: breadcrumb_navxt_admin.php:207
+#: breadcrumb_navxt_admin.php:223
 msgid "Go to the Breadcrumb NavXT online documentation"
 msgstr "Breadcrumb NavXT online dokumentasiyasına gedin"
 
-#: breadcrumb_navxt_admin.php:208
+#: breadcrumb_navxt_admin.php:224
 msgid "%sReport a Bug%s: If you think you have found a bug, please include your WordPress version and details on how to reproduce the bug."
 msgstr "%sReport a Bug%s: Əgər səhv tapdığınızı düşünürsünüzsə, zəhmət olmasa WordPress versiyasını və səhvi necə aradan qaldırmaq barədə ətraflı olaraq əlavə edin."
 
-#: breadcrumb_navxt_admin.php:208 breadcrumb_navxt_admin.php:211
+#: breadcrumb_navxt_admin.php:224
 msgid "Go to the Breadcrumb NavXT support post for your version."
 msgstr "Breadcrumb NavXT dəstək məqaləsinə sizin versiya üçün gedin."
 
-#: breadcrumb_navxt_admin.php:209
+#: breadcrumb_navxt_admin.php:225
 msgid "Giving Back"
 msgstr "Geri Vermək"
 
-#: breadcrumb_navxt_admin.php:210
+#: breadcrumb_navxt_admin.php:226
 msgid "%sDonate%s: Love Breadcrumb NavXT and want to help development? Consider buying the author a beer."
 msgstr "%sPul Yardımı%s: Breadcrumb NavXT - ni sevdiniz və inkişafına kömək etmək istəyirsiniz? Müəllifi pivə almağa görə nəzərə alın."
 
-#: breadcrumb_navxt_admin.php:210
+#: breadcrumb_navxt_admin.php:226
 msgid "Go to PayPal to give a donation to Breadcrumb NavXT."
 msgstr "Breadcrumb NavXT üçün pul yardımı etmək üçün PayPal-a gedin."
 
-#: breadcrumb_navxt_admin.php:211
+#: breadcrumb_navxt_admin.php:227
 msgid "%sTranslate%s: Is your language not available? Contact John Havlik to get translating."
 msgstr "%sTərcümə%s: Sizin diliniz mümkün deyil? John Havlik ilə tərcümə üçün əlaqə yaradın."
 
-#: breadcrumb_navxt_admin.php:216 breadcrumb_navxt_admin.php:307
+#: breadcrumb_navxt_admin.php:232 breadcrumb_navxt_admin.php:323
 msgid "General"
 msgstr "Ümumi"
 
-#: breadcrumb_navxt_admin.php:219
+#: breadcrumb_navxt_admin.php:235
 msgid "For the settings on this page to take effect, you must either use the included Breadcrumb NavXT widget, or place either of the code sections below into your theme."
 msgstr "Tənzimləmələrin bu səhifədə effekt verməyi üçün, daxil edilən Breadcrumb NavXT widget-ni başqa bir yol olaraq istifadə etməlisiniz, ya da kod blokların sizin temanın içinə daxil eməlisiniz."
 
-#: breadcrumb_navxt_admin.php:220
+#: breadcrumb_navxt_admin.php:236
 msgid "Breadcrumb trail with separators"
 msgstr "Breadcrumb zolağı ayırıcılar ilə"
 
-#: breadcrumb_navxt_admin.php:226
+#: breadcrumb_navxt_admin.php:242
 msgid "Breadcrumb trail in list form"
 msgstr "Breadcrumb zolağı form siyahısında"
 
-#: breadcrumb_navxt_admin.php:235
+#: breadcrumb_navxt_admin.php:251
 msgid "Quick Start"
 msgstr "Cəld Başlanğıc"
 
-#: breadcrumb_navxt_admin.php:238
+#: breadcrumb_navxt_admin.php:254
 msgid "Using the code from the Quick Start section above, the following CSS can be used as base for styling your breadcrumb trail."
 msgstr "Yuxarıdakı Cəld Başlanğıc bölməsindəki kodu istifadə etməklə, növbəti CSS sizin breadcrumb zolağı üçün təməl olaraq istifadə ediləcəkdir."
 
-#: breadcrumb_navxt_admin.php:250
+#: breadcrumb_navxt_admin.php:266
 msgid "Styling"
 msgstr "Stil"
 
-#: breadcrumb_navxt_admin.php:256
+#: breadcrumb_navxt_admin.php:272
 msgid "Import/Export/Reset"
 msgstr "İdxal/İxrac/Sıfırlama"
 
-#: breadcrumb_navxt_admin.php:280 includes/mtekk_adminkit.php:765
+#: breadcrumb_navxt_admin.php:296 includes/mtekk_adminkit.php:765
 msgid "Import"
 msgstr "İdxal"
 
-#: breadcrumb_navxt_admin.php:281 includes/mtekk_adminkit.php:766
+#: breadcrumb_navxt_admin.php:297 includes/mtekk_adminkit.php:766
 msgid "Export"
 msgstr "İxrac"
 
-#: breadcrumb_navxt_admin.php:282 includes/mtekk_adminkit.php:767
+#: breadcrumb_navxt_admin.php:298 includes/mtekk_adminkit.php:767
 msgid "Reset"
 msgstr "Sıfırlama"
 
-#: breadcrumb_navxt_admin.php:295
+#: breadcrumb_navxt_admin.php:311
 msgid "Breadcrumb NavXT Settings"
 msgstr "Breadcrumb NavXT Tənzimləmələri"
 
-#: breadcrumb_navxt_admin.php:310
+#: breadcrumb_navxt_admin.php:326
 msgid "Breadcrumb Separator"
 msgstr "Breadcrumb Ayırıcı"
 
-#: breadcrumb_navxt_admin.php:310
+#: breadcrumb_navxt_admin.php:326
 msgid "Placed in between each breadcrumb."
 msgstr "Hər breadcrumb arasında yerləşdirilir."
 
-#: breadcrumb_navxt_admin.php:311
+#: breadcrumb_navxt_admin.php:327
 msgid "Breadcrumb Max Title Length"
 msgstr "Breadcrumb Maksimum Başlıq Uzunluğu"
 
-#: breadcrumb_navxt_admin.php:315
+#: breadcrumb_navxt_admin.php:331
 msgid "Home Breadcrumb"
 msgstr "Ana Səhifə Breadcrumb"
 
-#: breadcrumb_navxt_admin.php:320
+#: breadcrumb_navxt_admin.php:336
 msgid "Place the home breadcrumb in the trail."
 msgstr "Ana Səhifə breadcrumb-ı zolaqda yerləşdirin."
 
-#: breadcrumb_navxt_admin.php:325
+#: breadcrumb_navxt_admin.php:341
 msgid "Home Title: "
 msgstr "Ana Səhifə Başlığı:"
 
-#: breadcrumb_navxt_admin.php:333
+#: breadcrumb_navxt_admin.php:349
 msgid "Home Template"
 msgstr "Ana Səhifə Şablonu"
 
-#: breadcrumb_navxt_admin.php:333
+#: breadcrumb_navxt_admin.php:349
 msgid "The template for the home breadcrumb."
 msgstr "Ana Səhifə breadcrumb-ı üçün Şablon"
 
-#: breadcrumb_navxt_admin.php:334
+#: breadcrumb_navxt_admin.php:350
 msgid "Home Template (Unlinked)"
 msgstr "Ana Səhifə Şablonu (Bəyənilməyən)"
 
-#: breadcrumb_navxt_admin.php:334
+#: breadcrumb_navxt_admin.php:350
 msgid "The template for the home breadcrumb, used when the breadcrumb is not linked."
 msgstr "Ana Səhifə breadcrumb-ı üçün Şablon, breacrumb link ilə əlaqələndirilmədikdə istifadə olunur."
 
-#: breadcrumb_navxt_admin.php:335
+#: breadcrumb_navxt_admin.php:351
 msgid "Blog Breadcrumb"
 msgstr "Blog Breadcrumb"
 
-#: breadcrumb_navxt_admin.php:335
+#: breadcrumb_navxt_admin.php:351
 msgid "Place the blog breadcrumb in the trail."
 msgstr "Blog breadcrumb-nı zolaqda yerləşdirin."
 
-#: breadcrumb_navxt_admin.php:336
+#: breadcrumb_navxt_admin.php:352
 msgid "Blog Template"
 msgstr "Blog Şablonu"
 
-#: breadcrumb_navxt_admin.php:336
+#: breadcrumb_navxt_admin.php:352
 msgid "The template for the blog breadcrumb, used only in static front page environments."
 msgstr "Blog breadcrumb-ı üçün Şablon, yalnız statik ana səhifə şəraitində istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:337
+#: breadcrumb_navxt_admin.php:353
 msgid "Blog Template (Unlinked)"
 msgstr "Blog Şablonu (Bəyənilməyən)"
 
-#: breadcrumb_navxt_admin.php:337
+#: breadcrumb_navxt_admin.php:353
 msgid "The template for the blog breadcrumb, used only in static front page environments and when the breadcrumb is not linked."
 msgstr "Blog breadcrumb-ı üçün Şablon, yalnız statik ana səhifəsi şəraitində və breadcrumb link ilə əlaqələndirilməyəndə istifadə olunur."
 
-#: breadcrumb_navxt_admin.php:341
+#: breadcrumb_navxt_admin.php:357
 msgid "Main Site Breadcrumb"
 msgstr "Əsas Sayt Breadcrumb-ı"
 
-#: breadcrumb_navxt_admin.php:346
+#: breadcrumb_navxt_admin.php:362
 msgid "Place the main site home breadcrumb in the trail in an multisite setup."
 msgstr "Əsas Sayt Breadcrumb-nı mutisayt quraşdırmasında zolaqda yerləşdirin."
 
-#: breadcrumb_navxt_admin.php:351
+#: breadcrumb_navxt_admin.php:367
 msgid "Main Site Home Title: "
 msgstr "Əsas Sayt Ana Səhifə başlığı:"
 
-#: breadcrumb_navxt_admin.php:360
+#: breadcrumb_navxt_admin.php:376
 msgid "Main Site Home Template"
 msgstr "Əsas Sayt Ana Səhifə Şablonu"
 
-#: breadcrumb_navxt_admin.php:360
+#: breadcrumb_navxt_admin.php:376
 msgid "The template for the main site home breadcrumb, used only in multisite environments."
 msgstr "Əsas Sayt Ana Səhifə breadcrumb-ı üçün şablon, yalnız multisayt şəraitində istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:361
+#: breadcrumb_navxt_admin.php:377
 msgid "Main Site Home Template (Unlinked)"
 msgstr "Əsas Sayt Ana Səhifə Şablonu (Bəyənilməyən)"
 
-#: breadcrumb_navxt_admin.php:361
+#: breadcrumb_navxt_admin.php:377
 msgid "The template for the main site home breadcrumb, used only in multisite environments and when the breadcrumb is not linked."
 msgstr "Əsas Sayt Ana Səhifə breadcrumb-ı üçün şablon, yalnız multisayt şəraitində və breadcrumb link ilə əlaqələndirilmədikdə  istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:366
+#: breadcrumb_navxt_admin.php:382
 msgid "Current Item"
 msgstr "Cari Element"
 
-#: breadcrumb_navxt_admin.php:369
+#: breadcrumb_navxt_admin.php:385
 msgid "Link Current Item"
 msgstr "Cari Elmentin Linki"
 
-#: breadcrumb_navxt_admin.php:369
+#: breadcrumb_navxt_admin.php:385
 msgid "Yes"
 msgstr "Hə"
 
-#: breadcrumb_navxt_admin.php:370
-msgid "Current Item Template"
-msgstr "Cari Elementin Şablonu"
-
-#: breadcrumb_navxt_admin.php:370
-msgid "The template for current item breadcrumbs."
-msgstr "Cari elementin breadcrumb-ı üçün şablon."
-
-#: breadcrumb_navxt_admin.php:371
-msgid "Current Item Template (Unlinked)"
-msgstr "Cari Element Şablonu"
-
-#: breadcrumb_navxt_admin.php:371
-msgid "The template for current item breadcrumbs, used only when the breadcrumb is not linked."
-msgstr "Cari elementin breadcrumb-ı üçün şablon, yalnız breadcrumb link ilə əlaqələndirilmədikdə istifadə edilir."
-
-#: breadcrumb_navxt_admin.php:372
+#: breadcrumb_navxt_admin.php:386
 msgid "Paged Breadcrumb"
 msgstr "Səhifələnmiş Breadcrumb"
 
-#: breadcrumb_navxt_admin.php:372
+#: breadcrumb_navxt_admin.php:386
 msgid "Include the paged breadcrumb in the breadcrumb trail."
 msgstr "Səhifələnmiş Breadcrumb-ı breadcrumb zolağında daxil edin."
 
-#: breadcrumb_navxt_admin.php:372
+#: breadcrumb_navxt_admin.php:386
 msgid "Indicates that the user is on a page other than the first on paginated posts/pages."
 msgstr "İstifadəçi məqalələr/səhifələr səhifələnməsində (pagination) birincidən başqa səhifələrdə olarkən bildirir."
 
-#: breadcrumb_navxt_admin.php:373
+#: breadcrumb_navxt_admin.php:387
 msgid "Paged Template"
 msgstr "Səhifələnmə Şablonu"
 
-#: breadcrumb_navxt_admin.php:373
+#: breadcrumb_navxt_admin.php:387
 msgid "The template for paged breadcrumbs."
 msgstr "Səhidələniş breadcrumb üçün şablon."
 
-#: breadcrumb_navxt_admin.php:378
+#: breadcrumb_navxt_admin.php:392
 msgid "Posts &amp; Pages"
 msgstr "Məqalələr &amp; Səhifələr"
 
-#: breadcrumb_navxt_admin.php:381
+#: breadcrumb_navxt_admin.php:395
 msgid "Post Template"
 msgstr "Məqalə Şablonu"
 
-#: breadcrumb_navxt_admin.php:381
+#: breadcrumb_navxt_admin.php:395
 msgid "The template for post breadcrumbs."
 msgstr "Məqalə breadcrumb-ı üçün şablon."
 
-#: breadcrumb_navxt_admin.php:382
+#: breadcrumb_navxt_admin.php:396
 msgid "Post Template (Unlinked)"
 msgstr "Məqalə Şablonu (Bəyənilməyən)"
 
-#: breadcrumb_navxt_admin.php:382
+#: breadcrumb_navxt_admin.php:396
 msgid "The template for post breadcrumbs, used only when the breadcrumb is not linked."
 msgstr "Məqalə breadcrumb-ı üçün şablon, yalnız breadcrumb link ilə əlaqələndirilmədikdə istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:383
+#: breadcrumb_navxt_admin.php:397
 msgid "Post Taxonomy Display"
 msgstr "Məqalə Təsnifat Görünüşü"
 
-#: breadcrumb_navxt_admin.php:383
+#: breadcrumb_navxt_admin.php:397
 msgid "Show the taxonomy leading to a post in the breadcrumb trail."
 msgstr "Məqalənin Təsnifat liderliyini breadcrumb zolağında göstərir."
 
-#: breadcrumb_navxt_admin.php:387
+#: breadcrumb_navxt_admin.php:401
 msgid "Post Taxonomy"
 msgstr "Məqalə Təsnifatı"
 
-#: breadcrumb_navxt_admin.php:391
+#: breadcrumb_navxt_admin.php:405
 msgid "Categories"
 msgstr "Kateqoriyalar"
 
-#: breadcrumb_navxt_admin.php:392 breadcrumb_navxt_admin.php:490
+#: breadcrumb_navxt_admin.php:406 breadcrumb_navxt_admin.php:464
 msgid "Dates"
 msgstr "Tarixlər"
 
-#: breadcrumb_navxt_admin.php:393
+#: breadcrumb_navxt_admin.php:407
 msgid "Tags"
 msgstr "Taglər"
 
-#: breadcrumb_navxt_admin.php:394 breadcrumb_navxt_admin.php:491
+#: breadcrumb_navxt_admin.php:408 breadcrumb_navxt_admin.php:465
 msgid "Pages"
 msgstr "Səhifələr"
 
-#: breadcrumb_navxt_admin.php:405 breadcrumb_navxt_admin.php:502
+#: breadcrumb_navxt_admin.php:419 breadcrumb_navxt_admin.php:476
 msgid "The taxonomy which the breadcrumb trail will show."
 msgstr "Breadcrumb zolağının göstərəcəyi təsnifat."
 
-#: breadcrumb_navxt_admin.php:409
+#: breadcrumb_navxt_admin.php:423
 msgid "Page Template"
 msgstr "Səhifə Şablonu"
 
-#: breadcrumb_navxt_admin.php:409
+#: breadcrumb_navxt_admin.php:423
 msgid "The template for page breadcrumbs."
 msgstr "Səhifə breadcrumbları üçüb şablon."
 
-#: breadcrumb_navxt_admin.php:410
+#: breadcrumb_navxt_admin.php:424
 msgid "Page Template (Unlinked)"
 msgstr "Səhifə Şablonu (Bəyənilməyən)"
 
-#: breadcrumb_navxt_admin.php:410
+#: breadcrumb_navxt_admin.php:424
 msgid "The template for page breadcrumbs, used only when the breadcrumb is not linked."
 msgstr "Səhifə breadcrumb-ı üçüb şablon, yalnız breadcrumb link ilə əlaqələndirilmədikdə istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:411
+#: breadcrumb_navxt_admin.php:425
 msgid "Attachment Template"
 msgstr "Fayl Yükləmə Şablonu"
 
-#: breadcrumb_navxt_admin.php:411
+#: breadcrumb_navxt_admin.php:425
 msgid "The template for attachment breadcrumbs."
 msgstr "Fayl Yükləmə breadcrumb-ı üçün şablon."
 
-#: breadcrumb_navxt_admin.php:412
+#: breadcrumb_navxt_admin.php:426
 msgid "Attachment Template (Unlinked)"
 msgstr "Fayl Yükləmə Şablonu (Bəyənilməyən)"
 
-#: breadcrumb_navxt_admin.php:412
+#: breadcrumb_navxt_admin.php:426
 msgid "The template for attachment breadcrumbs, used only when the breadcrumb is not linked."
 msgstr "Fayl Yükləmə breadcrumb-ı üçün şablon, yalnız breadcrumb link ilə əlaqələndirilmədikdə istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:427 breadcrumb_navxt_admin.php:600
-#: breadcrumb_navxt_class.php:56 breadcrumb_navxt_class.php:205
-#: breadcrumb_navxt_class.php:213 breadcrumb_navxt_class.php:219
-#: breadcrumb_navxt_class.php:235 breadcrumb_navxt_class.php:247
-#: breadcrumb_navxt_class.php:259
+#: breadcrumb_navxt_admin.php:566 breadcrumb_navxt_class.php:56
+#: breadcrumb_navxt_class.php:205 breadcrumb_navxt_class.php:213
+#: breadcrumb_navxt_class.php:219 breadcrumb_navxt_class.php:235
+#: breadcrumb_navxt_class.php:247 breadcrumb_navxt_class.php:259
 msgid "<a title=\"Go to %title%.\" href=\"%link%\">%htitle%</a>"
 msgstr "<a title=\"%title% üçün gedin.\" href=\"%link%\">%htitle%</a>"
 
-#: breadcrumb_navxt_admin.php:428 breadcrumb_navxt_admin.php:601
+#: breadcrumb_navxt_admin.php:567
 msgid "%htitle%"
 msgstr "%htitle%"
 
-#: breadcrumb_navxt_admin.php:465 breadcrumb_navxt_admin.php:541
+#: breadcrumb_navxt_admin.php:442 breadcrumb_navxt_admin.php:507
 msgid "%s Template"
 msgstr "%s Şablon"
 
-#: breadcrumb_navxt_admin.php:465 breadcrumb_navxt_admin.php:541
+#: breadcrumb_navxt_admin.php:442 breadcrumb_navxt_admin.php:507
 msgid "The template for %s breadcrumbs."
 msgstr "%s breadcrumblar üçün şablon."
 
-#: breadcrumb_navxt_admin.php:466 breadcrumb_navxt_admin.php:542
+#: breadcrumb_navxt_admin.php:443 breadcrumb_navxt_admin.php:508
 msgid "%s Template (Unlinked)"
 msgstr "%s Şablon (Bəyənilməyən)"
 
-#: breadcrumb_navxt_admin.php:466 breadcrumb_navxt_admin.php:542
+#: breadcrumb_navxt_admin.php:443 breadcrumb_navxt_admin.php:508
 msgid "The template for %s breadcrumbs, used only when the breadcrumb is not linked."
 msgstr "%s breadcrumblar üçün  şablon,  yalnız breadcrumb link ilə əlaqələndirilmədikdə istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:471
+#: breadcrumb_navxt_admin.php:448
 msgid "%s Root Page"
 msgstr "%s Təməl Səhifə"
 
-#: breadcrumb_navxt_admin.php:474
+#: breadcrumb_navxt_admin.php:451
 msgid "&mdash; Select &mdash;"
 msgstr "&mdash; Seçin &mdash;"
 
-#: breadcrumb_navxt_admin.php:478
+#: breadcrumb_navxt_admin.php:455
 msgid "%s Archive Display"
 msgstr "%s Arxiv Görünüşü"
 
-#: breadcrumb_navxt_admin.php:478
+#: breadcrumb_navxt_admin.php:455
 msgid "Show the breadcrumb for the %s post type archives in the breadcrumb trail."
 msgstr "%s məqalə tipi arxivləri üçün breadcrumb-ı breadcrumb zolağında göstərin."
 
-#: breadcrumb_navxt_admin.php:482
+#: breadcrumb_navxt_admin.php:456
 msgid "%s Taxonomy Display"
 msgstr "%s Təsnifat Görünüşü"
 
-#: breadcrumb_navxt_admin.php:482
+#: breadcrumb_navxt_admin.php:456
 msgid "Show the taxonomy leading to a %s in the breadcrumb trail."
 msgstr "Təsnifat liderliyini %s üçün breadcrumb zolağında göstərin."
 
-#: breadcrumb_navxt_admin.php:486
+#: breadcrumb_navxt_admin.php:460
 msgid "%s Taxonomy"
 msgstr "%s Təsnifat"
 
-#: breadcrumb_navxt_admin.php:512
+#: breadcrumb_navxt_admin.php:485
 msgid "Categories &amp; Tags"
 msgstr "Kateqoriyalar &amp; Taglər"
 
-#: breadcrumb_navxt_admin.php:515
+#: breadcrumb_navxt_admin.php:488
 msgid "Category Template"
 msgstr "Kateqoriya Şablonu"
 
-#: breadcrumb_navxt_admin.php:515
+#: breadcrumb_navxt_admin.php:488
 msgid "The template for category breadcrumbs."
 msgstr "Kateqoriya breadcrumb-ları  üçün  şablon."
 
-#: breadcrumb_navxt_admin.php:516
+#: breadcrumb_navxt_admin.php:489
 msgid "Category Template (Unlinked)"
 msgstr "Kateqoriya Şablonu (Bəyənilməyən)"
 
-#: breadcrumb_navxt_admin.php:516
+#: breadcrumb_navxt_admin.php:489
 msgid "The template for category breadcrumbs, used only when the breadcrumb is not linked."
 msgstr "Kateqoriya breadcrumb-ları üçün şablon, yalnız breadcrumb link ilə əlaqələndirilmədikdə istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:517
+#: breadcrumb_navxt_admin.php:490
 msgid "Tag Template"
 msgstr "Tag Şablonu"
 
-#: breadcrumb_navxt_admin.php:517
+#: breadcrumb_navxt_admin.php:490
 msgid "The template for tag breadcrumbs."
 msgstr "Tag breadcrumb-ları  üçün şablon."
 
-#: breadcrumb_navxt_admin.php:518
+#: breadcrumb_navxt_admin.php:491
 msgid "Tag Template (Unlinked)"
 msgstr "Tag Şablonu (Bəyənilməyən)"
 
-#: breadcrumb_navxt_admin.php:518
+#: breadcrumb_navxt_admin.php:491
 msgid "The template for tag breadcrumbs, used only when the breadcrumb is not linked."
 msgstr "Tag breadcrumb-ları  üçün şablon, yalnız breadcrumb link ilə əlaqələndirilmədikdə istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:551
+#: breadcrumb_navxt_admin.php:517
 msgid "Miscellaneous"
 msgstr "Müxtəlif"
 
-#: breadcrumb_navxt_admin.php:554
+#: breadcrumb_navxt_admin.php:520
 msgid "Author Template"
 msgstr "Müəllif Şablonu"
 
-#: breadcrumb_navxt_admin.php:554
+#: breadcrumb_navxt_admin.php:520
 msgid "The template for author breadcrumbs."
 msgstr "Müəllif breadcrumb-ları üçün şablon."
 
-#: breadcrumb_navxt_admin.php:555
+#: breadcrumb_navxt_admin.php:521
 msgid "Author Template (Unlinked)"
 msgstr "Müəllif Şablonu (Bəyənilməyən)"
 
-#: breadcrumb_navxt_admin.php:555
+#: breadcrumb_navxt_admin.php:521
 msgid "The template for author breadcrumbs, used only when the breadcrumb is not linked."
 msgstr "Müəllif breadcrumb-ları üçün şablon, yalnız breadcrumb link ilə əlaqələndirilmədikdə istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:556
+#: breadcrumb_navxt_admin.php:522
 msgid "Author Display Format"
 msgstr "Müəllif Görüntü Formatı"
 
-#: breadcrumb_navxt_admin.php:556
+#: breadcrumb_navxt_admin.php:522
 msgid "display_name uses the name specified in \"Display name publicly as\" under the user profile the others correspond to options in the user profile."
 msgstr "display_name  istifadəçi profilinin seçimlərində təyin edilən \"Adı kütləvi olaraq görüntüləndir\" kimi görüntülənir."
 
-#: breadcrumb_navxt_admin.php:557
+#: breadcrumb_navxt_admin.php:523
 msgid "Date Template"
 msgstr "Tarix Şablonu"
 
-#: breadcrumb_navxt_admin.php:557
+#: breadcrumb_navxt_admin.php:523
 msgid "The template for date breadcrumbs."
 msgstr "Tarix breadcrumb-ları üçün şablon."
 
-#: breadcrumb_navxt_admin.php:558
+#: breadcrumb_navxt_admin.php:524
 msgid "Date Template (Unlinked)"
 msgstr "Tarix Şablonu (Bəyənilməyən)"
 
-#: breadcrumb_navxt_admin.php:558
+#: breadcrumb_navxt_admin.php:524
 msgid "The template for date breadcrumbs, used only when the breadcrumb is not linked."
 msgstr "Tarix breadcrumb-ları üçün şablon,  yalnız breadcrumb link ilə əlaqələndirilmədikdə istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:559
+#: breadcrumb_navxt_admin.php:525
 msgid "Search Template"
 msgstr "Axtarış Şablonu"
 
-#: breadcrumb_navxt_admin.php:559
+#: breadcrumb_navxt_admin.php:525
 msgid "The anchor template for search breadcrumbs, used only when the search results span several pages."
 msgstr "Axtarış breadcrumb-ları üçün anchor şablonu,  yalnız breadcrumb link ilə əlaqələndirilmədikdə istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:560
+#: breadcrumb_navxt_admin.php:526
 msgid "Search Template (Unlinked)"
 msgstr "Axtarış Şablonu (Bəyənilməyən)"
 
-#: breadcrumb_navxt_admin.php:560
+#: breadcrumb_navxt_admin.php:526
 msgid "The anchor template for search breadcrumbs, used only when the search results span several pages and the breadcrumb is not linked."
 msgstr "Axtarış breadcrumb-ları üçün anchor şablonu, yalnız axtarış nəticələri bir neçə səhifələri birləşdirərsə və breadcrumb link ilə əlaqələndirilmədikdə istifadə edilir."
 
-#: breadcrumb_navxt_admin.php:561
+#: breadcrumb_navxt_admin.php:527
 msgid "404 Title"
 msgstr "404 Başlığı"
 
-#: breadcrumb_navxt_admin.php:562
+#: breadcrumb_navxt_admin.php:528
 msgid "404 Template"
 msgstr "404 Şablonu"
 
-#: breadcrumb_navxt_admin.php:562
+#: breadcrumb_navxt_admin.php:528
 msgid "The template for 404 breadcrumbs."
 msgstr "404 breadcrumb-ları üçün şablon."
 
-#: breadcrumb_navxt_admin.php:567
+#: breadcrumb_navxt_admin.php:533
 msgid "Save Changes"
 msgstr "Dəyişiklikləri yaddaşda saxlayın"
-
-#: includes/mtekk_adminkit.php:201
-msgid "Settings"
-msgstr "Tənzimləmələr"
-
-#: includes/mtekk_adminkit.php:271
-msgid "Your settings are out of date."
-msgstr "Sizin tənzimləmələr köhnəlib."
-
-#: includes/mtekk_adminkit.php:271
-msgid "Migrate the settings now."
-msgstr "Tənzimləmələri köçürün."
-
-#: includes/mtekk_adminkit.php:271
-msgid "Migrate now."
-msgstr "İndi Köçürün."
-
-#: includes/mtekk_adminkit.php:279
-msgid "Your plugin install is incomplete."
-msgstr "Sizin plugin quraşdırmanız natamamdır."
-
-#: includes/mtekk_adminkit.php:279
-msgid "Load default settings now."
-msgstr "Standart tənzimləmələri yükləyin."
-
-#: includes/mtekk_adminkit.php:279
-msgid "Complete now."
-msgstr "İndi Tamamlayın."
-
-#: includes/mtekk_adminkit.php:287
-msgid "Your plugin settings are invalid."
-msgstr "Sizin plugin tənzimləmələri səhvdir."
-
-#: includes/mtekk_adminkit.php:287
-msgid "Attempt to fix settings now."
-msgstr "Tənzimləmələri düzəltmək üçün cəhd edin."
-
-#: includes/mtekk_adminkit.php:287
-msgid "Fix now."
-msgstr "İndi cəh edin."
-
-#: includes/mtekk_adminkit.php:463
-msgid "Settings successfully saved."
-msgstr "Tənzimləmələr uğurla yaddaşda saxlanıldı."
-
-#: includes/mtekk_adminkit.php:463 includes/mtekk_adminkit.php:468
-msgid "Undo the options save."
-msgstr "Seçimlərin yaddaşda saxlanmasını geri qaytarın."
-
-#: includes/mtekk_adminkit.php:463 includes/mtekk_adminkit.php:468
-#: includes/mtekk_adminkit.php:573 includes/mtekk_adminkit.php:597
-#: includes/mtekk_adminkit.php:614
-msgid "Undo"
-msgstr "Geri"
-
-#: includes/mtekk_adminkit.php:468
-msgid "Some settings were not saved."
-msgstr "Bəzi tənzimləmələr yaddaşda saxlanılmadı."
-
-#: includes/mtekk_adminkit.php:469
-msgid "The following settings were not saved:"
-msgstr "Aşağıdakı tənzimləmələr yaddaşda saxlanılmadı:"
-
-#: includes/mtekk_adminkit.php:474
-msgid "Please include this message in your %sbug report%s."
-msgstr "Zəhmət olmasa bu mesajı öz %sbug report%s içinə daxil edin."
-
-#: includes/mtekk_adminkit.php:474
-msgid "Go to the %s support post for your version."
-msgstr "Öz versiyanız üçün %s dəstək mqaləsinə gedin."
-
-#: includes/mtekk_adminkit.php:573
-msgid "Settings successfully imported from the uploaded file."
-msgstr "Tənzimləmələr yüklənən fayldan uğurla idxal edildi."
-
-#: includes/mtekk_adminkit.php:573
-msgid "Undo the options import."
-msgstr "Seçimlərin idxal edilməsini geri qaytarın."
-
-#: includes/mtekk_adminkit.php:578
-msgid "Importing settings from file failed."
-msgstr "Fayldan tənzimləmələrin idxal edilməsi uğursuz oldu."
-
-#: includes/mtekk_adminkit.php:597
-msgid "Settings successfully reset to the default values."
-msgstr "Tənzimləmələr standart dəyərlərə uğurla qaytarıldı."
-
-#: includes/mtekk_adminkit.php:597
-msgid "Undo the options reset."
-msgstr "Seçimlərin sıfırlanmasını geri qaytarın."
-
-#: includes/mtekk_adminkit.php:614
-msgid "Settings successfully undid the last operation."
-msgstr "Tənzimləmələr son əməliyyata uğurla geri qaytarıldı."
-
-#: includes/mtekk_adminkit.php:614
-msgid "Undo the last undo operation."
-msgstr "Son geri qaytarma əməliyyatını geri qaytarın."
-
-#: includes/mtekk_adminkit.php:649
-msgid "Settings successfully migrated."
-msgstr "Tənzimləmələr uğurla köçürüldü."
-
-#: includes/mtekk_adminkit.php:656
-msgid "Default settings successfully installed."
-msgstr "Standart tənzimləmələr uğurla quraşdırıldı."
-
-#: includes/mtekk_adminkit.php:757
-msgid "Import settings from a XML file, export the current settings to a XML file, or reset to the default settings."
-msgstr "Tənzimləmələri XML fayldan idxal edin, cari tənzimləmələri XML fayla ixrac edin, ya da standart dəyərlərə sıfırlayın."
-
-#: includes/mtekk_adminkit.php:760
-msgid "Settings File"
-msgstr "Tənzimləmələr Faylı"
-
-#: includes/mtekk_adminkit.php:763
-msgid "Select a XML settings file to upload and import settings from."
-msgstr "Tənzimləmələri idxal etmək üçün XML tənzimləmələr faylını seçin."
-
-#: breadcrumb_navxt_class.php:203 breadcrumb_navxt_class.php:211
-msgid "Home"
-msgstr "Ana Səhifə"
-
-#: breadcrumb_navxt_class.php:230
-msgid "<a title=\"Reload the current page.\" href=\"%link%\">%htitle%</a>"
-msgstr "<a title=\"Cari Səhifəni yeniləyin.\" href=\"%link%\">%htitle%</a>"
-
-#: breadcrumb_navxt_class.php:242
-msgid "Page %htitle%"
-msgstr "Səhifə %htitle%"
-
-#: breadcrumb_navxt_class.php:266
-msgid "404"
-msgstr "404"
-
-#: breadcrumb_navxt_class.php:269
-msgid "Search results for &#39;<a title=\"Go to the first page of search results for %title%.\" href=\"%link%\">%htitle%</a>&#39;"
-msgstr "Axtarış nəticələri &#39;<a title=\"Axtarış nəticələririnin ilk səhifəsinə getmək üçün %title%.\" href=\"%link%\">%htitle%</a>&#39; üçün"
-
-#: breadcrumb_navxt_class.php:271
-msgid "Search results for &#39;%htitle%&#39;"
-msgstr "Axtarış nəticələri &#39;%htitle%&#39; üçün"
-
-#: breadcrumb_navxt_class.php:274
-msgid "<a title=\"Go to the %title% tag archives.\" href=\"%link%\">%htitle%</a>"
-msgstr "<a title=\"Gedin  %title% tag arxivlərinə.\" href=\"%link%\">%htitle%</a>"
-
-#: breadcrumb_navxt_class.php:279
-msgid "Articles by: <a title=\"Go to the first page of posts by %title%.\" href=\"%link%\">%htitle%</a>"
-msgstr "Arxivlər tərəfindən: <a title=\"Məqalələrin ilk səhifəsinə %title% vasitəsilə gedin.\" href=\"%link%\">%htitle%</a>"
-
-#: breadcrumb_navxt_class.php:281
-msgid "Articles by: %htitle%"
-msgstr "Artikllər tərəfindən: %htitle%"
-
-#: breadcrumb_navxt_class.php:286
-msgid "<a title=\"Go to the %title% category archives.\" href=\"%link%\">%htitle%</a>"
-msgstr "<a title=\"Gedin %title% kateqoriya arxivlərinə.\" href=\"%link%\">%htitle%</a>"
-
-#: breadcrumb_navxt_class.php:290
-msgid "<a title=\"Go to the %title% archives.\" href=\"%link%\">%htitle%</a>"
-msgstr "<a title=\"Gedin %title% arxivlərinə.\" href=\"%link%\">%htitle%</a>"
