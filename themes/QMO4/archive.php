@@ -3,13 +3,6 @@
 $date_format = get_option("date_format");
 $time_format = get_option("time_format");
 
-// Count search results
-$search_count = 0;
-$search = new WP_Query("s=$s & showposts=-1");
-if($search->have_posts()) : while($search->have_posts()) : $search->the_post();
-$search_count++;
-endwhile; endif;
-
 get_header(); ?>
 <section id="content-main" class="hfeed vcalendar" role="main">
 <?php if (have_posts()) : ?>
@@ -22,7 +15,7 @@ get_header(); ?>
   <?php elseif (is_month()) : ?>Posts for <?php the_time('F, Y'); ?>
   <?php elseif (is_year()) : ?>Posts for <?php the_time('Y'); ?>
   <?php elseif (is_author()) : ?>Posts and pages by <?php echo get_userdata(intval($author))->display_name; ?>
-  <?php elseif (is_search()) : ?>We found <?php echo $wp_query->found_posts; ?> results for &#8220;<?php the_search_query(); ?>&#8221;
+  <?php elseif (is_search()) : ?>Search results for &#8220;<?php the_search_query(); ?>&#8221;
   <?php else : ?>Posts
   <?php endif; ?>
   </h1>
