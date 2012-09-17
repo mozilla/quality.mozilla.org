@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BuddyPress \n"
 "Report-Msgid-Bugs-To: http://wppolyglots.wordpress.com\n"
-"POT-Creation-Date: 2012-08-05 21:37:42+00:00\n"
+"POT-Creation-Date: 2012-08-08 17:38:32+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1715,51 +1715,51 @@ msgstr ""
 msgid "My Account"
 msgstr ""
 
-#: bp-core/bp-core-avatars.php:223
+#: bp-core/bp-core-avatars.php:221
 msgid "Avatar Image"
 msgstr ""
 
-#: bp-core/bp-core-avatars.php:484
+#: bp-core/bp-core-avatars.php:482
 msgid "There is no error, the file uploaded with success"
 msgstr ""
 
-#: bp-core/bp-core-avatars.php:485 bp-core/bp-core-avatars.php:486
+#: bp-core/bp-core-avatars.php:483 bp-core/bp-core-avatars.php:484
 msgid "Your image was bigger than the maximum allowed file size of: "
 msgstr ""
 
-#: bp-core/bp-core-avatars.php:487
+#: bp-core/bp-core-avatars.php:485
 msgid "The uploaded file was only partially uploaded"
 msgstr ""
 
-#: bp-core/bp-core-avatars.php:488
+#: bp-core/bp-core-avatars.php:486
 msgid "No file was uploaded"
 msgstr ""
 
-#: bp-core/bp-core-avatars.php:489
+#: bp-core/bp-core-avatars.php:487
 msgid "Missing a temporary folder"
 msgstr ""
 
-#: bp-core/bp-core-avatars.php:493
+#: bp-core/bp-core-avatars.php:491
 msgid "Your upload failed, please try again. Error was: %s"
 msgstr ""
 
-#: bp-core/bp-core-avatars.php:498
+#: bp-core/bp-core-avatars.php:496
 msgid "The file you uploaded is too big. Please upload a file under %s"
 msgstr ""
 
-#: bp-core/bp-core-avatars.php:503
+#: bp-core/bp-core-avatars.php:501
 msgid "Please upload only JPG, GIF or PNG photos."
 msgstr ""
 
-#: bp-core/bp-core-avatars.php:514 bp-core/bp-core-avatars.php:527
+#: bp-core/bp-core-avatars.php:512 bp-core/bp-core-avatars.php:525
 msgid "Upload Failed! Error was: %s"
 msgstr ""
 
-#: bp-core/bp-core-avatars.php:545
+#: bp-core/bp-core-avatars.php:543
 msgid "Upload failed! Error was: %s"
 msgstr ""
 
-#: bp-core/bp-core-avatars.php:680 bp-core/bp-core-classes.php:174
+#: bp-core/bp-core-avatars.php:678 bp-core/bp-core-classes.php:174
 #: bp-core/bp-core-classes.php:175 bp-core/bp-core-classes.php:176
 #: bp-core/bp-core-template.php:98 bp-core/bp-core-template.php:107
 msgid "Avatar of %s"
@@ -1798,11 +1798,11 @@ msgstr ""
 msgid "Random Site"
 msgstr ""
 
-#: bp-core/bp-core-catchuri.php:281
+#: bp-core/bp-core-catchuri.php:278
 msgid "This user has been marked as a spammer. Only site admins can view this profile."
 msgstr ""
 
-#: bp-core/bp-core-catchuri.php:455 bp-core/bp-core-catchuri.php:514
+#: bp-core/bp-core-catchuri.php:452 bp-core/bp-core-catchuri.php:511
 msgid "You must log in to access the page you requested."
 msgstr ""
 
@@ -3421,8 +3421,8 @@ msgid "Edit Member"
 msgstr ""
 
 #: bp-members/bp-members-adminbar.php:99
-#: bp-xprofile/bp-xprofile-template.php:894
-#: bp-xprofile/bp-xprofile-template.php:895
+#: bp-xprofile/bp-xprofile-template.php:899
+#: bp-xprofile/bp-xprofile-template.php:900
 msgid "Edit Profile"
 msgstr ""
 
@@ -3541,19 +3541,19 @@ msgstr ""
 msgid "You"
 msgstr ""
 
-#: bp-members/bp-members-screens.php:90
+#: bp-members/bp-members-screens.php:94
 msgid "Please make sure you enter your password twice"
 msgstr ""
 
-#: bp-members/bp-members-screens.php:94
+#: bp-members/bp-members-screens.php:98
 msgid "The passwords you entered do not match."
 msgstr ""
 
-#: bp-members/bp-members-screens.php:117
+#: bp-members/bp-members-screens.php:121
 msgid "This is a required field"
 msgstr ""
 
-#: bp-members/bp-members-screens.php:247
+#: bp-members/bp-members-screens.php:251
 msgid "Your account is now active!"
 msgstr ""
 
@@ -3596,11 +3596,11 @@ msgstr ""
 msgid "registered %s"
 msgstr ""
 
-#: bp-members/bp-members-template.php:1100
+#: bp-members/bp-members-template.php:1076
 msgid "Your Avatar"
 msgstr ""
 
-#: bp-members/bp-members-template.php:1170
+#: bp-members/bp-members-template.php:1146
 msgid "Activity RSS Feed"
 msgstr ""
 
@@ -4393,7 +4393,7 @@ msgstr ""
 #. translators: no option picked in select box
 
 #: bp-themes/bp-default/forums/index.php:116
-#: bp-xprofile/bp-xprofile-template.php:458
+#: bp-xprofile/bp-xprofile-template.php:463
 msgid "----"
 msgstr ""
 
@@ -5523,62 +5523,62 @@ msgstr ""
 msgid "Your new avatar was uploaded successfully!"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:663
+#: bp-xprofile/bp-xprofile-template.php:668
 msgid "January"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:664
+#: bp-xprofile/bp-xprofile-template.php:669
 msgid "February"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:665
+#: bp-xprofile/bp-xprofile-template.php:670
 msgid "March"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:666
+#: bp-xprofile/bp-xprofile-template.php:671
 msgid "April"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:667
+#: bp-xprofile/bp-xprofile-template.php:672
 msgid "May"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:668
+#: bp-xprofile/bp-xprofile-template.php:673
 msgid "June"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:669
+#: bp-xprofile/bp-xprofile-template.php:674
 msgid "July"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:670
+#: bp-xprofile/bp-xprofile-template.php:675
 msgid "August"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:671
+#: bp-xprofile/bp-xprofile-template.php:676
 msgid "September"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:672
+#: bp-xprofile/bp-xprofile-template.php:677
 msgid "October"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:673
+#: bp-xprofile/bp-xprofile-template.php:678
 msgid "November"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:674
+#: bp-xprofile/bp-xprofile-template.php:679
 msgid "December"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:842
+#: bp-xprofile/bp-xprofile-template.php:847
 msgid "Avatar uploads are currently disabled. Why not use a <a href=\"http://gravatar.com\" target=\"_blank\">gravatar</a> instead?"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:850
+#: bp-xprofile/bp-xprofile-template.php:855
 msgid "Profile not recently updated"
 msgstr ""
 
-#: bp-xprofile/bp-xprofile-template.php:860
+#: bp-xprofile/bp-xprofile-template.php:865
 msgid "Profile updated %s"
 msgstr ""
