@@ -16,6 +16,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+require_once(dirname(__FILE__) . '/includes/block_direct_access.php');
 class bcn_widget extends WP_Widget
 {
 	//Default constructor
@@ -35,8 +36,10 @@ class bcn_widget extends WP_Widget
 	function widget($args, $instance)
 	{
 		extract($args);
+		//A bit of a hack but we need the DB settings to know if we should exit early
+		$opt = get_option('bcn_options');
 		//If we are on the front page and don't display on the front, return early
-		if($instance['front'] && is_front_page())
+		if($instance['front'] && is_front_page() && !(is_paged() && $opt['bpaged_display']))
 		{
 			return;
 		}
