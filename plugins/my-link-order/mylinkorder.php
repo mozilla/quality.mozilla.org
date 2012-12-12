@@ -3,7 +3,7 @@
 Plugin Name: My Link Order
 Plugin URI: http://www.geekyweekly.com/mylinkorder
 Description: My Link Order allows you to set the order in which links and link categories will appear in the sidebar. Uses a drag and drop interface for ordering. Adds a widget with additional options for easy installation on widgetized themes.
-Version: 3.3.2
+Version: 3.5
 Author: Andrew Charlton
 Author URI: http://www.geekyweekly.com
 Author Email: froman118@gmail.com
@@ -530,7 +530,7 @@ function mylinkorder_get_bookmarks($args = '') {
 	global $wpdb;
 
 	$defaults = array(
-		'orderby' => 'name', 'order' => 'ASC',
+		'orderby' => 'order', 'order' => 'ASC',
 		'limit' => -1, 'category' => '',
 		'category_name' => '', 'hide_invisible' => 1,
 		'show_updated' => 0, 'include' => '',
@@ -640,8 +640,11 @@ function mylinkorder_get_bookmarks($args = '') {
 			$orderparams = array();
 			foreach ( explode(',', $orderby) as $ordparam ) {
 				$ordparam = trim($ordparam);
-				if ( in_array( $ordparam, array( 'order', 'name', 'url', 'visible', 'rating', 'owner', 'updated' ) ) )
+				$keys = array( 'link_order', 'link_id', 'link_name', 'link_url', 'link_visible', 'link_rating', 'link_owner', 'link_updated', 'link_notes' );
+				if ( in_array( 'link_' . $ordparam, $keys ) )
 					$orderparams[] = 'link_' . $ordparam;
+				elseif ( in_array( $ordparam, $keys ) )
+					$orderparams[] = $ordparam;
 			}
 			$orderby = implode(',', $orderparams);
 	}
@@ -663,7 +666,7 @@ function mylinkorder_get_bookmarks($args = '') {
 	if ($limit != -1)
 		$query .= " LIMIT $limit";
 
-	$results = $wpdb->get_results($wpdb->prepare($query));
+	$results = $wpdb->get_results($query);
 
 	$cache[ $key ] = $results;
 	wp_cache_set( 'get_bookmarks', $cache, 'bookmark' );

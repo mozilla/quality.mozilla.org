@@ -3,8 +3,8 @@ Contributors: eskapism, MarsApril
 Donate link: http://eskapism.se/sida/donate/
 Tags: page, pages, posts, custom posts, tree, cms, dashboard, overview, drag-and-drop, rearrange, management, manage, admin
 Requires at least: 3.0
-Tested up to: 3.4.2
-Stable tag: 0.8.14
+Tested up to: 3.5
+Stable tag: 1.1
 
 Adds a tree of all your pages or custom posts. Use drag & drop to reorder your pages, and edit, view, add, and search your pages.
 
@@ -23,11 +23,14 @@ Page management in WordPress won't get any easier than this!
 * View your pages & posts in a tree-view, like you view files in Windows Explorer or the Finder in OS X
 * Drag and drop to rearrange/order your pages
 * Add pages after or inside a page
+* Add multiple pages at once - perfect for setting up a new site structure
 * Edit pages
 * View pages
 * Search pages
 * Available for both regular pages and custom posts
+* Works with both hierarchical and non-hierarchical post types
 * View your site hierarchy directly from the WordPress dashboard
+* Drag and drop between trees with different post types to change to post type of the draged item, i.e. change a regular page to became any custom post type
 * Support for translation plugin [WPML](http://wordpress.org/extend/plugins/sitepress-multilingual-cms/), so you can manage all the languages of your site
 
 #### Screencast
@@ -52,6 +55,8 @@ This plugin is available in the following languages:
 * Polish
 * Greek
 * Danish
+* Lithuanian
+* Estonian
 
 #### Making the tree available for your vistors
 If you're looking for a version of this page tree that the vistors of your site can use, then check out
@@ -85,6 +90,41 @@ Now the tree with the pages will be visible both on the dashboard and in the men
 7. Users of WPML can find all their languages in the tree
 
 == Changelog ==
+
+= 1.1 =
+- Added "Add new"-link next to headline, to better match the regular post overview page + it makes it possible to add new pages/posts when there are no pages/posts added (previously there needed to be at least one post added to be able to add new posts)
+- Added post count in parenthesis after each post status. Also makes the page match the regular post overview page a it more. Works for both built in post types and custom post types + if WPML is installed it will show post count for each language too.
+- Fixed a bug with sortables (well, I kinda forgot to load that script at all!) that made the plugin only work on the dashboard.
+- Fixed some IE-bugs
+
+= 1.0 =
+- New: create multiple pages at once! Add multiple pages faster than ever before! You can ever select if the new pages should be drafts or published. And ever drag and drop the pages to get the correct order even before adding them. I know - it's awesome!
+- Fixed: adds new pages with the correct and selected WPML-language
+- Added: you can now change the type of a post by draging the post between different trees on the dashboard. So if you have one custom post type called "Cars" and another called "Bicycles" you can now drag a page from the cars tree to the bicicyles tree and the post will converted to that post type. Pretty powerful feature that you used to need a separately plugin to be able to do.
+- Misc fixes
+- Added new POT-file for translators
+- I decided to call this version 1. I've been using this plugin for so long time now and I use it in almost every WordPress project I participate in (all projects with lots of pages), so with this new add-mulitple-page-feature it feels like it's time to go to version 1. Hope you'll agree! :)
+
+= 0.10.1 =
+- Fixed popup closing to fast on Firefox.
+- Enable menu item setting by default for hierarchical post types during first install. It was confusing when it was enabled for pages but not for other post types. Consistency!
+- Added link to settings page to plugin listing.
+- Fixed: WPML-stuff now also works on custom post types
+
+= 0.10 =
+- Fixed position of action div. Now it's always to the right of the page name.
+- Fixed so action div never is below the fold of the browser. Instead it's moved up until it's visible.
+- Fixed problem related to hoverIntent and mouseover and drag and drop. There was just to many wierd things going on so I switched to my own solution instead. Let me know if it works ok for you too now again!
+
+= 0.9 =
+- Only output scripts and styles on pages that the plugin uses. This should speed up other parts of the WordPress admin a little tiny itsy bitsy bit.
+- Added a hopefully not to spammy box about donation and stuff. Hopefully it it encourages some of you to give it a good review or maybe even donate some money. I've spent a lot, lot, LOT of time developing this plugin you know ;)
+- Changed title on dashboard widgets and changed name of the menu item under each supported post type. Makes the titles/names look/feel a bit less dorky.
+- Show icons next to the headline of top of pages with the tree
+- Minor CSS changes like a little bit bigger text on the pages and a bit more spacing between each page. Makes a bit easier to drag and drop/move them around.
+- Changed javascript to to use on() istead on live()
+- Removed hoverIntent since that is included in WordPress by default
+- Started using hoverIndent to make the popup with page actions show after a short while for each page. This also means that you can move outside the actions-pop-up for a short while without the pop up being closed - a thing that annoyed me very much. This makes the whole popup actions div thingie feels less in-your-face all the time. Hope you like it as much as I do!
 
 = 0.8.14 =
 - Added Estonian translation
@@ -351,8 +391,4 @@ http://wordpress.org/support/topic/plugin-cms-tree-page-view-broken-for-language
 = 0.1a =
 - First public version.
 
-
-== Still on WordPress 2? ==
-If you are using WordPress 2.x you can try this old version instead:
-http://downloads.wordpress.org/plugin/cms-tree-page-view.0.4.9.zip
 

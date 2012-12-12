@@ -78,14 +78,18 @@
 	padding-bottom: 2px;*/
 	position: relative;
 }
-.jstree li.jstree-closed,
+/*.jstree li.jstree-closed,
 .jstree li.jstree-open
  {
-	/* padding-top: 4px;
-	padding-bottom: 4px; */
-}
-.jstree li.hover a,
+}*/
+
+/*.jstree li.hover a,
 .jstree li a.hover
 {
+	background-color: #e7f4f9;
+}
+*/
+
+.jstree li a:hover {
 	background-color: #e7f4f9;
 }

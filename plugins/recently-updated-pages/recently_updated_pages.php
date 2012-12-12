@@ -6,8 +6,7 @@
      * Description:     Purpose of this plugin is to display the list of pages (and optionally posts) on
      *                  Wordpress blog those have been recently updated. It also lets you use WP's shortcodes to
 	 *					display last update date of the page or blog posts.
-     * Version:         1.0.3
-     * Plugin URI:      http://resource.bdwebwork.com/WordpressPlugins/RecentlyUpdatedPages/
+     * Version:         1.0.4
      * Author:          Ehsanul Haque
      * Author URI:      http://ehsanIs.me/
      *
@@ -178,6 +177,7 @@ In your PHP template file place the following code:<br/>
 <code>&lt;&#63;php<br/>echo do_shortcode('[rup_display_update_date]');<br/>&#63;&gt;</code><br/>
 To display the last update date within the content of your blog articles or pages use the shortcode like:<br/>
 <code>[rup_display_update_date]</code>
+</small>
 </p>
 <?php
         }

@@ -3,7 +3,7 @@
 Plugin Name: Flexi Pages Widget
 Plugin URI: http://srinig.com/wordpress/plugins/flexi-pages/
 Description: A highly configurable WordPress sidebar widget to list pages and sub-pages. User friendly widget control comes with various options. 
-Version: 1.6.10
+Version: 1.6.11
 Author: Srini G
 Author URI: http://srinig.com/wordpress
 License: GPL2
@@ -60,6 +60,7 @@ function flexipages_init()
 		if(is_home() && !is_front_page()) {
 			if($curr_page_id = get_option('page_for_posts'))
 				$curr_page = &get_post($curr_page_id);
+			else return array();
 		}
 		else if( is_page() ) {
 			global $wp_query;
@@ -133,6 +134,8 @@ function flexipages_init()
 		
 		extract($options);
 		
+		$poge_array = array();
+		
 		if($show_home && $show_home != 'off') {
 			$class = "home_page";
 			$class .= is_home()?" current_page_item":"";			
@@ -144,8 +147,6 @@ function flexipages_init()
 				'class' => $class
 			);
 		}	
-		else
-			$page_array = array();
 			
 		if($show_subpages == -2) $show_subpages = 2;
 		if($show_subpages == -3) $show_subpages = 3;
@@ -180,6 +181,7 @@ function flexipages_init()
 					!$include)
 					$children = flexipages_get_pages("child_of={$page->ID}&parent={$page->ID}&sort_column={$sort_column}&sort_order={$sort_order}&exclude={$exclude}&include={$include}&show_subpages={$show_subpages}&depth={$depth}&show_date={$show_date}&date_format={$date_format}", $level+1);
 				
+				$date = '';
 				if($show_date) {
 					$x = explode(" ", $page->post_date);
 					$y = explode("-", $x[0]);

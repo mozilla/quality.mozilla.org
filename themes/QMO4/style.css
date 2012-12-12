@@ -11,8 +11,8 @@ Tags: buddypress
 
 Colors -
 Blue      #369
-Orange    #f93
-Green     #390
+Orange    #e3720e
+Green     #2a7e00
 
 Font sizes -
 13px base size
@@ -48,20 +48,20 @@ body { background: #fff; font: 13px/1.538 Georgia, Times, serif; color: #333; pa
 
 /*** @Links *********/
 :link { text-decoration: none; color: #369; }
-:visited { text-decoration: none; color: #ef8a1d; }
+:visited { text-decoration: none; color: #e3720e; }
 :link:hover, :visited:hover, 
 :link:active, :visited:active, 
 :link:focus, :visited:focus { text-decoration: underline; }
 
 .page-title :visited, .section-title :visited { color: #369; }
 .entry-content :link, .entry-content :visited, 
-.entry-summary :link, .entry-summary :visited { color: #ef8a1d; font-weight: bold; }
+.entry-summary :link, .entry-summary :visited { color: #e3720e; font-weight: bold; }
 .entry-content :link:focus, .entry-content :visited:focus, 
 .entry-summary :link:focus, .entry-summary :visited:focus { background-color: #eee; }
 
 /* Override The Events Calendar styles */
 .category-events .entry-title a:link { color: #369; }
-.category-events .entry-title a:visited { color: #ef8a1d; }
+.category-events .entry-title a:visited { color: #e3720e; }
 
 /*** @Buttons *********/
 .group-button a:link, .group-button a:visited,
@@ -142,13 +142,13 @@ input[type='button']:hover, input[type='button']:focus {
 input[disabled] { opacity: .6; cursor: default; }
 
 /*** @Headings *********/
-h1, h2, h3, h4 { color: #390; font-weight: normal; line-height: 1.2; margin: 0 0 .25em; }
+h1, h2, h3, h4 { color: #2a7e00; font-weight: normal; line-height: 1.2; margin: 0 0 .25em; }
 h1 { font-size: 2.32em; }
 h2, .entry-content h1, .entry-title { font-size: 1.69em; margin-bottom: .5em; }
 h3 { font-size: 1.385em; }
 h4 { font-size: 1.2em; }
 h5, h6 { font-size: 1em; }
-legend { color: #390; font-size: 1.2em; }
+legend { color: #2a7e00; font-size: 1.2em; }
 .page-title, .section-title, .single .entry-title { font-size: 2.32em; line-height: 1.2; margin-bottom: .75em; }
 
 /* @Layout *********/
@@ -192,7 +192,7 @@ body.page .page { padding: 0; background-image: none; }
 .post:after, .page:after, .attachment:after { content: "."; display: block; clear: both; height: 0; visibility: hidden; }
 
 /*** @Flags *********/
-.post .event-flag, .post .tweet-flag, .page .doc-flag, .page .team-flag { position: absolute; left: 0; top: 0; width: 50px; padding-top: 50px; text-align: center; font: bold .846em Verdana, Tahoma, sans-serif; text-transform: uppercase; letter-spacing: 0.1em; color: #390; }
+.post .event-flag, .post .tweet-flag, .page .doc-flag, .page .team-flag { position: absolute; left: 0; top: 0; width: 50px; padding-top: 50px; text-align: center; font: bold .846em Verdana, Tahoma, sans-serif; text-transform: uppercase; letter-spacing: 0.1em; color: #2a7e00; }
 .post .event-flag { background: url("img/flag-event.png") 50% 0 no-repeat; }
 .post .tweet-flag { background: url("img/flag-tweet.png") 50% 0 no-repeat; }
 .page .doc-flag, .type-page .doc-flag { background: url("img/flag-docs.png") 50% 0 no-repeat; }
@@ -214,7 +214,7 @@ body.page .page { padding: 0; background-image: none; }
 .entry-content dt { font-style: italic; }
 .entry-content dd { padding-left: 15px; }
 .entry-content table { border-collapse: collapse; border: solid #d4d1c3; border-width: 1px 1px 0; }
-.entry-content table caption { font: .923em Verdana, Tahoma, sans-serif; color: #390; }
+.entry-content table caption { font: .923em Verdana, Tahoma, sans-serif; color: #2a7e00; }
 .entry-content th, .entry-content td { border-bottom: 1px solid #d4d1c3; padding: 0 4px; }
 .entry-content thead th { font-size: 90%; text-align: left; font-weight: normal; }
 .entry-content tbody th { text-align: left; }
@@ -243,7 +243,7 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus { border-
 #content img { max-width: 100%; height: auto; }
 #content .jcrop-holder img, #avatar-upload-form img, #create-group-form img, #group-settings-form img, #avatar-crop-pane #avatar-crop-preview { max-width: 999em; }
 .entry-content a img { padding: 2px; }
-.entry-content a:hover img, .entry-content a:focus img, .entry-content a:active img { padding: 1px; border: 1px solid #ef8a1d; }
+.entry-content a:hover img, .entry-content a:focus img, .entry-content a:active img { padding: 1px; border: 1px solid #e3720e; }
 
 .alignleft { float: left; margin: 0 1em 15px 0; }
 a .alignleft { margin: -2px 1em 15px -2px; }
@@ -353,13 +353,13 @@ table.tec-calendar td.tec-present .daynum { background: #390; font-weight: bold;
 table.tec-calendar td .tec-event { line-height: 1.2; padding: .5em 10px; }
 table.tec-calendar hr { background: #bcc; height: 1px; margin: 0 9px; border: 0; }
 table.tec-calendar .tec-tooltip .tec-event-body { font-size: 1em; padding: 0 10px; margin: 0 0 .75em; max-height: 10.25em; overflow: hidden; }
-table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10px; margin: .25em 0; background: transparent none; color: #390; height: auto; line-height: 1.2; }
+table.tec-calendar .tec-tooltip .tec-event-title { font-size: 1em; padding: 0 10px; margin: .25em 0; background: transparent none; color: #2a7e00; height: auto; line-height: 1.2; }
 table.tec-calendar .tec-event-date { font-weight: bold; }
 
 /* @Events @Calendar @List *********/
 .category-events #content #tec-content { width: auto; background: transparent none; margin: 0; padding: 0; }
 #tec-events-loop .post.vevent { padding: 0 0 1em; margin-bottom: 1em; }
-#tec-events-loop .event-day { clear: both; margin: 1em 0; color: #390; font: bold .923em Verdana, Tahoma, sans-serif; text-transform: uppercase; letter-spacing: .01em; }
+#tec-events-loop .event-day { clear: both; margin: 1em 0; color: #2a7e00; font: bold .923em Verdana, Tahoma, sans-serif; text-transform: uppercase; letter-spacing: .01em; }
 #tec-events-loop .entry-summary { margin: 0; padding: 0; }
 #tec-events-loop .event-date { font-size: 1em; }
 
@@ -550,14 +550,14 @@ ul.wp-tag-cloud li { display: inline; }
 .comments-head .cmt-post { width: 20%; float: right; font-weight: bold; background: url("img/feedback-arrow.png") 0 50% no-repeat; padding: .25em 0 .25em 60px; }
 .comments-head .cmt-post:visited { color: #369; }
 
-#comments .entry-title { font: .923em/1 Verdana, Tahoma, sans-serif; color: #390; }
+#comments .entry-title { font: .923em/1 Verdana, Tahoma, sans-serif; color: #2a7e00; }
 #comments .entry-title cite { font-style: normal; }
 #comment-list { list-style: none; margin: 0 0 2em; padding-bottom: 10px; background: url("img/pencil-line.png") 123% bottom repeat-x; }
 #comment-list .comment, #comment-list .pingback, #comment-list .trackback { position: relative; padding: 2em 0 0 80px; margin-bottom: 2em; background: url("img/pencil-line.png") center top repeat-x; }
 #comment-list.av .comment { min-height: 70px; }
 #comment-list .odd { background-image: url(img/pencil-line-stack.gif); }
 #comment-list .author { font-weight: bold; }
-#comment-list .comment-meta a { color: #390; }
+#comment-list .comment-meta a { color: #2a7e00; }
 #comment-list .comment-meta abbr { border: 0; }
 #comment-list .entry-title a:hover, 
 #comment-list .entry-title a:focus, 
@@ -581,7 +581,7 @@ ul.wp-tag-cloud li { display: inline; }
 /* @Comment @Form *********/
 #respond { width: 100%; }
 #comment-form { position: relative; padding-top: 2em; }
-#comment-form legend span { position: absolute; top: -.2em; color: #390; font-size: 1.231em; }
+#comment-form legend span { position: absolute; top: -.2em; color: #2a7e00; font-size: 1.231em; }
 #comment-form .self { margin-bottom: 1em; }
 #comment-form .self .logout { font: .923em Verdana, Tahoma, sans-serif; margin-left: 1em; }
 #comment-form .self .avatar { position: absolute; left: 0; top: 2em; }
