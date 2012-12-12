@@ -18,7 +18,7 @@
 
   <?php while ( bp_members() ) : bp_the_member(); ?>
     <li class="item member vcard">
-      <a href="<?php bp_member_permalink(); ?>profile/" class="fn url"><?php bp_member_avatar('width=50&height=50'); ?> <strong><?php bp_displayed_user_fullname(); ?></strong></a>
+      <a href="<?php bp_member_permalink(); ?>profile/" class="fn url"><?php bp_member_avatar('width=50&height=50'); ?> <strong><?php bp_member_name(); ?></strong></a>
       <?php if (bp_get_member_profile_data('field=IRC Nickname') != "") : ?>
         <span class="nickname">IRC: <?php bp_member_profile_data( 'field=IRC Nickname' ); ?></span>
       <?php endif; ?>

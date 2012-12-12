@@ -4,7 +4,7 @@ $user_email = $user->user_email;
 do_action( 'bp_before_member_header' ); ?>
 <div id="member-head" class="hcard">
   <div class="member-info">
-    <h1 class="fn"><a class="url" href="<?php bp_user_link(); ?>"><?php bp_member_name(); ?> <?php bp_displayed_user_avatar( 'type=full&width=100&height=100' ); ?></a></h1>
+    <h1 class="fn"><a class="url" href="<?php bp_user_link(); ?>"><?php bp_displayed_user_fullname(); ?> <?php bp_displayed_user_avatar( 'type=full&width=100&height=100' ); ?></a></h1>
     <?php if (bp_get_profile_field_data('field=IRC Nickname') != "") : ?>
     <h2 class="nickname"><?php bp_profile_field_data( 'field=IRC Nickname' ); ?></h2>
     <?php endif; ?>
