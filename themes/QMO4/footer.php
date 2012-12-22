@@ -4,7 +4,7 @@
 <?php do_action( 'bp_before_footer' ); ?>
     
   <footer id="site-info" role="contentinfo" class="section">
-    <p id="copyright">Copyright &copy; <?php echo date('Y'); ?> Mozilla. All rights reserved. | <a href="http://www.mozilla.com/privacy-policy.html" rel="external">Privacy Policy</a> | <a href="http://www.mozilla.com/about/legal.html" rel="external">Legal Notices</a></p>
+    <p id="copyright">Copyright &copy; <?php echo date('Y'); ?> Mozilla. All rights reserved. | <a href="http://www.mozilla.org/privacy-policy.html" rel="external">Privacy Policy</a> | <a href="http://www.mozilla.org/about/legal.html" rel="external">Legal Notices</a></p>
     <p>Portions of QMO content are &copy; 1998&ndash;<?php echo date('Y');?> by individual mozilla.org contributors.</p>
     <p>Some content available under a <a href="http://www.mozilla.org/foundation/licensing/website-content.html" rel="external license">Creative Commons license</a></p>
   <?php if (get_page_by_path('about')) : ?>
