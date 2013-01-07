@@ -1,7 +1,7 @@
-<?php 
+<?php
   // Fetch the category IDs
   $events_cat = get_category_by_slug('events')->cat_ID;
-  $news_cat = get_category_by_slug('qmo-news')->cat_ID; 
+  $news_cat = get_category_by_slug('qmo-news')->cat_ID;
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -14,25 +14,25 @@
   <![endif]-->
   <meta name="Rating" content="General">
   <meta name="MSSmartTagsPreventParsing" content="true">
-  
+
   <meta name="viewport" content="width=device-width">
-  
+
   <!-- For Facebook -->
   <meta property="og:site_name" content="<?php bloginfo('name'); ?>">
   <meta property="og:title" content="<?php if (is_singular()) : single_post_title(); else : bloginfo('name'); endif; ?>">
   <meta property="og:url" content="<?php if (is_singular()) : the_permalink(); else : bloginfo('url'); endif; ?>">
   <meta property="og:description" content="<?php fc_meta_desc(); ?>">
   <meta property="og:image" content="<?php bloginfo('stylesheet_directory'); ?>/img/Q.png">
-  
+
   <meta name="title" content="<?php if (is_singular()) : single_post_title(); echo ' | '; endif; bloginfo('name'); ?>">
   <meta name="description" content="<?php fc_meta_desc(); ?>">
-  
+
   <link rel="profile" href="http://gmpg.org/xfn/11">
   <link rel="shortcut icon" type="image/ico" href="<?php bloginfo('stylesheet_directory'); ?>/favicon.ico">
   <link rel="alternate" type="application/rss+xml" title="<?php bloginfo('name'); ?> News and Events Feed" href="<?php bloginfo('rss2_url'); echo '?cat='.$news_cat.','.$events_cat; ?>">
   <link rel="alternate" type="application/rss+xml" title="<?php bloginfo('name'); ?> Community Feed" href="<?php bloginfo('rss2_url'); ?>">
   <link rel="home" href="<?php echo bloginfo('url'); ?>">
-  <link rel="copyright" href="#copyright">  
+  <link rel="copyright" href="#copyright">
   <?php if ( function_exists( 'bp_sitewide_activity_feed_link' ) ) : ?>
   	<link rel="alternate" type="application/rss+xml" title="<?php bloginfo('name'); ?> | <?php _e('Site Wide Activity RSS Feed', 'buddypress' ) ?>" href="<?php bp_sitewide_activity_feed_link() ?>" />
   <?php endif; ?>
@@ -63,21 +63,31 @@
     elseif ( is_year() ) { $post = $posts[0]; _e('Posts for ', 'qmo'); echo the_time('Y'); echo ' &#124; '; bloginfo('name'); qmo_page_number(); }
     else {
       if ( function_exists('bp_is_active') ) :
-        qmo_page_title('&#124;',1,'right'); bloginfo('name'); qmo_page_number(); 
-      else : 
+        qmo_page_title('&#124;',1,'right'); bloginfo('name'); qmo_page_number();
+      else :
         wp_title('&#124;',1,'right'); bloginfo('name'); qmo_page_number();
       endif;
       }
   ?></title>
   <?php if ( function_exists('bp_is_active') ) { do_action( 'bp_head' ); } ?>
   <?php wp_head(); ?>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-35433268-17']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
 </head>
 
 <body <?php body_class(); ?>>
 <div class="wrapper">
 <?php do_action( 'bp_before_header' ); ?>
   <header id="masthead" class="section">
-  
+
     <div id="header">
       <a href="http://www.mozilla.org/" id="tabzilla">Mozilla</a>
     </div><!-- end #header -->
@@ -98,7 +108,7 @@
         <li><a href="<?php echo wp_login_url(); ?>">Log in</a></li>
         <?php endif; ?>
       </ul>
-      
+
       <div class="section">
         <?php include (TEMPLATEPATH . '/main-nav.php'); ?>
       </div>
