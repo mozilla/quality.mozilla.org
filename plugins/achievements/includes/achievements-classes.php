@@ -422,13 +422,13 @@ class DPA_Achievement {
 			break;
 
 			case 'active':
-				$sql = $wpdb->prepare( "SELECT a.{$select_vals} FROM {$bp->achievements->table_achievements} as a {$extras}WHERE is_active = 1" );
-				$sql_total_count = $wpdb->prepare( "SELECT COUNT(a.id) FROM {$bp->achievements->table_achievements} as a {$extras}WHERE is_active = 1" );
+				$sql = "SELECT a.{$select_vals} FROM {$bp->achievements->table_achievements} as a {$extras}WHERE is_active = 1";
+				$sql_total_count ="SELECT COUNT(a.id) FROM {$bp->achievements->table_achievements} as a {$extras}WHERE is_active = 1";
 			break;
 
 			case 'inactive':
-				$sql = $wpdb->prepare( "SELECT a.{$select_vals} FROM {$bp->achievements->table_achievements} as a {$extras}WHERE is_active = 0" );
-				$sql_total_count = $wpdb->prepare( "SELECT COUNT(a.id) FROM {$bp->achievements->table_achievements} as a {$extras}WHERE is_active = 0" );
+				$sql = "SELECT a.{$select_vals} FROM {$bp->achievements->table_achievements} as a {$extras}WHERE is_active = 0";
+				$sql_total_count = "SELECT COUNT(a.id) FROM {$bp->achievements->table_achievements} as a {$extras}WHERE is_active = 0";
 			break;
 
 			case 'single':
@@ -445,8 +445,8 @@ class DPA_Achievement {
 			case 'eventcount':
 			case 'newest':
 			case 'points':
-				$sql = $wpdb->prepare( "SELECT a.{$select_vals} FROM {$bp->achievements->table_achievements} as a {$extras}" );
-				$sql_total_count = $wpdb->prepare( "SELECT COUNT(a.id) FROM {$bp->achievements->table_achievements} as a {$extras}" );
+				$sql = "SELECT a.{$select_vals} FROM {$bp->achievements->table_achievements} as a {$extras}";
+				$sql_total_count = "SELECT COUNT(a.id) FROM {$bp->achievements->table_achievements} as a {$extras}";
 			break;
 		}
 
@@ -471,7 +471,7 @@ class DPA_Achievement {
 			// Only admins see inactive Achievements in the Directory.
 			if ( !dpa_permission_can_user_edit() ) {
 				if ( $search_terms ) {
-					$admin_sql = $wpdb->prepare( " AND is_active=1" );
+					$admin_sql = " AND is_active=1";
 					$sql .= $admin_sql;
 					$sql_total_count .= $admin_sql;
 
@@ -648,9 +648,9 @@ function dpa_get_total_achievements_count() {
 		$admin_sql = '';
 
 		if ( !dpa_permission_can_user_edit() )
-			$admin_sql = $wpdb->prepare( "WHERE is_active=1" );
+			$admin_sql = "WHERE is_active=1";
 
-		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM {$bp->achievements->table_achievements} {$admin_sql}" ) );
+		$count = $wpdb->get_var( "SELECT COUNT(id) FROM {$bp->achievements->table_achievements} {$admin_sql}" );
 		wp_cache_set( 'dpa_get_total_achievements_count', $count, 'dpa' );
 	}
 
@@ -670,10 +670,10 @@ function dpa_get_total_achievements_count_for_user( $user_id = false ) {
 	global $bp, $wpdb;
 
 	if ( !$user_id )
-		$user_id = ( $bp->displayed_user->id ) ? $bp->displayed_user->id : $bp->loggedin_user->id;
+		$user_id = ( ! empty( $bp->displayed_user->id ) ) ? $bp->displayed_user->id : $bp->loggedin_user->id;
 
 	if ( !$count = wp_cache_get( 'dpa_get_total_achievements_count_for_user_' . $user_id, 'bp' ) ) {
-		$admin_sql = $wpdb->prepare( "AND (is_active = 1 OR is_active = 2)" );
+		$admin_sql = "AND (is_active = 1 OR is_active = 2)";
 		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(a.id) FROM {$bp->achievements->table_achievements} as a, {$bp->achievements->table_unlocked} as u WHERE a.id = u.achievement_id AND u.user_id = %d {$admin_sql}", $user_id ) );
 		wp_cache_set( 'dpa_get_total_achievements_count_for_user_' . $user_id, $count, 'bp' );
 	}

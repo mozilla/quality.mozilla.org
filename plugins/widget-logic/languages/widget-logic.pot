@@ -1,0 +1,101 @@
+# Copyright (C) 2012 
+# This file is distributed under the same license as the  package.
+msgid ""
+msgstr ""
+"Project-Id-Version:  \n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/wp\n"
+"POT-Creation-Date: 2012-12-17 22:12:06+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2012-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: widget_logic.php:5
+msgid "Control widgets with WP's conditional tags is_home etc"
+msgstr ""
+
+#: widget_logic.php:18
+msgid "when plugin starts (default)"
+msgstr ""
+
+#: widget_logic.php:19
+msgid "after theme loads"
+msgstr ""
+
+#: widget_logic.php:20
+msgid "when all PHP loaded"
+msgstr ""
+
+#: widget_logic.php:21
+msgid "during page header"
+msgstr ""
+
+#: widget_logic.php:96
+msgid "Success! Options file imported"
+msgstr ""
+
+#: widget_logic.php:99
+msgid "Invalid options file"
+msgstr ""
+
+#: widget_logic.php:104
+msgid "No options file provided"
+msgstr ""
+
+#: widget_logic.php:173
+msgid "Widget Logic options"
+msgstr ""
+
+#: widget_logic.php:176
+msgid ""
+"Adds a new WP filter you can use in your own code. Not needed for main "
+"Widget Logic functionality."
+msgstr ""
+
+#: widget_logic.php:178
+msgid "Add 'widget_content' filter"
+msgstr ""
+
+#: widget_logic.php:181
+msgid "Resets a theme's custom queries before your Widget Logic is checked"
+msgstr ""
+
+#: widget_logic.php:183
+msgid "Use 'wp_reset_query' fix"
+msgstr ""
+
+#: widget_logic.php:186
+msgid ""
+"Delays widget logic code being evaluated til various points in the WP "
+"loading process"
+msgstr ""
+
+#: widget_logic.php:186
+msgid "Load logic"
+msgstr ""
+
+#: widget_logic.php:199
+msgid "Save WL options"
+msgstr ""
+
+#: widget_logic.php:203
+msgid "Save all WL options to a plain text config file"
+msgstr ""
+
+#: widget_logic.php:203
+msgid "Export options"
+msgstr ""
+
+#: widget_logic.php:204
+msgid "Import options"
+msgstr ""
+
+#: widget_logic.php:204
+msgid "Load all WL options from a plain text config file"
+msgstr ""
+
+#: widget_logic.php:205
+msgid "Select file for importing"
+msgstr ""

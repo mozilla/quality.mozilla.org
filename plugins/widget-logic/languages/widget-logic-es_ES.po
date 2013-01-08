@@ -1,0 +1,103 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Widget Logic en español\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-12-20 11:32+0100\n"
+"PO-Revision-Date: 2012-12-20 11:32+0100\n"
+"Last-Translator: Eduardo Larequi <elarequi@gmail.com>\n"
+"Language-Team: PNTE <blogs@educacion.navarra.es>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: __;_e;_x:1,2c;_c;_n:1,2;esc_html__;esc_html_e;esc_attr__;esc_attr_e\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Language: Spanish\n"
+"X-Poedit-Country: Spain\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: widget_logic.php:18
+msgid "when plugin starts (default)"
+msgstr "Cuando se inicia el plugin (por defecto)"
+
+#: widget_logic.php:19
+msgid "after theme loads"
+msgstr "Cuando se carga el tema"
+
+#: widget_logic.php:20
+msgid "when all PHP loaded"
+msgstr "Cuando se ha cargado todo el código PHP"
+
+#: widget_logic.php:21
+msgid "during page header"
+msgstr "Durante la carga de la cabecera de la página"
+
+#: widget_logic.php:96
+msgid "Success! Options file imported"
+msgstr "El fichero de opciones se ha importado con éxito"
+
+#: widget_logic.php:99
+msgid "Invalid options file"
+msgstr "Fichero de opciones no válido"
+
+#: widget_logic.php:104
+msgid "No options file provided"
+msgstr "No se ha proporcionado un fichero de opciones"
+
+#: widget_logic.php:173
+msgid "Widget Logic options"
+msgstr "Opciones de Widget Logic"
+
+#: widget_logic.php:176
+msgid "Adds a new WP filter you can use in your own code. Not needed for main Widget Logic functionality."
+msgstr "Añade un nuevo filtro de WordPress que puedes utilizar en tu propio código. No es necesario para conseguir la funcionalidad básica de Widget Logic."
+
+#: widget_logic.php:178
+msgid "Add 'widget_content' filter"
+msgstr "Añadir el filtro 'widget_content'"
+
+#: widget_logic.php:181
+msgid "Resets a theme's custom queries before your Widget Logic is checked"
+msgstr "Reinicia las consultas personalizadas de un tema antes de que se verifique la lógica del widget."
+
+#: widget_logic.php:183
+msgid "Use 'wp_reset_query' fix"
+msgstr "Utilizar 'wp_reset_query'"
+
+#: widget_logic.php:186
+msgid "Delays widget logic code being evaluated til various points in the WP loading process"
+msgstr "Retarda la evaluación del código de Widget Logic hasta determinados puntos del proceso de carga de WordPress"
+
+#: widget_logic.php:186
+msgid "Load logic"
+msgstr "Cargar las condiciones"
+
+#: widget_logic.php:199
+msgid "Save WL options"
+msgstr "Guardar opciones de Widget Logic"
+
+#: widget_logic.php:203
+msgid "Save all WL options to a plain text config file"
+msgstr "Permite guardar todas las opciones del plugin Widget Logic en un fichero de configuración en texto plano"
+
+#: widget_logic.php:203
+msgid "Export options"
+msgstr "Exportar opciones"
+
+#: widget_logic.php:204
+msgid "Import options"
+msgstr "Importar opciones"
+
+#: widget_logic.php:204
+msgid "Load all WL options from a plain text config file"
+msgstr "Permite cargar todas las opciones del plugin Widget Logic desde un fichero de configuración en texto plano"
+
+#: widget_logic.php:205
+msgid "Select file for importing"
+msgstr "Seleccionar fichero para importar"
+
+#~ msgid "Widget logic"
+#~ msgstr "Condiciones del widget"
+
+#~ msgid "Save"
+#~ msgstr "Guardar"

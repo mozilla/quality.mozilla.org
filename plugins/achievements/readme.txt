@@ -4,8 +4,8 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=P3K7Z
 Tags: buddypress,achievement,cubepoints,reward,points,score,rank,social,gaming,tokens,status,badge,WoW,Warcraft,games,challenges
 License: General Public License version 3
 Requires at least: WP 3.0.1, BuddyPress 1.5
-Tested up to: WP 3.3.1, BuddyPress 1.6
-Stable tag: 2.3
+Tested up to: WP 3.5.999, BuddyPress 1.6.3
+Stable tag: 2.4
 
 Achievements gives your BuddyPress community fresh impetus by promoting and rewarding social interaction with challenges, badges and points.
 
@@ -25,6 +25,10 @@ For information, support, premium enhancements and developer documentation, visi
 1. To get started, visit your site, and select the "Achievements" in the main navigation.
 
 == Changelog ==
+= 2.4 =
+* Compatibility fixes for WordPress 3.5. Props to Norm Huelsman for the initial patch.
+* Fix PHP warnings.
+
 = 2.3 =
 * Improves compatibility with some themes.
 
@@ -88,15 +92,15 @@ For information, support, premium enhancements and developer documentation, visi
 * The historical release history has been moved to a better place.
 
 == Upgrade Notice ==
-= 2.3 =
-* Improves compatibility with some themes.
+= 2.4 =
+* Improves compatibility with WordPress 3.5.
 
 == Frequently Asked Questions ==
 For information, support, and developer documentation, visit http://achievementsapp.com/.
 
 == License ==
 "Achievements for BuddyPress"
-Copyright (C) 2009-12 Paul Gibbs
+Copyright (C) 2009-13 Paul Gibbs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License version 2 as published by

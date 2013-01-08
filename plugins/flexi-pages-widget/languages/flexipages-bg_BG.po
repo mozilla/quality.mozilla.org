@@ -1,0 +1,140 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Flexi Pages Widget\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-02-06 18:18+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: shivangi <shivangi@outshinesolutions.com>\n"
+"Language-Team: Team Ajoft <info@ajoft.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Bulgarian\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../flexi-pages-widget.php:40
+msgid "Pages"
+msgstr "Страници"
+
+#: ../flexi-pages-widget.php:49
+#: ../flexi-pages-widget.php:312
+msgid "Home"
+msgstr "дом"
+
+#: ../flexi-pages-widget.php:252
+msgid "Go"
+msgstr "Go"
+
+#: ../flexi-pages-widget.php:451
+msgid "Title"
+msgstr "заглавие"
+
+#: ../flexi-pages-widget.php:456
+msgid "Sort by"
+msgstr "Сортирай по"
+
+#: ../flexi-pages-widget.php:458
+msgid "Page title"
+msgstr "заглавие на страницата"
+
+#: ../flexi-pages-widget.php:459
+msgid "Menu order"
+msgstr "менютата, подреждането на менютата"
+
+#: ../flexi-pages-widget.php:460
+msgid "Date created"
+msgstr "Дата на създаване"
+
+#: ../flexi-pages-widget.php:461
+msgid "Date modified"
+msgstr "Дата на промяна"
+
+#: ../flexi-pages-widget.php:462
+msgid "Page ID"
+msgstr "Page ID"
+
+#: ../flexi-pages-widget.php:463
+msgid "Page author ID"
+msgstr "Страница  автор ID"
+
+#: ../flexi-pages-widget.php:464
+msgid "Page slug"
+msgstr "страница  плужек"
+
+#: ../flexi-pages-widget.php:467
+msgid "ASC"
+msgstr "ASC"
+
+#: ../flexi-pages-widget.php:468
+msgid "DESC"
+msgstr "DESC"
+
+#: ../flexi-pages-widget.php:473
+msgid "Exclude"
+msgstr "Изключи"
+
+#: ../flexi-pages-widget.php:474
+msgid "Include"
+msgstr "Включете"
+
+#: ../flexi-pages-widget.php:475
+msgid "pages"
+msgstr "страници"
+
+#: ../flexi-pages-widget.php:479
+msgid "use &lt;Ctrl&gt; key to select multiple pages"
+msgstr "използвайте  Ctrl + ключ,  за да изберете няколко страници"
+
+#: ../flexi-pages-widget.php:483
+msgid "Show sub-pages"
+msgstr "Покажи  под-страници"
+
+#: ../flexi-pages-widget.php:485
+msgid "Show all sub-pages"
+msgstr "Покажи  всички под-страници"
+
+#: ../flexi-pages-widget.php:486
+msgid "Only related sub-pages"
+msgstr "Само  под-страници, свързани с"
+
+#: ../flexi-pages-widget.php:487
+msgid "Only strictly related sub-pages"
+msgstr "Само  строго под-страници, свързани с"
+
+#: ../flexi-pages-widget.php:493
+msgid "Show hierarchy"
+msgstr "Покажи  йерархия"
+
+#: ../flexi-pages-widget.php:497
+#, php-format
+msgid "%d levels deep"
+msgstr "%d нива в дълбочина"
+
+#: ../flexi-pages-widget.php:499
+msgid "Unlimited depth"
+msgstr "Неограничен  дълбочина"
+
+#: ../flexi-pages-widget.php:504
+msgid "Show home page"
+msgstr "Виж  началната страница"
+
+#: ../flexi-pages-widget.php:508
+msgid "Show date"
+msgstr "Покажи датата"
+
+#: ../flexi-pages-widget.php:510
+msgid "Choose Format"
+msgstr "Изберете  Format"
+
+#: ../flexi-pages-widget.php:519
+msgid "Show as dropdown"
+msgstr "Покажи  като падащото меню"
+
+#: ../flexi-pages-widget.php:534
+msgid "A highly configurable widget to list pages and sub-pages."
+msgstr "Конфигурира лесно джаджа списък  страници и под-страници."
+

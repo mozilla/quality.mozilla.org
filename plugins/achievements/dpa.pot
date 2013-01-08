@@ -1,31 +1,16 @@
 # Translation source file for Paul Gibbs' (paul@byotos.com) WordPress plugin, "Achievements for BuddyPress".
-# Achievements is copyright (C) 2009-12 Paul Gibbs.
-# This file is distributed under the same license as the "Achievements" package.
+# Achievements is copyright (C) 2009-13 Paul Gibbs.
 msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
-"Report-Msgid-Bugs-To: http://buddypress.org/community/groups/achievements/\n"
-"POT-Creation-Date: 2012-01-02 13:45:07+00:00\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/achievements\n"
+"POT-Creation-Date: 2013-01-02 19:23:34+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2012-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2013-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-
-#: includes/achievements-filters.php:83 includes/achievements-filters.php:106
-msgid "Viewing member %1$s to %2$s (of %3$s active members)"
-msgstr ""
-
-#: includes/achievements-filters.php:84 includes/achievements-filters.php:105
-msgid ""
-"Viewing member %1$s to %2$s (of %3$s members) who have unlocked this "
-"Achievement"
-msgstr ""
-
-#: includes/achievements-filters.php:123
-msgid "Unlocked %s ago"
-msgstr ""
 
 #: includes/achievements-admin.php:32
 msgid ""
@@ -299,9 +284,8 @@ msgstr ""
 msgid "Send"
 msgstr ""
 
-#: includes/achievements-admin.php:434
+#: includes/achievements-admin.php:434 includes/achievements-core.php:174
 #: includes/achievements-templatetags.php:1430
-#: includes/achievements-core.php:174
 msgid "Change Picture"
 msgstr ""
 
@@ -315,6 +299,195 @@ msgstr ""
 #: includes/achievements-admin.php:440
 msgid ""
 "Enter keywords here to search for in your images' titles and descriptions:"
+msgstr ""
+
+#: includes/achievements-classes.php:301
+msgid "This can't be zero."
+msgstr ""
+
+#: includes/achievements-classes.php:303
+msgid "This can't be blank."
+msgstr ""
+
+#: includes/achievements-classes.php:312
+msgid "Choose an event."
+msgstr ""
+
+#: includes/achievements-classes.php:315
+msgid "This needs to be at least one."
+msgstr ""
+
+#: includes/achievements-classes.php:318 includes/achievements-classes.php:327
+msgid "This needs to be less than two hundred characters long."
+msgstr ""
+
+#: includes/achievements-classes.php:321
+msgid "The Achievement's name must be unique; this one is already in use."
+msgstr ""
+
+#: includes/achievements-classes.php:324
+msgid "Missing Achievement description."
+msgstr ""
+
+#: includes/achievements-classes.php:331
+msgid "This slug conflicts with something important; please try another."
+msgstr ""
+
+#: includes/achievements-classes.php:334
+msgid "The slug must be unique; this one is already in use."
+msgstr ""
+
+#: includes/achievements-core.php:108
+msgid "Achievements <span>%s</span>"
+msgstr ""
+
+#: includes/achievements-core.php:112
+#: includes/templates/achievements/index.php:20
+msgid "My Achievements <span>%s</span>"
+msgstr ""
+
+#: includes/achievements-core.php:116 includes/achievements-core.php:262
+msgid "My Achievements"
+msgstr ""
+
+#: includes/achievements-core.php:139 includes/achievements-core.php:153
+msgid "Home"
+msgstr ""
+
+#: includes/achievements-core.php:163
+msgid "Unlocked By <span>%s</span>"
+msgstr ""
+
+#: includes/achievements-core.php:186
+#: includes/achievements-templatetags.php:1433
+msgid "Delete"
+msgstr ""
+
+#: includes/achievements-core.php:199
+#: includes/achievements-templatetags.php:1436
+msgid "Edit"
+msgstr ""
+
+#: includes/achievements-core.php:212
+msgid "Grant"
+msgstr ""
+
+#: includes/achievements-core.php:297
+msgid "Achievement RSS Feed"
+msgstr ""
+
+#: includes/achievements-core.php:701
+msgid "Sorry, there was no activity found. Please try a different filter."
+msgstr ""
+
+#: includes/achievements-core.php:702
+msgid "Sorry, there was no activity found."
+msgstr ""
+
+#: includes/achievements-core.php:1729
+msgid "The Achievement's picture has been updated."
+msgstr ""
+
+#: includes/achievements-core.php:1734
+msgid ""
+"There was an error changing the Achievement's picture, please try again."
+msgstr ""
+
+#: includes/achievements-core.php:1803
+msgid "The Achievement's details have been updated."
+msgstr ""
+
+#: includes/achievements-core.php:1814
+msgid ""
+"An error has occurred and the Achievement's details have not been updated. "
+"See below for details."
+msgstr ""
+
+#: includes/achievements-core.php:1837
+msgid "You need to select at least one person to give this Achievement to!"
+msgstr ""
+
+#: includes/achievements-core.php:1854
+msgid "The specified members have successfully received this Achievement."
+msgstr ""
+
+#: includes/achievements-core.php:1883
+msgid "There was an error deleting the Achievement, please try again."
+msgstr ""
+
+#: includes/achievements-core.php:1892
+msgid "The Achievement was deleted successfully."
+msgstr ""
+
+#: includes/achievements-core.php:1970
+msgid "Achievement created succesfully!"
+msgstr ""
+
+#: includes/achievements-core.php:1986
+msgid ""
+"An error has occurred and the Achievement has not been created. See below "
+"for details."
+msgstr ""
+
+#: includes/achievements-core.php:2006
+msgid "Yes"
+msgstr ""
+
+#: includes/achievements-core.php:2007
+msgid "No"
+msgstr ""
+
+#: includes/achievements-core.php:2014
+msgid "You unlock an achievement"
+msgstr ""
+
+#: includes/achievements-core.php:2046
+msgid "Achievement unlocked"
+msgstr ""
+
+#: includes/achievements-core.php:2075
+msgid "%1$s unlocked %2$s"
+msgstr ""
+
+#: includes/achievements-core.php:2086
+msgid "%1$s created the Achievement %2$s"
+msgstr ""
+
+#: includes/achievements-filters.php:83 includes/achievements-filters.php:106
+msgid "Viewing member %1$s to %2$s (of %3$s active members)"
+msgstr ""
+
+#: includes/achievements-filters.php:84 includes/achievements-filters.php:105
+msgid ""
+"Viewing member %1$s to %2$s (of %3$s members) who have unlocked this "
+"Achievement"
+msgstr ""
+
+#: includes/achievements-filters.php:123
+msgid "Unlocked %s ago"
+msgstr ""
+
+#: includes/achievements-notifications.php:36
+msgid "Achievement unlocked: %s"
+msgstr ""
+
+#: includes/achievements-notifications.php:41
+msgid "Achievements unlocked!"
+msgstr ""
+
+#: includes/achievements-notifications.php:79
+msgid "[%1$s] Achievement unlocked: %2$s"
+msgstr ""
+
+#: includes/achievements-notifications.php:80
+msgid ""
+"\n"
+"You have unlocked an Achievement: %1$s\n"
+"\n"
+"To review this and see all of your Achievements, go to %2$s\n"
+"\n"
+"---------------------\n"
+"To disable these notifications please log in and go to: %3$s"
 msgstr ""
 
 #: includes/achievements-templatetags.php:378
@@ -429,16 +602,6 @@ msgstr ""
 msgid "Other"
 msgstr ""
 
-#: includes/achievements-templatetags.php:1433
-#: includes/achievements-core.php:186
-msgid "Delete"
-msgstr ""
-
-#: includes/achievements-templatetags.php:1436
-#: includes/achievements-core.php:199
-msgid "Edit"
-msgstr ""
-
 #: includes/achievements-templatetags.php:1439
 msgid "Give"
 msgstr ""
@@ -470,411 +633,6 @@ msgstr ""
 
 #: includes/achievements-templatetags.php:1732
 msgid "View Achievements"
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:23
-msgid "This Achievement is worth %s points."
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:29
-msgid "Unlocked %s"
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:42
-msgid "Inactive"
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:79
-msgid "There were no Achievements found matching &ldquo;%s.&rdquo;"
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:81
-msgid "You haven't unlocked any Achievements yet"
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:83
-msgid "%s hasn't unlocked any Achievements yet"
-msgstr ""
-
-#: includes/templates/achievements/achievements-loop.php:85
-msgid "Oops, no Achievements were found!"
-msgstr ""
-
-#: includes/templates/achievements/single/achievement-header.php:24
-msgid "%s point"
-msgid_plural "%s points"
-msgstr[0] ""
-msgstr[1] ""
-
-#: includes/templates/achievements/single/achievement-header.php:27
-msgid "Inactive Achievement"
-msgstr ""
-
-#: includes/templates/achievements/single/achievement-header.php:30
-msgid "Only %s person has unlocked this Achievement"
-msgid_plural "%s people have unlocked this Achievement"
-msgstr[0] ""
-msgstr[1] ""
-
-#: includes/templates/achievements/single/grant.php:13
-msgid "Select people to give this Achievement to."
-msgstr ""
-
-#: includes/templates/achievements/single/grant.php:22
-msgid "Give Achievement"
-msgstr ""
-
-#: includes/templates/achievements/single/delete.php:4
-msgid ""
-"WARNING: Any members who have unlocked this Achievement will have it "
-"removed. There is no way back, please be careful with this option."
-msgstr ""
-
-#: includes/templates/achievements/single/delete.php:7
-msgid "I understand the consequences of deleting this Achievement."
-msgstr ""
-
-#: includes/templates/achievements/single/delete.php:10
-msgid "Delete Achievement"
-msgstr ""
-
-#: includes/templates/achievements/single/edit.php:4
-#: includes/templates/achievements/create.php:28
-msgid ""
-"Some of the Action options below may not be relevant to the type or event of "
-"the Achievement."
-msgstr ""
-
-#: includes/templates/achievements/single/change-picture.php:17
-msgid ""
-"We've noticed that you've got a lot of pictures to choose from. <a href='%"
-"s'>Set a filter</a> to restrict which images are retrieved from your <a "
-"href='%s'>WordPress Media Library</a>."
-msgstr ""
-
-#: includes/templates/achievements/single/change-picture.php:28
-msgid "Update Picture"
-msgstr ""
-
-#: includes/templates/achievements/single/change-picture.php:46
-msgid ""
-"Before you can choose a picture, you need to upload an image to the <a "
-"href='%s'>WordPress Media Library</a>."
-msgstr ""
-
-#: includes/templates/achievements/single/change-picture.php:50
-msgid ""
-"Unfortunately, there aren't any pictures to choose from. You'll need to ask "
-"an Administrator to upload some to the WordPress Media Library for you."
-msgstr ""
-
-#: includes/templates/achievements/index.php:7
-#: includes/templates/achievements/create.php:10
-msgid "Achievements Directory"
-msgstr ""
-
-#: includes/templates/achievements/index.php:7
-msgid "Create an Achievement"
-msgstr ""
-
-#: includes/templates/achievements/index.php:17
-msgid "All Achievements <span>%s</span>"
-msgstr ""
-
-#: includes/templates/achievements/index.php:20
-#: includes/achievements-core.php:112
-msgid "My Achievements <span>%s</span>"
-msgstr ""
-
-#: includes/templates/achievements/index.php:27
-#: includes/templates/members/single/achievements/unlocked.php:9
-msgid "Order By:"
-msgstr ""
-
-#: includes/templates/achievements/index.php:29
-#: includes/templates/members/single/achievements/unlocked.php:12
-msgid "Alphabetical"
-msgstr ""
-
-#: includes/templates/achievements/index.php:30
-#: includes/templates/members/single/achievements/unlocked.php:13
-msgid "Event Count"
-msgstr ""
-
-#: includes/templates/achievements/index.php:31
-msgid "Newest"
-msgstr ""
-
-#: includes/templates/achievements/index.php:32
-#: includes/templates/achievements/_addedit.php:74
-#: includes/templates/members/single/achievements/unlocked.php:14
-msgid "Points"
-msgstr ""
-
-#: includes/templates/achievements/create.php:10
-#: includes/templates/achievements/_addedit.php:114
-msgid "Create Achievement"
-msgstr ""
-
-#: includes/templates/achievements/create.php:30
-msgid ""
-"After you create the Achievement, you'll be able to choose a picture for it."
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:6
-msgid "Action"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:8
-msgid "Type"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:11
-msgid ""
-"An <em>award</em> is given by a site admin, whereas an <em>event</em> is "
-"unlocked automatically when its criteria are met."
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:26
-msgid "When the event occurs this many times"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:35
-msgid "In this group"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:45
-msgid "On this site"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:60
-msgid "Info"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:62
-msgid "Name"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:68
-msgid "Description"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:69
-msgid "Explain how to unlock this Achievement."
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:75
-msgid ""
-"Points are awarded when Achievements are unlocked. They are used as a "
-"measurement of contribution to your site."
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:87
-msgid "Advanced settings"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:89
-msgid "Active"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:90
-msgid "Is this Achievement active?"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:95
-msgid "Hidden"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:96
-msgid "Hide this Achievement in the Directory and from search results?"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:101
-msgid "Slug"
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:102
-msgid "The <em>slug</em> constitutes part of the link to this Achievement."
-msgstr ""
-
-#: includes/templates/achievements/_addedit.php:112
-msgid "Update Achievement"
-msgstr ""
-
-#: includes/templates/members/single/achievements/unlocked.php:11
-msgid "Recently Unlocked"
-msgstr ""
-
-#: includes/achievements-classes.php:301
-msgid "This can't be zero."
-msgstr ""
-
-#: includes/achievements-classes.php:303
-msgid "This can't be blank."
-msgstr ""
-
-#: includes/achievements-classes.php:312
-msgid "Choose an event."
-msgstr ""
-
-#: includes/achievements-classes.php:315
-msgid "This needs to be at least one."
-msgstr ""
-
-#: includes/achievements-classes.php:318 includes/achievements-classes.php:327
-msgid "This needs to be less than two hundred characters long."
-msgstr ""
-
-#: includes/achievements-classes.php:321
-msgid "The Achievement's name must be unique; this one is already in use."
-msgstr ""
-
-#: includes/achievements-classes.php:324
-msgid "Missing Achievement description."
-msgstr ""
-
-#: includes/achievements-classes.php:331
-msgid "This slug conflicts with something important; please try another."
-msgstr ""
-
-#: includes/achievements-classes.php:334
-msgid "The slug must be unique; this one is already in use."
-msgstr ""
-
-#: includes/feeds/dpa-myachievements-feed.php:28
-msgid "%s's Achievement Feed"
-msgstr ""
-
-#: includes/feeds/dpa-myachievements-feed.php:31
-msgid "Activity feed for the achievement, %s"
-msgstr ""
-
-#: includes/feeds/dpa-myachievements-feed.php:50
-msgid "Comments: %s"
-msgstr ""
-
-#: includes/achievements-notifications.php:36
-msgid "Achievement unlocked: %s"
-msgstr ""
-
-#: includes/achievements-notifications.php:41
-msgid "Achievements unlocked!"
-msgstr ""
-
-#: includes/achievements-notifications.php:79
-msgid "[%1$s] Achievement unlocked: %2$s"
-msgstr ""
-
-#: includes/achievements-notifications.php:80
-msgid ""
-"\n"
-"You have unlocked an Achievement: %1$s\n"
-"\n"
-"To review this and see all of your Achievements, go to %2$s\n"
-"\n"
-"---------------------\n"
-"To disable these notifications please log in and go to: %3$s"
-msgstr ""
-
-#: includes/achievements-core.php:108
-msgid "Achievements <span>%s</span>"
-msgstr ""
-
-#: includes/achievements-core.php:116 includes/achievements-core.php:262
-msgid "My Achievements"
-msgstr ""
-
-#: includes/achievements-core.php:139 includes/achievements-core.php:153
-msgid "Home"
-msgstr ""
-
-#: includes/achievements-core.php:163
-msgid "Unlocked By <span>%s</span>"
-msgstr ""
-
-#: includes/achievements-core.php:212
-msgid "Grant"
-msgstr ""
-
-#: includes/achievements-core.php:297
-msgid "Achievement RSS Feed"
-msgstr ""
-
-#: includes/achievements-core.php:701
-msgid "Sorry, there was no activity found. Please try a different filter."
-msgstr ""
-
-#: includes/achievements-core.php:702
-msgid "Sorry, there was no activity found."
-msgstr ""
-
-#: includes/achievements-core.php:1729
-msgid "The Achievement's picture has been updated."
-msgstr ""
-
-#: includes/achievements-core.php:1734
-msgid ""
-"There was an error changing the Achievement's picture, please try again."
-msgstr ""
-
-#: includes/achievements-core.php:1803
-msgid "The Achievement's details have been updated."
-msgstr ""
-
-#: includes/achievements-core.php:1814
-msgid ""
-"An error has occurred and the Achievement's details have not been updated. "
-"See below for details."
-msgstr ""
-
-#: includes/achievements-core.php:1837
-msgid "You need to select at least one person to give this Achievement to!"
-msgstr ""
-
-#: includes/achievements-core.php:1854
-msgid "The specified members have successfully received this Achievement."
-msgstr ""
-
-#: includes/achievements-core.php:1883
-msgid "There was an error deleting the Achievement, please try again."
-msgstr ""
-
-#: includes/achievements-core.php:1892
-msgid "The Achievement was deleted successfully."
-msgstr ""
-
-#: includes/achievements-core.php:1970
-msgid "Achievement created succesfully!"
-msgstr ""
-
-#: includes/achievements-core.php:1986
-msgid ""
-"An error has occurred and the Achievement has not been created. See below "
-"for details."
-msgstr ""
-
-#: includes/achievements-core.php:2006
-msgid "Yes"
-msgstr ""
-
-#: includes/achievements-core.php:2007
-msgid "No"
-msgstr ""
-
-#: includes/achievements-core.php:2014
-msgid "You unlock an achievement"
-msgstr ""
-
-#: includes/achievements-core.php:2046
-msgid "Achievement unlocked"
-msgstr ""
-
-#: includes/achievements-core.php:2075
-msgid "%1$s unlocked %2$s"
-msgstr ""
-
-#: includes/achievements-core.php:2086
-msgid "%1$s created the Achievement %2$s"
 msgstr ""
 
 #: includes/achievements-widgets.php:27
@@ -1021,6 +779,246 @@ msgstr ""
 
 #: includes/achievements-widgets.php:733
 msgid "Achievement Score"
+msgstr ""
+
+#: includes/feeds/dpa-myachievements-feed.php:28
+msgid "%s's Achievement Feed"
+msgstr ""
+
+#: includes/feeds/dpa-myachievements-feed.php:31
+msgid "Activity feed for the achievement, %s"
+msgstr ""
+
+#: includes/feeds/dpa-myachievements-feed.php:50
+msgid "Comments: %s"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:6
+msgid "Action"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:8
+msgid "Type"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:11
+msgid ""
+"An <em>award</em> is given by a site admin, whereas an <em>event</em> is "
+"unlocked automatically when its criteria are met."
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:26
+msgid "When the event occurs this many times"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:35
+msgid "In this group"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:45
+msgid "On this site"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:60
+msgid "Info"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:62
+msgid "Name"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:68
+msgid "Description"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:69
+msgid "Explain how to unlock this Achievement."
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:74
+#: includes/templates/achievements/index.php:32
+#: includes/templates/members/single/achievements/unlocked.php:14
+msgid "Points"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:75
+msgid ""
+"Points are awarded when Achievements are unlocked. They are used as a "
+"measurement of contribution to your site."
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:87
+msgid "Advanced settings"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:89
+msgid "Active"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:90
+msgid "Is this Achievement active?"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:95
+msgid "Hidden"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:96
+msgid "Hide this Achievement in the Directory and from search results?"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:101
+msgid "Slug"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:102
+msgid "The <em>slug</em> constitutes part of the link to this Achievement."
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:112
+msgid "Update Achievement"
+msgstr ""
+
+#: includes/templates/achievements/_addedit.php:114
+#: includes/templates/achievements/create.php:10
+msgid "Create Achievement"
+msgstr ""
+
+#: includes/templates/achievements/achievements-loop.php:23
+msgid "This Achievement is worth %s points."
+msgstr ""
+
+#: includes/templates/achievements/achievements-loop.php:29
+msgid "Unlocked %s"
+msgstr ""
+
+#: includes/templates/achievements/achievements-loop.php:42
+msgid "Inactive"
+msgstr ""
+
+#: includes/templates/achievements/achievements-loop.php:79
+msgid "There were no Achievements found matching &ldquo;%s.&rdquo;"
+msgstr ""
+
+#: includes/templates/achievements/achievements-loop.php:81
+msgid "You haven't unlocked any Achievements yet"
+msgstr ""
+
+#: includes/templates/achievements/achievements-loop.php:83
+msgid "%s hasn't unlocked any Achievements yet"
+msgstr ""
+
+#: includes/templates/achievements/achievements-loop.php:85
+msgid "Oops, no Achievements were found!"
+msgstr ""
+
+#: includes/templates/achievements/create.php:10
+#: includes/templates/achievements/index.php:7
+msgid "Achievements Directory"
+msgstr ""
+
+#: includes/templates/achievements/create.php:28
+#: includes/templates/achievements/single/edit.php:4
+msgid ""
+"Some of the Action options below may not be relevant to the type or event of "
+"the Achievement."
+msgstr ""
+
+#: includes/templates/achievements/create.php:30
+msgid ""
+"After you create the Achievement, you'll be able to choose a picture for it."
+msgstr ""
+
+#: includes/templates/achievements/index.php:7
+msgid "Create an Achievement"
+msgstr ""
+
+#: includes/templates/achievements/index.php:17
+msgid "All Achievements <span>%s</span>"
+msgstr ""
+
+#: includes/templates/achievements/index.php:27
+#: includes/templates/members/single/achievements/unlocked.php:9
+msgid "Order By:"
+msgstr ""
+
+#: includes/templates/achievements/index.php:29
+#: includes/templates/members/single/achievements/unlocked.php:12
+msgid "Alphabetical"
+msgstr ""
+
+#: includes/templates/achievements/index.php:30
+#: includes/templates/members/single/achievements/unlocked.php:13
+msgid "Event Count"
+msgstr ""
+
+#: includes/templates/achievements/index.php:31
+msgid "Newest"
+msgstr ""
+
+#: includes/templates/achievements/single/achievement-header.php:24
+msgid "%s point"
+msgid_plural "%s points"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/templates/achievements/single/achievement-header.php:27
+msgid "Inactive Achievement"
+msgstr ""
+
+#: includes/templates/achievements/single/achievement-header.php:30
+msgid "Only %s person has unlocked this Achievement"
+msgid_plural "%s people have unlocked this Achievement"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/templates/achievements/single/change-picture.php:17
+msgid ""
+"We've noticed that you've got a lot of pictures to choose from. <a "
+"href='%s'>Set a filter</a> to restrict which images are retrieved from your "
+"<a href='%s'>WordPress Media Library</a>."
+msgstr ""
+
+#: includes/templates/achievements/single/change-picture.php:28
+msgid "Update Picture"
+msgstr ""
+
+#: includes/templates/achievements/single/change-picture.php:46
+msgid ""
+"Before you can choose a picture, you need to upload an image to the <a "
+"href='%s'>WordPress Media Library</a>."
+msgstr ""
+
+#: includes/templates/achievements/single/change-picture.php:50
+msgid ""
+"Unfortunately, there aren't any pictures to choose from. You'll need to ask "
+"an Administrator to upload some to the WordPress Media Library for you."
+msgstr ""
+
+#: includes/templates/achievements/single/delete.php:4
+msgid ""
+"WARNING: Any members who have unlocked this Achievement will have it "
+"removed. There is no way back, please be careful with this option."
+msgstr ""
+
+#: includes/templates/achievements/single/delete.php:7
+msgid "I understand the consequences of deleting this Achievement."
+msgstr ""
+
+#: includes/templates/achievements/single/delete.php:10
+msgid "Delete Achievement"
+msgstr ""
+
+#: includes/templates/achievements/single/grant.php:13
+msgid "Select people to give this Achievement to."
+msgstr ""
+
+#: includes/templates/achievements/single/grant.php:22
+msgid "Give Achievement"
+msgstr ""
+
+#: includes/templates/members/single/achievements/unlocked.php:11
+msgid "Recently Unlocked"
 msgstr ""
 
 #: loader.php:46

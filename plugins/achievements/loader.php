@@ -13,9 +13,9 @@
 Plugin Name: Achievements
 Plugin URI: http://achievementsapp.com/
 Description: Achievements gives your BuddyPress community fresh impetus by promoting and rewarding social interaction with challenges, badges and points.
-Version: 2.3
+Version: 2.4
 Requires at least: WP 3.0.1, BuddyPress 1.5
-Tested up to: WP 3.3.1, BuddyPress 1.6
+Tested up to: WP 3.5.999, BuddyPress 1.6.3
 License: General Public License version 3
 Author: Paul Gibbs
 Author URI: http://byotos.com/
@@ -24,7 +24,7 @@ Domain Path: /includes/languages/
 Text Domain: dpa
 
 "Achievements for BuddyPress"
-Copyright (C) 2009-12 Paul Gibbs
+Copyright (C) 2009-13 Paul Gibbs
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License version 3 as published by
@@ -166,7 +166,7 @@ function dpa_install_and_upgrade() {
 				break;
 
 				case 1:
-					$wpdb->query( $wpdb->prepare( "ALTER TABLE {$table_prefix}achievements ADD COLUMN site_id bigint(20) NOT NULL" ) );
+					$wpdb->query( "ALTER TABLE {$table_prefix}achievements ADD COLUMN site_id bigint(20) NOT NULL" );
 					$wpdb->update( "{$table_prefix}achievements", array( 'site_id' => BP_ROOT_BLOG ), null, '%d' );
 				break;
 
@@ -206,15 +206,15 @@ function dpa_install_and_upgrade() {
 				break;
 
 				case 4:
-					$wpdb->query( $wpdb->prepare( "CREATE INDEX name ON {$table_prefix}achievements (name(20))" ) );
-					$wpdb->query( $wpdb->prepare( "CREATE INDEX action_id ON {$table_prefix}achievements (action_id)" ) );
-					$wpdb->query( $wpdb->prepare( "CREATE INDEX description ON {$table_prefix}achievements (description(20))" ) );
+					$wpdb->query( "CREATE INDEX name ON {$table_prefix}achievements (name(20))" );
+					$wpdb->query( "CREATE INDEX action_id ON {$table_prefix}achievements (action_id)" );
+					$wpdb->query( "CREATE INDEX description ON {$table_prefix}achievements (description(20))" );
 				break;
 
 				case 5:
-					$wpdb->query( $wpdb->prepare( "ALTER TABLE {$table_prefix}achievements ADD COLUMN group_id bigint(20) NOT NULL" ) );
+					$wpdb->query( "ALTER TABLE {$table_prefix}achievements ADD COLUMN group_id bigint(20) NOT NULL" );
 					$wpdb->update( "{$table_prefix}achievements", array( 'group_id' => -1 ), null, '%d' );
-					$wpdb->query( $wpdb->prepare( "CREATE INDEX group_id ON {$table_prefix}achievements (group_id)" ) );
+					$wpdb->query( "CREATE INDEX group_id ON {$table_prefix}achievements (group_id)" );
 				break;
 
 				case 6:
@@ -242,7 +242,7 @@ function dpa_install_and_upgrade() {
 				break;
 
 				case 9:
-					$wpdb->query( $wpdb->prepare( "ALTER TABLE {$table_prefix}achievements_actions ADD COLUMN is_group_action int(1) NOT NULL" ) );
+					$wpdb->query( "ALTER TABLE {$table_prefix}achievements_actions ADD COLUMN is_group_action int(1) NOT NULL" );
 					$wpdb->update( "{$table_prefix}achievements_actions", array( 'is_group_action' => 0 ), null, '%d' );
 					$wpdb->update( "{$table_prefix}achievements_actions", array( 'is_group_action' => 1 ), array( 'category' => 'groups' ), '%d' );
 				break;
@@ -306,7 +306,7 @@ function dpa_install_and_upgrade() {
 				break;
 
 				case 19:
-					$wpdb->query( $wpdb->prepare( "CREATE INDEX is_active ON {$table_prefix}achievements (is_active)" ) );
+					$wpdb->query( "CREATE INDEX is_active ON {$table_prefix}achievements (is_active)" );
 				break;
 
 				case 20:

@@ -1103,7 +1103,7 @@ function dpa_addedit_action_groups() {
 	function dpa_get_addedit_action_groups() {
 		global $bp, $wpdb;
 
-		$groups = $wpdb->get_results( $wpdb->prepare( "SELECT id, name FROM {$bp->groups->table_name} ORDER BY name ASC" ) );
+		$groups = $wpdb->get_results( "SELECT id, name FROM {$bp->groups->table_name} ORDER BY name ASC" );
 		$current_group_id = $bp->achievements->current_achievement->group_id;
 		$selected = ( $current_group_id < 1 ) ? 'selected="selected"' : '';
 		$options = array( sprintf( '<option value="%1$d"%2$s>%3$s</option>', apply_filters( 'dpa_get_achievement_group_id', -1 ), $selected, __( '(All groups)', 'dpa' ) ) );
@@ -1144,7 +1144,7 @@ function dpa_grant_achievement_userlist() {
 		else
 			$column = "user_status";
 
-		$members = $wpdb->get_results( $wpdb->prepare( "SELECT ID, display_name FROM {$wpdb->users} WHERE {$column} = 0 ORDER BY display_name ASC" ) );
+		$members = $wpdb->get_results( "SELECT ID, display_name FROM {$wpdb->users} WHERE {$column} = 0 ORDER BY display_name ASC" );
 		foreach ( $members as $member )
 			$options[] = sprintf( '<li><input type="checkbox" name="members[]" id="m-%1$d" value="%2$d" />%3$s', apply_filters( 'bp_get_member_user_id', $member->ID ), apply_filters( 'bp_get_member_user_id', $member->ID ), apply_filters( 'bp_get_member_user_nicename', $member->display_name ) );
 

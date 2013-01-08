@@ -1,5 +1,36 @@
 <?php
 
+
+/**
+ * Example how to use action cms_tree_page_view_post_can_edit to modify if a user can edit the page/post
+ */
+/*
+add_action("cms_tree_page_view_post_can_edit", function($can_edit, $post_id) {
+	
+	if ($post_id === 163) $can_edit = FALSE;
+
+	return $can_edit;
+
+}, 10, 2);
+
+
+add_action("cms_tree_page_view_post_user_can_add_inside", function($can_edit, $post_id) {
+	
+	if ($post_id === 233) $can_edit = FALSE;
+
+	return $can_edit;
+
+}, 10, 2);
+
+add_action("cms_tree_page_view_post_user_can_add_after", function($can_edit, $post_id) {
+	
+	if ($post_id === 142) $can_edit = FALSE;
+
+	return $can_edit;
+
+}, 10, 2);
+*/
+
 /**
  * Use the ajax action-thingie to catch our form with new pages
  * Add pages and then redirect to...?
@@ -175,9 +206,14 @@ function cms_tpv_add_pages() {
 // require("FirePHPCore/FirePHP.class.php");
 // $firephp = FirePHP::getInstance(true);
 
+/**
+ * Output and add hooks in head
+ */
 function cms_tpv_admin_head() {
 
 	if (!cms_tpv_is_one_of_our_pages()) return;
+
+	cms_tpv_setup_postsoverview();
 
 	global $cms_tpv_view;
 	if (isset($_GET["cms_tpv_view"])) {
@@ -214,7 +250,10 @@ function cms_tpv_is_one_of_our_pages() {
 
 	$options = cms_tpv_get_options();
 	$post_type = cms_tpv_get_selected_post_type();
-	$current_screen = get_current_screen(); # sf_d($current_screen);
+
+	if (! function_exists("get_current_screen")) return FALSE;
+	
+	$current_screen = get_current_screen();
 	$is_plugin_page = FALSE;
 
 	// Check if current page is one of the ones defined in $options["menu"]
@@ -225,10 +264,16 @@ function cms_tpv_is_one_of_our_pages() {
 		}
 	}
 
+	// Check if current page is one of the ones defined in $options["postsoverview"]
+	if ($current_screen->base === "edit" && in_array($current_screen->post_type, $options["postsoverview"])) {
+		$is_plugin_page = TRUE;
+	}
+
 	if ($current_screen->id === "settings_page_cms-tpv-options") {
 		// Is settings page for plugin
 		$is_plugin_page = TRUE;
 	} elseif ($current_screen->id === "dashboard" && !empty($options["dashboard"])) {
+		// At least one post type is enabled to be visible on dashboard
 		$is_plugin_page = TRUE;
 	}
 
@@ -240,7 +285,6 @@ function cms_tpv_is_one_of_our_pages() {
  * Add styles and scripts to pages that use the plugin
  */
 function cms_admin_enqueue_scripts() {
-
 
 	if (cms_tpv_is_one_of_our_pages()) {
 
@@ -285,6 +329,7 @@ function cms_admin_enqueue_scripts() {
 			"Password_protected_page" => __("Password protected page", 'cms-tree-page-view'),
 			"Adding_page" => __("Adding page...", 'cms-tree-page-view'),
 			"Adding" => __("Adding ...", 'cms-tree-page-view'),
+			"No posts found" => __("No posts found.", 'cms-tree-page-view')
 		);
 		wp_localize_script( "cms_tree_page_view", 'cmstpv_l10n', $oLocale);
 
@@ -292,18 +337,131 @@ function cms_admin_enqueue_scripts() {
 
 }
 
+function cms_tpv_load_textdomain() {
+	// echo "load textdomain";
+	if (is_admin()) {
+		load_plugin_textdomain('cms-tree-page-view', WP_CONTENT_DIR . "/plugins/languages", "/cms-tree-page-view/languages");
+	}
+}
 
 function cms_tpv_admin_init() {
 	
 	// DEBUG
 	//wp_enqueue_script( "jquery-hotkeys" );
 
-	load_plugin_textdomain('cms-tree-page-view', WP_CONTENT_DIR . "/plugins/languages", "/cms-tree-page-view/languages");
-
 	// add row to plugin page
+
 	add_filter( 'plugin_row_meta', 'cms_tpv_set_plugin_row_meta', 10, 2 );
 
 }
+
+/**
+ * Check if this is a post overview page and that plugin is enabled for this overview page
+ */
+function cms_tpv_setup_postsoverview() {
+
+	$options = cms_tpv_get_options();
+	$current_screen = get_current_screen();
+
+	if ("edit" === $current_screen->base && in_array($current_screen->post_type, $options["postsoverview"])) {
+
+		// Ok, this is a post overview page that we are enabled for
+		add_filter("views_" . $current_screen->id, "cmstpv_filter_views_edit_postsoverview");
+
+		cmstpv_postoverview_head();
+
+	}
+	
+}
+
+/**
+ * Add style etc to wp head to minimize flashing content
+ */
+function cmstpv_postoverview_head() {
+
+	if ( isset($_GET["mode"]) && $_GET["mode"] === "tree" ) {
+		?>
+		<style>
+			/* hide and position WP things */
+			/* TODO: move this to wp head so we don't have time to see wps own stuff */
+			.subsubsub, .tablenav.bottom, .tablenav .actions, .wp-list-table, .search-box, .tablenav .tablenav-pages { display: none !important; }
+			.tablenav.top { float: right; }
+			.view-switch { visibility: hidden; }
+		</style>
+		<?php
+	} else {
+		// post overview is enabled, but not active
+		// make room for our icon directly so page does not look jerky while adding it
+		?>
+		<style>
+			.view-switch {
+				padding-right: 23px;
+			}
+		</style>
+		<?php
+	}
+
+}
+
+/**
+ * Output tree and html code for post overview page
+ */
+function cmstpv_filter_views_edit_postsoverview($filter_var) {
+
+	$current_screen = get_current_screen();
+	
+	ob_start();
+	cms_tpv_print_common_tree_stuff();
+	$tree_common_stuff = ob_get_clean();
+
+	/*
+	on non hierarcical post types this one exists:
+	tablenav-pages one-page
+	then after:
+	<div class="view-switch">
+
+	if view-switch exists: add item to it
+	if view-switch not exists: add it + item to it
+
+	http://playground.ep/wordpress/wp-admin/images/list.png
+	*/
+	$mode = "tree";
+	$class = isset($_GET["mode"]) && $_GET["mode"] == $mode ? " class='current' " : "";
+	$title = __("Tree View", 'cms-tree-page-view');
+	$tree_a = "<a href='" . esc_url( add_query_arg( 'mode', $mode, $_SERVER['REQUEST_URI'] ) ) . "' $class> <img id='view-switch-$mode' src='" . esc_url( includes_url( 'images/blank.gif' ) ) . "' width='20' height='20' title='$title' alt='$title' /></a>\n";
+
+	// Copy of wordpress own, if it does not exist
+	$wp_list_a = "";
+	if (is_post_type_hierarchical( $current_screen->post_type ) ) {
+
+		$mode = "list";
+		$class = isset($_GET["mode"]) && $_GET["mode"] != $mode ? " class='cmstpv_add_list_view' " : " class='cmstpv_add_list_view current' ";
+		$title = __("List View");
+		$wp_list_a = "<a href='" . esc_url( add_query_arg( 'mode', $mode, $_SERVER['REQUEST_URI'] ) ) . "' $class><img id='view-switch-$mode' src='" . esc_url( includes_url( 'images/blank.gif' ) ) . "' width='20' height='20' title='$title' alt='$title' /></a>\n";
+
+	}
+
+	$out = "";
+	$out .= $tree_a;
+	$out .= $wp_list_a;
+
+	// Output tree related stuff if that view/mode is selected
+	if (isset($_GET["mode"]) && $_GET["mode"] === "tree") {
+	
+		$out .= sprintf('
+			<div class="cmstpv-postsoverview-wrap">
+				%1$s
+			</div>
+		', $tree_common_stuff);
+	
+	}
+
+	echo $out;
+
+	return $filter_var;
+
+}
+
 
 /**
  * Add settings link to plugin page
@@ -322,30 +480,42 @@ function cms_tpv_set_plugin_row_meta($links, $file) {
 }
 
 
-// save settings
+/**
+ * Save settings, called when saving settings in general > cms tree page view
+ */
 function cms_tpv_save_settings() {
+	
 	if (isset($_POST["cms_tpv_action"]) && $_POST["cms_tpv_action"] == "save_settings") {
+
 		$options = array();
 		$options["dashboard"] = (array) $_POST["post-type-dashboard"];
 		$options["menu"] = (array) $_POST["post-type-menu"];
+		$options["postsoverview"] = (array) $_POST["post-type-postsoverview"];
+		
 		update_option('cms_tpv_options', $options); // enable this to show box
+
 	}
+
 }
 
 /**
  * Add widget to dashboard
  */
 function cms_tpv_wp_dashboard_setup() {
+	
+	// echo "setup dashboard";
+
 	// add dashboard to capability edit_pages only
 	if (current_user_can("edit_pages")) {
 		$options = cms_tpv_get_options();
 		foreach ($options["dashboard"] as $one_dashboard_post_type) {
 			$post_type_object = get_post_type_object($one_dashboard_post_type);
 			$new_func_name = create_function('', "cms_tpv_dashboard('$one_dashboard_post_type');");
-			$widget_name = _x(sprintf('%1$s Tree', $post_type_object->labels->name), "name of dashboard", "cms-tree-page-view");
+			$widget_name = sprintf( _x('%1$s Tree', "name of dashboard", "cms-tree-page-view"), $post_type_object->labels->name);
 			wp_add_dashboard_widget( "cms_tpv_dashboard_widget_{$one_dashboard_post_type}", $widget_name, $new_func_name );
 		}
 	}
+
 }
 
 
@@ -371,14 +541,13 @@ function cms_tpv_admin_menu() {
 		$post_type_object = get_post_type_object($one_menu_post_type);
 		
 		$menu_name = _x("Tree View", "name in menu", "cms-tree-page-view");
-		$page_title = _x(sprintf('%1$s Tree View', $post_type_object->labels->name), "title on page with tree", "cms-tree-page-view");
+		$page_title = sprintf(_x('%1$s Tree View', "title on page with tree", "cms-tree-page-view"), $post_type_object->labels->name);
 		add_submenu_page($slug, $page_title, $menu_name, $post_type_object->cap->edit_posts, "cms-tpv-page-$one_menu_post_type", "cms_tpv_pages_page");
 	}
 
 	add_submenu_page( 'options-general.php' , CMS_TPV_NAME, CMS_TPV_NAME, "administrator", "cms-tpv-options", "cms_tpv_options");
 	
 }
-
 
 /**
  * Output options page
@@ -389,65 +558,103 @@ function cms_tpv_options() {
 	<div class="wrap">
 	
 		<?php cms_tpv_show_annoying_box(); ?>
-		
+	
+		<?php screen_icon(); ?>	
 		<h2><?php echo CMS_TPV_NAME ?> <?php _e("settings", 'cms-tree-page-view') ?></h2>
 
-		<form method="post" action="options.php">
+		<form method="post" action="options.php" class="cmtpv_options_form">
+			
 			<?php wp_nonce_field('update-options'); ?>
 					
 			<h3><?php _e("Select where to show a tree for pages and custom post types", 'cms-tree-page-view')?></h3>
 			
-			<?php
-			$options = cms_tpv_get_options();
-
-			$post_types = get_post_types(array(
-				"show_ui" => TRUE
-			), "objects");
-			$arr_page_options = array();
-			foreach ($post_types as $one_post_type) {
-				$name = $one_post_type->name;
+			<table class="form-table">
 				
-				if ($name == "post") {
-					// no support for pages. you could show them.. but since we can't reorder them there is not idea to show them.. or..?
-					// 14 jul 2011: ok, let's enable it for posts too. some people says it useful
-					// http://wordpress.org/support/topic/this-plugin-should-work-also-on-posts
-					// continue;
-				}
-
-				$arr_page_options[] = "post-type-dashboard-$name";
-				$arr_page_options[] = "post-type-menu-$name";
-				echo "<p>";
-				echo "<strong>".$one_post_type->label."</strong>";
+				<tbody>
 				
-				$checked = (in_array($name, $options["dashboard"])) ? " checked='checked' " : "";
-				echo "<br />";
-				echo "<input $checked type='checkbox' name='post-type-dashboard[]' value='$name' id='post-type-dashboard-$name' /> <label for='post-type-dashboard-$name'>" . __("On dashboard", 'cms-tree-page-view') . "</label>";
-				
-				$checked = (in_array($name, $options["menu"])) ? " checked='checked' " : "";
-				echo "<br />";
-				echo "<input $checked type='checkbox' name='post-type-menu[]' value='$name' id='post-type-menu-$name' /> <label for='post-type-menu-$name'>" . __("In menu", 'cms-tree-page-view') . "</label>";
-				echo "</p>";
+					<?php
+					
+					$options = cms_tpv_get_options();
 
-			}
+					$post_types = get_post_types(array(
+						"show_ui" => TRUE
+					), "objects");
+					
+					$arr_page_options = array();
+					foreach ($post_types as $one_post_type) {
 
-			?>
-			
+						$name = $one_post_type->name;
+						
+						if ($name === "post") {
+							// no support for pages. you could show them.. but since we can't reorder them there is not idea to show them.. or..?
+							// 14 jul 2011: ok, let's enable it for posts too. some people says it useful
+							// http://wordpress.org/support/topic/this-plugin-should-work-also-on-posts
+							// continue;
+						} else if ($name === "attachment") {
+							// No support for media/attachment
+							continue;
+						}
+
+						$arr_page_options[] = "post-type-dashboard-$name";
+						$arr_page_options[] = "post-type-menu-$name";
+						$arr_page_options[] = "post-type-postsoverview-$name";
+						
+						echo "<tr>";
+
+						echo "<th scope='row'>";
+						echo "<p>".$one_post_type->label."</p>";
+						echo "</th>";
+
+						echo "<td>";
+
+						echo "<p>";
+						
+						$checked = (in_array($name, $options["dashboard"])) ? " checked='checked' " : "";
+						echo "<input $checked type='checkbox' name='post-type-dashboard[]' value='$name' id='post-type-dashboard-$name' /> <label for='post-type-dashboard-$name'>" . __("On dashboard", 'cms-tree-page-view') . "</label>";
+						
+						echo "<br />";
+						$checked = (in_array($name, $options["menu"])) ? " checked='checked' " : "";
+						echo "<input $checked type='checkbox' name='post-type-menu[]' value='$name' id='post-type-menu-$name' /> <label for='post-type-menu-$name'>" . __("In menu", 'cms-tree-page-view') . "</label>";
+
+						echo "<br />";
+						$checked = (in_array($name, $options["postsoverview"])) ? " checked='checked' " : "";
+						echo "<input $checked type='checkbox' name='post-type-postsoverview[]' value='$name' id='post-type-postsoverview-$name' /> <label for='post-type-postsoverview-$name'>" . __("On post overview screen", 'cms-tree-page-view') . "</label>";
+
+						echo "</p>";
+
+						echo "</td>";
+
+						echo "</tr>";
+
+					}
+
+					?>
+				</tbody>
+			</table>
+
 			<input type="hidden" name="action" value="update" />
 			<input type="hidden" name="cms_tpv_action" value="save_settings" />
 			<input type="hidden" name="page_options" value="<?php echo join($arr_page_options, ",") ?>" />
 			<p class="submit">
 				<input type="submit" class="button-primary" value="<?php _e('Save Changes', 'cms-tree-page-view') ?>" />
 			</p>
+
 		</form>
+
 	</div>
 	
 	<?php
 }
 
+/**
+ * Load settings
+ * @return array with options
+ */
 function cms_tpv_get_options() {
 	$arr_options = (array) get_option('cms_tpv_options');
-	$arr_options["dashboard"] = (array) $arr_options["dashboard"];
-	$arr_options["menu"] = (array) $arr_options["menu"];
+	$arr_options["dashboard"] = (array) @$arr_options["dashboard"];
+	$arr_options["menu"] = (array) @$arr_options["menu"];
+	$arr_options["postsoverview"] = (array) @$arr_options["postsoverview"];
 	return $arr_options;
 }
 
@@ -483,12 +690,14 @@ function cms_tpv_is_post_type_hierarchical($post_type_object) {
 	return $is_hierarchical;
 }
 
-
+/**
+ * Get number of posts from WPML
+ */
 function cms_tpv_get_wpml_post_counts($post_type) {
 
 	global $wpdb;
 
-	$arr_statuses = array("publish", "draft", "trash");
+	$arr_statuses = array("publish", "draft", "trash", "future", "private");
 	$arr_counts = array();
 
 	foreach ($arr_statuses as $post_status) {
@@ -508,8 +717,10 @@ function cms_tpv_get_wpml_post_counts($post_type) {
 			WHERE p.post_type='{$post_type}' AND t.element_type='post_{$post_type}' {$extra_cond}
 			GROUP BY language_code
 		";
+
 		$res = $wpdb->get_results($sql);
 
+		$langs = array();
 		$langs['all'] = 0;
 		foreach($res as $r) {
 			$langs[$r->language_code] = $r->c;
@@ -535,7 +746,7 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 	if (!$post_type) {
 		$post_type = cms_tpv_get_selected_post_type();
 	}
-	#echo "post_type: $post_type";
+	
 	$post_type_object = get_post_type_object($post_type);
 	$get_pages_args = array("post_type" => $post_type);
 
@@ -563,16 +774,16 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 		$langs = array();
 		
 		$wpml_post_counts = cms_tpv_get_wpml_post_counts($post_type);
-		
-		$post_count_all = @$wpml_post_counts["publish"][$wpml_current_lang] + @$wpml_post_counts["draft"][$wpml_current_lang];
-		$post_count_publish	= @$wpml_post_counts["publish"][$wpml_current_lang];
-		$post_count_trash	= @$wpml_post_counts["trash"][$wpml_current_lang];
-	
+
+		$post_count_all = (int) @$wpml_post_counts["private"][$wpml_current_lang] + (int) @$wpml_post_counts["future"][$wpml_current_lang] + (int) @$wpml_post_counts["publish"][$wpml_current_lang] + (int) @$wpml_post_counts["draft"][$wpml_current_lang];
+		$post_count_publish	= (int) @$wpml_post_counts["publish"][$wpml_current_lang];
+		$post_count_trash	= (int) @$wpml_post_counts["trash"][$wpml_current_lang];
+
 		foreach ($wpml_post_counts["publish"] as $one_wpml_lang => $one_wpml_lang_count) {
 			if ("all" === $one_wpml_lang) continue;
-			$lang_post_count_all 		= $wpml_post_counts["publish"][$one_wpml_lang] + $wpml_post_counts["draft"][$one_wpml_lang];
-			$lang_post_count_publish	= $wpml_post_counts["publish"][$one_wpml_lang];
-			$lang_post_count_trash		= $wpml_post_counts["trash"][$one_wpml_lang];
+			$lang_post_count_all 		= (int) @$wpml_post_counts["publish"][$one_wpml_lang] + (int) @$wpml_post_counts["draft"][$one_wpml_lang];
+			$lang_post_count_publish	= (int) @$wpml_post_counts["publish"][$one_wpml_lang];
+			$lang_post_count_trash		= (int) @$wpml_post_counts["trash"][$one_wpml_lang];
 			$status_data_attributes["all"] 		.= " data-post-count-{$one_wpml_lang}='{$lang_post_count_all}' ";
 			$status_data_attributes["publish"] 	.= " data-post-count-{$one_wpml_lang}='{$lang_post_count_publish}' ";
 			$status_data_attributes["trash"] 	.= " data-post-count-{$one_wpml_lang}='{$lang_post_count_trash}' ";
@@ -627,26 +838,20 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 						$selected = "current";
 					}
 
-					$lang_count = @$wpml_post_counts["publish"][$one_lang["language_code"]] + @$wpml_post_counts["draft"][$one_lang["language_code"]];
+					$lang_count = (int) @$wpml_post_counts["publish"][$one_lang["language_code"]] + (int) @$wpml_post_counts["draft"][$one_lang["language_code"]];
 
 					$lang_out .= "
 						<li>
 							<a class='cms_tvp_switch_lang $selected cms_tpv_switch_language_code_{$one_lang["language_code"]}' href='#'>
 								$one_lang_details[display_name]
 								<span class='count'>(" . $lang_count . ")</span>
-							</a> | </li>";
+							</a> |</li>";
 				}
-				$lang_out = preg_replace('/ \| <\/li>$/', "</li>", $lang_out);
+				$lang_out = preg_replace('/ \|<\/li>$/', "</li>", $lang_out);
 				$lang_out .= "</ul>";
 				echo $lang_out;
 			}
 
-		}
-
-		if (empty($pages)) {
-		
-			echo '<div class="updated fade below-h2"><p>' . __("No posts found.", 'cms-tree-page-view') . '</p></div>';
-		
 		}
 
 		if (true) {
@@ -659,14 +864,12 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 					<a class="cms_tvp_view_all  <?php echo ($cms_tpv_view=="all") ? "current" : "" ?>" href="#" <?php echo $status_data_attributes["all"] ?>>
 						<?php _e("All", 'cms-tree-page-view') ?>
 						<span class="count">(<?php echo $post_count_all ?>)</span>
-					</a> |
-				</li>
+					</a> |</li>
 				<li class="cms_tvp_view_is_status_view">
 					<a class="cms_tvp_view_public <?php echo ($cms_tpv_view=="public") ? "current" : "" ?>" href="#" <?php echo $status_data_attributes["publish"] ?>>
 						<?php _e("Public", 'cms-tree-page-view') ?>
 						<span class="count">(<?php echo $post_count_publish ?>)</span>
-					</a> |
-				</li>
+					</a> |</li>
 				<li class="cms_tvp_view_is_status_view">
 					<a class="cms_tvp_view_trash <?php echo ($cms_tpv_view=="trash") ? "current" : "" ?>" href="#" <?php echo $status_data_attributes["trash"] ?>>
 						<?php _e("Trash", 'cms-tree-page-view') ?>
@@ -687,7 +890,7 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 					<form class="cms_tree_view_search_form" method="get" action="">
 						<input type="text" name="search" class="cms_tree_view_search" />
 						<a title="<?php _e("Clear search", 'cms-tree-page-view') ?>" class="cms_tree_view_search_form_reset" href="#">x</a>
-						<input type="submit" class="cms_tree_view_search_submit" value="<?php _e("Search", 'cms-tree-page-view') ?>" />
+						<input type="submit" class="cms_tree_view_search_submit button button-small" value="<?php _e("Search", 'cms-tree-page-view') ?>" />
 						<span class="cms_tree_view_search_form_working"><?php _e("Searching...", 'cms-tree-page-view') ?></span>
 						<span class="cms_tree_view_search_form_no_hits"><?php _e("Nothing found.", 'cms-tree-page-view') ?></span>
 					</form>
@@ -725,12 +928,12 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 
 					<span class='cms_tpv_action_add_page'><?php echo $post_type_object->labels->add_new_item ?></span>
 					
-					<a href="#" title='<?php _e("Add new page after", "cms-tree-page-view")?>' class='cms_tpv_action_add_page_after'><?php _e("After", "cms-tree-page-view")?></a>
+					<a class='cms_tpv_action_add_page_after' href="#" title='<?php _e("Add new page after", "cms-tree-page-view")?>' ><?php _e("After", "cms-tree-page-view")?></a>
 					
 					<?php
 					// if post type is hierarchical we can add pages inside
 					if (cms_tpv_is_post_type_hierarchical($post_type_object)) {
-						?><a href="#" title='<?php _e("Add new page inside", "cms-tree-page-view")?>' class='cms_tpv_action_add_page_inside'><?php _e("Inside", "cms-tree-page-view")?></a><?php
+						?><a class='cms_tpv_action_add_page_inside' href="#" title='<?php _e("Add new page inside", "cms-tree-page-view")?>' ><?php _e("Inside", "cms-tree-page-view")?></a><?php
 					}
 					// if post status = draft then we can not add pages inside because wordpress currently can not keep its parent if we edit the page
 					?>
@@ -759,21 +962,21 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 								</ul>
 							</div>
 
-							<div>
-								Position<br>
+							<div class="cms_tpv_add_position">
+								<?php _e("Position", "cms-tree-page-view") ?><br>
 								<label><input type="radio" name="cms_tpv_add_type" value="after"> <?php _e("After", "cms-tree-page-view") ?></label>
 								<label><input type="radio" name="cms_tpv_add_type" value="inside"> <?php _e("Inside", "cms-tree-page-view") ?></label>
 							</div>
 
 
 							<div>
-								Status<br>
+								<? _e("Status", "cms-tree-page-view") ?><br>
 								<label><input type="radio" name="cms_tpv_add_status" value="draft" checked> <?php _e("Draft", "cms-tree-page-view") ?></label>
 								<label><input type="radio" name="cms_tpv_add_status" value="published"> <?php _e("Published", "cms-tree-page-view") ?></label>
 							</div>
 
 							<div>
-								<input type="submit" value="Add" class="button-primary">
+								<input type="submit" value="<?php _e("Add", "cms-tree-page-view") ?>" class="button-primary">
 								<?php _e("or", "cms-tree-page-view") ?>
 								<a href="#" class="cms_tpv_add_cancel"><?php _e("cancel", "cms-tree-page-view") ?></a>
 							</div>
@@ -799,6 +1002,13 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 			</div>
 			<?php
 		}
+
+		if (empty($pages)) {
+		
+			echo '<div class="updated fade below-h2"><p>' . __("No posts found.", 'cms-tree-page-view') . '</p></div>';
+		
+		}
+
 		?>
 		
 	</div>
@@ -825,7 +1035,8 @@ function cms_tpv_pages_page() {
 	<div class="wrap">
 		<?php echo get_screen_icon(); ?>
 		<h2><?php
-			$page_title = _x(sprintf('%1$s Tree View', $post_type_object->labels->name), "headline of page with tree", "cms-tree-page-view");
+
+			$page_title = sprintf(_x('%1$s Tree View', "headline of page with tree", "cms-tree-page-view"), $post_type_object->labels->name);
 			echo $page_title;
 
 			// Add "add new" link the same way as the regular post page has
@@ -833,56 +1044,9 @@ function cms_tpv_pages_page() {
 				echo ' <a href="' . esc_url( $post_new_file ) . '" class="add-new-h2">' . esc_html( $post_type_object->labels->add_new ) . '</a>';
 			}
 
-
-
-
 		?></h2>
 		
 		<?php
-		/*
-		Not so much nagging, since I'm a nice guy.
-		<div class="bonny-plugins-inner-sidebar">
-			<h3>Support the author</h3>
-			<p>
-				If you like this plugin you are welcome to support the author by donating:
-			</p>
-			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="text-align: center">
-				<input type="hidden" name="cmd" value="_s-xclick">
-				<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----">
-				<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-				<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
-			</form>
-
-			<p style="text-align: center">
-				<a href="http://flattr.com/thing/117882/CMS-Tree-Page-View-Plugin-for-WordPress" target="_blank">
-				<img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a>
-			</p>
-
-			<p>
-				You can also show your appreciation 
-				by giving the plugin a <a href="http://wordpress.org/extend/plugins/cms-tree-page-view/">good rating over at the plugin directory</a>
-				or blog or tweet something nice about this plugin.
-			</p>
-
-			<h3>Support</h3>
-			<p>If you have any problems with this plugins please check out the <a href="http://wordpress.org/tags/cms-tree-page-view?forum_id=10">support forum</a>.</p>
-			
-			<h3>More CMS related plugins</h3>
-			<p>These are some more plugins that enhance the CMS functionality of WordPress. Please check them out!</p>
-			<ul>
-				<li><a href="http://wordpress.org/extend/plugins/admin-menu-tree-page-view/">Admin Menu Tree Page View</a></li>
-				<li><a href="http://wordpress.org/extend/plugins/simple-history/">Simple History</a></li>
-				<li><a href="http://wordpress.org/extend/plugins/simple-fields/">Simple Fields</a></li>
-				<li><a href="http://wordpress.org/extend/plugins/simple-front-end-edit-buttons/">Simple Front End Edit Buttons</a></li>
-			</ul>
-			
-			
-		</div>
-		*/
-		?>
-
-		<?php
-		// cms_tpv_show_annoying_box();
 		cms_tpv_print_common_tree_stuff($post_type);
 		?>
 
@@ -941,6 +1105,7 @@ function cms_tpv_get_pages($args = null) {
 	
 	#do_action_ref_array('parse_query', array(&$this));
 	#print_r($get_posts_args);
+
 	$pages = get_posts($get_posts_args);
 
 	// filter out pages for wpml, by applying same filter as get_pages does
@@ -972,6 +1137,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 		global $current_screen;
 		$screen = convert_to_screen("edit");
 		$screen->post_type = null;
+		$post_type_object = get_post_type_object($post_type);
 
 		ob_start(); // some plugins, for example magic fields, return javascript and things here. we're not compatible with that, so just swallow any output
 		$posts_columns = get_column_headers($screen);
@@ -1038,17 +1204,31 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 				$title = __("<Untitled page>", 'cms-tree-page-view');
 			}
 			$title = esc_html($title);
-			#$title = html_entity_decode($title, ENT_COMPAT, "UTF-8");
-			#$title = html_entity_decode($title, ENT_COMPAT);
 
-			// can edit?
-			if ( current_user_can( 'edit_page', $page_id ) ) {
-				$user_can_edit_page = true;
-				$user_can_edit_page_css = "cms_tpv_user_can_edit_page_yes";
+			$arr_page_css_styles = array();
+			$user_can_edit_page = apply_filters("cms_tree_page_view_post_can_edit", current_user_can( $post_type_object->cap->edit_post, $page_id), $page_id);
+			$user_can_add_inside = apply_filters("cms_tree_page_view_post_user_can_add_inside", current_user_can( $post_type_object->cap->edit_post, $page_id), $page_id);
+			$user_can_add_after = apply_filters("cms_tree_page_view_post_user_can_add_after", current_user_can( $post_type_object->cap->edit_post, $page_id), $page_id);	
+
+			if ( $user_can_edit_page ) {
+				$arr_page_css_styles[] = "cms_tpv_user_can_edit_page_yes";
 			} else {
-				$user_can_edit_page = false;
-				$user_can_edit_page_css = "cms_tpv_user_can_edit_page_no";
+				$arr_page_css_styles[] = "cms_tpv_user_can_edit_page_no";
 			}
+
+			if ( $user_can_add_inside ) {
+				$arr_page_css_styles[] = "cms_tpv_user_can_add_page_inside_yes";
+			} else {
+				$arr_page_css_styles[] = "cms_tpv_user_can_add_page_inside_no";
+			}
+
+			if ( $user_can_add_after ) {
+				$arr_page_css_styles[] = "cms_tpv_user_can_add_page_after_yes";
+			} else {
+				$arr_page_css_styles[] = "cms_tpv_user_can_add_page_after_no";
+			}
+
+			$page_css = join(" ", $arr_page_css_styles);
 
 			// fetch columns
 			$str_columns = "";
@@ -1104,7 +1284,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 					<?php /* "xhref": "<?php echo $editLink ?>", */ ?>
 					"id": "cms-tpv-<?php echo $onePage->ID ?>",
 					<?php /* "xtitle": "<?php _e("Click to edit. Drag to move.", 'cms-tree-page-view') ?>", */ ?>
-					"class": "<?php echo $user_can_edit_page_css ?>"
+					"class": "<?php echo $page_css ?>"
 				},
 				<?php echo $strState ?>
 				"metadata": {
@@ -1121,6 +1301,8 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 					"modified_author": "<?php echo $post_author ?>",
 					"columns": <?php echo $str_columns ?>,
 					"user_can_edit_page": "<?php echo (int) $user_can_edit_page ?>",
+					"user_can_add_page_inside": "<?php echo (int) $user_can_add_inside ?>",
+					"user_can_add_page_after": "<?php echo (int) $user_can_add_after ?>",
 					"post_title": "<?php echo $title ?>"
 				}
 				<?php
@@ -1149,6 +1331,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 }
 
 // Act on AJAX-call
+// Get pages
 function cms_tpv_get_childs() {
 
 	header("Content-type: application/json");
@@ -1496,6 +1679,7 @@ function cms_tpv_install() {
 	// set to current version
 	update_option('cms_tpv_version', CMS_TPV_VERSION);
 }
+#cms_tpv_install();
 
 /**
  * setup some defaults
@@ -1504,8 +1688,7 @@ function cms_tpv_setup_defaults() {
 
 	// check and update version
 	$version = get_option('cms_tpv_version', 0);
-
-	//$version = 0;
+	#$version = 0; // uncomment to test default settings
 
 	if ($version <= 0) {
 
@@ -1513,9 +1696,9 @@ function cms_tpv_setup_defaults() {
 
 		// Add pages to both dashboard and menu
 		$options["dashboard"] = array("page");
-		$options["menu"] = array("page");
 
 		// since 0.10.1 enable menu for all hierarchical custom post types
+		// since 1.2 also enable on post overview page
 		$post_types = get_post_types(array(
 			"show_ui" 		=> TRUE,
 			"hierarchical" 	=> TRUE
@@ -1523,11 +1706,14 @@ function cms_tpv_setup_defaults() {
 
 		foreach ($post_types as $one_post_type) {
 			$options["menu"][] = $one_post_type->name;
+			$options["postsoverview"][] = $one_post_type->name;
 		}
 
 		$options["menu"] = array_unique($options["menu"]);
+		$options["postsoverview"] = array_unique($options["postsoverview"]);
 
 		update_option('cms_tpv_options', $options);
+	
 	}
 
 }

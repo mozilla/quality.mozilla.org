@@ -2,15 +2,16 @@
 Contributors: eskapism, MarsApril
 Donate link: http://eskapism.se/sida/donate/
 Tags: page, pages, posts, custom posts, tree, cms, dashboard, overview, drag-and-drop, rearrange, management, manage, admin
-Requires at least: 3.0
+Requires at least: 3.4
 Tested up to: 3.5
-Stable tag: 1.1
+Stable tag: 1.2.2
 
-Adds a tree of all your pages or custom posts. Use drag & drop to reorder your pages, and edit, view, add, and search your pages.
+Adds a tree view of all pages & custom posts. Get a great overview + options to drag & drop to reorder & option to add multiple pages.
 
 == Description ==
 
 Adds a CMS-like tree overview of all your pages and custom posts to WordPress - much like the view often found in a page-focused CMS.
+
 Within this tree you can edit pages, view pages, add pages, search pages, and drag and drop pages to rearrange the order.
 
 CMS Tree Page View is a good alternative to plugins such as pageMash, WordPress Page Tree
@@ -32,6 +33,24 @@ Page management in WordPress won't get any easier than this!
 * View your site hierarchy directly from the WordPress dashboard
 * Drag and drop between trees with different post types to change to post type of the draged item, i.e. change a regular page to became any custom post type
 * Support for translation plugin [WPML](http://wordpress.org/extend/plugins/sitepress-multilingual-cms/), so you can manage all the languages of your site
+
+#### Show your pages on your site in the same order as they are in CMS Tree Page View
+To show your pages on your website in the same order as they appear in this plugin, you must
+sort them by "menu order".
+
+`
+// Example using query_posts
+$args = array(
+  'orderby'=> 'menu_order',
+  'order'=>'ASC',
+  'post_type' => 'page',
+);
+$posts = query_posts($args);
+
+// Example using wp_query
+$query = new WP_Query( array( 'post_type' => 'page', 'orderby' => 'title menu_order', 'order' => 'ASC' ) );
+
+`
 
 #### Screencast
 Watch this screencast to see how easy you could be managing your pages:
@@ -58,14 +77,9 @@ This plugin is available in the following languages:
 * Lithuanian
 * Estonian
 
-#### Making the tree available for your vistors
-If you're looking for a version of this page tree that the vistors of your site can use, then check out
-this navigation widget called [Nice Navigation](http://wordpress.org/extend/plugins/nice-navigation/).
-
 #### Always show your pages in the admin area
 If you want to always have a list of your pages available in your WordPress admin area, please check out the plugin
 [Admin Menu Tree Page View](http://wordpress.org/extend/plugins/admin-menu-tree-page-view/).
-
 
 #### Donation and more plugins
 * If you like this plugin don't forget to [donate to support further development](http://eskapism.se/sida/donate/).
@@ -82,14 +96,36 @@ Now the tree with the pages will be visible both on the dashboard and in the men
 == Screenshots ==
 
 1. The page tree in action
-2. Edit, view and add pages (choices visible upon mouse over).
-3. Search pages.
+2. Edit, view and even add multiple pages at once!
+3. Search pages
 4. Drag-and-drop to rearrange/change the order of the pages.
 5. The tree is also available on the dashboard and therefore available immediately after you login.
-6. The settings page - choose where you want the tree to show up
-7. Users of WPML can find all their languages in the tree
+6. Users of WPML can find all their languages in the tree
+7. Quickly switch between regular list view and tree view using the switch icon
 
 == Changelog ==
+
+= 1.2.2 =
+- Hide "inside" link if post type is draft, since you can't create new post inside a page with status draft (limitation/bug with Wordpress)
+- Added actions so other developers or plugins can control what pages/posts that are editiable and so on. Added filters are: cms_tree_page_view_post_can_edit, cms_tree_page_view_post_user_can_add_inside, cms_tree_page_view_post_user_can_add_after
+
+= 1.2.1 =
+- Fixed wrong count if WPML where activated and future or private posts existed for a language
+- Show info message if no posts found after fetching posts with AJAX
+- Updated Swedish translation
+- Updated Russian translation - hopefully it works this time!
+- Updated POT file
+- Minor language fixes, like actually loading plugin textdomain before using any texts...
+
+= 1.2 =
+- Added option to show the tree in the regular post overview screen. Makes the tree view fit into the regular workflow and GUI much better. To enable: go to settings > CMS Tree Page View > Tick the option "On post overview screen". Then go to for example the pages overview screen and in the upper right corner there will be an icon to switch between the regular list view and the tree view of this plugin.
+- Fixed so search button now looks more like the rest of the WordPress GUI
+- Fixed a undefined index warning
+- Fixed wrong language count for WPML-enabled post types
+- Perhaps fixed a problem with some other plugins, for example Formidable Pro
+- Added icon to settings page
+- Added updated Russian translation
+- Updated POT-file for translators
 
 = 1.1 =
 - Added "Add new"-link next to headline, to better match the regular post overview page + it makes it possible to add new pages/posts when there are no pages/posts added (previously there needed to be at least one post added to be able to add new posts)
@@ -98,7 +134,7 @@ Now the tree with the pages will be visible both on the dashboard and in the men
 - Fixed some IE-bugs
 
 = 1.0 =
-- New: create multiple pages at once! Add multiple pages faster than ever before! You can ever select if the new pages should be drafts or published. And ever drag and drop the pages to get the correct order even before adding them. I know - it's awesome!
+- New: create multiple pages at once! Add multiple pages faster than ever before! You can even select if the new pages should be drafts or published. And ever drag and drop the pages to get the correct order even before adding them. I know - it's awesome!
 - Fixed: adds new pages with the correct and selected WPML-language
 - Added: you can now change the type of a post by draging the post between different trees on the dashboard. So if you have one custom post type called "Cars" and another called "Bicycles" you can now drag a page from the cars tree to the bicicyles tree and the post will converted to that post type. Pretty powerful feature that you used to need a separately plugin to be able to do.
 - Misc fixes

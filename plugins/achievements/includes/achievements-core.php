@@ -51,6 +51,7 @@ require ( dirname( __FILE__ ) . '/achievements-filters.php' );
 function dpa_setup_globals() {
 	global $bp;
 
+	$bp->achievements = new stdClass;
 	$bp->achievements->id = 'achievements';
 	$bp->achievements->slug = DPA_SLUG;
 	$bp->achievements->table_achievements = $bp->table_prefix . 'achievements';
@@ -258,6 +259,7 @@ function dpa_setup_admin_bar() {
 
 		// My Achievements
 		$wp_admin_nav[] = array(
+			'id'     => 'dpa-my-achievements',
 			'parent' => 'my-account-' . $bp->achievements->id,
 			'title'  => __( 'My Achievements', 'dpa' ),
 			'href'   => trailingslashit( $link . DPA_SLUG_MY_ACHIEVEMENTS )
@@ -450,7 +452,7 @@ function dpa_get_active_actions() {
 	global $bp, $wpdb;
 
 	if ( !$actions = wp_cache_get( 'dpa_active_actions', 'dpa' ) ) {
-		$actions = $wpdb->get_results( $wpdb->prepare( "SELECT DISTINCT action.name FROM {$bp->achievements->table_achievements} as achievement, {$bp->achievements->table_actions} as action WHERE achievement.action_id = action.id AND achievement.action_id != -1 AND (achievement.is_active = 1 OR achievement.is_active = 2)" ) );
+		$actions = $wpdb->get_results( "SELECT DISTINCT action.name FROM {$bp->achievements->table_achievements} as achievement, {$bp->achievements->table_actions} as action WHERE achievement.action_id = action.id AND achievement.action_id != -1 AND (achievement.is_active = 1 OR achievement.is_active = 2)" );
 		wp_cache_set( 'dpa_active_actions', $actions, 'dpa' );
 	}
 	return apply_filters( 'dpa_get_active_actions', (array)$actions );
@@ -468,7 +470,7 @@ function dpa_get_actions() {
 	global $bp, $wpdb;
 
 	if ( !$actions = wp_cache_get( 'dpa_actions', 'dpa' ) ) {
-		$actions = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$bp->achievements->table_actions} ORDER BY category, description" ) );
+		$actions = $wpdb->get_results( "SELECT * FROM {$bp->achievements->table_actions} ORDER BY category, description" );
 		wp_cache_set( 'dpa_actions', $actions, 'dpa' );
 	}
 	return apply_filters( 'dpa_get_actions', (array)$actions );
@@ -1962,6 +1964,11 @@ function dpa_screen_achievement_create() {
 
 	$achievements_errors = $achievement->save();
 	if ( !is_wp_error( $achievements_errors ) ) {
+
+		// Avoid PHP warning
+		if ( ! isset( $achievements_template ) )
+			$achievements_template = new stdClass;
+
 		$achievements_template->achievement = $achievement;  // Required for dpa_record_activity()
 
 		if ( 1 == $achievement->is_active )
