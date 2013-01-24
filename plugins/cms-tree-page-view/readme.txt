@@ -4,7 +4,7 @@ Donate link: http://eskapism.se/sida/donate/
 Tags: page, pages, posts, custom posts, tree, cms, dashboard, overview, drag-and-drop, rearrange, management, manage, admin
 Requires at least: 3.4
 Tested up to: 3.5
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 
 Adds a tree view of all pages & custom posts. Get a great overview + options to drag & drop to reorder & option to add multiple pages.
 
@@ -104,6 +104,11 @@ Now the tree with the pages will be visible both on the dashboard and in the men
 7. Quickly switch between regular list view and tree view using the switch icon
 
 == Changelog ==
+
+= 1.2.3 =
+- Removed an ugly pixel in the tree icon
+- Minor CSS changes to tree icon
+- Updated French translation
 
 = 1.2.2 =
 - Hide "inside" link if post type is draft, since you can't create new post inside a page with status draft (limitation/bug with Wordpress)

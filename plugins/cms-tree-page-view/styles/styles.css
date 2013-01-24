@@ -477,6 +477,10 @@ for posts overview enabled mode
 	padding-right: 0;
 }
 
+.view-switch-cstpv-icon-added a {
+	display: inline-block;
+}
+
 #view-switch-tree {
 	background: url(images/switch-view-icons.png) 0 0;
 	display: none;
