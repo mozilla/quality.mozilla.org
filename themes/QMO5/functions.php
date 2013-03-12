@@ -1,5 +1,26 @@
 <?php
 /*********
+* Load various JavaScripts
+*/
+function qmo_load_scripts() {
+  // Load the default jQuery
+  wp_enqueue_script('jquery');
+
+  // Load the threaded comment reply script
+  if ( get_option('thread_comments') && is_singular() ) {
+    wp_enqueue_script( 'comment-reply' );
+  }
+  
+  // Check required fields on comment form
+  wp_register_script( 'checkcomments', get_template_directory_uri() . '/js/fc-checkcomment.js' );
+  if ( get_option('require_name_email') && is_singular() ) {
+    wp_enqueue_script('checkcomments');
+  }
+}
+add_action( 'wp_enqueue_scripts', 'qmo_load_scripts' );
+
+
+/*********
 * Allow uploading some additional MIME types
 */
 function fc_add_mimes( $mimes=array() ) {
