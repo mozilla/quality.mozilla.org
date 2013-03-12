@@ -52,15 +52,8 @@
     elseif ( is_day() ) { $post = $posts[0]; _e('Posts for ', 'qmo'); echo the_time('F jS, Y'); echo ' &#124; '; bloginfo('name'); qmo_page_number(); }
     elseif ( is_month() ) { $post = $posts[0]; _e('Posts for ', 'qmo'); echo the_time('F, Y'); echo ' &#124; '; bloginfo('name'); qmo_page_number(); }
     elseif ( is_year() ) { $post = $posts[0]; _e('Posts for ', 'qmo'); echo the_time('Y'); echo ' &#124; '; bloginfo('name'); qmo_page_number(); }
-    else {
-      if ( function_exists('bp_is_active') ) :
-        qmo_page_title('&#124;',1,'right'); bloginfo('name'); qmo_page_number();
-      else :
-        wp_title('&#124;',1,'right'); bloginfo('name'); qmo_page_number();
-      endif;
-      }
-  ?></title>
-  <?php if ( function_exists('bp_is_active') ) { do_action( 'bp_head' ); } ?>
+    else { wp_title('&#124;',1,'right'); bloginfo('name'); qmo_page_number(); } ?>
+  </title>
   <?php wp_head(); ?>
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -76,9 +69,7 @@
 
 <body <?php body_class(); ?>>
 <div class="wrapper">
-<?php do_action( 'bp_before_header' ); ?>
   <header id="masthead" class="section">
-
     <div id="header">
       <a href="http://www.mozilla.org/" id="tabzilla">Mozilla</a>
     </div><!-- end #header -->

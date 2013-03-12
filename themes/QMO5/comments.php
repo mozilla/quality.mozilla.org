@@ -46,12 +46,20 @@
         <p id="cancel-comment-reply"><?php cancel_comment_reply_link('Cancel Reply'); ?></p>
         <ol>
         <?php if ( $user_ID ) : ?>
-        <?php global $current_user; get_currentuserinfo(); ?>
-          <li class="self">Logged in as <a href="<?php echo bp_loggedin_user_domain(); ?>"><?php echo $current_user->display_name; ?> <?php echo bp_core_fetch_avatar( 'item_id='.$current_user->ID ); ?></a> <a class="logout" href="<?php echo wp_logout_url($_SERVER['REQUEST_URI']); ?>" title="Log out of this account">Log out</a></li>
+          <li class="self"><?php printf( __( 'You are logged in as <a href="%1$s">%2$s</a>. <a class="logout" href="%3$s">Log out?</a>', 'onemozilla' ), admin_url( 'profile.php' ), esc_html($user_identity), wp_logout_url( apply_filters( 'the_permalink', get_permalink( $post_id ) ) ) ); ?></li>
         <?php else : ?>
-          <li id="cmt-name"><label for="author">Your name <?php if ($req) echo "<abbr title='required'>*</abbr>"; ?></label> <input type="text" name="author" id="author" value="<?php echo $comment_author; ?>" size="25" /></li>
-          <li id="cmt-email"><label for="email">Your e-mail <?php if ($req) echo "<abbr title='required'>*</abbr>"; ?> <span class="note">(not published)</span> </label> <input type="text" name="email" id="email" value="<?php echo $comment_author_email; ?>" size="25" /></li>
-          <li id="cmt-web"><label for="url">Your website</label> <input type="text" name="url" id="url" value="<?php echo $comment_author_url; ?>" size="25" /></li>
+          <li id="cmt-name">
+            <label for="author">Your name <?php if ($req) : ?><span class="note"><?php _e('(required)', 'onemozilla'); ?></span><?php endif; ?></label>
+            <input type="text" name="author" id="author" value="<?php echo esc_attr($comment_author); ?>" size="25" <?php if ($req) echo "required aria-required='true'"; ?>>
+          </li>
+          <li id="cmt-email">
+            <label for="email">Your e-mail <?php if ($req) : ?><span class="note"><?php _e('(required, will not be published)', 'onemozilla'); ?></span><?php endif; ?></label>
+            <input type="email" name="email" id="email" value="<?php echo esc_attr($comment_author_email); ?>" size="25" <?php if ($req) echo "required aria-required='true'"; ?>>
+          </li>
+          <li id="cmt-web">
+            <label for="url">Your website</label>
+            <input type="url" name="url" id="url" value="<?php echo esc_attr($comment_author_url); ?>" size="25">
+          </li>
         <?php endif; ?>
           <li id="cmt-cmt">
             <script src="<?php bloginfo('stylesheet_directory'); ?>/js/jquery.textarea-expander.js" type="text/javascript"></script>

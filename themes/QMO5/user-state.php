@@ -8,11 +8,7 @@ global $current_user;
 get_currentuserinfo(); ?>
 <div id="user-state">
   <ul class="howdy">
-  <?php if ( function_exists('bp_is_active') ) : ?>
-    <li class="user-greet"><a href="<?php echo bp_loggedin_user_domain(); ?>" title="Your profile"><?php echo bp_core_fetch_avatar( 'item_id='.$current_user->ID ); ?><?php echo $current_user->display_name; ?></a></li>
-  <?php else : ?>
     <li class="user-greet"><a href="<?php echo admin_url('profile.php'); ?>" title="Your profile"><?php echo get_avatar( $current_user->ID, 50 ); ?><?php echo $current_user->display_name; ?></a></li>
-  <?php endif; ?>
   <?php if( current_user_can('publish_posts') ) : ?>
     <li class="user-admin"><a href="<?php echo get_admin_url(); ?>">Site Admin</a></li>
   <?php endif; ?>
@@ -25,7 +21,6 @@ get_currentuserinfo(); ?>
       <li><label for="pwd">Password</label> <input type="password" name="pwd" id="pwd"></li>
       <li class="check"><label for="rememberme"><input name="rememberme" id="rememberme" type="checkbox" value="forever"> Remember me</label></li>
       <li class="submit"><button type="submit" name="submit" class="button">Log in</button></li>
-      <li class="signup"><strong><a href="<?php echo bp_get_signup_page(false); ?>" title="<?php _e('Not registered? Sign up!', 'qmo'); ?>"><?php _e('Sign up', 'qmo'); ?></a></strong></li>
     </ul>
     <input type="hidden" name="redirect_to" value="<?php echo $_SERVER['REQUEST_URI']; ?>">
   </form>
