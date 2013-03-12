@@ -403,7 +403,7 @@ function dpa_achievement_points( $achievement_id = 0 ) {
 	 *
 	 * @param int $achievement_id Optional. Achievement ID
 	 * @return int
-	 * @since Achievements (3.0)
+	 * @since Achievements (2.0)
 	 */
 	function dpa_get_achievement_points( $achievement_id = 0 ) {
 		$achievement_id = dpa_get_achievement_id( $achievement_id );
@@ -435,6 +435,29 @@ function dpa_achievement_target( $achievement_id = 0 ) {
 		$target         = (int) get_post_meta( $achievement_id, '_dpa_target', true );
 
 		return apply_filters( 'dpa_get_achievement_target', $target, $achievement_id );
+	}
+
+/**
+ * Output the redemption code for this achievement.
+ *
+ * @param int $achievement_id Optional. Achievement ID
+ * @since Achievements (3.1)
+ */
+function dpa_achievement_redemption_code( $achievement_id = 0 ) {
+	echo number_format_i18n( dpa_get_achievement_redemption_code( $achievement_id ) );
+}
+	/**
+	 * Return the redemption code for this achievement.
+	 *
+	 * @param int $achievement_id Optional. Achievement ID
+	 * @return string
+	 * @since Achievements (3.1)
+	 */
+	function dpa_get_achievement_redemption_code( $achievement_id = 0 ) {
+		$achievement_id = dpa_get_achievement_id( $achievement_id );
+		$target         = get_post_meta( $achievement_id, '_dpa_redemption_code', true );
+
+		return apply_filters( 'dpa_get_achievement_redemption_code', $target, $achievement_id );
 	}
 
 /**

@@ -3,14 +3,14 @@
 Plugin Name: Breadcrumb NavXT
 Plugin URI: http://mtekk.us/code/breadcrumb-navxt/
 Description: Adds a breadcrumb navigation showing the visitor&#39;s path to their current location. For details on how to use this plugin visit <a href="http://mtekk.us/code/breadcrumb-navxt/">Breadcrumb NavXT</a>. 
-Version: 4.2.0
+Version: 4.3.0
 Author: John Havlik
 Author URI: http://mtekk.us/
 License: GPL2
 TextDomain: breadcrumb-navxt
 DomainPath: /languages/
 */
-/*  Copyright 2007-2012  John Havlik  (email : mtekkmonkey@gmail.com)
+/*  Copyright 2007-2013  John Havlik  (email : mtekkmonkey@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ if(!class_exists('mtekk_adminKit'))
  */
 class bcn_admin extends mtekk_adminKit
 {
-	protected $version = '4.2.0';
+	protected $version = '4.3.0';
 	protected $full_name = 'Breadcrumb NavXT Settings';
 	protected $short_name = 'Breadcrumb NavXT';
 	protected $access_level = 'manage_options';
@@ -100,6 +100,8 @@ class bcn_admin extends mtekk_adminKit
 	{
 		//We're going to make sure we run the parent's version of this function as well
 		parent::init();
+		//We want to run late for using our breadcrumbs
+		add_filter('tha_breadcrumb_navigation', array($this, 'tha_compat'), 99);
 	}
 	function wp_loaded()
 	{
@@ -192,6 +194,20 @@ class bcn_admin extends mtekk_adminKit
 				if(isset($opts['Hcurrent_item_template']))
 				{
 					unset($opts['Hcurrent_item_template']);
+				}
+			}
+			//Upgrading to 4.3.0
+			if(version_compare($version, '4.3.0', '<'))
+			{
+				//Removed home_title
+				if(isset($opts['Shome_title']))
+				{
+					unset($opts['Shome_title']);
+				}
+				//Removed mainsite_title
+				if(isset($opts['Smainsite_title']))
+				{
+					unset($opts['Smainsite_title']);
 				}
 			}
 			//Add custom post types
@@ -318,7 +334,7 @@ class bcn_admin extends mtekk_adminKit
 			return;
 		}
 		?>
-		<form action="options-general.php?page=breadcrumb-navxt" method="post" id="bcn_admin-options">
+		<form action="<?php echo $this->admin_url(); ?>" method="post" id="bcn_admin-options">
 			<?php settings_fields('bcn_options');?>
 			<div id="hasadmintabs">
 			<fieldset id="general" class="bcn_options">
@@ -354,7 +370,7 @@ class bcn_admin extends mtekk_adminKit
 				<h3><?php _e('Current Item', 'breadcrumb-navxt'); ?></h3>
 				<table class="form-table">
 					<?php
-						$this->input_check(__('Link Current Item', 'breadcrumb-navxt'), 'bcurrent_item_linked', __('Yes'));
+						$this->input_check(__('Link Current Item', 'breadcrumb-navxt'), 'bcurrent_item_linked', __('Yes', 'breadcrumb-navxt'));
 						$this->input_check(__('Paged Breadcrumb', 'breadcrumb-navxt'), 'bpaged_display', __('Include the paged breadcrumb in the breadcrumb trail.', 'breadcrumb-navxt'), false, __('Indicates that the user is on a page other than the first on paginated posts/pages.', 'breadcrumb-navxt'));
 						$this->input_text(__('Paged Template', 'breadcrumb-navxt'), 'Hpaged_template', 'large-text', false, __('The template for paged breadcrumbs.', 'breadcrumb-navxt'));
 						do_action($this->unique_prefix . '_settings_current_item');
@@ -362,26 +378,8 @@ class bcn_admin extends mtekk_adminKit
 				</table>
 				<h3><?php _e('Home Breadcrumb', 'breadcrumb-navxt'); ?></h3>
 				<table class="form-table">
-					<tr valign="top">
-						<th scope="row">
-							<?php _e('Home Breadcrumb', 'breadcrumb-navxt'); ?>						
-						</th>
-						<td>
-							<label>
-								<input name="bcn_options[bhome_display]" type="checkbox" id="bhome_display" value="true" <?php checked(true, $this->opt['bhome_display']); ?> />
-								<?php _e('Place the home breadcrumb in the trail.', 'breadcrumb-navxt'); ?>				
-							</label><br />
-							<ul>
-								<li>
-									<label for="Shome_title">
-										<?php _e('Home Title: ','breadcrumb-navxt');?>
-										<input type="text" name="bcn_options[Shome_title]" id="Shome_title" value="<?php echo esc_html($this->opt['Shome_title'], ENT_COMPAT, 'UTF-8'); ?>" size="20" />
-									</label>
-								</li>
-							</ul>							
-						</td>
-					</tr>
-					<?php
+					<?php 
+						$this->input_check(__('Home Breadcrumb', 'breadcrumb-navxt'), 'bhome_display', __('Place the home breadcrumb in the trail.', 'breadcrumb-navxt'));
 						$this->input_text(__('Home Template', 'breadcrumb-navxt'), 'Hhome_template', 'large-text', false, __('The template for the home breadcrumb.', 'breadcrumb-navxt'));
 						$this->input_text(__('Home Template (Unlinked)', 'breadcrumb-navxt'), 'Hhome_template_no_anchor', 'large-text', false, __('The template for the home breadcrumb, used when the breadcrumb is not linked.', 'breadcrumb-navxt'));
 						do_action($this->unique_prefix . '_settings_home');
@@ -398,27 +396,8 @@ class bcn_admin extends mtekk_adminKit
 				</table>
 				<h3><?php _e('Mainsite Breadcrumb', 'breadcrumb-navxt'); ?></h3>
 				<table class="form-table">
-					<tr valign="top">
-						<th scope="row">
-							<?php _e('Main Site Breadcrumb', 'breadcrumb-navxt'); ?>						
-						</th>
-						<td>
-							<label>
-								<input name="bcn_options[bmainsite_display]" type="checkbox" id="bmainsite_display" <?php if(!is_multisite()){echo 'disabled="disabled" class="disabled"';}?> value="true" <?php checked(true, $this->opt['bmainsite_display']); ?> />
-								<?php _e('Place the main site home breadcrumb in the trail in an multisite setup.', 'breadcrumb-navxt'); ?>				
-							</label><br />
-							<ul>
-								<li>
-									<label for="Smainsite_title">
-										<?php _e('Main Site Home Title: ', 'breadcrumb-navxt');?>
-										<input type="text" name="bcn_options[Smainsite_title]" id="Smainsite_title" <?php if(!is_multisite()){echo 'disabled="disabled" class="disabled"';}?> value="<?php echo htmlentities($this->opt['Smainsite_title'], ENT_COMPAT, 'UTF-8'); ?>" size="20" />
-										<?php if(!is_multisite()){?><input type="hidden" name="bcn_options[Smainsite_title]" value="<?php echo htmlentities($this->opt['Smainsite_title'], ENT_COMPAT, 'UTF-8');?>" /><?php } ?>
-									</label>
-								</li>
-							</ul>							
-						</td>
-					</tr>
 					<?php
+						$this->input_check(__('Main Site Breadcrumb', 'breadcrumb-navxt'), 'bmainsite_display', __('Place the main site home breadcrumb in the trail in an multisite setup.', 'breadcrumb-navxt'));
 						$this->input_text(__('Main Site Home Template', 'breadcrumb-navxt'), 'Hmainsite_template', 'large-text', !is_multisite(), __('The template for the main site home breadcrumb, used only in multisite environments.', 'breadcrumb-navxt'));
 						$this->input_text(__('Main Site Home Template (Unlinked)', 'breadcrumb-navxt'), 'Hmainsite_template_no_anchor', 'large-text', !is_multisite(), __('The template for the main site home breadcrumb, used only in multisite environments and when the breadcrumb is not linked.', 'breadcrumb-navxt'));
 						do_action($this->unique_prefix . '_settings_mainsite');
@@ -461,7 +440,7 @@ class bcn_admin extends mtekk_adminKit
 									}
 								}
 							?>
-							<p class="description"><?php _e('The hierarchy which the breadcrumb trail will show.', 'breadcrumb-navxt'); ?></p>
+							<p class="description"><?php _e('The hierarchy which the breadcrumb trail will show. Note that the "Post Parent" option may require an additional plugin to behave as expected since this is a non-hierarchical post type.', 'breadcrumb-navxt'); ?></p>
 						</td>
 					</tr>
 				</table>
@@ -530,7 +509,18 @@ class bcn_admin extends mtekk_adminKit
 									}
 								}
 							?>
-							<p class="description"><?php _e('The hierarchy which the breadcrumb trail will show.', 'breadcrumb-navxt'); ?></p>
+							<p class="description">
+							<?php
+							if($post_type->hierarchical)
+							{
+								_e('The hierarchy which the breadcrumb trail will show.', 'breadcrumb-navxt'); 
+							}
+							else
+							{
+								_e('The hierarchy which the breadcrumb trail will show. Note that the "Post Parent" option may require an additional plugin to behave as expected since this is a non-hierarchical post type.', 'breadcrumb-navxt');
+							}
+							?>
+							</p>
 						</td>
 					</tr>
 				</table>
@@ -734,11 +724,23 @@ class bcn_admin extends mtekk_adminKit
 		}
 	}
 	/**
+	 * Hooks into the theme hook alliance tha_breadcrumb_navigation filter and replaces the trail
+	 * with one generated by Breadcrumb NavXT
+	 * 
+	 * @param string $bradcrumb_trail The string breadcrumb trail that we will replace
+	 * @return string The Breadcrumb NavXT assembled breadcrumb trail
+	 */
+	function tha_compat($breadcrumb_trail)
+	{
+		//Return our breadcrumb trail
+		return $this->display(true);
+	}
+	/**
 	 * Outputs the breadcrumb trail
 	 * 
-	 * @param  (bool)   $return Whether to return or echo the trail.
-	 * @param  (bool)   $linked Whether to allow hyperlinks in the trail or not.
-	 * @param  (bool)	$reverse Whether to reverse the output or not.
+	 * @param bool $return Whether to return or echo the trail.
+	 * @param bool $linked Whether to allow hyperlinks in the trail or not.
+	 * @param bool $reverse Whether to reverse the output or not.
 	 */
 	function display($return = false, $linked = true, $reverse = false)
 	{
@@ -751,10 +753,10 @@ class bcn_admin extends mtekk_adminKit
 	/**
 	 * Outputs the breadcrumb trail
 	 * 
-	 * @since  3.2.0
-	 * @param  (bool)   $return Whether to return or echo the trail.
-	 * @param  (bool)   $linked Whether to allow hyperlinks in the trail or not.
-	 * @param  (bool)	$reverse Whether to reverse the output or not.
+	 * @since 3.2.0
+	 * @param bool $return Whether to return or echo the trail.
+	 * @param bool $linked Whether to allow hyperlinks in the trail or not.
+	 * @param bool	$reverse Whether to reverse the output or not.
 	 */
 	function display_list($return = false, $linked = true, $reverse = false)
 	{

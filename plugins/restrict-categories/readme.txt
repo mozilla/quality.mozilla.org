@@ -3,8 +3,8 @@ Contributors: mmuro
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Restrict%20Categories&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Tags: restrict, admin, administration, cms, categories, category
 Requires at least: 3.0
-Tested up to: 3.3.1
-Stable tag: 2.5
+Tested up to: 3.5.1
+Stable tag: 2.6.1
 
 Restrict the categories that users can view, add, and edit in the admin panel.
 
@@ -50,6 +50,17 @@ In other words, Restrict Categories allows you complete control over groups of u
 3. The Categories selection on the Add New Post screen with restricted categories
 
 == Changelog ==
+
+**Version 2.6.1**
+
+* Check if array key exists before stripping placeholder to resolve warnings for some servers
+
+**Version 2.6**
+
+* Add "Select All" feature
+* Update minimum capability to manage_categories
+* Fix bug where users may see all categories in certain cases
+* Fix PHP notices
 
 **Version 2.5**
 

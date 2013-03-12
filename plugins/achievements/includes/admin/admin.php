@@ -218,13 +218,15 @@ class DPA_Admin {
 		if ( ! DPA_Admin::is_admin_screen() )
 			return;
 
+		$rtl = is_rtl() ? '-rtl' : '';
+
 		// "Supported Plugins" screen
 		if ( 'achievements-plugins' == $_GET['page'] )
-			wp_enqueue_style( 'dpa_admin_css', trailingslashit( $this->css_url ) . 'supportedplugins.css', array(), '20120722' );
+			wp_enqueue_style( 'dpa_admin_css', trailingslashit( $this->css_url ) . "supportedplugins{$rtl}.css", array(), '20120722' );
 
 		// Achievements "users" screen
 		elseif ( 'achievements-users' == $_GET['page'] )
-			wp_enqueue_style( 'dpa_admin_users_css', trailingslashit( $this->css_url ) . 'users.css', array(), '20130113' );
+			wp_enqueue_style( 'dpa_admin_users_css', trailingslashit( $this->css_url ) . "users{$rtl}.css", array(), '20130113' );
 	}
 
 	/**
@@ -369,7 +371,7 @@ class DPA_Admin {
 			foreach ( $new_achievements as $achievement_obj ) {
 				$progress_obj = array();
 
-				// If we have current progress, pass that to dpa_maybe_unlock_achievement().
+				// If we have existing progress, pass that to dpa_maybe_unlock_achievement().
 				foreach ( $existing_progress as $progress ) {
 					if ( $achievement_obj->ID === $progress->post_parent ) {
 						$progress_obj = $progress;

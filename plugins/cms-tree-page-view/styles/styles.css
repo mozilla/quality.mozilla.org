@@ -478,7 +478,7 @@ for posts overview enabled mode
 }
 
 .view-switch-cstpv-icon-added a {
-	display: inline-block;
+	display: inline-block !important;
 }
 
 #view-switch-tree {

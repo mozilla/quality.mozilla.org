@@ -897,6 +897,7 @@ jQuery(function($) {
 			view_switch_list_a = view_switch_list.closest("a");
 
 		view_switch.append(view_switch_list_a);
+		view_switch.append(" ");
 
 	}
 	

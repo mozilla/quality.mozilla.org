@@ -3,7 +3,8 @@
 Plugin Name: Restrict Categories
 Description: Restrict the categories that users can view, add, and edit in the admin panel.
 Author: Matthew Muro
-Version: 2.5
+Author URI: http://matthewmuro.com
+Version: 2.6.1
 */
 
 /*
@@ -21,35 +22,127 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA 
 */
 
-/* Instantiate new class */
-$rc = new RestrictCategories();
+// Instantiate new class
+$restrict_categories_load = new RestrictCategories();
 
-/* Restrict Categories class */
+// Restrict Categories class
 class RestrictCategories{
 	
 	private $cat_list = NULL;
 	
 	public function __construct(){
-		/* Make sure we are in the admin before proceeding. */
+		// Make sure we are in the admin before proceeding.
 		if ( is_admin() ) {
 			$post_type = ( isset( $_GET['post_type'] ) ) ? $_GET['post_type'] : false;
 
-  			/* If the page is the Posts screen, do our thing, otherwise chill */
+  			// If the page is the Posts screen, do our thing, otherwise chill
 			if ( $post_type == false || $post_type == 'post' )
 				add_action( 'admin_init', array( &$this, 'posts' ) );
 			
-			/* Build options and settings pages. */
+			// Build options and settings pages.
 			add_action( 'admin_init', array( &$this, 'init' ) );
 			add_action( 'admin_menu', array( &$this, 'add_admin' ) );
 			
-			/* Adds a Settings link to the Plugins page */
+			// Load admin scripts
+			add_action( 'load-settings_page_restrict-categories', array( &$this, 'admin_scripts' ) );
+			
+			// Adds a Settings link to the Plugins page
 			add_filter( 'plugin_action_links', array( &$this, 'rc_plugin_action_links' ), 10, 2 );
 			add_filter( 'screen_settings', array( &$this, 'add_screen_options' ) );
+			
+			add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
 		}
 		
-		/* Make sure XML-RPC requests are filtered to match settings */
+		// Make sure XML-RPC requests are filtered to match settings
 		if ( defined ( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST )
 			add_action( 'xmlrpc_call', array( &$this, 'posts' ) );
+	}
+
+	/**
+	 * Register database options and set defaults, which are blank
+	 * 
+	 * @since 1.0
+	 * @uses register_setting() Register a setting in the database
+	 */
+	public function init() {
+		register_setting( 'RestrictCats_options_group', 'RestrictCats_options', array( &$this, 'options_sanitize' ) );
+		register_setting( 'RestrictCats_user_options_group', 'RestrictCats_user_options', array( &$this, 'options_sanitize' ) );
+				
+		// Set the options to a variable
+		add_option( 'RestrictCats_options' );
+		add_option( 'RestrictCats_user_options' );
+		
+		$screen_options = get_option( 'RestrictCats-screen-options' );
+		
+		// Default is 20 per page
+		$defaults = array(
+			'roles_per_page' => 20,
+			'users_per_page' => 20
+		);
+		
+		// If the option doesn't exist, add it with defaults
+		if ( !$screen_options )
+			update_option( 'RestrictCats-screen-options', $defaults );
+		
+		// If the user has saved the Screen Options, update
+		if ( isset( $_REQUEST['restrict-categories-screen-options-apply'] ) && in_array( $_REQUEST['restrict-categories-screen-options-apply'], array( 'Apply', 'apply' ) ) ) {
+			$roles_per_page = absint( $_REQUEST['RestrictCats-screen-options']['roles_per_page'] );
+			$users_per_page = absint( $_REQUEST['RestrictCats-screen-options']['users_per_page'] );
+			
+			$updated_options = array(
+				'roles_per_page' => $roles_per_page,
+				'users_per_page' => $users_per_page
+			);
+			
+			update_option( 'RestrictCats-screen-options', $updated_options );
+		}
+		
+		// Resets the options
+		if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'restrict-categories' ) :
+			
+			if ( !isset( $_REQUEST['action'] ) )
+				return;
+			
+			if ( 'reset' !== $_REQUEST['action'] )
+				return;
+				
+			$nonce = $_REQUEST['_wpnonce'];
+			
+			// Security check to verify the nonce
+			if ( ! wp_verify_nonce( $nonce, 'rc-reset-nonce' ) )
+				wp_die( __( 'Security check', 'restrict-categories' ) );
+			
+			// Reset Roles and Users options
+			update_option( 'RestrictCats_options', array() );
+			update_option( 'RestrictCats_user_options', array() );
+			
+		endif;
+	}
+
+	/**
+	 * Display admin notices
+	 * 
+	 * @since 1.0
+	 */
+	public function admin_notices(){
+		if ( isset( $_REQUEST['action'] ) ) :
+			
+			switch( $_REQUEST['action'] ) :
+				case 'reset' :
+					echo '<div id="message" class="updated"><p>' . __( 'Restrict Categories reset' , 'restrict-categories') . '</p></div>';
+				break;
+			endswitch;
+			
+		endif;
+	}	
+	
+	/**
+	 * Load JS in admin
+	 * 
+	 * @since 2.6
+	 */
+	public function admin_scripts() {
+		wp_enqueue_script( 'restrict-categories-admin', plugins_url( '/js/restrict-categories.js', __FILE__ ), array( 'jquery' ), false, true );
 	}
 	
 	/**
@@ -58,9 +151,9 @@ class RestrictCategories{
 	 * @since 1.8 
 	 * @return $links array Links to add to plugin name
 	 */
-	public function rc_plugin_action_links($links, $file){
+	public function rc_plugin_action_links( $links, $file ) {
 		if ( $file == plugin_basename(__FILE__) )
-			$links[] = '<a href="options-general.php?page=restrict-categories">'.__('Settings').'</a>';
+			$links[] = '<a href="options-general.php?page=restrict-categories">' . __( 'Settings', 'restrict-categories' ) . '</a>';
 	
 		return $links;
 	}
@@ -73,12 +166,14 @@ class RestrictCategories{
 	 * @return $cat array All category slugs.
 	 */
 	public function get_cats(){
+		$cat = array();
+		
 		$categories = get_terms( 'category','hide_empty=0' );
 
 		foreach ( $categories as $category ) {
 			$cat[] = array(
 				'slug' => $category->slug
-				);
+			);
 		}
 	
 		return $cat;
@@ -93,16 +188,17 @@ class RestrictCategories{
 	 * @return $rc_options array Multidimensional array with options.
 	 */
 	public function populate_opts(){
-		$roles = $this->get_roles();
-		$cats = $this->get_cats();
+		$rc_options = array();
+		
+		$roles 	= $this->get_roles();
+		$cats 	= $this->get_cats();
 		
 		foreach ( $roles as $name => $id ) {
-				$rc_options[] = 
-					array(
-					'name' => $name,
-					'id' => $id . '_cats',
-					'options' => $cats
-					);
+			$rc_options[] = array(
+				'name'      => $name,
+				'id'        => "{$id}_cats",
+				'options'   => $cats
+			);
 		}
 		
 		return $rc_options;	
@@ -117,16 +213,17 @@ class RestrictCategories{
 	 * @return $rc_user_options array Multidimensional array with options.
 	 */
 	public function populate_user_opts(){
-		$logins = $this->get_logins();
-		$cats = $this->get_cats();
+		$rc_user_options = array();
+		
+		$logins	= $this->get_logins();
+		$cats 	= $this->get_cats();
 		
 		foreach ( $logins as $name => $id ) {
-				$rc_user_options[] = 
-					array(
-					'name' => $name,
-					'id' => $id . '_user_cats',
-					'options' => $cats
-					);
+			$rc_user_options[] = array(
+				'name'     => $name,
+				'id'       => "{$id}_user_cats",
+				'options'  => $cats
+			);
 		}
 	
 		return $rc_user_options;	
@@ -140,6 +237,8 @@ class RestrictCategories{
 	 * @return $roles array Returns array of user roles with the "pretty" name and the slug.
 	 */
 	public function get_roles(){
+		$roles = array();
+		
 		$editable_roles = get_editable_roles();
 	
 		foreach ( $editable_roles as $role => $name ) {
@@ -158,6 +257,8 @@ class RestrictCategories{
 	 * @return $users array Returns array of user logins.
 	 */
 	public function get_logins(){
+		$users = array();
+		
 		if ( function_exists( 'get_users' ) ){
 			$blogusers = get_users();
 			
@@ -176,51 +277,13 @@ class RestrictCategories{
 		return $users;
 	}
 	
-	/**
-	 * Register database options and set defaults, which are blank
-	 * 
-	 * @since 1.0
-	 * @uses register_setting() Register a setting in the database
-	 */
-	public function init() {
-		register_setting( 'RestrictCats_options_group', 'RestrictCats_options', array( &$this, 'options_sanitize' ) );
-		register_setting( 'RestrictCats_user_options_group', 'RestrictCats_user_options', array( &$this, 'options_sanitize' ) );
-				
-		/* Set the options to a variable */
-		add_option( 'RestrictCats_options' );
-		add_option( 'RestrictCats_user_options' );
-		
-		$screen_options = get_option( 'RestrictCats-screen-options' );
-		
-		/* Default is 20 per page */
-		$defaults = array(
-			'roles_per_page' => 20,
-			'users_per_page' => 20
-		);
-		
-		/* If the option doesn't exist, add it with defaults */
-		if ( !$screen_options )
-			update_option( 'RestrictCats-screen-options', $defaults );
-		
-		/* If the user has saved the Screen Options, update */
-		if ( isset( $_REQUEST['restrict-categories-screen-options-apply'] ) && in_array( $_REQUEST['restrict-categories-screen-options-apply'], array( 'Apply', 'apply' ) ) ) {
-			$roles_per_page = absint( $_REQUEST['RestrictCats-screen-options']['roles_per_page'] );
-			$users_per_page = absint( $_REQUEST['RestrictCats-screen-options']['users_per_page'] );
-			
-			$updated_options = array(
-				'roles_per_page' => $roles_per_page,
-				'users_per_page' => $users_per_page
-			);
-			update_option( 'RestrictCats-screen-options', $updated_options );
-		}
-	}
 	
 	/**
 	 * Adds the Screen Options tab
 	 * 
 	 * @since 2.4
 	 */
-	public function add_screen_options($current){
+	public function add_screen_options( $current ){
 		global $current_screen;
 
 		$options = get_option( 'RestrictCats-screen-options' );
@@ -242,8 +305,12 @@ class RestrictCategories{
 	 * @return $input array Returns array of input if available
 	 */
 	public function options_sanitize( $input ){
-		$options =  ( 'RestrictCats_user_options_group' == $_REQUEST['option_page'] ) ? get_option( 'RestrictCats_user_options' ) : get_option( 'RestrictCats_options' );
-
+		
+		if ( !isset( $_REQUEST['option_page'] ) )
+			return;
+		
+		$options = ( 'RestrictCats_user_options_group' == $_REQUEST['option_page'] ) ? get_option( 'RestrictCats_user_options' ) : get_option( 'RestrictCats_options' );
+		
 		if ( is_array( $input ) ) {
 			foreach( $input as $k => $v ) {
 				$options[ $k ] = $v;
@@ -254,31 +321,14 @@ class RestrictCategories{
 	}
 	
 	/**
-	 * Add options page and handle data reset
+	 * Add options page
 	 * 
 	 * 
 	 * @since 1.0
 	 * @uses add_options_page() Creates a menu item under the Settings menu.
 	 */
 	public function add_admin() {
-		/* Resets the options */
-		if ( $_GET['page'] == 'restrict-categories' && 'reset' == $_REQUEST['action'] ) {
-			$nonce = $_REQUEST['_wpnonce'];
-			
-			/* Security check to verify the nonce */
-			if ( ! wp_verify_nonce($nonce, 'rc-reset-nonce') )
-				die(__('Security check'));
-			
-			/* Reset Roles and Users options */
-			update_option( 'RestrictCats_options', array() );
-			update_option( 'RestrictCats_user_options', array() );
-			
-			/* Set submitted action to display success message */
-			$_POST['reset'] = true;
-		}
-		
-		/* Add menu to Settings */				   
-		add_options_page( __('Restrict Categories', 'restrict-categories'), __('Restrict Categories', 'restrict-categories'), 'create_users', 'restrict-categories', array( &$this, 'admin' ) );
+		add_options_page( __('Restrict Categories', 'restrict-categories'), __('Restrict Categories', 'restrict-categories'), 'manage_categories', 'restrict-categories', array( &$this, 'admin' ) );
 	}
 	
 	/**
@@ -291,21 +341,17 @@ class RestrictCategories{
 	 * @uses wp_list_categories() Displays a list of categories
 	 */
 	public function admin() {
-		$rc_options = $this->populate_opts();
-		$rc_user_options = $this->populate_user_opts();
-		
-		/* Display message for resetting form */
-		if ( $_POST['reset'] )
-			_e('<div id="setting-error-settings_updated" class="updated settings-error"><p><strong>Settings reset.</strong></p></div>', 'restrict-categories');
-		
-		/* Default main tab is Roles */
+		$rc_options       = $this->populate_opts();
+		$rc_user_options  = $this->populate_user_opts();
+				
+		// Default main tab is Roles
 		$tab = 'roles';
 		
-		/* Set variables if the Users tab is selected */
+		// Set variables if the Users tab is selected
 		if ( isset( $_GET['type'] ) && $_GET['type'] == 'users' )
 			$tab = 'users';
 
-		/* Setup links for Roles/Users tabs */
+		// Setup links for Roles/Users tabs
 		$roles_tab = esc_url( admin_url( 'options-general.php?page=restrict-categories' ) );
 		$users_tab = add_query_arg( 'type', 'users', $roles_tab );
 	?>
@@ -314,13 +360,13 @@ class RestrictCategories{
 			<?php screen_icon( 'options-general' ); ?>
 			<h2><?php _e('Restrict Categories', 'restrict-categories'); ?></h2>
             <h2 class="nav-tab-wrapper">
-            	<a href="<?php echo $roles_tab; ?>" class="nav-tab <?php echo ( $tab == 'roles' ) ? 'nav-tab-active' : ''; ?>">Roles</a>
-                <a href="<?php echo $users_tab; ?>" class="nav-tab <?php echo ( $tab == 'users' ) ? 'nav-tab-active' : ''; ?>">Users</a>
+            	<a href="<?php echo $roles_tab; ?>" class="nav-tab <?php echo ( $tab == 'roles' ) ? 'nav-tab-active' : ''; ?>"><?php _e( 'Roles', 'restrict-categories' ); ?></a>
+                <a href="<?php echo $users_tab; ?>" class="nav-tab <?php echo ( $tab == 'users' ) ? 'nav-tab-active' : ''; ?>"><?php _e( 'Users', 'restrict-categories' ); ?></a>
             </h2>
 			
 			<form method="post" action="options.php">
 			<?php
-                /* Create a new instance of our user/roles boxes class */
+                // Create a new instance of our user/roles boxes class
                 $boxes = new RestrictCats_User_Role_Boxes();
 
                 if ( $tab == 'roles' ) :
@@ -329,7 +375,7 @@ class RestrictCategories{
                     <?php
                         settings_fields( 'RestrictCats_options_group' );
                         
-                        /* Create boxes for Roles */
+                        // Create boxes for Roles
                         $boxes->start_box( get_option( 'RestrictCats_options' ), $rc_options, 'RestrictCats_options' );
                     ?> 
                 </fieldset>
@@ -340,21 +386,19 @@ class RestrictCategories{
                 <fieldset>
                     <p>Selecting categories for a user will <em>override</em> the categories you have chosen for that user's role.</p>
                     <?php
-                        /* Create boxes for Users */
+                        // Create boxes for Users
                         $boxes->start_box( get_option( 'RestrictCats_user_options' ), $rc_user_options, 'RestrictCats_user_options' );
                     ?> 
                 </fieldset>
                 <?php endif; ?>
                 
-                <p class="submit">
-                    <input type="submit" name="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />
-                </p>
+                <?php submit_button(); ?>
 			</form>
             
             <h3><?php _e('Reset to Default Settings', 'restrict-categories'); ?></h3>
 			<p><?php _e('This option will reset all changes you have made to the default configuration.  <strong>You cannot undo this process</strong>.', 'restrict-categories'); ?></p>
 			<form method="post">
-                <input class="button-secondary" name="reset" type="submit" value="<?php _e('Reset', 'restrict-categories'); ?>" />
+				<?php submit_button( __( 'Reset', 'restrict-categories' ), 'secondary', 'reset' ); ?>
                 <input type="hidden" name="action" value="reset" />
                 <?php wp_nonce_field( 'rc-reset-nonce' ); ?>
 			</form>
@@ -374,35 +418,40 @@ class RestrictCategories{
 	 */
 	public function posts() {
 		global $wp_query, $current_user;
+
+		// Placeholder category (only used to ensure saving while paging works)
+		$defaults = array( 'RestrictCategoriesDefault' );
 		
-		/* Get the current user in the admin */
+		// Get the current user in the admin
 		$user = new WP_User( $current_user->ID );
 				
-		/* Get the user role */
+		// Get the user role
 		$user_cap = $user->roles;
 		
-		/* Get the user login name/ID */
+		// Get the user login name/ID
 		if ( function_exists( 'get_users' ) )
 			$user_login = $user->user_nicename;
 		elseif ( function_exists( 'get_users_of_blog' ) )
 			$user_login = $user->ID;
 		
-		/* Get selected categories for Roles */
+		// Get selected categories for Roles
 		$settings = get_option( 'RestrictCats_options' );
 		
-		/* Get selected categories for Users */
+		// Get selected categories for Users
 		$settings_user = get_option( 'RestrictCats_user_options' );
-
-		/* Selected categories for User overwrites Roles selection */
+				
+		// For users, strip out the placeholder category, which is only used to make sure the checkboxes work
+		if ( is_array( $settings_user ) && array_key_exists( $user_login . '_user_cats', $settings_user ) )
+			$settings_user[ $user_login . '_user_cats' ] = array_values( array_diff( $settings_user[ $user_login . '_user_cats' ], $defaults ) );
+		
+		// Selected categories for User overwrites Roles selection 
 		if ( is_array( $settings_user ) && !empty( $settings_user[ $user_login . '_user_cats' ] ) ) {
-			/* Strip out the placeholder category, which is only used to make sure the checkboxes work */
-			$settings_user[ $user_login . '_user_cats' ] = array_values( array_diff( $settings_user[ $user_login . '_user_cats' ], array( 'RestrictCategoriesDefault' ) ) );
 			
-			/* Build the category list */
+			// Build the category list
 			foreach ( $settings_user[ $user_login . '_user_cats' ] as $category ) {
 				$term_id = get_term_by( 'slug', $category, 'category' )->term_id;
 				
-				/* If WPML is installed, return the translated ID */
+				// If WPML is installed, return the translated ID
 				if ( function_exists( 'icl_object_id' ) )
 					$term_id = icl_object_id( $term_id, 'category', true );
 				
@@ -413,16 +462,16 @@ class RestrictCategories{
 		}
 		else {
 			foreach ( $user_cap as $key ) {
-				/* Make sure the settings from the DB isn't empty before building the category list */
+				// Make sure the settings from the DB isn't empty before building the category list
 				if ( is_array( $settings ) && !empty( $settings[ $key . '_cats' ] ) ) {
-					/* Strip out the placeholder category, which is only used to make sure the checkboxes work */
-					$settings[ $key . '_cats' ] = array_values( array_diff( $settings[ $key . '_cats' ], array( 'RestrictCategoriesDefault' ) ) );
+					// Strip out the placeholder category, which is only used to make sure the checkboxes work
+					$settings[ $key . '_cats' ] = array_values( array_diff( $settings[ $key . '_cats' ], $defaults ) );
 					
-					/* Build the category list */
+					// Build the category list
 					foreach ( $settings[ $key . '_cats' ] as $category ) {
 						$term_id = get_term_by( 'slug', $category, 'category' )->term_id;
 						
-						/* If WPML is installed, return the translated ID */
+						// If WPML is installed, return the translated ID
 						if ( function_exists( 'icl_object_id' ) )
 							$term_id = icl_object_id( $term_id, 'category', true );
 						
@@ -442,21 +491,21 @@ class RestrictCategories{
 	 * @global $cat_list string The global comma-separated list of restricted categories.
 	 */
 	public function cat_filters( $categories ){
-		/* Clean up the category list */
+		// Clean up the category list
 		$this->cat_list = rtrim( $categories, ',' );
 		
-		/* If there are no categories, don't do anything */
+		// If there are no categories, don't do anything
 		if ( $this->cat_list !== '' ) {
 			global $pagenow;
 			
-			/* Only restrict the posts query if we're on the Posts screen */
+			// Only restrict the posts query if we're on the Posts screen
 			if ( $pagenow == 'edit.php' || ( defined ( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST ) )
 				add_filter( 'pre_get_posts', array( &$this, 'posts_query' ) );
 			
-			/* Allowed pages for term exclusions */
+			// Allowed pages for term exclusions
 			$pages = array( 'edit.php', 'post-new.php', 'post.php' );
 			
-			/* Make sure to exclude terms from $pages array as well as the Category screen */
+			// Make sure to exclude terms from $pages array as well as the Category screen
 			if ( in_array( $pagenow, $pages ) || ( $pagenow == 'edit-tags.php' && $_GET['taxonomy'] == 'category' ) || ( defined ( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST ) )
 				add_filter( 'list_terms_exclusions', array( &$this, 'exclusions' ) );
 		}	
@@ -471,10 +520,10 @@ class RestrictCategories{
 	 */
 	public function posts_query( $query ){
 		if ( $this->cat_list !== '' ) {
-			/* Build an array for the categories */
+			// Build an array for the categories 
 			$cat_list_array = explode( ',', $this->cat_list );
 			
-			/* Make sure the posts are removed by default or if filter category is ran */
+			// Make sure the posts are removed by default or if filter category is ran
 			if ( ! isset( $_REQUEST['cat'] ) )
 				$query->set( 'category__in', $cat_list_array );
 			elseif( isset( $_REQUEST['cat'] ) && $_REQUEST['cat'] == '0' )
@@ -516,70 +565,70 @@ class RestrictCats_User_Role_Boxes {
 	
 	public function start_box($settings, $options, $options_name){
 			
-			/* Create a new instance of our custom walker class */
+			// Create a new instance of our custom walker class
 			$walker = new RestrictCats_Walker_Category_Checklist();
 			
 			
-			/* Get screen options from the wp_options table */
+			// Get screen options from the wp_options table
 			$screen_options = get_option( 'RestrictCats-screen-options' );
 			
-			/* How many to show per page */
+			// How many to show per page
 			$per_page = ( 'RestrictCats_options' == $options_name  ) ? $screen_options['roles_per_page'] : $screen_options['users_per_page'];
 
-			/* What page are we looking at? */
+			// What page are we looking at?
 			$current_page = $this->get_pagenum();
 	
-			/* How many do we have? */
+			// How many do we have?
 			$total_items = count( $options );
 			
-			/* Calculate pagination */
+			// Calculate pagination
 			$options = array_slice( $options, ( ( $current_page - 1 ) * $per_page ), $per_page );
 			
-			/* Register our pagination */
+			// Register our pagination
 			$this->set_pagination_args( array(
 				'total_items' => $total_items,
 				'per_page'    => $per_page,
 				'total_pages' => ceil( $total_items / $per_page )
 			) );
 			
-			/* Display pagination */
+			// Display pagination
 			echo '<div class="tablenav">';
 				$this->pagination( 'top' );
 			echo '<br class="clear" /></div>';
 
-			/* Loop through each role and build the checkboxes */
+			// Loop through each role and build the checkboxes
 			foreach ( $options as $key => $value ) : 
 				
 				$id = $value['id'];
 				
-				/* Get selected categories from database, if available */
-				if ( is_array( $settings[ $id ] ) )
+				// Get selected categories from database, if available
+				if ( isset( $settings[ $id ] ) && is_array( $settings[ $id ] ) )
 					$selected = $settings[ $id ];
 				else
 					$selected = array();
 				
 				
 				
-				/* Setup links for Roles/Users tabs in this class */
+				// Setup links for Roles/Users tabs in this class
 				$roles_tab = esc_url( admin_url( 'options-general.php?page=restrict-categories' ) );
 				$users_tab = add_query_arg( $id . '-tab', 'popular', $roles_tab );
 				
-				/* If the Users tab is selected, setup query_arg for checkbox tabs */
+				// If the Users tab is selected, setup query_arg for checkbox tabs
 				if ( isset( $_REQUEST['type'] ) && $_REQUEST['type'] == 'users' ) {
 					$roles_tab = add_query_arg( array( 'type' => 'users', $id . '-tab' => 'all' ), $roles_tab );
 					$users_tab = add_query_arg( array( 'type' => 'users', $id . '-tab' => 'popular' ), $roles_tab );
 				}
 				
-				/* Make sure View All and Most Used tabs work when paging */
+				// Make sure View All and Most Used tabs work when paging
 				if ( isset( $_REQUEST['paged'] ) ) {
 					$roles_tab = add_query_arg( array( 'paged' => absint( $_REQUEST['paged'] ) ), $roles_tab );
 					$users_tab = add_query_arg( array( 'paged' => absint( $_REQUEST['paged'] ) ), $users_tab );
 				}
 				
-				/* View All tab is default */
+				// View All tab is default
 				$current_tab = 'all';
 				
-				/* Check which checkbox tab is selected */
+				// Check which checkbox tab is selected
 				if ( isset( $_REQUEST[ $id . '-tab' ] ) && in_array( $_REQUEST[ $id . '-tab' ], array( 'all', 'popular' ) ) )
 					$current_tab = $_REQUEST[ $id . '-tab' ];			
 			?>
@@ -598,13 +647,13 @@ class RestrictCats_User_Role_Boxes {
 									<?php
 										wp_list_categories(
 											array(
-											'admin' => $id,
-											'selected_cats' => $selected,
-											'options_name' => $options_name,
-											'hide_empty' => 0,
-											'title_li' => '',
-											'disabled' => ( 'all' == $current_tab ? false : true ),
-											'walker' => $walker
+											'admin'          => $id,
+											'selected_cats'  => $selected,
+											'options_name'   => $options_name,
+											'hide_empty'     => 0,
+											'title_li'       => '',
+											'disabled'       => ( 'all' == $current_tab ? false : true ),
+											'walker'         => $walker
 											)
 										);
 									
@@ -618,15 +667,15 @@ class RestrictCats_User_Role_Boxes {
 									<?php
 										wp_list_categories(
 											array(
-											'admin' => $id,
-											'selected_cats' => $selected,
-											'options_name' => $options_name,
-											'hide_empty' => 0,
-											'title_li' => '',
-											'orderby' => 'count',
-											'order' => 'DESC',
-											'disabled' => ( 'popular' == $current_tab ? false : true ),
-											'walker' => $walker
+											'admin'          => $id,
+											'selected_cats'  => $selected,
+											'options_name'   => $options_name,
+											'hide_empty'     => 0,
+											'title_li'       => '',
+											'orderby'        => 'count',
+											'order'          => 'DESC',
+											'disabled'       => ( 'popular' == $current_tab ? false : true ),
+											'walker'         => $walker
 											)
 										);
 										
@@ -641,7 +690,12 @@ class RestrictCats_User_Role_Boxes {
 								$shift_default = array_diff( $selected, array( 'RestrictCategoriesDefault' ) );
 								$selected = array_values( $shift_default );
 							?>
-							<p style="padding-left:10px;"><strong><?php echo count( $selected ); ?></strong> <?php echo ( count( $selected ) > 1 || count( $selected ) == 0 ) ? 'categories' : 'category'; ?> selected</p>
+							<p style="padding-left:10px;">
+								<strong><?php echo count( $selected ); ?></strong> <?php echo ( count( $selected ) > 1 || count( $selected ) == 0 ) ? 'categories' : 'category'; ?> selected
+								<span class="list-controls" style="float:right; margin-top: 0;">
+									<a class="select-all" id="<?php echo $id; ?>-select-all" href="#"><?php _e( 'Select All', 'restrict-categories' ); ?></a>
+								</span>
+							</p>
 							
 						</div>
 					</div>
@@ -827,18 +881,5 @@ class RestrictCats_Walker_Category_Checklist extends Walker {
 	function end_el(&$output, $category, $depth, $args) {
 		$output .= "</li>\n";
 	}
-}
-
-/**
- * Delete options from the database
- * 
- * @since 1.8
- */
-if ( isset ( $rc ) )
-	register_uninstall_hook( __FILE__, 'RestrictCats_uninstall' );
-
-function RestrictCats_uninstall(){
-	delete_option( 'RestrictCats_options' );
-	delete_option( 'RestrictCats_user_options' );
 }
 ?>

@@ -61,6 +61,11 @@ function cms_tpv_add_pages() {
 	$ref_post_id	= (int) $_POST["ref_post_id"];
 	$lang 			= $_POST["lang"];
 
+	// Check nonce
+	if ( ! check_admin_referer("cms-tpv-add-pages") ) {
+		wp_die( __( 'Cheatin&#8217; uh?' ) );
+	}
+
 	// If lang variable is set, then set some more wpml-related post/get-variables
 	if ($lang) {
 		// post seems to fix creating new posts in selcted lang
@@ -92,12 +97,25 @@ function cms_tpv_add_pages() {
 	// and then all pages after that one will get it's menu_order 
 	// increased by the same number as the number of new posts we're gonna add
 	
+	$ok_to_continue_by_permission = TRUE;
+	$post_type_object = get_post_type_object($ref_post->post_type);
+
 	$post_parent = 0;
 	if ("after" === $post_position) {
 		$post_parent = $ref_post->post_parent;
+		$ok_to_continue_by_permission = apply_filters("cms_tree_page_view_post_user_can_add_after", current_user_can( $post_type_object->cap->create_posts, $ref_post_id), $ref_post_id);	
 	} elseif ("inside" === $post_position) {
 		$post_parent = $ref_post->ID;
+		$ok_to_continue_by_permission = apply_filters("cms_tree_page_view_post_user_can_add_inside", current_user_can( $post_type_object->cap->create_posts, $ref_post_id), $ref_post_id);
 	}
+
+	if ( ! $ok_to_continue_by_permission ) {
+		wp_die( __( 'Cheatin&#8217; uh?' ) );
+		return FALSE;
+	}
+
+//	$user_can_edit_page = apply_filters("cms_tree_page_view_post_can_edit", current_user_can( $post_type_object->cap->edit_post, $ref_post_id), $ref_post_id);
+
 
 
 	/*
@@ -136,11 +154,11 @@ function cms_tpv_add_pages() {
 						"menu_order" => $one_post->menu_order + $arr_post_names_count
 					);
 					$return_id = wp_update_post($post_update);
-					if (0 ===$return_id) die("Error: could not update post with id " . $post_update->ID);
+					if (0 ===$return_id) die( "Error: could not update post with id " . $post_update->ID . "<br>Technical details: " . print_r($post_update) );
 
 				}
 
-				if ( ! $has_passed_ref_post && $ref_post->ID === $one_post->ID) {
+				if ( ! $has_passed_ref_post && $ref_post->ID === $one_post->ID ) {
 					$has_passed_ref_post = TRUE;
 				}			
 
@@ -436,7 +454,7 @@ function cmstpv_filter_views_edit_postsoverview($filter_var) {
 
 		$mode = "list";
 		$class = isset($_GET["mode"]) && $_GET["mode"] != $mode ? " class='cmstpv_add_list_view' " : " class='cmstpv_add_list_view current' ";
-		$title = __("List View");
+		$title = __("List View"); /* translation not missing - exists in wp */
 		$wp_list_a = "<a href='" . esc_url( add_query_arg( 'mode', $mode, $_SERVER['REQUEST_URI'] ) ) . "' $class><img id='view-switch-$mode' src='" . esc_url( includes_url( 'images/blank.gif' ) ) . "' width='20' height='20' title='$title' alt='$title' /></a>\n";
 
 	}
@@ -485,13 +503,13 @@ function cms_tpv_set_plugin_row_meta($links, $file) {
  */
 function cms_tpv_save_settings() {
 	
-	if (isset($_POST["cms_tpv_action"]) && $_POST["cms_tpv_action"] == "save_settings") {
+	if (isset($_POST["cms_tpv_action"]) && $_POST["cms_tpv_action"] == "save_settings" && check_admin_referer('update-options')) {
 
 		$options = array();
 		$options["dashboard"] = (array) $_POST["post-type-dashboard"];
-		$options["menu"] = (array) $_POST["post-type-menu"];
+		$options["menu"] = isset( $_POST["post-type-menu"] ) ? (array) $_POST["post-type-menu"] : array();
 		$options["postsoverview"] = (array) $_POST["post-type-postsoverview"];
-		
+
 		update_option('cms_tpv_options', $options); // enable this to show box
 
 	}
@@ -511,8 +529,10 @@ function cms_tpv_wp_dashboard_setup() {
 		foreach ($options["dashboard"] as $one_dashboard_post_type) {
 			$post_type_object = get_post_type_object($one_dashboard_post_type);
 			$new_func_name = create_function('', "cms_tpv_dashboard('$one_dashboard_post_type');");
-			$widget_name = sprintf( _x('%1$s Tree', "name of dashboard", "cms-tree-page-view"), $post_type_object->labels->name);
-			wp_add_dashboard_widget( "cms_tpv_dashboard_widget_{$one_dashboard_post_type}", $widget_name, $new_func_name );
+			if ( ! empty( $post_type_object ) ) {
+				$widget_name = sprintf( _x('%1$s Tree', "name of dashboard", "cms-tree-page-view"), $post_type_object->labels->name);
+				wp_add_dashboard_widget( "cms_tpv_dashboard_widget_{$one_dashboard_post_type}", $widget_name, $new_func_name );
+			}
 		}
 	}
 
@@ -527,22 +547,31 @@ function cms_tpv_dashboard($post_type = "") {
 	cms_tpv_print_common_tree_stuff($post_type);
 }
 
+// Add items to the wp admin menu
 function cms_tpv_admin_menu() {
 
 	// add 
 	$options = cms_tpv_get_options();
+
 	foreach ($options["menu"] as $one_menu_post_type) {
+		
 		// post is a special one.
 		if ($one_menu_post_type == "post") {
 			$slug = "edit.php";
 		} else {
 			$slug = "edit.php?post_type=$one_menu_post_type";
 		}
-		$post_type_object = get_post_type_object($one_menu_post_type);
 		
-		$menu_name = _x("Tree View", "name in menu", "cms-tree-page-view");
-		$page_title = sprintf(_x('%1$s Tree View', "title on page with tree", "cms-tree-page-view"), $post_type_object->labels->name);
-		add_submenu_page($slug, $page_title, $menu_name, $post_type_object->cap->edit_posts, "cms-tpv-page-$one_menu_post_type", "cms_tpv_pages_page");
+		$post_type_object = get_post_type_object($one_menu_post_type);
+
+		// Only try to add menu if we got a valid post type object
+		// I think you can get a notice message here if you for example have enabled
+		// the menu for a custom post type that you later on remove?
+		if ( ! empty( $post_type_object ) ) {
+			$menu_name = _x("Tree View", "name in menu", "cms-tree-page-view");
+			$page_title = sprintf(_x('%1$s Tree View', "title on page with tree", "cms-tree-page-view"), $post_type_object->labels->name);
+			add_submenu_page($slug, $page_title, $menu_name, $post_type_object->cap->edit_posts, "cms-tpv-page-$one_menu_post_type", "cms_tpv_pages_page");
+		}
 	}
 
 	add_submenu_page( 'options-general.php' , CMS_TPV_NAME, CMS_TPV_NAME, "administrator", "cms-tpv-options", "cms_tpv_options");
@@ -743,7 +772,7 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 
 	global $sitepress, $cms_tpv_view, $wpdb;
 
-	if (!$post_type) {
+	if ( ! $post_type ) {
 		$post_type = cms_tpv_get_selected_post_type();
 	}
 	
@@ -947,6 +976,7 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 
 						<input type="hidden" name="action" value="cms_tpv_add_pages">
 						<input type="hidden" name="ref_post_id" value="">
+						<?php wp_nonce_field("cms-tpv-add-pages") ?>
 						
 						<!-- lang for wpml -->
 						<input type="hidden" name="lang" value="">
@@ -958,7 +988,7 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 							<div>
 								<!-- Pages<br> -->
 								<ul class="cms_tpv_action_add_doit_pages">
-									<li><span></span><input placeholder="<?php _e("Enter title here") ?>" type="text" name="cms_tpv_add_new_pages_names[]"></li>
+									<li><span></span><input placeholder="<?php _e("Enter title here") /* translation not missing - exists in wp */ ?>" type="text" name="cms_tpv_add_new_pages_names[]"></li>
 								</ul>
 							</div>
 
@@ -1207,8 +1237,8 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 
 			$arr_page_css_styles = array();
 			$user_can_edit_page = apply_filters("cms_tree_page_view_post_can_edit", current_user_can( $post_type_object->cap->edit_post, $page_id), $page_id);
-			$user_can_add_inside = apply_filters("cms_tree_page_view_post_user_can_add_inside", current_user_can( $post_type_object->cap->edit_post, $page_id), $page_id);
-			$user_can_add_after = apply_filters("cms_tree_page_view_post_user_can_add_after", current_user_can( $post_type_object->cap->edit_post, $page_id), $page_id);	
+			$user_can_add_inside = apply_filters("cms_tree_page_view_post_user_can_add_inside", current_user_can( $post_type_object->cap->create_posts, $page_id), $page_id);
+			$user_can_add_after = apply_filters("cms_tree_page_view_post_user_can_add_after", current_user_can( $post_type_object->cap->create_posts, $page_id), $page_id);	
 
 			if ( $user_can_edit_page ) {
 				$arr_page_css_styles[] = "cms_tpv_user_can_edit_page_yes";
@@ -1340,6 +1370,14 @@ function cms_tpv_get_childs() {
 	$view = $_GET["view"]; // all | public | trash
 	$post_type = (isset($_GET["post_type"])) ? $_GET["post_type"] : null;
 	$search = (isset($_GET["search_string"])) ? trim($_GET["search_string"]) : ""; // exits if we're doing a search
+
+	// Check if user is allowed to get the list. For example subscribers should not be allowed to
+	// Use same capability that is required to add the menu
+	$post_type_object = get_post_type_object($post_type);
+	if ( ! current_user_can( $post_type_object->cap->edit_posts ) ) {
+		die( __( 'Cheatin&#8217; uh?' ) );
+	}
+
 	if ($action) {
 	
 		if ($search) {
@@ -1424,6 +1462,9 @@ function cms_tpv_get_childs() {
 	exit;
 }
 
+/**
+ * @TODO: check if this is used any longer? If not then delete it!
+ */
 function cms_tpv_add_page() {
 	global $wpdb;
 
@@ -1679,7 +1720,8 @@ function cms_tpv_install() {
 	// set to current version
 	update_option('cms_tpv_version', CMS_TPV_VERSION);
 }
-#cms_tpv_install();
+
+// cms_tpv_install();
 
 /**
  * setup some defaults

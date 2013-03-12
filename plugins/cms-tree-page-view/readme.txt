@@ -2,9 +2,9 @@
 Contributors: eskapism, MarsApril
 Donate link: http://eskapism.se/sida/donate/
 Tags: page, pages, posts, custom posts, tree, cms, dashboard, overview, drag-and-drop, rearrange, management, manage, admin
-Requires at least: 3.4
-Tested up to: 3.5
-Stable tag: 1.2.3
+Requires at least: 3.5.1
+Tested up to: 3.5.1
+Stable tag: 1.2.5
 
 Adds a tree view of all pages & custom posts. Get a great overview + options to drag & drop to reorder & option to add multiple pages.
 
@@ -76,6 +76,7 @@ This plugin is available in the following languages:
 * Danish
 * Lithuanian
 * Estonian
+* Finnish
 
 #### Always show your pages in the admin area
 If you want to always have a list of your pages available in your WordPress admin area, please check out the plugin
@@ -104,6 +105,16 @@ Now the tree with the pages will be visible both on the dashboard and in the men
 7. Quickly switch between regular list view and tree view using the switch icon
 
 == Changelog ==
+
+= 1.2.5 =
+- Fixed some notice warnings
+- Added Finnish translation
+- Fixed a security issue. Thanks to Julio POTIER (<a href="http://secu.boiteaweb.fr/">http://secu.boiteaweb.fr/</a>) for finding and reporting.
+- Added nonce checks for options page and for adding new pages
+
+= 1.2.4 =
+- Small design changes for the icons in the post overview screen
+- Added actions to check permissions when adding pages with AJAX
 
 = 1.2.3 =
 - Removed an ugly pixel in the tree icon

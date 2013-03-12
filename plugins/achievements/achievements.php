@@ -13,8 +13,8 @@
 Plugin Name: Achievements
 Plugin URI: http://achievementsapp.com/
 Description: Achievements gamifies your WordPress site with challenges, badges, and points.
-Version: 3
-Requires at least: 3.5
+Version: 3.1
+Requires at least: 3.5.1
 Tested up to: 3.5.1
 License: GPLv3
 Author: Paul Gibbs
@@ -304,7 +304,7 @@ final class DPA_Achievements_Loader {
 		 */
 		require( $this->includes_dir . 'common/functions.php'  );
 		require( $this->includes_dir . 'common/template.php'   );
-		//require( $this->includes_dir . 'common/widgets.php'    );
+		require( $this->includes_dir . 'common/widgets.php'    );
 
 		require( $this->includes_dir . 'achievements/functions.php' );
 		require( $this->includes_dir . 'achievements/template.php'  );
@@ -439,7 +439,7 @@ final class DPA_Achievements_Loader {
 			'ep_mask'    => 0,                           // EP_ROOT - removes comment-page rewrite rules
 			'feed'       => false,                       // Remove feed rewrite rules
 			'feeds'      => false,                       // Remove feed rewrite rules (this is what the parameter ought to be)
-			'pages'      => false,
+			'pages'      => true,
 			'slug'       => dpa_get_root_slug(),
 			'with_front' => false,
 		);
@@ -594,8 +594,8 @@ final class DPA_Achievements_Loader {
 			'id'      => 'default',
 			'name'    => __( 'Achievements Default', 'dpa' ),
 			'version' => dpa_get_version(),
-			'dir'     => trailingslashit( $this->themes_dir . '/achievements' ),
-			'url'     => trailingslashit( $this->themes_url . '/achievements' )
+			'dir'     => trailingslashit( $this->themes_dir . 'achievements' ),
+			'url'     => trailingslashit( $this->themes_url . 'achievements' )
 		) );
 	}
 
