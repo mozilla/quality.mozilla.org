@@ -24,7 +24,7 @@
   </div>
 
   <?php if ( $children ) : ?>
-    <script src="<?php bloginfo('stylesheet_directory'); ?>/TabInterface.js" type="text/javascript"></script>
+    <script src="<?php bloginfo('stylesheet_directory'); ?>/js/TabInterface.js" type="text/javascript"></script>
     <script type="text/javascript">
     // <![CDATA[
       jQuery(document).ready(function(){
