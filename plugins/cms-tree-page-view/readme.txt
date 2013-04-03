@@ -4,7 +4,7 @@ Donate link: http://eskapism.se/sida/donate/
 Tags: page, pages, posts, custom posts, tree, cms, dashboard, overview, drag-and-drop, rearrange, management, manage, admin
 Requires at least: 3.5.1
 Tested up to: 3.5.1
-Stable tag: 1.2.5
+Stable tag: 1.2.7
 
 Adds a tree view of all pages & custom posts. Get a great overview + options to drag & drop to reorder & option to add multiple pages.
 
@@ -41,14 +41,19 @@ sort them by "menu order".
 `
 // Example using query_posts
 $args = array(
+  'post_type' => 'page',
   'orderby'=> 'menu_order',
   'order'=>'ASC',
-  'post_type' => 'page',
 );
 $posts = query_posts($args);
 
 // Example using wp_query
-$query = new WP_Query( array( 'post_type' => 'page', 'orderby' => 'title menu_order', 'order' => 'ASC' ) );
+$args = array(
+	'post_type' => 'page',
+	'orderby' => 'menu_order',
+	'order' => 'ASC',
+);
+$query = new WP_Query( $args );
 
 `
 
@@ -105,6 +110,14 @@ Now the tree with the pages will be visible both on the dashboard and in the men
 7. Quickly switch between regular list view and tree view using the switch icon
 
 == Changelog ==
+
+= 1.2.7 =
+- Fix some notice errors/warning. Props damienwhaley. Fixes http://wordpress.org/support/topic/fix-for-three-non-fatal-errors.
+
+= 1.2.6 =
+- Fixed loading CSS over HTTPS. 
+Fixes http://wordpress.org/support/topic/update-noticonscss-reference-in-stylescss-for-https-sites-too.
+- Fixed some styling issues in IE 8.
 
 = 1.2.5 =
 - Fixed some notice warnings

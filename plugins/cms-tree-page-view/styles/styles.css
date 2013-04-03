@@ -5,8 +5,7 @@
 }
 */
 
-@import url("http://s0.wordpress.com/i/noticons/noticons.css");
-
+@import url("https://secure.wordpress.com/i/noticons/noticons.css");
 
 .cms_tpv_wrapper {
 	z-index: 10;
@@ -53,6 +52,7 @@
 
 .cms-tpv-subsubsub li:first-child {
 	margin-left: 0;
+	margin-right: 1px;
 }
 
 .cms-tpv-subsubsub li a {
@@ -118,6 +118,7 @@
 
 
 .tree-default span.post_type {
+	background-color: rgb(248, 98, 16);
 	background-color: rgba(248, 98, 16, .75);
 	-moz-border-radius: 2px;
 	-webkit-border-radius: 2px;
@@ -134,11 +135,13 @@
 }
 .tree-default span.post_type_password,
 .tree-default span.post_type_private {
+	background-color: rgb(37, 182, 26);
 	background-color: rgba(37, 182, 26, .75);
 }
 .tree-default span.post_type_pending,
 .tree-default span.post_type_future
 {
+	background-color: rgb(0, 105, 224);
 	background-color: rgba(0, 105, 224, .75);
 }
 
