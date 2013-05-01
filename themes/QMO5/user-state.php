@@ -15,7 +15,7 @@ get_currentuserinfo(); ?>
     <li class="user-logout"><a href="<?php echo wp_logout_url($_SERVER['REQUEST_URI']); ?>">Log Out</a></li>
   </ul>
 </div>
-<?php elseif ( get_option('users_can_register') ) : ?>
+<?php else : ?>
 <div id="user-state">
   <form action="<?php bloginfo('url') ?>/wp-login.php" method="post">
     <ul class="login">
