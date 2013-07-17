@@ -861,7 +861,7 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 	if (! $json_data) $json_data = '{}';
 	?>
 	<script type="text/javascript">
-		cms_tpv_jsondata.<?php echo $post_type ?> = <?php echo $json_data ?>;
+		cms_tpv_jsondata["<?php echo $post_type ?>"] = <?php echo $json_data ?>;
 	</script>
 	
 	<div class="cms_tpv_wrapper">
@@ -1151,7 +1151,7 @@ function cms_tpv_get_pages($args = null) {
 
 	// does not work with plugin ALO EasyMail Newsletter
 	remove_filter('get_pages','ALO_exclude_page');
-	
+
 	#do_action_ref_array('parse_query', array(&$this));
 	#print_r($get_posts_args);
 
@@ -1252,7 +1252,6 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 			if (empty($title)) {
 				$title = __("<Untitled page>", 'cms-tree-page-view');
 			}
-			$title = esc_html($title);
 
 			$arr_page_css_styles = array();
 			$user_can_edit_page = apply_filters("cms_tree_page_view_post_can_edit", current_user_can( $post_type_object->cap->edit_post, $page_id), $page_id);
@@ -1322,7 +1321,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 			?>
 			{
 				"data": {
-					"title": "<?php echo $title ?>",
+					"title": <?php echo json_encode($title) ?>,
 					"attr": {
 						"href": "<?php echo $editLink ?>"
 						<?php /* , "xid": "cms-tpv-<?php echo $onePage->ID ?>" */ ?>
@@ -1352,7 +1351,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 					"user_can_edit_page": "<?php echo (int) $user_can_edit_page ?>",
 					"user_can_add_page_inside": "<?php echo (int) $user_can_add_inside ?>",
 					"user_can_add_page_after": "<?php echo (int) $user_can_add_after ?>",
-					"post_title": "<?php echo $title ?>"
+					"post_title": <?php echo json_encode($title) ?>
 				}
 				<?php
 				// if id is in $arrOpenChilds then also output children on this one

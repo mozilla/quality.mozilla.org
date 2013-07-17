@@ -1,4 +1,4 @@
-# Translation of the WordPress plugin   by .
+# Translation of the WordPress plugin CMS Tree Page View.
 # Copyright (C) 2010
 # This file is distributed under the same license as the  package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
@@ -7,255 +7,431 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/cms-tree-page-view\n"
-"POT-Creation-Date: 2011-03-06 14:33:36+00:00\n"
-"PO-Revision-Date: 2012-02-26 16:01+0100\n"
+"POT-Creation-Date: 2013-04-16 16:52+0100\n"
+"PO-Revision-Date: 2013-04-16 17:00+0100\n"
 "Last-Translator: Martin Lettner <m.lettner@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
 
-#: functions.php:53
+#: ../cms-tree-page-view/functions.php:66
+#: ../cms-tree-page-view/functions.php:113
+#: ../cms-tree-page-view/functions.php:1396
+msgid "Cheatin&#8217; uh?"
+msgstr ""
+
+#: ../cms-tree-page-view/functions.php:321
 msgid "Enter title of new page"
-msgstr "Titel der neuen Seite eingeben:"
+msgstr "Titel der neuen Seite eingeben"
 
-#: functions.php:54
+#: ../cms-tree-page-view/functions.php:322
 msgid "child pages"
 msgstr "untergeordnete Seiten"
 
-#: functions.php:55
-#: functions.php:381
+#: ../cms-tree-page-view/functions.php:323
+#: ../cms-tree-page-view/functions.php:970
 msgid "Edit page"
-msgstr "Diese Seite bearbeiten"
+msgstr "Seite bearbeiten"
 
-#: functions.php:56
-#: functions.php:382
+#: ../cms-tree-page-view/functions.php:324
+#: ../cms-tree-page-view/functions.php:971
 msgid "View page"
-msgstr "Diese Seite anzeigen"
+msgstr "Seite anzeigen"
 
-#: functions.php:57
-#: functions.php:381
+#: ../cms-tree-page-view/functions.php:325
+#: ../cms-tree-page-view/functions.php:970
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: functions.php:58
-#: functions.php:382
+#: ../cms-tree-page-view/functions.php:326
+#: ../cms-tree-page-view/functions.php:971
 msgid "View"
 msgstr "Anzeigen"
 
-#: functions.php:59
+#: ../cms-tree-page-view/functions.php:327
 msgid "Add page"
 msgstr "Seite hinzufügen"
 
-#: functions.php:60
-#: functions.php:386
+#: ../cms-tree-page-view/functions.php:328
+#: ../cms-tree-page-view/functions.php:979
 msgid "Add new page after"
 msgstr "Eine neue Seite nach dieser hinzufügen"
 
-#: functions.php:61
+#: ../cms-tree-page-view/functions.php:329
 msgid "after"
 msgstr "Danach"
 
-#: functions.php:62
+#: ../cms-tree-page-view/functions.php:330
 msgid "inside"
 msgstr "Innerhalb"
 
-#: functions.php:63
+#: ../cms-tree-page-view/functions.php:331
 msgid "Sorry, can't create a sub page to a page with status \"draft\"."
-msgstr "Entschuldigung, es kann keine Unterseite zu einer Seite mit dem Status \"Entwurf\" hinzugefügt werden."
+msgstr ""
+"Entschuldigung, es kann keine Unterseite zu einer Seite mit dem Status "
+"\"Entwurf\" hinzugefügt werden."
 
-#: functions.php:64
+#: ../cms-tree-page-view/functions.php:332
 msgid "Sorry, can't create a sub page to a page with status \"trash\"."
-msgstr "Entschuldigung, es kann keine Unterseite zu einer Seite mit dem Status \"Papierkorb\" hinzugefügt werden."
+msgstr ""
+"Entschuldigung, es kann keine Unterseite zu einer Seite mit dem Status "
+"\"Papierkorb\" hinzugefügt werden."
 
-#: functions.php:65
+#: ../cms-tree-page-view/functions.php:333
 msgid "Sorry, can't create a page after a page with status \"trash\"."
-msgstr "Entschuldigung, es kann keine Seite nach einer Seite mit dem Status \"Papierkorb\" hinzugefügt werden."
+msgstr ""
+"Entschuldigung, es kann keine Seite nach einer Seite mit dem Status "
+"\"Papierkorb\" hinzugefügt werden."
 
-#: functions.php:66
-#: functions.php:390
+#: ../cms-tree-page-view/functions.php:334
+#: ../cms-tree-page-view/functions.php:984
 msgid "Add new page inside"
 msgstr "Eine neue Seite innerhalb dieser hinzufügen"
 
-#: functions.php:67
+#: ../cms-tree-page-view/functions.php:335
+#: ../cms-tree-page-view/functions.php:341
 msgid "draft"
 msgstr "Entwurf"
 
-#: functions.php:68
+#: ../cms-tree-page-view/functions.php:336
+#: ../cms-tree-page-view/functions.php:342
 msgid "future"
 msgstr "Geplant"
 
-#: functions.php:69
+#: ../cms-tree-page-view/functions.php:337
+#: ../cms-tree-page-view/functions.php:343
 msgid "protected"
 msgstr "Geschützt"
 
-#: functions.php:70
-#: functions.php:644
+#: ../cms-tree-page-view/functions.php:338
+#: ../cms-tree-page-view/functions.php:344
+#: ../cms-tree-page-view/functions.php:1296
 msgid "pending"
 msgstr "Offen"
 
-#: functions.php:71
+#: ../cms-tree-page-view/functions.php:339
+#: ../cms-tree-page-view/functions.php:345
 msgid "private"
 msgstr "Privat"
 
-#: functions.php:72
+#: ../cms-tree-page-view/functions.php:340
+#: ../cms-tree-page-view/functions.php:346
 msgid "trash"
 msgstr "In den Papierkorb verschieben"
 
-#: functions.php:73
+#: ../cms-tree-page-view/functions.php:347
 msgid "Password protected page"
 msgstr "Passwortgeschützte Seite"
 
-#: functions.php:74
+#: ../cms-tree-page-view/functions.php:348
 msgid "Adding page..."
 msgstr "Seite wird hinzugefügt..."
 
-#: functions.php:175
-msgid "settings"
-msgstr "Einstellungen"
+#: ../cms-tree-page-view/functions.php:349
+msgid "Adding ..."
+msgstr "Seite wird hinzugefügt…"
 
-#: functions.php:180
-msgid "Select where to show a tree for pages and custom post types"
-msgstr "Auswählen wo eine Baumansicht für Seiten und Artikel angezeigt werden soll:"
-
-#: functions.php:204
-msgid "On dashboard"
-msgstr "Im Dashboard"
-
-#: functions.php:208
-msgid "In menu"
-msgstr "Im Menü"
-
-#: functions.php:219
-msgid "Save Changes"
-msgstr "Änderungen speichern"
-
-#: functions.php:335
+#: ../cms-tree-page-view/functions.php:350
+#: ../cms-tree-page-view/functions.php:1057
 msgid "No posts found."
 msgstr "Keine Artikel gefunden."
 
-#: functions.php:341
+#: ../cms-tree-page-view/functions.php:448
+msgid "Tree View"
+msgstr "Baumstruktur"
+
+#: ../cms-tree-page-view/functions.php:457
+msgid "List View"
+msgstr "Listenansicht"
+
+#: ../cms-tree-page-view/functions.php:493
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: ../cms-tree-page-view/functions.php:533
+#, php-format
+msgctxt "name of dashboard"
+msgid "%1$s Tree"
+msgstr "%1$s Baumstruktur"
+
+#: ../cms-tree-page-view/functions.php:571
+msgctxt "name in menu"
+msgid "Tree View"
+msgstr "Baumstruktur"
+
+#: ../cms-tree-page-view/functions.php:572
+#, php-format
+msgctxt "title on page with tree"
+msgid "%1$s Tree View"
+msgstr "%1$s Baumstruktur"
+
+#: ../cms-tree-page-view/functions.php:592
+msgid "settings"
+msgstr "Einstellungen"
+
+#: ../cms-tree-page-view/functions.php:598
+msgid "Select where to show a tree for pages and custom post types"
+msgstr ""
+"Auswählen wo eine Baumansicht für Seiten und Artikel angezeigt werden soll:"
+
+#: ../cms-tree-page-view/functions.php:642
+msgid "On dashboard"
+msgstr "Im Dashboard"
+
+#: ../cms-tree-page-view/functions.php:646
+msgid "In menu"
+msgstr "Im Menü"
+
+#: ../cms-tree-page-view/functions.php:650
+msgid "On post overview screen"
+msgstr "In der Beitrags-Übersicht"
+
+#: ../cms-tree-page-view/functions.php:669
+msgid "Save Changes"
+msgstr "Änderungen speichern"
+
+#: ../cms-tree-page-view/functions.php:913
 msgid "All"
 msgstr "Alle"
 
-#: functions.php:342
+#: ../cms-tree-page-view/functions.php:918
 msgid "Public"
 msgstr "Öffentlich"
 
-#: functions.php:343
+#: ../cms-tree-page-view/functions.php:923
 msgid "Trash"
 msgstr "Papierkorb"
 
-#: functions.php:348
+#: ../cms-tree-page-view/functions.php:931
 msgid "Expand"
 msgstr "Ausklappen"
 
-#: functions.php:349
+#: ../cms-tree-page-view/functions.php:932
 msgid "Collapse"
 msgstr "Einklappen"
 
-#: functions.php:357
+#: ../cms-tree-page-view/functions.php:940
 msgid "Clear search"
 msgstr "Suche leeren"
 
-#: functions.php:358
+#: ../cms-tree-page-view/functions.php:941
 msgid "Search"
 msgstr "Suchen"
 
-#: functions.php:359
+#: ../cms-tree-page-view/functions.php:942
 msgid "Searching..."
 msgstr "Wird gesucht..."
 
-#: functions.php:360
+#: ../cms-tree-page-view/functions.php:943
 msgid "Nothing found."
 msgstr "Keine Inhalte gefunden."
 
-#: functions.php:366
+#: ../cms-tree-page-view/functions.php:950
 msgid "Loading..."
 msgstr "Laden..."
 
-#: functions.php:371
+#: ../cms-tree-page-view/functions.php:955
 msgid "Search: no pages found"
 msgstr "Suche: Keine Seiten gefunden"
 
-#: functions.php:374
+#: ../cms-tree-page-view/functions.php:958
 msgid "Loading tree"
 msgstr "Baum wird geladen"
 
-#: functions.php:386
+#: ../cms-tree-page-view/functions.php:979
+#: ../cms-tree-page-view/functions.php:1016
 msgid "After"
 msgstr "Danach"
 
-#: functions.php:390
+#: ../cms-tree-page-view/functions.php:984
+#: ../cms-tree-page-view/functions.php:1017
 msgid "Inside"
 msgstr "Innerhalb"
 
-#: functions.php:394
+#: ../cms-tree-page-view/functions.php:988
 msgid "Can not create page inside of a page with draft status"
-msgstr "Es kann keine Seite innerhalb einer Seite mit Entwurfs-Status erstellt werden."
+msgstr ""
+"Es kann keine Seite innerhalb einer Seite mit Entwurfs-Status erstellt "
+"werden."
 
-#: functions.php:397
+#: ../cms-tree-page-view/functions.php:1005
+msgid "Add page(s)"
+msgstr "Seite(n) hinzufügen"
+
+#: ../cms-tree-page-view/functions.php:1010
+msgid "Enter title here"
+msgstr "Titel der neuen Seite eingeben"
+
+#: ../cms-tree-page-view/functions.php:1015
+msgid "Position"
+msgstr "Position"
+
+#: ../cms-tree-page-view/functions.php:1022
+msgid "Status"
+msgstr "Status"
+
+#: ../cms-tree-page-view/functions.php:1023
+msgid "Draft"
+msgstr "Entwurf"
+
+#: ../cms-tree-page-view/functions.php:1024
+msgid "Published"
+msgstr "Veröffentlicht"
+
+#: ../cms-tree-page-view/functions.php:1028
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: ../cms-tree-page-view/functions.php:1029
+msgid "or"
+msgstr "oder"
+
+#: ../cms-tree-page-view/functions.php:1030
+msgid "cancel"
+msgstr "Abbrechen"
+
+#: ../cms-tree-page-view/functions.php:1040
 msgid "Last modified"
 msgstr "Zuletzt modifiziert"
 
-#: functions.php:399
+#: ../cms-tree-page-view/functions.php:1042
 msgid "by"
 msgstr "von"
 
-#: functions.php:402
+#: ../cms-tree-page-view/functions.php:1045
 msgid "Page ID"
 msgstr "Seiten-ID"
 
-#: functions.php:609
+#: ../cms-tree-page-view/functions.php:1088
+#, php-format
+msgctxt "headline of page with tree"
+msgid "%1$s Tree View"
+msgstr "%1$s Baumstruktur"
+
+#: ../cms-tree-page-view/functions.php:1248
 msgid "Unknown user"
 msgstr "Unbekannter Benutzer"
 
-#: functions.php:614
+#: ../cms-tree-page-view/functions.php:1253
 msgid "<Untitled page>"
 msgstr "<Unbenannte Seite>"
 
-#: functions.php:634
+#: ../cms-tree-page-view/functions.php:1286
 msgid "Comments"
 msgstr "Kommentare"
 
-#: functions.php:641
+#: ../cms-tree-page-view/functions.php:1293
+#, php-format
 msgid "%s pending"
 msgstr "%s offen"
 
-#: functions.php:651
+#: ../cms-tree-page-view/functions.php:1303
 msgctxt "comment count"
 msgid "0"
 msgstr "0"
 
-#: functions.php:651
+#: ../cms-tree-page-view/functions.php:1303
 msgctxt "comment count"
 msgid "1"
 msgstr "1"
 
-#: functions.php:651
+#: ../cms-tree-page-view/functions.php:1303
 msgctxt "comment count"
 msgid "%"
 msgstr "%"
 
-#: functions.php:682
-msgid "Click to edit. Drag to move."
-msgstr "Zum Editieren klicken. Zum Bewegen ziehen."
-
-#: functions.php:833
+#: ../cms-tree-page-view/functions.php:1502
 msgid "New page"
 msgstr "Neue Seite"
 
-#: functions.php:1015
-msgid "Close"
-msgstr "Schließen"
+#: ../cms-tree-page-view/functions.php:1692
+msgid "Thanks for using my plugin"
+msgstr "Danke, dass Sie dieses Plugin verwenden"
 
-#: functions.php:1016
-msgid "<strong>Thank you for using this plugin!</strong> If you need help please check out the <a href=\"http://eskapism.se/code-playground/cms-tree-page-view/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox\">plugin homepage</a> or the <a href=\"http://wordpress.org/tags/cms-tree-page-view?forum_id=10\">support forum</a>."
-msgstr "<strong>Vielen Dank, dass Sie dieses Plugin verwenden!</strong> Falls Sie Hilfe benötigen schauen Sie auf der <a href=\"http://eskapism.se/code-playground/cms-tree-page-view/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox\">Plugin-Homepage [en]</a> oder im <a href=\"http://wordpress.org/tags/cms-tree-page-view?forum_id=10\">Support-Forum [en]</a> nach."
+#: ../cms-tree-page-view/functions.php:1694
+msgid ""
+"Hi there! I just wanna says thanks for using my plugin. I hope you like it "
+"as much as I do."
+msgstr ""
 
-#: functions.php:1017
-msgid "If you like this plugin, please <a href=\"http://eskapism.se/sida/donate/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox\">support my work by donating</a> - or at least say something nice about this plugin in a blog post or tweet."
-msgstr "Falls Sie dieses Plugin nützlich finden, bitte <a href=\"http://eskapism.se/sida/donate/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox\">unterstützen Sie meine Arbeit mit einer Spende</a> - oder hinterlassen Sie eine freundliche Nachricht über das Plugin in einer Blog- oder Twitter-Nachricht."
+#: ../cms-tree-page-view/functions.php:1695
+msgid "/Pär Thernström - plugin creator"
+msgstr "/Pär Thernström - Plugin-Autor"
+
+#: ../cms-tree-page-view/functions.php:1697
+msgid "I like this plugin<br>– how can I thank you?"
+msgstr "Mir gefällt dieses Plugin<br>Wie kann ich helfen?"
+
+#: ../cms-tree-page-view/functions.php:1698
+msgid "There are serveral ways for you to show your appreciation:"
+msgstr ""
+
+#: ../cms-tree-page-view/functions.php:1700
+#, php-format
+msgid ""
+"<a href=\"%1$s\">Give it a nice review</a> over at the WordPress Plugin "
+"Directory"
+msgstr ""
+
+#: ../cms-tree-page-view/functions.php:1701
+#, php-format
+msgid "<a href=\"%1$s\">Give a donation</a> – any amount will make me happy"
+msgstr ""
+
+#: ../cms-tree-page-view/functions.php:1702
+#, php-format
+msgid ""
+"<a href=\"%1$s\">Post a nice tweet</a> or make a nice blog post about the "
+"plugin"
+msgstr ""
+
+#: ../cms-tree-page-view/functions.php:1705
+msgid "Support"
+msgstr "Hilfe/Support"
+
+#: ../cms-tree-page-view/functions.php:1706
+#, php-format
+msgid "Plese see the <a href=\"%1$s\">support forum</a> for help."
+msgstr ""
+
+#: ../cms-tree-page-view/functions.php:1710
+msgid "Hide until next upgrade"
+msgstr "Bis zum nächsten Update verstecken"
+
+#~ msgid "Click to edit. Drag to move."
+#~ msgstr "Zum Editieren klicken. Zum Bewegen ziehen."
+
+#~ msgid "Close"
+#~ msgstr "Schließen"
+
+#~ msgid ""
+#~ "<strong>Thank you for using this plugin!</strong> If you need help please "
+#~ "check out the <a href=\"http://eskapism.se/code-playground/cms-tree-page-"
+#~ "view/?utm_source=wordpress&utm_medium=banner&utm_campaign=promobox"
+#~ "\">plugin homepage</a> or the <a href=\"http://wordpress.org/tags/cms-"
+#~ "tree-page-view?forum_id=10\">support forum</a>."
+#~ msgstr ""
+#~ "<strong>Vielen Dank, dass Sie dieses Plugin verwenden!</strong> Falls Sie "
+#~ "Hilfe benötigen schauen Sie auf der <a href=\"http://eskapism.se/code-"
+#~ "playground/cms-tree-page-view/?"
+#~ "utm_source=wordpress&utm_medium=banner&utm_campaign=promobox\">Plugin-"
+#~ "Homepage [en]</a> oder im <a href=\"http://wordpress.org/tags/cms-tree-"
+#~ "page-view?forum_id=10\">Support-Forum [en]</a> nach."
+
+#~ msgid ""
+#~ "If you like this plugin, please <a href=\"http://eskapism.se/sida/donate/?"
+#~ "utm_source=wordpress&utm_medium=banner&utm_campaign=promobox\">support my "
+#~ "work by donating</a> - or at least say something nice about this plugin "
+#~ "in a blog post or tweet."
+#~ msgstr ""
+#~ "Falls Sie dieses Plugin nützlich finden, bitte <a href=\"http://eskapism."
+#~ "se/sida/donate/?"
+#~ "utm_source=wordpress&utm_medium=banner&utm_campaign=promobox"
+#~ "\">unterstützen Sie meine Arbeit mit einer Spende</a> - oder hinterlassen "
+#~ "Sie eine freundliche Nachricht über das Plugin in einer Blog- oder "
+#~ "Twitter-Nachricht."
 
 #~ msgid "Show tree"
 #~ msgstr "Zeige Baum"

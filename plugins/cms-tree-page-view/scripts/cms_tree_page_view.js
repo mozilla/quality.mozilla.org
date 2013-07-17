@@ -263,6 +263,7 @@ jQuery(function($) {
 		
 		var isHierarchical = $(elm).closest(".cms_tpv_wrapper").find("[name=cms_tpv_meta_post_type_hierarchical]").val();
 		if (isHierarchical === "0") {
+			
 			// no move to children if not hierarchical
 			treeOptionsTmp.types = {
 				"types": {
@@ -271,8 +272,12 @@ jQuery(function($) {
 					}
 				}
 			};
+
 		}
 		
+		// set search url to include post type
+		treeOptionsTmp.search.ajax.url = ajaxurl + CMS_TPV_AJAXURL + CMS_TPV_VIEW + "&post_type=" + cms_tpv_get_post_type(this);
+
 		$elm.bind("search.jstree", function (event, data) {
 			if (data.rslt.nodes.length === 0) {
 				// no hits. doh.
@@ -693,7 +698,7 @@ function cms_tpv_bind_clean_node() {
 				// post_status can be any value because of plugins like Edit flow
 				// check if we have an existing translation for the string, otherwise use the post status directly
 				var post_status_to_show = "";
-				if (post_status_to_show = cmstpv_l10n["Status_"+post_status + "_ucase"]) {
+				if (post_status_to_show = cmstpv_l10n["Status_" + post_status + "_ucase"]) {
 					// it's ok
 				} else {
 					post_status_to_show = post_status;

@@ -3,7 +3,7 @@ Contributors: stomlinson, Marcel Bokhorst, M66B
 Tags: security, admin, authentication, access, widget, login, shortcode, comment, comments, discussion, bbPress, bbPress 2.0, browserid, mozilla, persona
 Requires at least: 3.1
 Tested up to: 3.5.1
-Stable tag: 0.41
+Stable tag: 0.44
 
 Implementation of Mozilla Persona (BrowserID) for WordPress
 
@@ -48,23 +48,13 @@ Please report any issues on [GitHub](https://github.com/shane-tomlinson/browseri
 
 Try putting the following into this option:
 
-`<img src="https://login.persona.org/i/browserid_logo_sm.png" />`
+`<img src="https://login.persona.org/i/persona_sign_in_red.png" />`
 
-Now you will see the Mozilla Persona logo instead of the login button.
+Now you will see a red 'Sign in with Persona' button instead of the traditional CSS button.
 
 = Which server verifies the assertion? =
 
 The assertion is verified by the server at https://login.persona.org/verify.
-
-= I get 'SSL certificate problem, verify that the CA cert is OK' =
-
-Your hosting provider should take a look at the SSL certificates.
-You can check the option *Do not verify SSL certificate*, but please realize this isn't entirely safe.
-
-= I get 'Bad Gateway' =
-
-The login.persona.org service is still in testing phase.
-Trying again may help.
 
 = I get 'Login failed' =
 
@@ -118,6 +108,32 @@ Follow these steps to install the development version:
 * Click *Upload* (a link at the top)
 * Click *Choose file* and select the file you downloaded before
 * Click *Install*, then *Activate Plugin*
+
+= 0.44 =
+* Improvement: Commenting for new Persona users is simpler
+* Improvement: New member registration with new Persona users is simpler
+* Improvement: Separate CSS into its own file for maintainability
+* Improvement: Replace .png signin buttons with localizable CSS buttons
+* Improvement: Pre-fill input fields with default values in configuration screen
+* Improvement: Do not show the lost password link if "Disable non-Persona auth" is selected
+* Improvement: Do not show the "default password nag" if "Disable non-Persona auth" is selected
+* Improvement: Code Cleanup.
+* New feature: A .PO file with all strings has been created for localization
+* New Feature: Spanish translations. Thanks Guillermo Movia!
+* Bug Fix: site name can now contain ' and &
+* Bug Fix: no more static warnings in strict PHP mode
+* Bug Fix: remove plugin options from database when de-activated
+* Bug Fix: incorrect button link for example button link in the FAQ
+
+= 0.43 =
+* Continue with 0.41
+* Bug Fix: Fix the missing arguments errors
+* Bug Fix: HTML Escape the hostname when printing debug information
+* Bug Fix: Logout link from the widget signs the user out of Persona
+* Security Improvement: Remove the "Noverify SSL Certificate" option
+
+= 0.42 =
+* Revert to 0.37
 
 = 0.41 =
 * Bug Fix: Fix the "missing arguments" error due to not declaring the number of expected variables to Set_auth_cookie_action.
@@ -385,6 +401,7 @@ First public release
 
 == Acknowledgments ==
 [Marcel Bokhorst](http://blog.bokhorst.biz/) is the original author of this plugin. His awesome work has allowed me to continue.
+[Guillermo Movia](mailto://deimidis@mozilla-hispano.org) for Spanish translations.
 
 
 This plugin uses:

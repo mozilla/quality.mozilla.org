@@ -208,6 +208,7 @@
 	left: 112px;
 	width: 16px;
 	height: 16px;
+	padding: 0 !important;
 	background: transparent url(https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/ui-darkness/images/ui-icons_cccccc_256x240.png) no-repeat -32px -194px;
 	text-indent: -9999px;
 }

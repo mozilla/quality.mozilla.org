@@ -31,46 +31,12 @@ class bcn_breadcrumb
 	protected $linked;
 	//The link the breadcrumb leads to, null if $linked == false
 	protected $url;
-	protected $_tags = array(
-					'%title%',
-					'%link%',
-					'%htitle%',
-					'%type%',
-					'%ftitle%',
-					'%fhtitle%');
+	//The corresponding resource ID
+	protected $id = NULL;
 	private $_title = NULL;
 	//The type of this breadcrumb
 	public $type;
-	protected $allowed_html = array(
-					'a' => array(
-						'href' => true,
-						'title' => true,
-						'class' => true,
-						'id' => true,
-						'media' => true,
-						'dir' => true,
-						'relList' => true,
-						'rel' => true
-					),
-					'img' => array(
-						'alt' => true,
-						'align' => true,
-						'height' => true,
-						'width' => true,
-						'src' => true,
-						'id' => true,
-						'class' => true
-					),
-					'span' => array(
-						'title' => true,
-						'class' => true,
-						'id' => true,
-						'dir' => true,
-						'align' => true,
-						'lang' => true,
-						'xml:lang' => true
-					)
-				);
+	protected $allowed_html = array();
 	/**
 	 * The enhanced default constructor, ends up setting all parameters via the set_ functions
 	 *  
@@ -79,10 +45,14 @@ class bcn_breadcrumb
 	 * @param string $type (optional) The breadcrumb type
 	 * @param string $url (optional) The url the breadcrumb links to
 	 */
-	public function bcn_breadcrumb($title = '', $template = '', $type = '', $url = NULL)
+	public function bcn_breadcrumb($title = '', $template = '', $type = '', $url = NULL, $id = NULL)
 	{
+		//Filter allowed_html array to allow others to add acceptable tags
+		$this->allowed_html = apply_filters('bcn_allowed_html', wp_kses_allowed_html('post'));
 		//The breadcrumb type
 		$this->type = $type;
+		//Set the resource id
+		$this->set_id($id);
 		//Set the title
 		$this->set_title($title);
 		//Assign the breadcrumb template
@@ -94,7 +64,7 @@ class bcn_breadcrumb
 			}
 			else
 			{
-				$template = __('<a title="Go to %title%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt');
+				$template = __('<a title="Go to %ftitle%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt');
 			}
 		}
 		if($url == NULL)
@@ -116,7 +86,7 @@ class bcn_breadcrumb
 	public function set_title($title)
 	{
 		//Set the title
-		$this->title = apply_filters('bcn_breadcrumb_title', $title, $this->type);
+		$this->title = apply_filters('bcn_breadcrumb_title', $title, $this->type, $this->id);
 		$this->_title = $this->title;
 	}
 	/**
@@ -136,7 +106,7 @@ class bcn_breadcrumb
 	 */
 	public function set_url($url)
 	{
-		$this->url = apply_filters('bcn_breadcrumb_url', $url);
+		$this->url = esc_url(apply_filters('bcn_breadcrumb_url', $url, $this->type, $this->id));
 		//Set linked to true if we set a non-null $url
 		if($url)
 		{
@@ -151,8 +121,17 @@ class bcn_breadcrumb
 	public function set_template($template)
 	{
 		//Assign the breadcrumb template
-		$this->template = wp_kses($template, $this->allowed_html);
+		$this->template = wp_kses(apply_filters('bcn_breadcrumb_template', $template, $this->type, $this->id), $this->allowed_html);
 	}
+	/**
+	 * Sets the internal breadcrumb ID
+	 *
+	 * @param int $id the id of the resource this breadcrumb represents
+	 */
+	 public function set_id($id)
+	 {
+	 	$this->id = $id;
+	 }
 	/**
 	 * Append a type entry to the type array
 	 * 
@@ -202,28 +181,30 @@ class bcn_breadcrumb
 	{
 		//Build our replacements array
 		$replacements = array(
-							esc_attr(strip_tags($this->title)),
-							$this->url,
-							$this->title,
-							$this->type,
-							esc_attr(strip_tags($this->_title)),
-							$this->_title);
+			'%title%' => esc_attr(strip_tags($this->title)),
+			'%link%' => $this->url,
+			'%htitle%' => $this->title,
+			'%type%' => $this->type,
+			'%ftitle%' => esc_attr(strip_tags($this->_title)),
+			'%fhtitle%' => $this->_title
+			);
 		//The type may be an array, implode it if that is the case
-		if(is_array($replacements[3]))
+		if(is_array($replacements['%type%']))
 		{
-			$replacements[3] = implode(' ', $replacements[3]);
+			$replacements['%type%'] = implode(' ', $replacements['%type%']);
 		}
+		$replacements = apply_filters('bcn_template_tags', $replacements, $this->type, $this->id);
 		//If we are linked we'll need to use the normal template
 		if($this->linked && $linked)
 		{
 			//Return the assembled breadcrumb string
-			return str_replace($this->_tags, $replacements, $this->template);
+			return str_replace(array_keys($replacements), $replacements, $this->template);
 		}
 		//Otherwise we use the no anchor template
 		else
 		{
 			//Return the assembled breadcrumb string
-			return str_replace($this->_tags, $replacements, $this->template_no_anchor);
+			return str_replace(array_keys($replacements), $replacements, $this->template_no_anchor);
 		}
 	}
 }
@@ -232,7 +213,7 @@ class bcn_breadcrumb
 class bcn_breadcrumb_trail
 {
 	//Our member variables
-	private $version = '4.3.0';
+	private $version = '4.4.0';
 	//An array of breadcrumbs
 	public $trail = array();
 	//The options
@@ -255,19 +236,19 @@ class bcn_breadcrumb_trail
 			//Should the mainsite be shown
 			'bmainsite_display' => true,
 			//The breadcrumb template for the main site, this is global, four keywords are available %link%, %title%, %htitle%, and %type%
-			'Hmainsite_template' => __('<a title="Go to %title%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
+			'Hmainsite_template' => __('<a title="Go to %ftitle%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
 			//The breadcrumb template for the main site, used when an anchor is not needed, this is global, four keywords are available %link%, %title%, %htitle%, and %type%
 			'Hmainsite_template_no_anchor' => '%htitle%',
 			//Should the home page be shown
 			'bhome_display' => true,
 			//The breadcrumb template for the home page, this is global, four keywords are available %link%, %title%, %htitle%, and %type%
-			'Hhome_template' => __('<a title="Go to %title%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
+			'Hhome_template' => __('<a title="Go to %ftitle%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
 			//The breadcrumb template for the home page, used when an anchor is not needed, this is global, four keywords are available %link%, %title%, %htitle%, and %type%
 			'Hhome_template_no_anchor' => '%htitle%',
 			//Should the blog page be shown globally
 			'bblog_display' => true,
 			//The breadcrumb template for the blog page only in static front page mode, this is global, four keywords are available %link%, %title%, %htitle%, and %type%
-			'Hblog_template' => __('<a title="Go to %title%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
+			'Hblog_template' => __('<a title="Go to %ftitle%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
 			//The breadcrumb template for the blog page only in static front page mode, used when an anchor is not needed, this is global, four keywords are available %link%, %title%, %htitle%, and %type%
 			'Hblog_template_no_anchor' => '%htitle%',
 			//Separator that is placed between each item in the breadcrumb trial, but not placed before
@@ -281,7 +262,7 @@ class bcn_breadcrumb_trail
 			'bcurrent_item_linked' => false,
 			//Static page options
 			//The anchor template for page breadcrumbs, four keywords are available %link%, %title%, %htitle%, and %type%
-			'Hpost_page_template' => __('<a title="Go to %title%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
+			'Hpost_page_template' => __('<a title="Go to %ftitle%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
 			//The anchor template for page breadcrumbs, used when an anchor is not needed, four keywords are available %link%, %title%, %htitle%, and %type%
 			'Hpost_page_template_no_anchor' => '%htitle%',
 			//Just a link to the page on front property
@@ -293,7 +274,7 @@ class bcn_breadcrumb_trail
 			'bpaged_display' => false,
 			//The post options previously singleblogpost
 			//The breadcrumb template for post breadcrumbs, four keywords are available %link%, %title%, %htitle%, and %type%
-			'Hpost_post_template' => __('<a title="Go to %title%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
+			'Hpost_post_template' => __('<a title="Go to %ftitle%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
 			//The breadcrumb template for post breadcrumbs, used when an anchor is not needed, four keywords are available %link%, %title%, %htitle%, and %type%
 			'Hpost_post_template_no_anchor' => '%htitle%',
 			//Just a link for the page for posts
@@ -305,7 +286,7 @@ class bcn_breadcrumb_trail
 			//Attachment settings
 			//TODO: Need to move attachments to support via normal post handlers
 			//The breadcrumb template for attachment breadcrumbs, four keywords are available %link%, %title%, %htitle%, and %type%
-			'Hpost_attachment_template' => __('<a title="Go to %title%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
+			'Hpost_attachment_template' => __('<a title="Go to %ftitle%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
 			//The breadcrumb template for attachment breadcrumbs, used when an anchor is not needed, four keywords are available %link%, %title%, %htitle%, and %type%
 			'Hpost_attachment_template_no_anchor' => '%htitle%',
 			//404 page settings
@@ -315,33 +296,33 @@ class bcn_breadcrumb_trail
 			'S404_title' => __('404', 'breadcrumb-navxt'),
 			//Search page options
 			//The breadcrumb template for search breadcrumbs, four keywords are available %link%, %title%, %htitle%, and %type%
-			'Hsearch_template' => __('Search results for &#39;<a title="Go to the first page of search results for %title%." href="%link%" class="%type%">%htitle%</a>&#39;', 'breadcrumb-navxt'),
+			'Hsearch_template' => __('Search results for &#39;<a title="Go to the first page of search results for %ftitle%." href="%link%" class="%type%">%htitle%</a>&#39;', 'breadcrumb-navxt'),
 			//The breadcrumb template for search breadcrumbs, used when an anchor is not necessary, four keywords are available %link%, %title%, %htitle%, and %type%
 			'Hsearch_template_no_anchor' => __('Search results for &#39;%htitle%&#39;', 'breadcrumb-navxt'),
 			//Tag related stuff
 			//The breadcrumb template for tag breadcrumbs, four keywords are available %link%, %title%, %htitle%, and %type%
-			'Hpost_tag_template' => __('<a title="Go to the %title% tag archives." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
+			'Hpost_tag_template' => __('<a title="Go to the %ftitle% tag archives." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
 			//The breadcrumb template for tag breadcrumbs, used when an anchor is not needed, four keywords are available %link%, %title%, %htitle%, and %type%
 			'Hpost_tag_template_no_anchor' => '%htitle%',
 			//Post format related stuff
 			//The breadcrumb template for post format breadcrumbs, four keywords are available %link%, %title%, %htitle%, and %type%
-			'Hpost_format_template' => __('<a title="Go to the %title% tag archives." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
+			'Hpost_format_template' => __('<a title="Go to the %ftitle% tag archives." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
 			//The breadcrumb template for post format breadcrumbs, used when an anchor is not needed, four keywords are available %link%, %title%, %htitle%, and %type%
 			'Hpost_format_template_no_anchor' => '%htitle%',
 			//Author page stuff
 			//The anchor template for author breadcrumbs, four keywords are available %link%, %title%, %htitle%, and %type%
-			'Hauthor_template' => __('Articles by: <a title="Go to the first page of posts by %title%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
+			'Hauthor_template' => __('Articles by: <a title="Go to the first page of posts by %ftitle%." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
 			//The anchor template for author breadcrumbs, used when anchors are not needed, four keywords are available %link%, %title%, %htitle%, and %type%
 			'Hauthor_template_no_anchor' => __('Articles by: %htitle%', 'breadcrumb-navxt'),
 			//Which of the various WordPress display types should the author breadcrumb display
 			'Sauthor_name' => 'display_name',
 			//Category stuff
 			//The breadcrumb template for category breadcrumbs, four keywords are available %link%, %title%, %htitle%, and %type%
-			'Hcategory_template' => __('<a title="Go to the %title% category archives." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
+			'Hcategory_template' => __('<a title="Go to the %ftitle% category archives." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
 			//The breadcrumb template for category breadcrumbs, used when anchors are not needed, four keywords are available %link%, %title%, %htitle%, and %type%
 			'Hcategory_template_no_anchor' => '%htitle%',
 			//The breadcrumb template for date breadcrumbs, four keywords are available %link%, %title%, %htitle%, and %type%
-			'Hdate_template' => __('<a title="Go to the %title% archives." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
+			'Hdate_template' => __('<a title="Go to the %ftitle% archives." href="%link%" class="%type%">%htitle%</a>', 'breadcrumb-navxt'),
 			//The breadcrumb template for date breadcrumbs, used when anchors are not needed, four keywords are available %link%, %title%, %htitle%, and %type%
 			'Hdate_template_no_anchor' => '%htitle%'
 		);
@@ -406,7 +387,7 @@ class bcn_breadcrumb_trail
 		{
 			//TODO Evaluate the need for this filter call
 			//Place the breadcrumb in the trail, uses the constructor to set the title, prefix, and suffix, get a pointer to it in return
-			$breadcrumb = $this->add(new bcn_breadcrumb(apply_filters('the_author', $curauth->$author_name), $this->opt['Hauthor_template_no_anchor'], array('author', 'current-item')));
+			$breadcrumb = $this->add(new bcn_breadcrumb(apply_filters('the_author', $curauth->$author_name), $this->opt['Hauthor_template_no_anchor'], array('author', 'current-item'), NULL, $curauth->ID));
 			//If we're paged, or allowing the current item to be linked, let's link to the first page
 			if($this->opt['bcurrent_item_linked'] || (is_paged() && $this->opt['bpaged_display']))
 			{
@@ -426,7 +407,7 @@ class bcn_breadcrumb_trail
 	 * 
 	 * TODO: Add logic for contextual taxonomy selection
 	 */
-	function post_hierarchy($id, $type, $parent = null)
+	function post_hierarchy($id, $type, $parent = NULL)
 	{
 		//Check to see if breadcrumbs for the taxonomy of the post needs to be generated
 		if($this->opt['bpost_' . $type . '_taxonomy_display'])
@@ -462,7 +443,7 @@ class bcn_breadcrumb_trail
 			//Handle the use of hierarchical posts as the 'taxonomy'
 			else if(is_post_type_hierarchical($this->opt['Spost_' . $type . '_taxonomy_type']))
 			{
-				if($parent == null)
+				if($parent == NULL)
 				{
 					//We have to grab the post to find its parent, can't use $post for this one
 					$parent = get_post($id);
@@ -534,9 +515,9 @@ class bcn_breadcrumb_trail
 	{
 		global $post;
 		//Get the current category object, filter applied within this call
-		$term = &get_term($id, $taxonomy);
+		$term = get_term($id, $taxonomy);
 		//Place the breadcrumb in the trail, uses the constructor to set the title, template, and type, get a pointer to it in return
-		$breadcrumb = $this->add(new bcn_breadcrumb($term->name, $this->opt['H' . $taxonomy . '_template'], array($taxonomy), get_term_link($term, $taxonomy)));
+		$breadcrumb = $this->add(new bcn_breadcrumb($term->name, $this->opt['H' . $taxonomy . '_template'], array($taxonomy), get_term_link($term, $taxonomy), $id));
 		//Make sure the id is valid, and that we won't end up spinning in a loop
 		if($term->parent && $term->parent != $id)
 		{
@@ -556,7 +537,7 @@ class bcn_breadcrumb_trail
 		//Use WordPress API, though a bit heavier than the old method, this will ensure compatibility with other plug-ins
 		$parent = get_post($id);
 		//Place the breadcrumb in the trail, uses the constructor to set the title, template, and type, get a pointer to it in return
-		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title($id), $this->opt['Hpost_' . $parent->post_type . '_template'], array($parent->post_type), get_permalink($id)));
+		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title($id), $this->opt['Hpost_' . $parent->post_type . '_template'], array($parent->post_type), get_permalink($id), $id));
 		//Make sure the id is valid, and that we won't end up spinning in a loop
 		if($parent->post_parent >= 0 && $parent->post_parent != false && $id != $parent->post_parent && $frontpage != $parent->post_parent)
 		{
@@ -574,7 +555,7 @@ class bcn_breadcrumb_trail
 	{
 		global $post, $page;
 		//Place the breadcrumb in the trail, uses the bcn_breadcrumb constructor to set the title, template, and type
-		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title(), $this->opt['Hpost_' . $post->post_type . '_template_no_anchor'], array('post-' . $post->post_type, 'current-item')));
+		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title(), $this->opt['Hpost_' . $post->post_type . '_template_no_anchor'], array('post-' . $post->post_type, 'current-item'), NULL, $post->ID));
 		//If the current item is to be linked, or this is a paged post, add in links
 		if($this->opt['bcurrent_item_linked'] || ($page > 1 && $this->opt['bpaged_display']))
 		{
@@ -612,7 +593,7 @@ class bcn_breadcrumb_trail
 	{
 		global $post;
 		//Place the breadcrumb in the trail, uses the constructor to set the title, template, and type, get a pointer to it in return
-		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title(), $this->opt['Hpost_attachment_template_no_anchor'], array('post-attachment', 'current-item')));
+		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title(), $this->opt['Hpost_attachment_template_no_anchor'], array('post-attachment', 'current-item'), NULL, $post->ID));
 		if($this->opt['bcurrent_item_linked'])
 		{
 			//Change the template over to the normal, linked one
@@ -623,7 +604,7 @@ class bcn_breadcrumb_trail
 		//Get the parent's information
 		$parent = get_post($post->post_parent);
 		//Place the breadcrumb in the trail, uses the constructor to set the title, template, and type, get a pointer to it in return
-		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title($post->post_parent), $this->opt['Hpost_' . $parent->post_type . '_template'], array($parent->post_type), get_permalink($post->post_parent)));
+		$breadcrumb = $this->add(new bcn_breadcrumb(get_the_title($post->post_parent), $this->opt['Hpost_' . $parent->post_type . '_template'], array($parent->post_type), get_permalink($post->post_parent), $post->post_parent));
 		//We need to treat flat and hiearchical post attachment hierachies differently
 		if(is_post_type_hierarchical($parent->post_type))
 		{
@@ -658,7 +639,7 @@ class bcn_breadcrumb_trail
 		//Simmilar to using $post, but for things $post doesn't cover
 		$term = $wp_query->get_queried_object();
 		//Place the breadcrumb in the trail, uses the constructor to set the title, template, and type, get a pointer to it in return
-		$breadcrumb = $this->add(new bcn_breadcrumb($term->name, $this->opt['H' . $term->taxonomy . '_template_no_anchor'], array($term->taxonomy, 'current-item')));
+		$breadcrumb = $this->add(new bcn_breadcrumb($term->name, $this->opt['H' . $term->taxonomy . '_template_no_anchor'], array($term->taxonomy, 'current-item'), NULL, $term->term_id));
 		//If we're paged, let's link to the first page
 		if($this->opt['bcurrent_item_linked'] || (is_paged() && $this->opt['bpaged_display']))
 		{
@@ -762,7 +743,7 @@ class bcn_breadcrumb_trail
 		//Get the site name
 		$site_name = get_option('blogname');
 		//Place the breadcrumb in the trail, uses the constructor to set the title, prefix, and suffix, get a pointer to it in return
-		$breadcrumb = $this->add(new bcn_breadcrumb($site_name, $this->opt['Hhome_template_no_anchor'], array('site-home', 'current-item')));
+		$breadcrumb = $this->add(new bcn_breadcrumb($site_name, $this->opt['Hhome_template_no_anchor'], array('home', 'current-item')));
 		//If we're paged, let's link to the first page
 		if($this->opt['bcurrent_item_linked'] || (is_paged() && $this->opt['bpaged_display']))
 		{
@@ -776,7 +757,7 @@ class bcn_breadcrumb_trail
 			//Get the site name
 			$site_name = get_site_option('site_name');
 			//Place the main site breadcrumb in the trail, uses the constructor to set the title, prefix, and suffix, get a pointer to it in return
-			$breadcrumb = $this->add(new bcn_breadcrumb($site_name, $this->opt['Hmainsite_template'], array('mainsite-home'), get_home_url($current_site->blog_id)));
+			$breadcrumb = $this->add(new bcn_breadcrumb($site_name, $this->opt['Hmainsite_template'], array('main-home'), get_home_url($current_site->blog_id)));
 		}
 	}
 	/**
@@ -793,14 +774,14 @@ class bcn_breadcrumb_trail
 			//Get the site name
 			$site_name = get_option('blogname');
 			//Place the breadcrumb in the trail, uses the constructor to set the title, prefix, and suffix, get a pointer to it in return
-			$breadcrumb = $this->add(new bcn_breadcrumb($site_name, $this->opt['Hhome_template'], array('site-home'), get_home_url()));
+			$breadcrumb = $this->add(new bcn_breadcrumb($site_name, $this->opt['Hhome_template'], array('home'), get_home_url()));
 			//If we have a multi site and are not on the main site we need to add a breadcrumb for the main site
 			if($this->opt['bmainsite_display'] && !is_main_site())
 			{
 				//Get the site name
 				$site_name = get_site_option('site_name');
 				//Place the main site breadcrumb in the trail, uses the constructor to set the title, prefix, and suffix, get a pointer to it in return
-				$breadcrumb = $this->add(new bcn_breadcrumb($site_name, $this->opt['Hmainsite_template'], array('mainsite-home'), get_home_url($current_site->blog_id)));
+				$breadcrumb = $this->add(new bcn_breadcrumb($site_name, $this->opt['Hmainsite_template'], array('main-home'), get_home_url($current_site->blog_id)));
 			}
 		}
 	}
@@ -1004,7 +985,7 @@ class bcn_breadcrumb_trail
 		if(count($this->trail) > 0)
 		{
 			//Exit early since we have breadcrumbs in the trail
-			return null;
+			return NULL;
 		}
 		//Do any actions if necessary, we past through the current object instance to keep life simple
 		do_action('bcn_before_fill', $this);
