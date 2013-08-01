@@ -26,7 +26,7 @@ get_header(); ?>
       
     <?php $children = $wpdb->get_results("SELECT * FROM $wpdb->posts WHERE post_parent = ".$post->ID." AND post_type = 'page' ORDER BY menu_order", 'OBJECT'); ?>
     <?php if ( $children ) : ?>
-      <div id="sub-teams" class="tabbed">
+      <div id="sub-pages" <?php if ( sizeof($children) > 1 ) : ?>class="tabbed"<?php endif; ?>>
         <?php foreach ( $children as $child ) : setup_postdata( $child ); ?>
           <h1 class="section-title"><?php echo $child->post_title; ?></h1>
           <div class="entry-content">
@@ -81,7 +81,7 @@ get_header(); ?>
 <?php $children = wp_list_pages('title_li=&child_of='.$post->ID.'&echo=0&sort_column=menu_order');
   if ($children) : ?>
   <div class="widget related_pages">
-    <h3 class="widgettitle">Sub-teams</h3>
+    <h3 class="widgettitle">Sub-pages</h3>
     <ul class="page-tree">
     <?php echo $children; ?>
     </ul>

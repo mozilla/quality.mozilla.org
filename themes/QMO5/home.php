@@ -22,7 +22,7 @@ get_header(); ?>
         <li id="page-<?php echo $post->ID; ?>" class="team">
           <a href="<?php the_permalink() ?>" rel="bookmark">
           <?php if (function_exists('the_post_thumbnail') && has_post_thumbnail($post->ID) ) : ?>
-            <?php echo get_the_post_thumbnail( $post->ID, 'team-icon-small', array('alt' => "", 'title' => "") ); ?>
+            <?php echo get_the_post_thumbnail( $post->ID, 'thumbnail', array('alt' => "", 'title' => "") ); ?>
           <?php endif; ?>
           <?php the_title(); ?>
           </a>
