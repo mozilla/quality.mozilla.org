@@ -363,6 +363,7 @@ table.tec-calendar .tec-event-date { font-weight: bold; }
 
 /* @Breadcrumbs *********/
 .crumbs { list-style: none; font: .846em/1.1 Verdana, Tahoma, sans-serif; }
+.crumbs a:after { content: ""; display: none; clear: none; }
 
 /* @Access @Navigation *********/
 #nav-access { position: absolute; top: -50em; list-style: none; width: 90%; margin: 0 auto; }
