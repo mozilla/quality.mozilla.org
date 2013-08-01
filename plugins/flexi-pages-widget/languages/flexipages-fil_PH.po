@@ -1,0 +1,132 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Flexi Pages Widget\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-09-03 12:08+0530\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Morten Elm\n"
+"Language-Team: wpp.pp.ua <wordpress.ua@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"Language: uk_UA\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SearchPath-0: \n"
+
+#: /flexi-pages-widget.php:36
+msgid "Pages"
+msgstr "Mga Pahina"
+
+#: /flexi-pages-widget.php:46
+#: /flexi-pages-widget.php:279
+msgid "Home"
+msgstr "Bungad"
+
+#: /flexi-pages-widget.php:385
+msgid "Title"
+msgstr "Pamagat"
+
+#: /flexi-pages-widget.php:390
+msgid "Sort by"
+msgstr "Isalansan batay sa"
+
+#: /flexi-pages-widget.php:392
+msgid "Page title"
+msgstr "Pamagat ng Pahina"
+
+#: /flexi-pages-widget.php:393
+msgid "Menu order"
+msgstr "Ayos ng Menu"
+
+#: /flexi-pages-widget.php:394
+msgid "Date created"
+msgstr "Petsa nang nilikha"
+
+#: /flexi-pages-widget.php:395
+msgid "Date modified"
+msgstr "Petsa nang binago"
+
+#: /flexi-pages-widget.php:396
+msgid "Page ID"
+msgstr "ID ng Pahina"
+
+#: /flexi-pages-widget.php:397
+msgid "Page author ID"
+msgstr "ID ng may-akda ng Pahina"
+
+#: /flexi-pages-widget.php:398
+msgid "Page slug"
+msgstr "Katiting na Pahina"
+
+#: /flexi-pages-widget.php:401
+msgid "ASC"
+msgstr "ASC"
+
+#: /flexi-pages-widget.php:402
+msgid "DESC"
+msgstr "DESC"
+
+#: /flexi-pages-widget.php:407
+msgid "Exclude"
+msgstr "Ibukod: "
+
+#: /flexi-pages-widget.php:408
+msgid "Include"
+msgstr "Isama"
+
+#: /flexi-pages-widget.php:409
+msgid "pages"
+msgstr "mga pahina"
+
+#: /flexi-pages-widget.php:413
+msgid "use &lt;Ctrl&gt; key to select multiple pages"
+msgstr "gamitin ang &lt;Ctrl&gt;tipaan para pumili ng maraming pahina "
+
+#: /flexi-pages-widget.php:417
+msgid "Show sub-pages"
+msgstr "Ipakita ang mga subpahina"
+
+#: /flexi-pages-widget.php:419
+msgid "Show all sub-pages"
+msgstr "Ipakita ang lahat ng mga subpahina"
+
+#: /flexi-pages-widget.php:420
+msgid "Only related sub-pages"
+msgstr "Kaugnay na mga subpahina lamang"
+
+#: /flexi-pages-widget.php:421
+msgid "Only strictly related sub-pages"
+msgstr "Istriktong mga kaugnay na subpahina lamang"
+
+#: /flexi-pages-widget.php:427
+msgid "Show hierarchy"
+msgstr "Ipakita ang herarkiya "
+
+#: /flexi-pages-widget.php:431
+#, php-format
+msgid "%d levels deep"
+msgstr "%d lalim na antas"
+
+#: /flexi-pages-widget.php:433
+msgid "Unlimited depth"
+msgstr "Walang limitasyong lalim"
+
+#: /flexi-pages-widget.php:438
+msgid "Show home page"
+msgstr "Ipakita ang bungad na pahina"
+
+#: /flexi-pages-widget.php:442
+msgid "Show date"
+msgstr "Ipakita ang petsa"
+
+#: /flexi-pages-widget.php:444
+msgid "Choose Format"
+msgstr "Pumili ng Anyo"
+
+#: /flexi-pages-widget.php:462
+msgid "A highly configurable widget to list pages and sub-pages."
+msgstr "Ang maaaring kumpigurahin na widget para sa lista ng mga pahina at subpahina."
+
