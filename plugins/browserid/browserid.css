@@ -1,4 +1,14 @@
 
+.persona-button--select-color {
+  line-height: 23px;
+}
+
+input[type=radio].persona-button--select-color-radio {
+  margin: 0 10px 0 0;
+  display: table-cell;
+  vertical-align: middle;
+}
+
 /* Link body */
 .persona-button {
   color: #fff !important;
@@ -169,6 +179,8 @@
   box-shadow:     inset 0 -1px 0 rgba(0,0,0,0.3);
 }
 
+
+
 /* ========================================================
  *    Dark button
  * ===================================================== */
@@ -297,7 +309,16 @@
  */
 .persona--persona-only-auth #wp-submit {
 	position: absolute;
-  left: -9999px !important;
+	left: -9999px !important;
+}
+
+/**
+ * Comment form.
+ *
+ */
+.persona--comments #respond input[type=submit] {
+	position: absolute;
+	left: -9999px !important;
 }
 
 /**

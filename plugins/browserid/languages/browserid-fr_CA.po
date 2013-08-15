@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Mozilla Persona v0.44\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-07-20 19:19+0100\n"
-"PO-Revision-Date: 2013-07-17 15:43:25+0000\n"
+"PO-Revision-Date: 2013-07-17 15:42:40+0000\n"
 "Last-Translator: Marcel Bokhorst\n"
 "Language-Team: \n"
 "Language: \n"
@@ -120,7 +120,7 @@ msgstr "Titre :"
 # @ browserid
 #: browserid.php:132 browserid.php:907
 msgid "Sign in with your email"
-msgstr "Se connecter avec votre email"
+msgstr "Se connecter avec votre courriel"
 
 # @ browserid
 #: browserid.php:162

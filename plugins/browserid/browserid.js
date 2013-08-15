@@ -1,5 +1,5 @@
 /*jshint browser: true*/
-/*global browserid_common: true, $: true*/
+/*global browserid_common, jQuery*/
 (function() {
   "use strict";
 
@@ -24,7 +24,7 @@
   // If the user is trying to submit the form before they have received
   // a Persona assertion, prevent the form from being submitted. This takes
   // effect if the user types "enter" into one of the commentor info fields.
-  var enableCommentSubmit = browserid_common.logged_in_user || false;
+  var enableCommentSubmit = browserid_common.loggedInUser || false;
 
   $(".js-persona__login").click(function(event) {
     event.preventDefault();
@@ -36,15 +36,20 @@
   // the js-persona__logout button in the admin toolbar is added after this
   // script is run. Attach a live event (yuck) so that the user is still
   // able to log out.
-  $(".js-persona__logout").live("click", function(event) {
+  liveEvent(".js-persona__logout", "click", function(event) {
     event.preventDefault();
 
     ignoreLogout = false;
     navigator.id.logout();
   });
 
-  if (browserid_common.comments) {
+  if (browserid_common.isPersonaUsedWithComments) {
     $("body").addClass("persona--comments");
+
+    $(".js-persona__submit-comment").click(function(event) {
+      event.preventDefault();
+      $("#commentform").submit();
+    });
 
     $("#commentform").submit(function(event) {
       // Make sure there is a comment before submitting
@@ -65,7 +70,7 @@
     });
   }
 
-  if (browserid_common.persona_only_auth) {
+  if (browserid_common.isPersonaOnlyAuth) {
     $("body").addClass("persona--persona-only-auth");
 
     // Make sure there is a username before submitting
@@ -151,9 +156,9 @@
     // abort all action.
     forceSubmit = true;
   }
-  else if ((document.location.href === browserid_common.registration_redirect) &&
+  else if ((document.location.href === browserid_common.urlRegistrationRedirect) &&
            (sessionStorage.getItem("submitting_registration"))) {
-    // If the user lands on the registration_redirect page AND they just came
+    // If the user lands on the urlRegistrationRedirect page AND they just came
     // from the Registration page, inform other pages that registration has
     // completed so they can redirect.
     localStorage.setItem("registration_complete", "true");
@@ -170,8 +175,8 @@
 
 
 
-  // If there was an error, log the user out.
-  if (browserid_common.error || $("#login_error").length) {
+  // If there was on error, log the user out.
+  if (browserid_common.msgError || $("#login_error").length) {
     ignoreLogout = true;
 
     navigator.id.logout();
@@ -186,7 +191,7 @@
   };
 
   navigator.id.watch({
-    loggedInUser: browserid_common.logged_in_user || null,
+    loggedInUser: browserid_common.loggedInUser || null,
     onlogin: function(assertion) {
       loginType = getLoginType(loginType);
 
@@ -204,8 +209,8 @@
       // There is a bug in Persona with Chrome. When a user signs in, the
       // onlogout callback is first fired. Check if a user is actually
       // signed in before redirecting to the logout URL.
-      if (browserid_common.logged_in_user) {
-        document.location = browserid_common.logout_redirect;
+      if (browserid_common.loggedInUser) {
+        document.location = browserid_common.urlLogoutRedirect;
       }
     }
   });
@@ -219,8 +224,11 @@
     loginType = type;
 
     var opts = {
-      siteName: browserid_common.sitename || "",
-      siteLogo: browserid_common.sitelogo || ""
+      siteName: browserid_common.siteName || "",
+      siteLogo: browserid_common.siteLogo || "",
+      backgroundColor: browserid_common.backgroundColor || "",
+      termsOfService: browserid_common.termsOfService || "",
+      privacyPolicy: browserid_common.privacyPolicy || ""
     };
 
    /**
@@ -259,15 +267,15 @@
     var form = document.createElement("form");
     form.setAttribute("style", "display: none;");
     form.method = "POST";
-    form.action = browserid_common.siteurl;
+    form.action = browserid_common.urlLoginSubmit;
 
     var fields = {
       browserid_assertion: assertion,
       rememberme: rememberme
     };
 
-    if (browserid_common.login_redirect !== null)
-      fields.redirect_to = browserid_common.login_redirect;
+    if (browserid_common.urlLoginRedirect !== null)
+      fields.redirect_to = browserid_common.urlLoginRedirect;
 
     appendFormHiddenFields(form, fields);
 
@@ -321,7 +329,7 @@
     // If the user is submitting a comment and is not logged in,
     // log them out of Persona. This will prevent the plugin from
     // trying to log the user in to the site once the comment is posted.
-    if (!browserid_common.logged_in_user) {
+    if (!browserid_common.loggedInUser) {
       ignoreLogout = true;
       navigator.id.logout();
     }
@@ -429,7 +437,7 @@
     var complete = localStorage.getItem("registration_complete");
     if (complete) {
       localStorage.removeItem("registration_complete");
-      document.location = browserid_common.registration_redirect;
+      document.location = browserid_common.urlRegistrationRedirect;
     }
     else {
       setTimeout(refreshWhenRegistrationSubmitComplete, 100);
@@ -482,6 +490,10 @@
         $(submitButton).addClass("disabled");
       }
     }
+  }
+
+  function liveEvent(selector, eventType, callback) {
+    $("body")[typeof $.fn.on === "function" ? "on" : "delegate"](eventType, selector, callback);
   }
 
 
