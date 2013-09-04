@@ -3,8 +3,8 @@ Contributors: mmuro
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Restrict%20Categories&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Tags: restrict, admin, administration, cms, categories, category
 Requires at least: 3.0
-Tested up to: 3.5.1
-Stable tag: 2.6.1
+Tested up to: 3.6
+Stable tag: 2.6.2
 
 Restrict the categories that users can view, add, and edit in the admin panel.
 
@@ -51,104 +51,108 @@ In other words, Restrict Categories allows you complete control over groups of u
 
 == Changelog ==
 
-**Version 2.6.1**
+**Version 2.6.2 - Aug, 14, 2013**
+
+* Fix notices in PHP 5.4
+
+**Version 2.6.1 - Mar 12, 2013**
 
 * Check if array key exists before stripping placeholder to resolve warnings for some servers
 
-**Version 2.6**
+**Version 2.6 - Mar 11, 2013**
 
 * Add "Select All" feature
 * Update minimum capability to manage_categories
 * Fix bug where users may see all categories in certain cases
 * Fix PHP notices
 
-**Version 2.5**
+**Version 2.5 - Sep, 13, 2012**
 
 * Fix bug for saving with pagination
 
-**Version 2.4**
+**Version 2.4 - Jan 17, 2012**
 
 * Add pagination controls for Roles and Users. Customize number displayed using the Screen Options tab
 
-**Version 2.3**
+**Version 2.3 - Aug 17, 2011**
 
 * Fix bug where custom taxonomies were being hidden on the Add Post screen
 
-**Version 2.2.2**
+**Version 2.2.2 - Jul 13, 2011**
 
 * Fix bug where XML-RPC support was broken
 
-**Version 2.2.1**
+**Version 2.2.1 - May 19, 2011**
 
 * Fix bug where 'View All' and 'Most Popular' tabs were not set correctly for the Roles screen
 
-**Version 2.2**
+**Version 2.2 - May 16, 2011**
 
 * Fix bug where Pages type was not being displayed in Internal Linking WordPress feature
 * Added 'View All' and 'Most Popular' tabs to each role/user to make it easier to find relevant categories
 
-**Version 2.1**
+**Version 2.1 - May 10, 2011**
 
 * Correct problem that prevented tabbed interface from being uploaded
 
-**Version 2.0**
+**Version 2.0 - Apr 18, 2011**
 
 * Improve the user interface by separating the Roles and Users via tabs
 
-**Version 1.9**
+**Version 1.9 - Mar 30, 2011**
 
 * Added XML-RPC support so categories are restricted using mobile devices and remote applications
 
-**Version 1.8**
+**Version 1.8 - Mar 12, 2011**
 
 * Fix bug for WordPress 3.1 users that broke user restriction.
 * Switch code to PHP classes to prevent conflicts with other plugins.
 * Now using register_setting to save options instead of custom method.
 * Uninstalling/Deleting plugin now removes Restrict Categories database options.
 
-**Version 1.7**
+**Version 1.7 - Feb 18, 2011**
 
 * Fix bug that hid list of images under Gallery tab on Media Uploader.
 
-**Version 1.6.1**
+**Version 1.6.1 - Jan 24, 2011**
 
 * Fix bug where user restriction was not being applied.
 
-**Version 1.6**
+**Version 1.6 - Jan 20, 2011**
 
 * Added restriction based on username
 * Show number of selected categories for each role and username
 * Improve reliability of Posts Edit screen query
 
-**Version 1.5**
+**Version 1.5 - Jan 6, 2011**
 
 * Updated user interface
 * Fix bug to allow sub-categories
 * Fix bug to allow duplicate category names
 * Fix bug for categories with single quotes, ampersands, and other encoded characters
 
-**Version 1.4**
+**Version 1.4 - Nov 29, 2010**
 
 * Fix for bug assuming database table prefix
 * Improve compatibility with PHP 5.2 and empty array checking
 * Added string localization
 
-**Version 1.3**
+**Version 1.3 - Nov 23, 2010**
 
 * Update that removes restricted categories from all terms lists (Category management page, Posts dropdown filter, and New/Edit post category list)
 * Fix for "Wrong datatype" bug on checkboxes
 
-**Version 1.2**
+**Version 1.2 - Nov 8, 2010**
 
 * Fix for a bug that would allow restricted users to use the category dropdown filter to gain access to categories
 
-**Version 1.1**
+**Version 1.1 - Nov 8, 2010**
 
 * Updated list of categories to include those that are unassigned
 * Fixed a small HTML bug
 * Now storing options as an array instead of converting to a string
 
-**Version 1.0**
+**Version 1.0 - Nov 8, 2010**
 
 * Plugin launch!
 
