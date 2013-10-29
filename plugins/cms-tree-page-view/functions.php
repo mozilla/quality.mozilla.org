@@ -220,9 +220,6 @@ function cms_tpv_add_pages() {
 
 }
 
-// for debug, remember to comment out (yes.. i *know* i will forget this later on...)
-// require("FirePHPCore/FirePHP.class.php");
-// $firephp = FirePHP::getInstance(true);
 
 /**
  * Output and add hooks in head
@@ -230,7 +227,7 @@ function cms_tpv_add_pages() {
 function cms_tpv_admin_head() {
 
 	if (!cms_tpv_is_one_of_our_pages()) return;
-
+	
 	cms_tpv_setup_postsoverview();
 
 	global $cms_tpv_view;
@@ -368,8 +365,12 @@ function cms_tpv_admin_init() {
 	//wp_enqueue_script( "jquery-hotkeys" );
 
 	// add row to plugin page
-
 	add_filter( 'plugin_row_meta', 'cms_tpv_set_plugin_row_meta', 10, 2 );
+
+	// @todo: register settings
+	#add_settings_section("cms_tree_page_view_settings", "cms_tree_page_view", "", "");
+	#register_setting( 'cms_tree_page_view_settings', "post-type-dashboard-post" );
+
 
 }
 
@@ -382,7 +383,7 @@ function cms_tpv_setup_postsoverview() {
 	$current_screen = get_current_screen();
 
 	if ("edit" === $current_screen->base && in_array($current_screen->post_type, $options["postsoverview"])) {
-
+		
 		// Ok, this is a post overview page that we are enabled for
 		add_filter("views_" . $current_screen->id, "cmstpv_filter_views_edit_postsoverview");
 
@@ -431,7 +432,6 @@ function cmstpv_filter_views_edit_postsoverview($filter_var) {
 	ob_start();
 	cms_tpv_print_common_tree_stuff();
 	$tree_common_stuff = ob_get_clean();
-
 	/*
 	on non hierarcical post types this one exists:
 	tablenav-pages one-page
@@ -510,7 +510,7 @@ function cms_tpv_save_settings() {
 		$options["menu"] = isset( $_POST["post-type-menu"] ) ? (array) $_POST["post-type-menu"] : array();
 		$options["postsoverview"] = isset( $_POST["post-type-postsoverview"] ) ? (array) $_POST["post-type-postsoverview"] : array();
 
-		update_option('cms_tpv_options', $options); // enable this to show box
+		update_option('cms_tpv_options', $options);
 
 	}
 
@@ -788,7 +788,7 @@ function cms_tpv_get_wpml_post_counts($post_type) {
  * Print tree stuff that is common for both dashboard and page
  */
 function cms_tpv_print_common_tree_stuff($post_type = "") {
-
+	
 	global $sitepress, $cms_tpv_view, $wpdb;
 
 	if ( ! $post_type ) {
@@ -844,6 +844,7 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 		$post_count_trash = $post_count->trash;
 	}
 
+	
 	// output js for the root/top level
 	// function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $post_type) {
 	// @todo: make into function since used at other places
@@ -855,9 +856,12 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 			$jstree_open[$i] = (int) str_replace("#cms-tpv-", "", $jstree_open[$i]);
 		}
 	}
+	
+
 	ob_start();
 	cms_tpv_print_childs(0, $cms_tpv_view, $jstree_open, $post_type);
 	$json_data = ob_get_clean();
+
 	if (! $json_data) $json_data = '{}';
 	?>
 	<script type="text/javascript">
@@ -1019,7 +1023,7 @@ function cms_tpv_print_common_tree_stuff($post_type = "") {
 
 
 							<div>
-								<? _e("Status", "cms-tree-page-view") ?><br>
+                                                                <?php _e("Status", "cms-tree-page-view") ?><br>
 								<label><input type="radio" name="cms_tpv_add_status" value="draft" checked> <?php _e("Draft", "cms-tree-page-view") ?></label>
 								<label><input type="radio" name="cms_tpv_add_status" value="published"> <?php _e("Published", "cms-tree-page-view") ?></label>
 							</div>
@@ -1119,7 +1123,7 @@ function cms_tpv_get_pages($args = null) {
 
 	$get_posts_args = array(
 		"numberposts" => "-1",
-		"orderby" => "menu_order",
+		"orderby" => "menu_order title",
 		"order" => "ASC",
 		// "caller_get_posts" => 1, // get sticky posts in natural order (or so I understand it anyway). Deprecated since 3.1
 		"ignore_sticky_posts" => 1,
@@ -1159,6 +1163,8 @@ function cms_tpv_get_pages($args = null) {
 
 	// filter out pages for wpml, by applying same filter as get_pages does
 	// only run if wpml is available or always?
+        // Note: get_pages filter uses orderby comma separated and with the key sort_column
+        $get_posts_args["sort_column"] = str_replace(" ", ", ", $get_posts_args["orderby"]);
 	$pages = apply_filters('get_pages', $pages, $get_posts_args);
 	
 	return $pages;
@@ -1168,10 +1174,6 @@ function cms_tpv_get_pages($args = null) {
 function cms_tpv_parse_query($q) {
 }
 
-function cms_tpv_firedebug($var) {
-	global $firephp;
-	$firephp->log($var);
-}
 
 /**
  * Output JSON for the children of a node
@@ -1182,12 +1184,16 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 	$arrPages = cms_tpv_get_pages("parent=$pageID&view=$view&post_type=$post_type");
 
 	if ($arrPages) {
-	
+
 		global $current_screen;
 		$screen = convert_to_screen("edit");
-		$screen->post_type = null;
-		$post_type_object = get_post_type_object($post_type);
+		#return;	
+		
+		// If this is set to null then quick/bul edit stops working on posts (not pages)
+		// If did set it to null sometime. Can't remember why...
+		// $screen->post_type = null;
 
+		$post_type_object = get_post_type_object($post_type);
 		ob_start(); // some plugins, for example magic fields, return javascript and things here. we're not compatible with that, so just swallow any output
 		$posts_columns = get_column_headers($screen);
 		ob_get_clean();
@@ -1199,12 +1205,10 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 		// Translated post statuses
 		$post_statuses = get_post_statuses();
 
-		#cms_tpv_firedebug(timer_stop());
-		
+	
 		?>[<?php
 		for ($i=0, $pagesCount = sizeof($arrPages); $i<$pagesCount; $i++) {
 	
-			#cms_tpv_firedebug(timer_stop());
 			$onePage = $arrPages[$i];
 			$tmpPost = $post;
 			$post = $onePage;
@@ -1243,7 +1247,8 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 
 			// last edited by
 			setup_postdata($post);
-			$post_author = get_the_modified_author();
+
+			$post_author = cms_tpv_get_the_modified_author();
 			if (empty($post_author)) {
 				$post_author = __("Unknown user", 'cms-tree-page-view');
 			}
@@ -1725,6 +1730,10 @@ function bonny_d($var) {
 }
 
 
+/**
+ * Install function
+ * Called from hook register_activation_hook()
+ */
 function cms_tpv_install() {
 
 	// after upgrading/re-enabling the plugin, also re-enable the little please-donate-box
@@ -1732,8 +1741,7 @@ function cms_tpv_install() {
 	
 	// first install or pre custom posts version:
 	// make sure pages are enabled by default
-	// run on admin_init so most themes and plugins have time to setup their things. late prio too.
-	add_action("admin_init", "cms_tpv_setup_defaults", 999);
+	cms_tpv_setup_defaults();
 
 	// set to current version
 	update_option('cms_tpv_version', CMS_TPV_VERSION);
@@ -1751,7 +1759,7 @@ function cms_tpv_setup_defaults() {
 	#$version = 0; // uncomment to test default settings
 
 	if ($version <= 0) {
-
+		#error_log("tree: setup defaults, beacuse db version less than 0");
 		$options = array();
 
 		// Add pages to both dashboard and menu
@@ -1778,8 +1786,10 @@ function cms_tpv_setup_defaults() {
 
 }
 
-// when plugins are loaded, check if current plugin version is same as stored
-// if not = it's an upgrade. right?
+/**
+ * when plugins are loaded, check if current plugin version is same as stored
+ * if not = it's an upgrade. right?
+ */
 function cms_tpv_plugins_loaded($a) {
 	$installed_version = get_option('cms_tpv_version', 0);
 	#echo "installed_version: $installed_version";
@@ -1791,4 +1801,18 @@ function cms_tpv_plugins_loaded($a) {
 		update_option('cms_tpv_show_annoying_little_box', 1);
 	}
 
+}
+
+/**
+ * modified version of get_the_modified_author() that checks that user was retrieved before applying filters
+ * according to http://wordpress.org/support/topic/better-wp-security-conflict-1?replies=7 some users
+ * had problems when a user had been deleted
+ */
+function cms_tpv_get_the_modified_author() {
+	if ( $last_id = get_post_meta( get_post()->ID, '_edit_last', true) ) {
+		$last_user = get_userdata($last_id);
+		if( $last_user !== false ){
+			return apply_filters('the_modified_author', $last_user->display_name);
+		}
+	}
 }
