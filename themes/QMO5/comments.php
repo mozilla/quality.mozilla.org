@@ -7,8 +7,8 @@
   }
 
   $comment_count = get_comment_count($post->ID);
-  
-//    if ( $comment_count['approved'] > 0 ) 
+
+//    if ( $comment_count['approved'] > 0 )
 
   /* This variable is for alternating comment background */
   $oddcomment = 'alt';
@@ -19,7 +19,7 @@
 <?php if ( have_comments() || comments_open() ) : // If there are comments OR comments are open ?>
 <section id="comments">
   <header class="comments-head">
-    <h1><?php comments_number(__('No comments yet','qmo'), __('One comment','qmo'), __('% comments','qmo') );?></h1>
+    <h3><?php comments_number(__('No comments yet','qmo'), __('One comment','qmo'), __('% comments','qmo') );?></h3>
     <?php if ( comments_open() && $comment_count['approved'] > 3 ) { ?><a class="cmt-post" href="#respond"><?php _e('Post a comment','qmo'); ?></a><?php } ?>
   </header>
 
@@ -63,7 +63,7 @@
         <?php endif; ?>
           <li id="cmt-cmt">
             <script src="<?php bloginfo('stylesheet_directory'); ?>/js/jquery.textarea-expander.js" type="text/javascript"></script>
-            <label for="comment">Your comment</label> 
+            <label for="comment">Your comment</label>
             <textarea name="comment" id="comment" cols="50" rows="10" class="expand100-400"></textarea>
           </li>
           <li id="comment-submit"><button name="submit" type="submit" id="submit"><?php _e('Submit', 'qmo'); ?></button>
@@ -76,7 +76,7 @@
   </div><?php // end #respond ?>
 </section><?php // end #comments ?>
   <?php if (get_option('require_name_email')) : ?>
-  <script type="text/javascript" src="<?php bloginfo('stylesheet_directory'); ?>/fc-checkcomment.js"></script>
+  <script type="text/javascript" src="<?php bloginfo('stylesheet_directory'); ?>/js/fc-checkcomment.js"></script>
   <script type="text/javascript">jQuery("#comment-form").submit(function() { return fc_checkform(<?php if ($req) : echo "'req'"; endif; ?>); });</script>
   <?php endif; ?>
 <?php endif; // end if comments open ?>
