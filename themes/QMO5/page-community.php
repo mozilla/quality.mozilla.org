@@ -10,13 +10,6 @@ $twitter_cat = get_category_by_slug('twitter')->cat_ID;
 
 get_header(); ?>
 <section id="content-main" class="hfeed vcalendar" role="main">
-<?php if (!is_front_page()) : ?>
-<ul id="stream-filter">
-  <li><a class="<?php if (is_page('community')) : echo 'button on'; else : echo 'button'; endif; ?>" href="<?php echo get_permalink(get_page_by_path('community')->ID); ?>">All</a></li>
-  <li><a class="<?php if (is_category($synd_cat)) : echo 'button on'; else : echo 'button'; endif; ?>" href="<?php echo get_category_link($synd_cat); ?>">Blogs</a></li>
-  <li><a class="<?php if (is_category($twitter_cat)) : echo 'button on'; else : echo 'button'; endif; ?>" href="<?php echo get_category_link($twitter_cat); ?>">Tweets</a></li>
-</ul>
-<?php endif; ?>
 
 <?php $wp_query->query('paged='.$paged);
 if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>

@@ -164,7 +164,7 @@ legend { color: #2a7e00; font-size: 1.2em; }
 #tagline { color: #999; font-size: 2.33em; }
 #tagline strong { color: #369; }
 #home-head .teams-list { list-style: none; margin: 1em -3% 1em 0; font-size: 1.231em; line-height: 1.2; overflow: hidden; }
-#home-head .teams-list li { width: 14%; margin-right: 2.5%; float: left; text-align: center; }
+#home-head .teams-list li { width: 11%; margin: 0 1.6% 20px; float: left; text-align: center; }
 #home-head .teams-list a img { opacity: .99; max-width: 80%; text-decoration: none; display: block; margin: 0 auto .5em; }
 #home-head .teams-list a:hover img, #home-head ul.teams-list a:focus img, #home-head ul.teams-list a:active img { opacity: .85; }
 
