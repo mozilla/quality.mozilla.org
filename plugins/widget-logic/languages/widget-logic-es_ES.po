@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Widget Logic en español\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-20 11:32+0100\n"
-"PO-Revision-Date: 2012-12-20 11:32+0100\n"
+"POT-Creation-Date: 2013-01-07 20:56+0100\n"
+"PO-Revision-Date: 2013-01-07 21:08+0100\n"
 "Last-Translator: Eduardo Larequi <elarequi@gmail.com>\n"
 "Language-Team: PNTE <blogs@educacion.navarra.es>\n"
 "MIME-Version: 1.0\n"
@@ -96,8 +96,9 @@ msgstr "Permite cargar todas las opciones del plugin Widget Logic desde un fiche
 msgid "Select file for importing"
 msgstr "Seleccionar fichero para importar"
 
-#~ msgid "Widget logic"
-#~ msgstr "Condiciones del widget"
+#: widget_logic.php:239
+msgid "Widget logic:"
+msgstr "Condiciones del widget:"
 
 #~ msgid "Save"
 #~ msgstr "Guardar"

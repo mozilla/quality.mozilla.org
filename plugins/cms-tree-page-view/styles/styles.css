@@ -5,11 +5,14 @@
 }
 */
 
-@import url("https://secure.wordpress.com/i/noticons/noticons.css");
+/*
+Don't use this anymore since it's against the repository guidelines
+@import url("htt ps://secure.wordpress.com/i/noticons/noticons.css");
+*/
 
 .cms_tpv_wrapper {
 	z-index: 10;
-	margin-right: 250px;
+	/*margin-right: 250px;*/
 }
 
 .postbox .cms_tpv_wrapper {
@@ -112,7 +115,7 @@
 	display:inline-block;
 	margin:0 3px 0 0; padding:0;
 	width:16px; height:16px;
-	/* icon source => http://www.famfamfam.com/lab/icons/silk/  */
+	/* icon source => http ://www.famfamfam.com/lab/icons/silk/  */
 	background:transparent url(images/lock.png) center no-repeat;
 }
 
@@ -209,14 +212,14 @@
 	width: 16px;
 	height: 16px;
 	padding: 0 !important;
-	background: transparent url(https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/ui-darkness/images/ui-icons_cccccc_256x240.png) no-repeat -32px -194px;
+	background: transparent url(images/ui-icons_cccccc_256x240.png) no-repeat -32px -194px;
 	text-indent: -9999px;
 }
 #cms_tpv_dashboard_widget .cms_tree_view_search_form_reset {
 	top: 8px;
 }
 .cms_tree_view_search_form_reset:hover {
-	background: transparent url(https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/ui-lightness/images/ui-icons_222222_256x240.png) no-repeat -32px -194px;
+	background: transparent url(images/ui-icons_222222_256x240.png) no-repeat -32px -194px;
 }
 
 
@@ -451,7 +454,7 @@ ul.cms_tpv_action_add_doit_pages {
 	transition: all .25s ease-in-out; -webkit-transition: all .25s ease-in-out; -moz-transition: all .25s ease-in-out; -o-transition: all .25s ease-in-out; -ms-transition: all .25s ease-in-out;
 }
 .cms_tpv_action_add_doit_pages span:first-child {
-	background: transparent url(https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/ui-darkness/images/ui-icons_222222_256x240.png) no-repeat -2px -228px;
+	background: transparent url(images/ui-icons_222222_256x240.png) no-repeat -2px -228px;
 	margin-top: 7px;
 	margin-right: 3px;
 	float: left;
@@ -462,6 +465,12 @@ ul.cms_tpv_action_add_doit_pages {
 
 .cms_tpv_action_add_doit_pages li:last-child span:first-child {
 	visibility: hidden;
+}
+
+/* prevent long titles from overflowing the dashboard widget area */
+.cms_tpv_container.jstree a {
+	max-width: 90%;
+	overflow: hidden;
 }
 
 /*

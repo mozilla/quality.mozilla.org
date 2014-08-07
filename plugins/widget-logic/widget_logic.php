@@ -3,7 +3,7 @@
 Plugin Name:    Widget Logic
 Plugin URI:     http://wordpress.org/extend/plugins/widget-logic/
 Description:    Control widgets with WP's conditional tags is_home etc
-Version:        0.56
+Version:        0.57
 Author:         Alan Trewartha
 Author URI:     http://freakytrigger.co.uk/author/alan/
  
@@ -113,7 +113,7 @@ function widget_logic_expand_control()
 	// pop the widget id on the params array (as it's not in the main params so not provided to the callback)
 	foreach ( $wp_registered_widgets as $id => $widget )
 	{	// controll-less widgets need an empty function so the callback function is called.
-		if (!$wp_registered_widget_controls[$id])
+		if (!isset($wp_registered_widget_controls[$id]))
 			wp_register_widget_control($id,$widget['name'], 'widget_logic_empty_control');
 		$wp_registered_widget_controls[$id]['callback_wl_redirect']=$wp_registered_widget_controls[$id]['callback'];
 		$wp_registered_widget_controls[$id]['callback']='widget_logic_extra_control';
@@ -230,13 +230,15 @@ function widget_logic_extra_control()
 	$value = !empty( $wl_options[$id ] ) ? htmlspecialchars( stripslashes( $wl_options[$id ] ),ENT_QUOTES ) : '';
 
 	// dealing with multiple widgets - get the number. if -1 this is the 'template' for the admin interface
-	$number=$params[0]['number'];
-	if ($number==-1) {$number="__i__"; $value="";}
 	$id_disp=$id;
-	if (isset($number)) $id_disp=$wp_registered_widget_controls[$id]['id_base'].'-'.$number;
+	if (!empty($params) && isset($params[0]['number']))
+	{	$number=$params[0]['number'];
+		if ($number==-1) {$number="__i__"; $value="";}
+		$id_disp=$wp_registered_widget_controls[$id]['id_base'].'-'.$number;
+	}
 
 	// output our extra widget logic field
-	echo "<p><label for='".$id_disp."-widget_logic'>Widget logic: <textarea class='widefat' type='text' name='".$id_disp."-widget_logic' id='".$id_disp."-widget_logic' >".$value."</textarea></label></p>";
+	echo "<p><label for='".$id_disp."-widget_logic'>". __('Widget logic:','widget-logic'). " <textarea class='widefat' type='text' name='".$id_disp."-widget_logic' id='".$id_disp."-widget_logic' >".$value."</textarea></label></p>";
 }
 
 

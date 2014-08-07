@@ -4,7 +4,7 @@ Plugin Name: Restrict Categories
 Description: Restrict the categories that users can view, add, and edit in the admin panel.
 Author: Matthew Muro
 Author URI: http://matthewmuro.com
-Version: 2.6.2
+Version: 2.6.3
 */
 
 /*
@@ -42,9 +42,6 @@ class RestrictCategories{
 			// Build options and settings pages.
 			add_action( 'admin_init', array( &$this, 'init' ) );
 			add_action( 'admin_menu', array( &$this, 'add_admin' ) );
-
-			// Load admin scripts
-			add_action( 'load-settings_page_restrict-categories', array( &$this, 'admin_scripts' ) );
 
 			// Adds a Settings link to the Plugins page
 			add_filter( 'plugin_action_links', array( &$this, 'rc_plugin_action_links' ), 10, 2 );
@@ -259,19 +256,17 @@ class RestrictCategories{
 	public function get_logins(){
 		$users = array();
 
-		if ( function_exists( 'get_users' ) ){
-			$blogusers = get_users();
+		$args = array();
 
-			foreach ( $blogusers as $login ) {
-				$users[ $login->user_login ] = $login->user_nicename;
-			}
+		if ( isset( $_POST['rc-search-users'] ) ) {
+			$search = ( isset( $_REQUEST['rc-search'] ) && !empty( $_REQUEST['rc-search'] ) ) ? esc_html( $_POST['rc-search'] ) : '';
+			$args = array( 'search' => $search );
 		}
-		elseif ( function_exists( 'get_users_of_blog' ) ){
-			$blogusers = get_users_of_blog();
 
-			foreach ( $blogusers as $login ) {
-				$users[ $login->user_login ] = $login->user_id;
-			}
+		$blogusers = get_users( $args );
+
+		foreach ( $blogusers as $login ) {
+			$users[ $login->user_login ] = $login->user_nicename;
 		}
 
 		return $users;
@@ -328,7 +323,10 @@ class RestrictCategories{
 	 * @uses add_options_page() Creates a menu item under the Settings menu.
 	 */
 	public function add_admin() {
-		add_options_page( __('Restrict Categories', 'restrict-categories'), __('Restrict Categories', 'restrict-categories'), 'manage_categories', 'restrict-categories', array( &$this, 'admin' ) );
+		$current_page = add_options_page( __('Restrict Categories', 'restrict-categories'), __('Restrict Categories', 'restrict-categories'), 'manage_categories', 'restrict-categories', array( &$this, 'admin' ) );
+
+		// Load admin scripts
+		add_action( "load-$current_page", array( &$this, 'admin_scripts' ) );
 	}
 
 	/**
@@ -341,8 +339,6 @@ class RestrictCategories{
 	 * @uses wp_list_categories() Displays a list of categories
 	 */
 	public function admin() {
-		$rc_options       = $this->populate_opts();
-		$rc_user_options  = $this->populate_user_opts();
 
 		// Default main tab is Roles
 		$tab = 'roles';
@@ -357,43 +353,70 @@ class RestrictCategories{
 	?>
 
 		<div class="wrap">
-			<?php screen_icon( 'options-general' ); ?>
-			<h2><?php _e('Restrict Categories', 'restrict-categories'); ?></h2>
+			<h2>
+			<?php
+				_e('Restrict Categories', 'restrict-categories');
+
+				// If searched, output the query
+				if ( isset( $_REQUEST['rc-search'] ) && !empty( $_REQUEST['rc-search'] ) ) {
+					echo '<span class="subtitle">' . sprintf( __( 'Search results for "%s"' , 'restrict-categories'), $_REQUEST['rc-search'] ) . '</span>';
+					echo sprintf( '<span class="subtitle"><a href="%1$s">%2$s</a></span>', $users_tab, __( 'View All Users', 'restrict-categories' ) );
+				}
+			?>
+			</h2>
+
             <h2 class="nav-tab-wrapper">
             	<a href="<?php echo $roles_tab; ?>" class="nav-tab <?php echo ( $tab == 'roles' ) ? 'nav-tab-active' : ''; ?>"><?php _e( 'Roles', 'restrict-categories' ); ?></a>
                 <a href="<?php echo $users_tab; ?>" class="nav-tab <?php echo ( $tab == 'users' ) ? 'nav-tab-active' : ''; ?>"><?php _e( 'Users', 'restrict-categories' ); ?></a>
             </h2>
 
-			<form method="post" action="options.php">
 			<?php
                 // Create a new instance of our user/roles boxes class
                 $boxes = new RestrictCats_User_Role_Boxes();
 
                 if ( $tab == 'roles' ) :
-            ?>
-                <fieldset>
-                    <?php
-                        settings_fields( 'RestrictCats_options_group' );
 
-                        // Create boxes for Roles
-                        $boxes->start_box( get_option( 'RestrictCats_options' ), $rc_options, 'RestrictCats_options' );
-                    ?>
-                </fieldset>
+                	$rc_options = $this->populate_opts();
+
+            ?>
+            	<form method="post" action="options.php">
+	                <fieldset>
+	                    <?php
+	                    	settings_fields( 'RestrictCats_options_group' );
+
+	                        // Create boxes for Roles
+	                        $boxes->start_box( get_option( 'RestrictCats_options' ), $rc_options, 'RestrictCats_options' );
+	                    ?>
+	                </fieldset>
+	                <?php submit_button(); ?>
+            	</form>
 			<?php
 				elseif ( $tab == 'users' ) :
-					settings_fields( 'RestrictCats_user_options_group' );
-            ?>
-                <fieldset>
-                    <p>Selecting categories for a user will <em>override</em> the categories you have chosen for that user's role.</p>
-                    <?php
-                        // Create boxes for Users
-                        $boxes->start_box( get_option( 'RestrictCats_user_options' ), $rc_user_options, 'RestrictCats_user_options' );
-                    ?>
-                </fieldset>
-                <?php endif; ?>
 
-                <?php submit_button(); ?>
-			</form>
+					$rc_user_options = $this->populate_user_opts();
+            ?>
+            	<form method="post" action="options-general.php?page=restrict-categories&type=users">
+            		<fieldset>
+						<p style="float: left; margin-top:8px;">Selecting categories for a user will <em>override</em> the categories you have chosen for that user's role.</p>
+						<p style="float:right; margin-top:8px;">
+							<input type="search" id="rc-search-users" name="rc-search" value="">
+							<?php submit_button( __( 'Search Users', 'restrict-categories' ), 'secondary', 'rc-search-users', false ); ?>
+						</p>
+            		</fieldset>
+				</form>
+
+				<form method="post" action="options.php">
+	                <fieldset>
+	                    <?php
+	                    	settings_fields( 'RestrictCats_user_options_group' );
+
+	                        // Create boxes for Users
+	                        $boxes->start_box( get_option( 'RestrictCats_user_options' ), $rc_user_options, 'RestrictCats_user_options' );
+	                    ?>
+	                </fieldset>
+	                <?php submit_button(); ?>
+                </form>
+                <?php endif; ?>
 
             <h3><?php _e('Reset to Default Settings', 'restrict-categories'); ?></h3>
 			<p><?php _e('This option will reset all changes you have made to the default configuration.  <strong>You cannot undo this process</strong>.', 'restrict-categories'); ?></p>

@@ -3,7 +3,7 @@
 Plugin Name: CMS Tree Page View
 Plugin URI: http://eskapism.se/code-playground/cms-tree-page-view/
 Description: Adds a CMS-like tree view of all your pages, like the view often found in a page-focused CMS. Use the tree view to edit, view, add pages and search pages (very useful if you have many pages). And with drag and drop you can rearrange the order of your pages. Page management won't get any easier than this!
-Version: 1.2.17
+Version: 1.2.28
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -27,7 +27,7 @@ License: GPL2
 
 #require("functions.php");
 
-define( "CMS_TPV_VERSION", "1.2.17");
+define( "CMS_TPV_VERSION", "1.2.28");
 define( "CMS_TPV_NAME", "CMS Tree Page View");
 
 require(dirname(__FILE__) . "/functions.php");
@@ -68,13 +68,15 @@ add_action('wp_ajax_cms_tpv_add_page', 'cms_tpv_add_page');
 add_action('wp_ajax_cms_tpv_add_pages', 'cms_tpv_add_pages');
 
 // activation
+define( "CMS_TPV_MOVE_PERMISSION", "move_cms_tree_view_page");
 register_activation_hook( WP_PLUGIN_DIR . "/cms-tree-page-view/index.php" , 'cms_tpv_install' );
+register_uninstall_hook( WP_PLUGIN_DIR . "/cms-tree-page-view/index.php" , 'cms_tpv_uninstall' );
 
 // To test activation hook, uncomment function below
 // cms_tpv_install();
 
-// catch upgrade
-add_action('plugins_loaded', 'cms_tpv_plugins_loaded' , 1);
+// catch upgrade. moved from plugins_loaded to init to be able to use wp_roles
+add_action('init', 'cms_tpv_plugins_loaded' , 1);
 
 // hook onto query
 #add_action( 'parse_query', 'cms_tpv_parse_query' );

@@ -2,9 +2,9 @@
 Contributors: mmuro
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=G87A9UN9CLPH4&lc=US&item_name=Restrict%20Categories&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Tags: restrict, admin, administration, cms, categories, category
-Requires at least: 3.0
-Tested up to: 3.6
-Stable tag: 2.6.2
+Requires at least: 3.1
+Tested up to: 3.8.1
+Stable tag: 2.6.3
 
 Restrict the categories that users can view, add, and edit in the admin panel.
 
@@ -51,7 +51,12 @@ In other words, Restrict Categories allows you complete control over groups of u
 
 == Changelog ==
 
-**Version 2.6.2 - Aug, 14, 2013**
+**Version 2.6.3 - Jan 28, 2013**
+
+* Add "Search Users" feature to Users tab
+* Remove check for get_users_of_blog, which was deprecated in WordPress 3.1.
+
+**Version 2.6.2 - Aug 14, 2013**
 
 * Fix notices in PHP 5.4
 
@@ -66,7 +71,7 @@ In other words, Restrict Categories allows you complete control over groups of u
 * Fix bug where users may see all categories in certain cases
 * Fix PHP notices
 
-**Version 2.5 - Sep, 13, 2012**
+**Version 2.5 - Sep 13, 2012**
 
 * Fix bug for saving with pagination
 
@@ -157,6 +162,9 @@ In other words, Restrict Categories allows you complete control over groups of u
 * Plugin launch!
 
 == Upgrade Notice ==
+
+= 2.6.3
+Add "Search Users" feature to Users tab
 
 = 2.5 =
 Bug fix for saving with pagination

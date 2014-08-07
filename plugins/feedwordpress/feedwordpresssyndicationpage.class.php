@@ -649,17 +649,48 @@ class FeedWordPressSyndicationPage extends FeedWordPressAdminPage {
 
 	function bleg_box ($page, $box = NULL) {
 		?>
+<script type="text/javascript">
+/* <![CDATA[ */
+    (function() {
+        var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+        t.parentNode.insertBefore(s, t);
+    })();
+/* ]]> */</script>
+
 <div class="donation-form">
-<h4>Keep FeedWordPress improving</h4>
+<h4>Consider a Donation to FeedWordPress</h4>
 <form action="https://www.paypal.com/cgi-bin/webscr" accept-charset="UTF-8" method="post"><div>
 <p><a href="http://feedwordpress.radgeek.com/">FeedWordPress</a> makes syndication
 simple and empowers you to stream content from all over the web into your
-WordPress hub. That's got to be worth a few lattes. If you're finding FWP useful,
+WordPress hub. If you&#8217;re finding FWP useful,
 <a href="http://feedwordpress.radgeek.com/donate/">a modest gift</a>
 is the best way to support steady progress on development, enhancements,
 support, and documentation.</p>
-<div class="donate">
-<input type="hidden" name="business" value="commerce@radgeek.com"  />
+
+<div class="donate" style="vertical-align: middle">
+
+<div id="flattr-paypal">
+
+<div style="display: inline-block; vertical-align: middle; ">
+<a class="FlattrButton" style="display:none;"   href="http://feedwordpress.radgeek.com/"></a>
+<noscript>
+<a href="http://flattr.com/thing/1380856/FeedWordPress" target="_blank"><img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a>
+</noscript>
+<div>via Flattr</div>
+
+</div> <!-- style="display: inline-block" -->
+
+<div class="hovered-component" style="display: inline-block; vertical-align: bottom">
+<a href="bitcoin:<?php print esc_attr(FEEDWORDPRESS_BLEG_BTC); ?>"><img src="<?php print esc_url(WP_PLUGIN_URL.'/'.FeedWordPress::path('btc-qr-64px.png')); ?>" alt="Donate" /></a>
+<div><a href="bitcoin:<?php print esc_attr(FEEDWORDPRESS_BLEG_BTC); ?>">via bitcoin<span class="hover-on pop-over" style="background-color: #ddffdd; padding: 5px; color: black; border-radius: 5px;">bitcoin:<?php print esc_html(FEEDWORDPRESS_BLEG_BTC); ?></span></a></div>
+</div>
+
+<div style="display: inline-block; vertical-align: bottom">
+<input type="image" name="submit" src="<?php print esc_url(WP_PLUGIN_URL.'/'.FeedWordPress::path('paypal-donation-64px.png')); ?>" alt="Donate through PayPal" />
+<input type="hidden" name="business" value="distro.to.feedback@radgeek.com"  />
 <input type="hidden" name="cmd" value="_xclick"  />
 <input type="hidden" name="item_name" value="FeedWordPress donation"  />
 <input type="hidden" name="no_shipping" value="1"  />
@@ -667,9 +698,14 @@ support, and documentation.</p>
 <input type="hidden" name="currency_code" value="USD" />
 <input type="hidden" name="notify_url" value="http://feedwordpress.radgeek.com/ipn/donation"  />
 <input type="hidden" name="custom" value="1"  />
-<input type="image" name="submit" src="https://www.paypal.com/en_GB/i/btn/btn_donate_SM.gif" alt="Donate through PayPal" />
-</div>
-</div></form>
+<div>via PayPal</div>
+</div> <!-- style="display: inline-block" -->
+
+</div> <!-- id="flattr-paypal" -->
+</div> <!-- class="donate" -->
+
+</div> <!-- class="donation-form" -->
+</form>
 
 <p>You can make a gift online (or
 <a href="http://feedwordpress.radgeek.com/donation">set up an automatic
@@ -1023,10 +1059,7 @@ function fwp_dashboard_update_if_requested ($object) {
 		echo "</ul>\n";
 
 		if (!is_null($tdelta)) :
-			$mesg = array();
-			if (isset($delta['new'])) : $mesg[] = ' '.$tdelta['new'].' new posts were syndicated'; endif;
-			if (isset($delta['updated'])) : $mesg[] = ' '.$tdelta['updated'].' existing posts were updated'; endif;
-			echo "<p>Update complete.".implode(' and', $mesg)."</p>";
+			echo "<p><strong>Update complete.</strong>".fwp_update_set_results_message($delta)."</p>";
 			echo "\n"; flush();
 		endif;
 		echo "</div> <!-- class=\"updated\" -->\n";
