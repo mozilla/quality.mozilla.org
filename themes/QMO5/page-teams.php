@@ -10,7 +10,7 @@
       </p>
       <?php else : ?>
       <p class="crumbs"><a href="<?php echo get_permalink($post->post_parent); ?>" title="<?php _e('Return to &ldquo;'.get_the_title($post->post_parent).'&rdquo;','qmo'); ?>">&larr; <?php echo get_the_title($post->post_parent); ?></a></p>
-      <?php endif; ?>    
+      <?php endif; ?>
     <?php endif;?>
 
     <h1 class="section-title"><?php the_title(); ?></h1>
@@ -18,7 +18,7 @@
   <?php endwhile; ?>
 
     <?php $teams_page = get_page_by_path('teams')->ID;
-    $teams = new WP_Query(array('post_type' => 'page','post_status' => 'publish','post_parent' => $teams_page, 'order' => 'ASC', 'orderby' => 'menu_order'));
+    $teams = new WP_Query(array('post_type' => 'page','post_status' => 'publish','post_parent' => $teams_page, 'posts_per_page' => -1, 'order' => 'ASC', 'orderby' => 'menu_order'));
     if ( $teams->have_posts() ) : ?>
       <div id="teams-list">
       <?php while ( $teams->have_posts() ) : $post = $teams->next_post(); ?>

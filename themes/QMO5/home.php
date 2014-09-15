@@ -15,7 +15,7 @@ get_header(); ?>
 
 
     <?php $teams_page = get_page_by_path('teams')->ID;
-    $teams = new WP_Query(array('post_type' => 'page','post_status' => 'publish','post_parent' => $teams_page, 'order' => 'ASC', 'orderby' => 'menu_order'));
+    $teams = new WP_Query(array('post_type' => 'page','post_status' => 'publish','post_parent' => $teams_page, 'posts_per_page' => -1, 'order' => 'ASC', 'orderby' => 'menu_order'));
     if ( $teams->have_posts() ) : ?>
       <ul class="teams-list">
       <?php while ( $teams->have_posts() ) : $post = $teams->next_post(); ?>
@@ -46,7 +46,7 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
   <?php if ( ( function_exists('is_event') && is_event() ) || in_category('events') ) : ?>
     <div class="entry-meta">
       <p class="event-flag">Event</p>
-      <p class="vcard">Posted by <a class="fn url author" title="See all <?php the_author_posts() ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a> 
+      <p class="vcard">Posted by <a class="fn url author" title="See all <?php the_author_posts() ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a>
       on <?php the_time(get_option('date_format')); ?> at <time class="updated" pubdate datetime="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></time>.
       <?php if ( current_user_can( 'edit_page', $post->ID ) ) : ?><span class="edit"><?php edit_post_link('Edit', '', ''); ?></span><?php endif; ?>
       </p>
@@ -63,7 +63,7 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
         <span class="posted-year"><?php the_time('Y'); ?></span>
         <time class="updated" pubdate datetime="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></time>
       </p>
-      <p class="vcard"><?php _e('Posted by','qmo') ?> <a class="fn url author" title="See all <?php the_author_posts(); ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a> 
+      <p class="vcard"><?php _e('Posted by','qmo') ?> <a class="fn url author" title="See all <?php the_author_posts(); ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a>
       in <?php the_category(', ', ''); ?>.
       <?php if ( current_user_can( 'edit_page', $post->ID ) ) : ?><span class="edit"><?php edit_post_link(__('Edit','qmo'), '', ''); ?></span><?php endif; ?>
       </p>

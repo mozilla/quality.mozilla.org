@@ -11,11 +11,11 @@ $twitter_cat = get_category_by_slug('twitter')->cat_ID;
 get_header(); ?>
 <section id="content-main" class="hfeed vcalendar" role="main">
 
-<?php $wp_query->query('paged='.$paged);
+<?php $wp_query->query('posts_per_page=10&paged='.$paged);
 if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
 
-  <article id="post-<?php the_ID(); ?>" 
-    <?php if ( function_exists('is_event') && is_event() ) : post_class('vevent'); 
+  <article id="post-<?php the_ID(); ?>"
+    <?php if ( function_exists('is_event') && is_event() ) : post_class('vevent');
       elseif (in_category('twitter')) : post_class('tweet');
       elseif ( function_exists('is_syndicated') && is_syndicated() ) : post_class('syndicated');
       else : post_class(); endif; ?> role="article">
@@ -25,7 +25,7 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
   <?php if ( ( function_exists('is_event') && is_event() ) || in_category('events') ) : ?>
     <div class="entry-meta">
       <p class="event-flag">Event</p>
-      <p class="vcard">Posted by <a class="fn url author" title="See all <?php the_author_posts() ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a> 
+      <p class="vcard">Posted by <a class="fn url author" title="See all <?php the_author_posts() ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a>
       on <?php the_time($date_format); ?> at <time class="updated" pubdate datetime="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></time>.
       <?php if ( current_user_can( 'edit_page', $post->ID ) ) : ?><span class="edit"><?php edit_post_link('Edit', '', ''); ?></span><?php endif; ?>
       </p>
@@ -54,7 +54,7 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
         <span class="posted-year"><?php the_time('Y'); ?></span>
         <time class="updated" pubdate datetime="<?php the_time('Y-m-d\TH:i:sP'); ?>"><?php the_time(); ?></time>
       </p>
-      <p class="vcard"><?php _e('Posted by','qmo') ?> <a class="fn url author" title="See all <?php the_author_posts(); ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a> 
+      <p class="vcard"><?php _e('Posted by','qmo') ?> <a class="fn url author" title="See all <?php the_author_posts(); ?> posts by <?php the_author(); ?>" href="<?php echo get_author_posts_url($authordata->ID, $authordata->user_nicename); ?>"><?php the_author(); ?></a>
       <?php if(!in_category('community')) : ?>in <?php the_category(', ', ''); ?><?php endif; ?>
       <?php if ( current_user_can( 'edit_page', $post->ID ) ) : ?><span class="edit"><?php edit_post_link(__('Edit','qmo'), '', ''); ?></span><?php endif; ?>
       </p>
@@ -93,7 +93,7 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
   </article><!-- /post -->
 
   <?php endwhile; ?>
-  
+
     <?php if (fc_show_posts_nav()) : ?>
       <?php if (function_exists('fc_pagination') ) : fc_pagination(); else: ?>
         <ul class="nav-paging">
@@ -102,7 +102,7 @@ if (have_posts()) : while (have_posts()) : the_post(); // The Loop ?>
         </ul>
       <?php endif; ?>
     <?php endif; ?>
-  
+
   <?php else : // if there are no posts ?>
 
   <h1 class="section-title"><?php _e('Sorry, there&#8217;s nothing to see here.','qmo'); ?></h1>
