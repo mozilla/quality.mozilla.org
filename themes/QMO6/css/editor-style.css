@@ -1,0 +1,208 @@
+/*--------------------------------------------------------------------*
+  @Fonts
+*/
+@font-face {
+  font-family: 'Open Sans';
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Regular-webfont.eot');
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Regular-webfont.woff') format('woff'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Regular-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Italic-webfont.eot');
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Italic-webfont.eot?#iefix') format('embedded-opentype'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Italic-webfont.woff') format('woff'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Italic-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Semibold-webfont.eot');
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Semibold-webfont.eot?#iefix') format('embedded-opentype'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Semibold-webfont.woff') format('woff'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Semibold-webfont.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-SemiboldItalic-webfont.eot');
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-SemiboldItalic-webfont.eot?#iefix') format('embedded-opentype'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-SemiboldItalic-webfont.woff') format('woff'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-SemiboldItalic-webfont.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Open Sans Light';
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Light-webfont.eot');
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Light-webfont.eot?#iefix') format('embedded-opentype'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Light-webfont.woff') format('woff'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Light-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans Light';
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-LightItalic-webfont.eot');
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-LightItalic-webfont.eot?#iefix') format('embedded-opentype'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-LightItalic-webfont.woff') format('woff'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-LightItalic-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Open Sans Light';
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Regular-webfont.eot');
+  src: url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Regular-webfont.woff') format('woff'),
+       url('//mozorg.cdn.mozilla.net/media/fonts/OpenSans-Regular-webfont.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+
+/* @Reset defaults *********/
+header, hgroup, nav, section, article, aside, footer, main { display: block; }
+html, body, form, fieldset, legend, h1, h2, h3, h4, h5, h6, dd { margin: 0; padding: 0; }
+p, pre, blockquote, ul, ol, dl, table { margin: 0 0 1.5em; padding: 0; }
+blockquote:before, blockquote:after, q:before, q:after { content: ""; }
+blockquote, q { quotes: "" ""; }
+table { border-collapse: collapse; border-spacing: 0; }
+fieldset { border: 0; }
+form ul, form ol { list-style: none; margin: 0 0 1.5em; }
+input, select, textarea { font-family: inherit; font-size: 100%; }
+.dtstart, .dtend, .published, .updated { border: 0; }
+img, video, object { max-width: 100%; height: auto; }
+
+html .mceContentBody {
+  max-width: 620px;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 100%;
+  line-height: 1.5;
+  color: #333;
+  word-wrap: break-word;
+  margin: 20px;
+  background: #f9fcff;
+  -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+  font-variant-ligatures: common-ligatures;
+  text-rendering: optimizeLegibility;
+  -webkit-font-feature-settings: 'liga', 'dlig';
+     -moz-font-feature-settings: 'liga', 'dlig';
+          font-feature-settings: 'liga', 'dlig';
+}
+
+/*--------------------------------------------------------------------*
+  @Headings
+*/
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 .25em;
+  color: #484848;
+  line-height: 1.05;
+  font-family: 'Open Sans Light', sans-serif;
+  font-weight: normal;
+  letter-spacing: -.05em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .75);
+}
+
+h1 {
+  font-size: 48px;
+  font-size: 3rem;
+}
+
+h2 {
+  font-size: 32px;
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 28px;
+  font-size: 1.75rem;
+}
+
+h4 {
+  font-size: 24px;
+  font-size: 1.5rem;
+}
+
+h5 {
+  font-size: 16px;
+  font-size: 1rem;
+}
+
+h6 {
+  font-size: 14px;
+  font-size: .875rem;
+}
+
+/*--------------------------------------------------------------------*
+  @Links
+*/
+a:link {
+  color: #2983c8;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #628cad;
+}
+
+a:hover,
+a:focus,
+a:active {
+  color: #20679e;
+  text-decoration: underline;
+}
+
+/* @Content *********/
+ul, ol { margin: 0 0 1.5em 24px; }
+li ul, li ol { margin: 0 0 0 24px; }
+blockquote {   font-style: italic; padding: 0 24px; }
+blockquote em, blockquote i, blockquote cite { font-style: normal; }
+dt { font-style: italic; }
+dd { padding-left: 24px; }
+table { border-collapse: collapse; border-width: 1px 1px 0; border-style: solid; border-color: #ddd; }
+tr:nth-child(even) { background-color: rgba(200,200,200,.1); }
+th, td { border-bottom: 1px solid #ddd; padding: 0 6px; color: #3c3c3c; font-size: inherit; font-weight: inherit; }
+thead th { font-size: .857em; text-align: left; font-weight: normal; background-color: rgba(200,200,200,.2); }
+tbody th { text-align: left; }
+pre { overflow: auto; }
+code { font-size: .857em; }
+hr {
+  clear: both;
+  margin: 30px auto;
+  color: transparent;
+  background: transparent;
+  border-top: 1px dotted rgba(0,0,0,.25);
+}
+img { background-color: #fff; border: 10px solid #fff; box-shadow: 0 1px 1px rgba(0,0,0,.1); }
+
+.wp-smiley { margin: 0; border: 0; background: transparent; }
+.alignleft { float: left; margin: 0 24px .5em 0; }
+a .alignleft { margin: 0 24px .5em 0; }
+.alignright { float: right; margin: 0 0 .5em 24px; }
+a .alignright { margin: 0 0 .5em 24px; }
+.aligncenter { display: block; margin: 0 auto 1.5em; }
+
+.wp-caption { margin-bottom: .75em; background: #fff; box-shadow: 0 1px 1px rgba(0,0,0,.1); padding: 10px; }
+.wp-caption.aligncenter { clear: both; margin: 0 auto 1.5em; }
+.wp-caption img { display: block; margin: 0; border: 0; max-width: 100%; box-shadow: none; }
+.wp-caption.aligncenter img { margin: 0 auto; }
+.wp-caption .wp-caption-text { margin: .75em 5px 0; font-size: .923em; line-height: 1.2; font-style: italic; text-align: center; }
+
+::-moz-selection { background: #6bd7f3; }
+::selection { background: #6bd7f3; }
