@@ -1,42 +1,39 @@
 <?php
 /*
- Plugin Name:  The Events Calendar
- Plugin URI: http://wordpress.org/extend/plugins/the-events-calendar/
- Description:  The Events Calendar plugin enables you to rapidly create and manage events using the post editor. Features include optional Eventbrite integration, Google Maps integration as well as default calendar grid and list templates for streamlined one click installation. When updating The Events Calendar, if EventBrite for The Events Calendar is being used, the two plugins must be updated together. Requires PHP 5.1 or above. 
- Version: 1.6.5
- Author: Shane & Peter, Inc.
- Author URI: http://www.shaneandpeter.com/
- Text Domain: the-events-calendar
- */
+Plugin Name: The Events Calendar
+Description: The Events Calendar is a carefully crafted, extensible plugin that lets you easily share your events. Beautiful. Solid. Awesome.
+Version: 3.8.1
+Author: Modern Tribe, Inc.
+Author URI: http://m.tri.be/1x
+Text Domain: tribe-events-calendar
+License: GPLv2 or later
+*/
 
+/*
+Copyright 2009-2012 by Modern Tribe Inc and the contributors
 
-register_activation_hook(__FILE__, 'sp_the_events_calendar_activate');
-add_action( 'admin_head', 'sp_the_events_calendar_version_check' );
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-function sp_the_events_calendar_version_check() {
-  if ( version_compare( PHP_VERSION, "5.1", "<") ) { 
-    echo "<div class='error'>The Events Calendar requires PHP 5.1 or greater.  Please de-activate The Events Calendar.</div>";
-    }   
-}
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-function sp_the_events_calendar_activate() {
-    if ( version_compare( PHP_VERSION, "5.1", "<") ) { 
-        trigger_error('', E_USER_ERROR);
-    } else {
-		require_once(dirname(__FILE__) . "/the-events-calendar.class.php");
-		require_once(dirname(__FILE__) . "/the-events-calendar-exception.class.php");
-		require_once(dirname(__FILE__) . "/events-calendar-widget.class.php");
-		require_once(dirname(__FILE__) . "/events-list-widget.class.php");
-		require_once(dirname(__FILE__) . "/template-tags.php");
-		global $spEvents;
-		$spEvents->on_activate();
-    }   
-}
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 
-if (version_compare(phpversion(), "5.1", ">=")) {
-	require_once(dirname(__FILE__) . "/the-events-calendar.class.php");
-	require_once(dirname(__FILE__) . "/the-events-calendar-exception.class.php");
-	require_once(dirname(__FILE__) . "/events-calendar-widget.class.php");
-	require_once(dirname(__FILE__) . "/events-list-widget.class.php");
-	require_once(dirname(__FILE__) . "/template-tags.php");
+require_once( dirname( __FILE__ ) . '/lib/the-events-calendar.class.php' );
+
+TribeEvents::instance();
+
+register_activation_hook( dirname( __FILE__ ) . '/lib/the-events-calendar.class.php', array( 'TribeEvents', 'flushRewriteRules' ) );
+register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
+
+if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
+	register_deactivation_hook( __FILE__, array( 'TribeEvents', 'resetActivationMessage' ) );
 }
