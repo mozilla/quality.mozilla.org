@@ -477,7 +477,6 @@ a:active {
   @Author @Bio
 */
 .author-bio .widget-title {
-  padding: 93px 0 0;
   position: relative;
 }
 .author-bio .author {
@@ -488,9 +487,8 @@ a:active {
   -webkit-transition: all .1s linear;
      -moz-transition: all .1s linear;
           transition: all .1s linear;
-  position: absolute;
-  top: -1px;
-  left: -1px;
+  float: left;
+  margin: -1px 20px 10px -1px;
 }
 .author-bio .author:hover .avatar,
 .author-bio .author:focus .avatar,
@@ -1366,7 +1364,7 @@ input:-moz-placeholder {
   top: 0;
   padding: 5px;
   background: #fff;
-  border: 1px solid #2983c8;
+  box-shadow: 0 1px 1px rgba(0,0,0,.1);
 }
 #teams-list .team-info {
   width: 68%;

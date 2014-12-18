@@ -37,7 +37,7 @@ function qmo_setup() {
   // Set default image sizes
   update_option('thumbnail_size_w', 160);
   update_option('thumbnail_size_h', 160);
-  update_option('medium_size_w', 252);
+  update_option('medium_size_w', 250);
   update_option('medium_size_h', 0);
   update_option('large_size_w', 600);
   update_option('large_size_h', 0);
@@ -217,6 +217,7 @@ function fc_add_mimes( $mimes=array() ) {
   $mimes['mp4'] = 'video/mp4';
   $mimes['m4v'] = 'video/mp4';
   $mimes['flv'] = 'video/x-flv';
+  $mimes['svg'] = 'image/svg+xml';
   return $mimes;
 }
 add_filter('upload_mimes', 'fc_add_mimes');
@@ -549,4 +550,5 @@ function fc_is_subpage() {
     return false;
   };
 };
+
 ?>
