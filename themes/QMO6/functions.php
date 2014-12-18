@@ -34,6 +34,9 @@ function qmo_setup() {
   // This theme uses Featured Images (also known as post thumbnails)
   add_theme_support( 'post-thumbnails' );
 
+  // Include default feeds in head
+  add_theme_support( 'automatic-feed-links' );
+
   // Set default image sizes
   update_option('thumbnail_size_w', 160);
   update_option('thumbnail_size_h', 160);
@@ -41,6 +44,9 @@ function qmo_setup() {
   update_option('medium_size_h', 0);
   update_option('large_size_w', 600);
   update_option('large_size_h', 0);
+
+  // Thumbnail size for small team icons
+  add_image_size( 'team-icon-small', 80, 80, true );
 
   // Disable the header text and color options
   define( 'NO_HEADER_TEXT', true );
@@ -54,6 +60,7 @@ endif; // qmo_setup
  * Tell WordPress to run qmo_setup() when the 'after_setup_theme' hook is run.
  */
 add_action( 'after_setup_theme', 'qmo_setup' );
+
 
 /*********
  * Register and define the Social Sharing and Hide Authors settings
