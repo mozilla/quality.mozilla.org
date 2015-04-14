@@ -476,6 +476,9 @@ a:active {
 /*--------------------------------------------------------------------*
   @Author @Bio
 */
+.author-bio {
+  min-height: 70px;
+}
 .author-bio .widget-title {
   position: relative;
 }
