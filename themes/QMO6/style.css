@@ -1626,7 +1626,7 @@ input:-moz-placeholder {
     padding: 5px;
     background: #fff;
     border-radius: 5px;
-    z-index: 100;
+    z-index: 199;
   }
   #nav-main-list li {
     display: block;
