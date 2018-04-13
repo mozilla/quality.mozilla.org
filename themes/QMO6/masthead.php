@@ -14,5 +14,6 @@
 
   <?php wp_nav_menu( array( 'theme_location' => 'main', 'container' => 'nav', 'container_id' => 'nav-main', 'fallback_cb' => 'false', 'items_wrap' => '<span class="toggle">Menu</span><ul id="nav-main-list">%3$s</ul>' ) ); ?>
 
-  <a href="https://www.mozilla.org/" id="tabzilla">Mozilla</a>
+  <a class="mozilla-logo" href="https://www.mozilla.org/" rel="external">Mozilla</a>
+
 </header><!-- #masthead -->

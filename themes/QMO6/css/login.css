@@ -1,9 +1,7 @@
 @font-face {
   font-family: "Open Sans";
-  src: url("//www.mozilla.org/media/fonts/OpenSans-Regular-webfont.eot");
-  src: url("//www.mozilla.org/media/fonts/OpenSans-Regular-webfont.eot?#iefix") format("embedded-opentype"),
-       url("//www.mozilla.org/media/fonts/OpenSans-Regular-webfont.woff") format("woff"),
-       url("//www.mozilla.org/media/fonts/OpenSans-Regular-webfont.ttf") format("truetype");
+  src: url("../fonts/opensans-regular.woff2") format("woff2"),
+       url("../fonts/opensans-regular.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }

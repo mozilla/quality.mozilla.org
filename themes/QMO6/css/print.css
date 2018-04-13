@@ -5,48 +5,42 @@ header, hgroup, nav, section, article, aside, footer { display: block; }
 /* Light */
 @font-face {
   font-family: "Open Sans Light";
-  src: url("//www.mozilla.org/media/fonts/OpenSans-Light-webfont.eot");
-  src: url("//www.mozilla.org/media/fonts/OpenSans-Light-webfont.eot?#iefix") format("embedded-opentype"),
-       url("//www.mozilla.org/media/fonts/OpenSans-Light-webfont.woff") format("woff"),
-       url("//www.mozilla.org/media/fonts/OpenSans-Light-webfont.ttf") format("truetype");
+  src: url("fonts/opensans-light.woff2") format("woff2"),
+       url("fonts/opensans-light.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Open Sans Light";
-  src: url("//www.mozilla.org/media/fonts/OpenSans-LightItalic-webfont.eot");
-  src: url("//www.mozilla.org/media/fonts/OpenSans-LightItalic-webfont.eot?#iefix") format("embedded-opentype"),
-       url("//www.mozilla.org/media/fonts/OpenSans-LightItalic-webfont.woff") format("woff"),
-       url("//www.mozilla.org/media/fonts/OpenSans-LightItalic-webfont.ttf") format("truetype");
+  src: url("fonts/opensans-lightitalic.woff2") format("woff2"),
+       url("fonts/opensans-lightitalic.woff") format("woff");
   font-weight: normal;
   font-style: italic;
 }
 
 @font-face {
   font-family: "Open Sans Light";
-  src: url("//www.mozilla.org/media/fonts/OpenSans-Regular-webfont.eot");
-  src: url("//www.mozilla.org/media/fonts/OpenSans-Regular-webfont.eot?#iefix") format("embedded-opentype"),
-       url("//www.mozilla.org/media/fonts/OpenSans-Regular-webfont.woff") format("woff"),
-       url("//www.mozilla.org/media/fonts/OpenSans-Regular-webfont.ttf") format("truetype");
+  src: url("fonts/opensans-regular.woff2") format("woff2"),
+       url("fonts/opensans-regular.woff") format("woff");
   font-weight: bold;
   font-style: normal;
 }
 
 
 /* Hidden elements */
-#header, 
-#content-sub, 
-#respond, 
-#breadcrumbs, 
-#nav-access, 
-.spread, 
-#sub-footer, 
-#footer-logo, 
-#footer-menu, 
-.comment-util, 
-.cmt-post { 
-  display: none; 
+#header,
+#content-sub,
+#respond,
+#breadcrumbs,
+#nav-access,
+.spread,
+#sub-footer,
+#footer-logo,
+#footer-menu,
+.comment-util,
+.cmt-post {
+  display: none;
 }
 
 #page { width: 90%; margin: 0 auto; background: #fff none !important; }

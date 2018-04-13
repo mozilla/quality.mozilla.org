@@ -24,6 +24,5 @@
 </footer>
 
 <?php wp_footer(); ?>
-<script src="//mozorg.cdn.mozilla.net/tabzilla/tabzilla.js"></script>
 </body>
 </html>
